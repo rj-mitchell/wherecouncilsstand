@@ -1,0 +1,20 @@
+# Where Councils Stand settings. Paths are relative to the repository root unless absolute.
+# Environment overrides: COUNCILS_DATA_DIR, COUNCILS_CONFIG.
+
+[paths]
+data_dir = "data"
+
+[archive]
+# The record starts in May 2018 for every council (docs/DECISIONS.md, 4).
+start_date = "2018-05-01"
+
+[modgov]
+# Identifies the crawler to councils' servers, with a page explaining what it does.
+user_agent = "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+# At least this many seconds between requests to the same council.
+min_interval_seconds = 1.0
+timeout_seconds = 40
+retries = 3
+# Minutes of a meeting newer than this are fetched again: they are approved, and sometimes corrected, at the
+# next meeting.
+refetch_days = 120
