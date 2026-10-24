@@ -45,6 +45,29 @@ def to_text(fragment: str | None) -> str:
     return _tidy("".join(parts))
 
 
+def tables(fragment: str | None) -> list[list[list[str]]]:
+    """Every table in an HTML fragment, as rows of cell texts. Empty cells are kept as "", so a mark's column is
+    known."""
+    if not fragment or "<t" not in fragment.lower() and "&lt;t" not in fragment.lower():
+        return []
+    raw = html.unescape(fragment) if "&lt;" in fragment else fragment
+    try:
+        root = lhtml.fragment_fromstring(raw, create_parent="div")
+    except (etree.ParserError, ValueError):
+        return []
+    out = []
+    for table in root.iter("table"):
+        rows = []
+        for tr in table.iter("tr"):
+            cells = [_SPACE.sub(" ", td.text_content()).strip() for td in tr if isinstance(td.tag, str)
+                     and td.tag.lower() in ("td", "th")]
+            if any(cells):
+                rows.append(cells)
+        if rows:
+            out.append(rows)
+    return out
+
+
 def _tidy(text: str) -> str:
     lines = []
     for line in text.split("\n"):
@@ -53,3 +76,15 @@ def _tidy(text: str) -> str:
         if line:
             lines.append(line)
     return "\n".join(lines)
+
+
+def vote_tables(fragment: str | None) -> list[list[list[str]]]:
+    """The tables that could be named votes: a row with both a "For" and an "Against" cell."""
+    keep = []
+    for rows in tables(fragment):
+        for row in rows[:4]:
+            cells = {c.strip().rstrip(":").strip().lower() for c in row}
+            if cells & {"for", "in favour", "yes"} and cells & {"against", "no"}:
+                keep.append(rows)
+                break
+    return keep

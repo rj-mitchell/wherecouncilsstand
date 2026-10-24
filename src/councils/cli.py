@@ -81,6 +81,14 @@ def pilot_run(workers: int = typer.Option(4, help="councils loaded at once")) ->
         typer.echo(json.dumps(line))
 
 
+@app.command("pilot-check")
+def pilot_check(n: int = 15, seed: int = typer.Option(None, help="a different sample")) -> None:
+    """A random sample of named votes and declarations, with their passages, for checking by hand."""
+    from councils import pilot
+
+    typer.echo(pilot.check_sample(load_settings(), n, seed if seed is not None else pilot.SEED))
+
+
 @app.command()
 def report() -> None:
     """The pilot's measurements, as Markdown."""

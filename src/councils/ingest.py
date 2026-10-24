@@ -6,7 +6,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import date
 
-from councils import committees, store
+from councils import committees, extract, store
 from councils.config import Settings
 from councils.parse import parties
 from councils.registry import Council, site_sharers
@@ -75,8 +75,10 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
                     continue
                 ctx = meeting_rows.Context(council.gss, council.name, council.modgov_url, cid, title, kind)
                 m, its, att = meeting_rows.rows(root, ctx)
+                # Members of the public and council staff in the attendance list aren't stored (docs/DECISIONS.md, 9).
+                att = [a for a in att if extract.is_councillor(a["role"])]
                 for a in att:
-                    a["party"] = parties.normalise(a["party_label"])
+                    a["party"] = parties.normalise(a["party_label"], council.gss)
                 meetings.append(m)
                 items += its
                 attendance += att

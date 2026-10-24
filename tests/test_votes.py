@@ -89,3 +89,131 @@ def test_dashed_declaration():
 
 def test_no_declarations():
     assert declarations.parse("There were no declarations of interest.", MEMBERS) == []
+
+
+def test_for_in_ordinary_prose_is_not_a_vote():
+    text = ("The Cabinet Member for: Customer Services presented the strategy. Priorities for - Regulatory, "
+            "Governance and Staffing were agreed.")
+    assert votes.parse(text, MEMBERS) == []
+
+
+def test_single_side_after_announcement():
+    text = "A recorded vote was taken. In favour of the motion: Councillors Carr and Smith. The motion was carried."
+    assert by_side(votes.parse(text, MEMBERS)) == {"for": ["3", "4"]}
+
+
+def test_vote_table():
+    from councils.parse.minutes import vote_tables
+
+    html = ("<p>A recorded vote took place.</p><table><tr><td>Recommendation 2.4</td></tr>"
+            "<tr><td>Name</td><td>For</td><td>Against</td><td>Abstain</td><td>Absent</td></tr>"
+            "<tr><td>Cllr J Carr</td><td>?</td><td>&nbsp;</td><td></td><td></td></tr>"
+            "<tr><td>Cllr S Smith</td><td></td><td>?</td><td></td><td></td></tr>"
+            "<tr><td>Cllr K Andrews</td><td></td><td></td><td>X</td><td></td></tr>"
+            "<tr><td>Cllr A Markham</td><td></td><td></td><td></td><td>?</td></tr></table>")
+    found = votes.parse_tables(vote_tables(html), MEMBERS)
+    assert by_side(found) == {"for": ["3"], "against": ["4"], "abstain": ["6"]}
+
+
+def test_count_table_is_not_a_named_vote():
+    from councils.parse.minutes import vote_tables
+
+    html = "<table><tr><td>For</td><td>Against</td><td>Abstain</td></tr><tr><td>30</td><td>12</td><td>1</td></tr></table>"
+    assert votes.parse_tables(vote_tables(html), MEMBERS) == []
+
+
+def test_namely_format():
+    text = ("A recorded vote was taken on the formal Council Tax resolutions resulting as follows: For the resolutions "
+            "3 votes (namely, the Mayor, Councillors Carr and Smith) Against the resolutions None Abstentions 1 vote "
+            "(namely, Councillor Andrews)")
+    found = votes.parse(text, MEMBERS)
+    assert by_side(found) == {"for": ["5", "3", "4"], "abstain": ["6"]}
+
+
+def test_names_before_side():
+    text = ("it was declared CARRIED with 3 voting in favour and 1 against. (Councillors J Carr, S Smith and "
+            "K Andrews voting in favour and Councillor Markham voting against).")
+    found = votes.parse(text, MEMBERS)
+    assert by_side(found) == {"for": ["3", "4", "6"], "against": ["5"]}
+    assert {v.outcome for v in found} == {"carried"}
+
+
+def test_heading_without_colon():
+    text = ("Members Voting FOR the Resolutions below Councillors Jo Carr and Sam Smith. (2) Members Voting AGAINST the "
+            "Resolutions below Councillors Kate Andrews. (1) The recommendations were therefore carried.")
+    found = votes.parse(text, MEMBERS)
+    assert by_side(found) == {"for": ["3", "4"], "against": ["6"]}
+    assert {v.outcome for v in found} == {"carried"}
+
+
+def test_count_after_last_name():
+    found = votes.parse("For the Motion – Councillors Carr and Smith (2) Against the Motion – Councillor "
+                        "Andrews (1)", MEMBERS)
+    assert by_side(found) == {"for": ["3", "4"], "against": ["6"]}
+
+
+def test_heading_ending_in_count_and_full_stop():
+    text = ("FOR the Amendment (2): Carr and Smith. AGAINST the Amendment (0). ABSTAIN the Amendment (1): Andrews.")
+    assert by_side(votes.parse(text, MEMBERS)) == {"for": ["3", "4"], "abstain": ["6"]}
+
+
+def test_names_after_none_are_not_guessed():
+    text = ("A recorded vote was taken: FOR – Councillors: Carr Smith AGAINST – None ABSTENTIONS – None "
+            "Councillors: Andrews Markham RESOLVED – that the tax base be noted.")
+    assert votes.parse(text, MEMBERS) == []
+
+
+def test_long_heading_before_colon():
+    text = ("Members Voting FOR the proposal to add to the budget for the Town Hall Refurbishment: Councillors Jo Carr "
+            "and Sam Smith (2) Members voting AGAINST the proposal: Councillors Kate Andrews (1)")
+    assert by_side(votes.parse(text, MEMBERS)) == {"for": ["3", "4"], "against": ["6"]}
+
+
+def test_the_mayor_role():
+    members = MEMBERS + [Member("9", "Councillor Pat Ray", "The Mayor")]
+    members = [m for m in members if m.member_id != "5"]
+    found = votes.parse("For: The Mayor; Councillors Carr. Against: Councillor Smith.", members)
+    assert by_side(found)["for"] == ["9", "3"]
+
+
+def test_counts_typos_and_lost_ticks():
+    text = ("the votes were cast as follows:- FOR: 2:- Carr, S. Smith AGAINST: 1:- Andrews ABTENTIONS: 1:- Markham "
+            "1. County Council RESOLVED")
+    assert by_side(votes.parse(text, MEMBERS)) == {"for": ["3", "4"], "against": ["6"], "abstain": ["5"]}
+    text = "A recorded vote was held: For:?Carr; Smith (2) Against:?(0) Abstain:? Andrews (1) ? The motion was CARRIED."
+    assert by_side(votes.parse(text, MEMBERS)) == {"for": ["3", "4"], "abstain": ["6"]}
+
+
+def test_list_ends_at_next_sentence():
+    text = ("In Favour of the amendment – Councillors J. Carr, S. Smith. Against the amendment – Councillors K. Andrews, "
+            "A. Markham. The vote on the amendment was not carried.")
+    assert by_side(votes.parse(text, MEMBERS)) == {"for": ["3", "4"], "against": ["6", "5"]}
+
+
+def test_voting_to_abstain():
+    text = ("Members Voting FOR the Motion: Councillors Jo Carr (1). Members voting AGAINST the Motion: Councillors Sam "
+            "Smith and Kate Andrews (2). Members voting to ABSTAIN on the Motion: Councillor Alan Markham (1).")
+    assert by_side(votes.parse(text, MEMBERS)) == {"for": ["3"], "against": ["4", "6"], "abstain": ["5"]}
+
+
+def test_election_of_a_person_is_not_a_motion_vote():
+    assert votes.parse("For Councillor Sam Smith", MEMBERS) == []
+    text = ("A recorded vote was taken. FOR COUNCILLOR SMITH: Councillors Carr and Andrews (2). FOR COUNCILLOR "
+            "MARKHAM: Councillors Markham (1). ABSTENTIONS: None (0).")
+    assert votes.parse(text, MEMBERS) == []
+
+
+def test_list_ends_before_voting_figures():
+    text = ("FOR: Councillors Carr and Smith (2). AGAINST: Councillor Andrews (1). ABSTENTIONS: Councillor Markham (1). "
+            "(Voting figures: 2 for, 1 against, 1 abstention).")
+    assert by_side(votes.parse(text, MEMBERS)) == {"for": ["3", "4"], "against": ["6"], "abstain": ["5"]}
+
+
+def test_roles_that_are_not_councillors():
+    from councils.extract import is_councillor
+
+    assert all(is_councillor(r) for r in ["Committee Member", "Chair", "The Mayor", "Vice-Chair", "Leader",
+                                          "Portfolio Holder", "Substitute", "Councillor Also Present"])
+    assert not any(is_councillor(r) for r in ["Officer", "Committee Officer", "Democratic Services Officer", "Public",
+                                              "Invitees", "Invitee/Observer", "Guest", "Co-Optee", "Council Staff",
+                                              "Church Representative", "Independent Member", "Committee Clerk"])

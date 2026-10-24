@@ -46,6 +46,7 @@ ITEM_SCHEMA = pa.schema([
     ("title", pa.string()),
     ("agenda_text", pa.string()),
     ("minutes_text", pa.string()),
+    ("vote_tables", pa.string()),       # JSON: tables in the minutes that could be named votes (parse/votes.py)
     ("is_decision", pa.bool_()),
     ("is_restricted", pa.bool_()),
     ("is_call_in", pa.bool_()),

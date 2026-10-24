@@ -3,12 +3,13 @@ minutes, and who attended."""
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from datetime import date
 
 from lxml import etree
 
-from councils.parse.minutes import to_text
+from councils.parse.minutes import to_text, vote_tables
 from councils.sources.modgov import parse_date
 
 
@@ -44,7 +45,9 @@ def rows(root: etree._Element, ctx: Context) -> tuple[dict, list[dict], list[dic
     pdfs = []
     for n, it in enumerate(root.iterfind("agendaitems/agendaitem")):
         iid = _t(it, "agendaitemid")
-        minutes = to_text(_t(it, "minutesnonemptyhtmlbody"))
+        minutes_html = _t(it, "minutesnonemptyhtmlbody")
+        minutes = to_text(minutes_html)
+        tables = vote_tables(minutes_html)
         docs = [(_t(doc, "title"), _t(doc, "url")) for doc in it.iterfind("linkeddocuments/linkeddoc")]
         pdfs += [url for title, url in docs if "minute" in title.lower()]
         items.append({
@@ -58,6 +61,7 @@ def rows(root: etree._Element, ctx: Context) -> tuple[dict, list[dict], list[dic
             "title": _t(it, "agendaitemtitle"),
             "agenda_text": to_text(_t(it, "agendatext")),
             "minutes_text": minutes,
+            "vote_tables": json.dumps(tables) if tables else "",
             "is_decision": _bool(it, "isdecision"),
             "is_restricted": _bool(it, "isrestricted"),
             "is_call_in": _bool(it, "iscallin"),

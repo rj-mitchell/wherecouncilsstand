@@ -121,3 +121,29 @@ def report(settings: Settings) -> str:
     out += ["", "## Size", "", f"{size[1]:,} agenda items with minutes text, {size[0] or 0:,} characters "
             f"(about {(size[0] or 0) // 4:,} tokens)."]
     return "\n".join(out)
+
+
+def check_sample(settings: Settings, n: int = 15, seed: int = SEED) -> str:
+    """A random sample (fixed seed) of named votes and declarations, each with the passage it was read from, for
+    checking by hand against the minutes."""
+    con = duckdb.connect()
+    store.parquet.attach(con, settings.parquet_dir)
+    ids = ", ".join(f"'{g}'" for g in (c.gss for c in sample()))
+    rng = random.Random(seed)
+    blocks = [r[0] for r in con.execute(f"select distinct vote_id from votes where gss in ({ids}) order by 1").fetchall()]
+    out = ["# Named votes"]
+    for vid in sorted(rng.sample(blocks, min(n, len(blocks)))):
+        rows = con.execute("select vote, name, member_id, outcome, question, excerpt, i.url from votes v "
+                           "join items i using (item_id) where vote_id = ? order by vote, name", [vid]).fetchall()
+        sides = defaultdict(list)
+        for vote, name, member_id, *_ in rows:
+            sides[vote].append(name + ("" if member_id else " [unmatched]"))
+        out += ["", f"## {vid}  outcome={rows[0][3] or '?'}  question={rows[0][4] or '?'}", rows[0][6],
+                *(f"- {side} ({len(names)}): {', '.join(names)}" for side, names in sides.items()),
+                f"> {rows[0][5]}"]
+    decls = con.execute(f"select d.name, d.member_id, d.interest, d.excerpt, i.url from declarations d join items i "
+                        f"using (item_id) where d.gss in ({ids}) order by d.item_id, d.name").fetchall()
+    out += ["", "# Declarations"]
+    for name, member_id, interest, excerpt, url in rng.sample(decls, min(n, len(decls))):
+        out += ["", f"- {name}{'' if member_id else ' [unmatched]'} — {interest or '?'} — {url}", f"> {excerpt}"]
+    return "\n".join(out)
