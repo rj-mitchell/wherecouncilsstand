@@ -254,6 +254,14 @@ class SearchIndex:
             f"passage_id IN ({', '.join(sql_str(p) for p in passage_ids)})").limit(None).to_list()
         return {r["passage_id"]: r for r in rows}
 
+    def vectors_for_keys(self, keys: list[str]) -> dict[str, np.ndarray]:
+        """passage_id -> vector, for the given source keys."""
+        if not keys or VECTORS not in self._names():
+            return {}
+        where = f"source_key IN ({', '.join(sql_str(k) for k in keys)})"
+        found = self.vectors().search().where(where).select(["passage_id", "vector"]).limit(None).to_arrow()
+        return dict(zip(found["passage_id"].to_pylist(), np.asarray(found["vector"].to_pylist(), dtype=np.float32)))
+
     def rows_for_keys(self, keys: list[str]) -> list[dict[str, Any]]:
         if not keys:
             return []

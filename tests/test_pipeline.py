@@ -157,3 +157,18 @@ def test_pipeline_end_to_end_is_grounded(settings):
     assert answer["loaded_words"] == 1                  # "fiasco" in the model's own voice is flagged
     sent = client.calls[0]["messages"][0]["content"]
     assert all("Bloggs" not in b["text"] for s in sent if s["type"] == "search_result" for b in s["content"])
+
+
+def test_reindex_keeps_embeddings_of_unchanged_passages_and_updates_tags(settings):
+    idx = Indexer(settings)
+    before = idx.index.vectors().count_rows()
+    assert before and all(v["embedded"] for v in idx.state.data.values())
+    # the party label changes (as after a new rule in parse/parties.py): tags change, text doesn't
+    rows = store.parquet.read(settings.parquet_dir, "attendance", GUILDFORD)
+    store.parquet.write(settings.parquet_dir, "attendance", GUILDFORD,
+                        [r | {"party": "GRN"} if r["member_id"] == "7" else r for r in rows])
+    idx.index_all()
+    assert idx.index.vectors().count_rows() == before
+    assert all(v["embedded"] for v in idx.state.data.values())
+    vec_rows = idx.index.vectors().search().where(f"gss = '{GUILDFORD}'").limit(None).to_list()
+    assert all("GRN" in r["parties"] for r in vec_rows)

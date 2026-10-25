@@ -17,6 +17,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
 from councils import store
 from councils.config import Settings
 from councils.embed.base import Embedder
@@ -175,16 +177,33 @@ class Indexer:
         self.state = State(settings.index_dir / "state.json")
 
     def index_council(self, gss: str) -> int:
+        """Replace a council's passages. A council-year whose passages are all unchanged keeps its embeddings, with its
+        tags (party in control, parties named) brought up to date; any other is embedded again."""
         rows = passage_rows(gss, self.settings, int(self.settings.embedding.get("passage_words", 250)))
         by_key: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for r in rows:
             by_key[r["source_key"]].append(r)
         old = [k for k in self.state.data if k.startswith(f"{gss}:")]
+        embedded = [k for k in old if self.state.data[k].get("embedded") and k in by_key]
+        kept: dict[str, list] = {}
+        if embedded:
+            stored: dict[str, dict[str, str]] = defaultdict(dict)    # key -> passage_id -> text
+            for r in self.index.rows_for_keys(embedded):
+                stored[r["source_key"]][r["passage_id"]] = r["search_text"]
+            vectors = self.index.vectors_for_keys(embedded)
+            for k in embedded:
+                new = by_key[k]
+                if len(new) == len(stored[k]) and all(stored[k].get(r["passage_id"]) == r["search_text"]
+                                                      and r["passage_id"] in vectors for r in new):
+                    kept[k] = [vectors[r["passage_id"]] for r in new]
         self.index.replace_keys(sorted(set(old) | set(by_key)), rows)
         for k in old:
             self.state.data.pop(k, None)
         for k, v in by_key.items():
             self.state.indexed(k, len(v))
+            if k in kept:
+                self.index.add_vectors([], v, np.asarray(kept[k], dtype=np.float32))
+                self.state.data[k]["embedded"] = True
         self.state.save()
         return len(rows)
 
