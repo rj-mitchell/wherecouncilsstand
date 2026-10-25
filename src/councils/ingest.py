@@ -38,11 +38,12 @@ def selected_committees(client: Client, council: Council) -> dict[int, tuple[str
             continue
         title = c.title
         if sharers:  # a site shared with another council: keep only this council's committees
-            own = committees.strip_prefix(title, [council.short_name])
+            own = committees.strip_prefix(title, [council.name, council.short_name])
             if own is None:
                 continue
             title = own
-        k = committees.kind(title, council.gss)
+        # full council named as the council itself: "Cornwall Council"
+        k = "council" if title.strip().lower() == council.name.lower() else committees.kind(title, council.gss)
         if k:
             out[c.id] = (c.title, k)
     return out

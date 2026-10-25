@@ -32,7 +32,8 @@ _RULES = [
             r"|the conservative party( candidate)?"),
     ("LD", r"ld|lib ?dems?|libdems?|liberal democrats?( party| group)?|lib dem group|libdem group|libdem ?fo(cus)?"
            r"|wld|welsh liberal democrats?"),
-    ("GRN", r"grn|gre|gp|green|greens|green party|green group|the green party|green party and independent group"),
+    ("GRN", r"grn|gre|gp|green|greens|green party( candidate)?|green group|the green party"
+            r"|green party and independent group"),
     ("REF", r"ref|refuk|ruk|reform ?uk|reform|reform uk party|reform group|reform uk group"),
     ("PC", r"pc|plaid|plai|plaid cymru|plaid cymru - the party of wales"),
     ("UKIP", r"ukip|uk independence party"),
@@ -40,7 +41,7 @@ _RULES = [
     ("YP", r"your party|yp"),
     ("WPB", r"workers party( of britain)?|wpb"),
     ("SDP", r"sdp|social democratic party"),
-    ("IND", r"ind|indep|inde|independent|independents?( member| councillor)?|non-? ?aligned|unaligned|no party|non political"),
+    ("IND", r"i|ind|ind ind|indy|indep|inde|independent|independant|independents?( member| councillor)?|non-? ?aligned|unaligned|no party|non political"),
     ("NONE", r"|none|n/a|-"),
 ]
 _COMPILED = [(code, re.compile(rf"^(?:{pattern})$", re.I)) for code, pattern in _RULES]
