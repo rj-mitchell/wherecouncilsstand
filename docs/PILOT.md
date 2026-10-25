@@ -130,8 +130,69 @@ Remaining weaknesses:
 - about 3% of names match no member, mostly because older attendance lists are incomplete, or because of
   misspellings in the minutes ("Heighbour" for Neighbour).
 
-A fourth, fresh sample should be checked before launch, and the target set: for example, no member on the wrong side
-in a sample of 50.
+### Across all councils
+
+Once about 200 councils were loaded, 50 votes were drawn at random from all of them (seed 2026) and checked by hand
+against the minutes. The target was no member on the wrong side. The parser missed it:
+
+| | Votes |
+|---|---|
+| Right | 23 |
+| Within one or two names of right (a name missed, or a stray word such as "MBE" read as a name) | 18 |
+| Misread: a list read from the wrong place, a side missed, or an election of a leader read as a vote | 6 |
+| **Members on the wrong side** | **3** |
+
+Outcomes were wrong in at least 4 of the 50, where the parser took the result of another question nearby.
+
+The three wrong-side errors:
+
+- **Wirral:** counts first, then one list ("For - 65 Against - 0 Abstentions - 0 Avis, Banks, …"). All 65 were put
+  under abstentions.
+- **Merton:** a "Not voting:" list read as part of the "against" list before it, putting 7 non-voters against.
+- **Harrow:** an "Absent:" list read the same way.
+
+Fixes, each with a test built from the real wording:
+
+- "Not voting", "Absent", "Did not vote" and "Present not voting" now end the list before them.
+- A zero count can't have names: names after "Abstentions - 0" go to the side whose count they match, or are left out.
+- A list with far more names than its count is left out; it means both lists follow both headings, or the list runs on
+  into the text.
+- Party block votes ("Labour block vote of 15 votes") are left out: they aren't votes by name.
+- Totals after each list ("Those voting FOR – 56") no longer split a vote in two.
+- Headings may run up to their colon ("For the Cabinet recommendations to Council as set out in the minutes …:"),
+  but not across a verb ("… are recorded as set out below:"), and year ranges ("for 2023-2027") aren't headings.
+- A list now ends at a new sentence ("Councillor Gill. The proposed motion therefore FELL."), or at "Motion Carried".
+- The result is read from the sentences straight after the names, up to one that moves on to another question. Only
+  if there's nothing there is the last result before the vote used.
+- One member recorded after the lists is read ("The Lord Mayor abstained from voting."; "Councillor Huntley voted
+  against.").
+- Roles named with a person count once ("the Deputy Mayor, Councillor Ed Foley"; "His Worshipful the Mayor
+  Councillor Salim Chowdhury"). A deputy mayor is no longer matched to the mayor.
+- "K Berberi" isn't matched to the only Berberi listed if that member is Mark. Surname-first names ("Barratt R") are
+  matched. Honours split from names ("MBE", "J.P.") and counts in square brackets ("[7]") are dropped.
+
+The same 50, parsed again, have no member on the wrong side. Wirral's vote is now left unread rather than guessed.
+Oxford's 29 names are read. Lincolnshire's two votes are no longer split into four.
+
+A second sample of 20 (seed 777) found one more wrong-side error. Southend wrote both lists after both headings
+("For the Motion (31) Against the Motion (13) Councillors …"), and all 44 were read as against. This is the case that
+the count rule above now leaves out. That sample also found Crawley's block votes and a missed "[7]" count.
+
+**A final sample of 20 (seed 4242), drawn after every fix and checked without changing anything:**
+
+- **17 right, 2 within one name, 1 with one side's list missed. No member on the wrong side.** The two near
+  misses are the minutes' own slips: "J, Phipps", and a member listed twice. The missed list was "AGAINST the
+  Amendment (22). Bayliss, …", with a full stop after the count; this has been fixed since.
+- The result was read in 18 of the 20, and was right wherever the minutes give it.
+
+Across the 198 councils loaded at the time, the changes read **6% more named votes** (6,591 to 6,958). They also cut
+names matched to no member from 3.3% to 3.0%. Removing names from excerpts had two faults, now fixed. It cut
+"McInroy" to "[name removed]Inroy". And it removed a councillor's name when a heading followed it ("Mr Whiting
+Against (51)").
+
+20 votes is a small sample. A wrong-side rate under 1 in 20 is all it shows. Before launch, a larger check (100 or
+more votes) should confirm the target. Each vote should keep linking to the council's own minutes, so a reader can
+check.
 
 ## Declarations of interest
 
@@ -198,8 +259,9 @@ one-member groups or mixed groups ("Independent partnership"), which need a pers
 2. ~~Remove the names of people who aren't councillors from anything shown.~~ Done; a larger check of misses is
    still to do.
 3. Load the remaining councils, and record each council's licence statement.
-4. Check a fresh sample of 50 votes by hand against a set target.
-5. Adapt Where Countries Stand's index and briefing engine to council minutes, with "the minutes record that…"
-   wording (docs/DECISIONS.md, 7).
+4. ~~Check a fresh sample of 50 votes by hand against a set target.~~ Done across all councils: three wrong-side
+   errors found and fixed, then none in a fresh 20. A check of 100 or more is still to do before launch.
+5. ~~Adapt Where Countries Stand's index and briefing engine to council minutes, with "the minutes record that…"
+   wording (docs/DECISIONS.md, 7).~~ Done, from the command line.
 6. Retry the 25 councils that blocked automated requests and the 45 that were unreachable, from another network.
    Ask the ones still blocking to allow the crawler.

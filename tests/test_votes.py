@@ -217,3 +217,129 @@ def test_roles_that_are_not_councillors():
     assert not any(is_councillor(r) for r in ["Officer", "Committee Officer", "Democratic Services Officer", "Public",
                                               "Invitees", "Invitee/Observer", "Guest", "Co-Optee", "Council Staff",
                                               "Church Representative", "Independent Member", "Committee Clerk"])
+
+
+TOWN = [
+    Member("21", "Councillor Ed Foley", "Deputy Mayor"),
+    Member("22", "Councillor Janice Howard", "Mayor"),
+    Member("23", "Councillor Tom Barlow", "Committee Member"),
+    Member("24", "Councillor Ann Williams", "Committee Member"),
+    Member("25", "Councillor Jo Bailey", "Committee Member"),
+    Member("26", "Councillor Mo Kohler", "Committee Member"),
+    Member("27", "Councillor Sue Ward", "Committee Member"),
+    Member("28", "Councillor Ian Gill", "Committee Member"),
+    Member("29", "Councillor Al Leigh MBE", "Committee Member"),
+]
+
+
+def test_not_voting_ends_a_list_and_a_named_role_counts_once():
+    text = ("The Mayor called for a roll-call vote on the amendment. Voting was as follows: Votes in favour: "
+            "Councillors Barlow, the Deputy Mayor, Councillor Ed Foley and Williams (3) Votes against: Councillors "
+            "Ward and the Mayor, Councillor Janice Howard (2) Not voting: Councillors Bailey and Kohler (2) "
+            "The Mayor declared the amendment to be lost.")
+    found = votes.parse(text, TOWN)
+    assert by_side(found) == {"for": ["23", "21", "24"], "against": ["27", "22"]}
+    assert {v.outcome for v in found} == {"lost"}
+
+
+def test_totals_after_each_list_do_not_split_the_vote():
+    text = ("A recorded vote was taken. Those for the amendment: Barlow and Williams Those voting FOR – 2 Those voting "
+            "against the amendment: Ward and Bailey. Those voting AGAINST – 2 ABSTENTIONS – 0 Upon being put to the "
+            "vote, the amendment was lost.")
+    found = votes.parse(text, TOWN)
+    assert by_side(found) == {"for": ["23", "24"], "against": ["27", "25"]}
+    assert len({v.block for v in found}) == 1
+
+
+def test_counts_first_then_one_list_belongs_to_the_side_with_that_count():
+    text = ("A vote was taken on the Substantive Motion, where there appeared – For - 3 Against - 0 Abstentions - 0 "
+            "Barlow, Ward, Bailey The Substantive Motion was carried.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "27", "25"]}
+
+
+def test_long_heading_up_to_its_colon():
+    text = ("A recorded vote was then taken: For the Cabinet recommendations to Council as set out in the minutes "
+            "of that meeting: Councillors Barlow, Ward, Williams (3) Against the Cabinet recommendations to Council: "
+            "None (0) Abstentions: Councillors Gill, Kohler (2) With more councillors voting for than against, the "
+            "resolution was carried.")
+    found = votes.parse(text, TOWN)
+    assert by_side(found) == {"for": ["23", "27", "24"], "abstain": ["28", "26"]}
+    assert {v.outcome for v in found} == {"carried"}
+
+
+def test_list_ends_at_a_new_sentence_and_outcome_before_the_vote_wins_over_a_later_one():
+    text = ("The amendment was put to the vote and was lost. The voting on the amendment was as follows: In favour "
+            "(2) Councillors Barlow and Williams. Against (2) Councillors Ward and Kohler. Abstentions (1) "
+            "Councillor Gill. The proposed motion was then put to the meeting and was carried.")
+    found = votes.parse(text, TOWN)
+    assert by_side(found) == {"for": ["23", "24"], "against": ["27", "26"], "abstain": ["28"]}
+    assert {v.outcome for v in found} == {"lost"}
+
+
+def test_outcome_straight_after_and_honours_split_by_columns():
+    text = ("Following the debate, the voting was as follows. For (3) Mr Barlow, Mr A Leigh, MBE, Ms Ward "
+            "Against (1) Mrs Williams Abstain (0) Motion Carried. RESOLVED that the motion be agreed.")
+    found = votes.parse(text, TOWN)
+    assert by_side(found) == {"for": ["23", "29", "27"], "against": ["24"]}
+    assert {v.outcome for v in found} == {"carried"}
+
+
+def test_worshipful_mayor_absent_and_voting_without_those():
+    text = ("Voting for the motion: Councilors T. Barlow, A. Williams. Voting against the motion: His Worshipful "
+            "the Mayor Councillor Janice Howard, Ward. Absent: Councillors Gill and Kohler.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["22", "27"]}
+
+
+def test_deputy_mayor_in_brackets_is_not_the_mayor():
+    text = ("For the Amendment (2) - Councillors Barlow and Williams. Against the Amendment (2) - The Deputy Lord "
+            "Mayor (Councillor Ed Foley) and Councillor Ward. Abstentions (1) - The Lord Mayor.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["21", "27"], "abstain": ["22"]}
+
+
+def test_count_then_cllr_without_a_colon():
+    text = ("The amendment was put to a recorded vote. (a) For the amendment – 2 Cllr Barlow and Cllr Williams. "
+            "(b) Against the amendment - 1 Cllr Ward. (c) Abstentions – 1 Cllr Gill. 46.4 The amendment was lost.")
+    found = votes.parse(text, TOWN)
+    assert by_side(found) == {"for": ["23", "24"], "against": ["27"], "abstain": ["28"]}
+    assert {v.outcome for v in found} == {"lost"}
+
+
+def test_titles_with_full_stops_are_not_sentence_ends():
+    text = "For: Mrs. Williams, Mr. T Barlow. Against: Cllr. Ward. Total against: 1 Present not voting: Gill."
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["24", "23"], "against": ["27"]}
+
+
+def test_one_member_recorded_after_the_lists():
+    text = ("The following members voted in favour of the motion: Councillor Tom Barlow Councillor Ann Williams ? "
+            "The following members voted against the motion: ? Councillor Sue Ward Councillor Mo Kohler ? The Mayor "
+            "abstained from voting. Following the vote, the motion was declared LOST.")
+    found = votes.parse(text, TOWN)
+    assert by_side(found) == {"for": ["23", "24"], "against": ["27", "26"], "abstain": ["22"]}
+    assert {v.outcome for v in found} == {"lost"}
+    text = ("For: Councillors Barlow and Williams. Against: Councillor Ward. Councillor Gill voted against. "
+            "The amendment was carried.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["27", "28"]}
+
+
+def test_years_are_not_headings():
+    text = ("The budget for 2023-2027 was moved. A recorded vote was taken. For: Councillors Barlow and Williams. "
+            "Against: Councillor Ward.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["27"]}
+
+
+def test_both_lists_after_both_headings_are_not_read():
+    text = ("The votes recorded were as follows: For the Motion (3) Against the Motion (1) Councillors Barlow, "
+            "Williams, Kohler and the Mayor Councillors Ward Abstained (0) The motion was carried.")
+    assert votes.parse(text, TOWN) == []
+
+
+def test_surname_first_square_counts_and_mayor_in_brackets():
+    text = ("FOR (2) Barlow T, Williams A. AGAINST (1) Councillor Janice Howard (Mayor). Members abstaining from the "
+            "vote. Councillors Ward and Gill [2] There were no other votes.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["22"], "abstain": ["27", "28"]}
+
+
+def test_count_then_full_stop():
+    text = ("FOR the Amendment (2): Barlow and Williams. AGAINST the Amendment (2). Ward and Gill. ABSTENTIONS (0): "
+            "The Amendment on being put, was declared LOST.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["27", "28"]}

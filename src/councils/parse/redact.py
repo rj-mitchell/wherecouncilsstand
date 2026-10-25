@@ -27,7 +27,8 @@ from collections.abc import Iterable
 
 REMOVED = "[name removed]"
 
-_NAME_WORD = r"[A-Z][a-z'’]+(?:-[A-Z][a-z'’]+)?"
+_PART = r"(?:[A-Z][a-z'’]{0,2}[A-Z][a-z'’]+|[A-Z][a-z'’]+)"        # "Smith", "McInroy", "MacDonald", "O'Brien"
+_NAME_WORD = rf"{_PART}(?:-{_PART})?"
 _TITLED = re.compile(
     rf"\b(?:Mr|Mrs|Ms|Miss|Mx|Dr|Prof|Professor|Sir|Dame|Rev|Revd|Father|Canon)\.?\s+"
     rf"(?:[A-Z]\.?\s*){{0,3}}{_NAME_WORD}(?:\s+{_NAME_WORD}){{0,2}}"
@@ -86,6 +87,9 @@ def _is_person(name: str) -> bool:
 # A councillor's role straight after the name: the person is a councillor, whatever the attendance list says.
 _COUNCILLOR_ROLE = re.compile(r"^\s*[,(]\s*(?:the\s+)?(?:deputy\s+)?(?:leader|mayor|lord mayor|civic mayor|cabinet member|"
                               r"portfolio holder|chair(?:man)?|vice[- ]chair|executive member|presiding member)\b", re.I)
+# Words that end a list of names in minutes rather than belong to one.
+_NOT_NAME_TAIL = re.compile(r"(?:\s+(?:Against|For|Abstain\w*|Abstention\w*|Absent|Apologies|Voting|Votes?|Total|None|Nil|"
+                            r"Carried|Lost|Resolved|Present|The|And|Amendments?|Motions?|Recommendations?|Substantive))+$")
 _AFTER_COUNCILLOR = re.compile(r"(?:councillors?|cllrs?\.?|cynghorydd)\s*$", re.I)
 _LIST_MORE = re.compile(rf"^(?:,\s*|\s+and\s+|\s*&\s*)(?P<name>(?:(?:Mr|Mrs|Ms|Miss|Mx|Dr)\.?\s+)?(?:[A-Z]\.?\s*){{0,3}}"
                         rf"{_NAME_WORD}(?:\s+{_NAME_WORD}){{1,2}})")
@@ -111,6 +115,7 @@ def redact(text: str, councillors: set[str]) -> tuple[str, int]:
     spans: list[tuple[int, int]] = []
 
     def consider(name: str, start: int) -> bool:
+        name = _NOT_NAME_TAIL.sub("", name)          # "Mr Whiting Against (51)": the heading isn't part of the name
         end = start + len(name)
         if _AFTER_COUNCILLOR.search(text[max(0, start - 14):start]) or _COUNCILLOR_ROLE.match(text[end:end + 40]):
             return False

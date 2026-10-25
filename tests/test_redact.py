@@ -74,3 +74,11 @@ def test_named_after_an_action():
     assert r("The Leader invited Jonathan Davies from Putting Cumbria First to make his statement.") == \
         f"The Leader invited {REMOVED} from Putting Cumbria First to make his statement."
     assert r("The Mayor thanked Councillor Jane Smith.") == "The Mayor thanked Councillor Jane Smith."
+
+
+def test_vote_heading_after_a_titled_councillor_and_mc_names():
+    c = {"whiting", "baker", "streatfeild", "mcinroy"}
+    text = "For (2) Mr Streatfeild, Mr M J Whiting Against (2) Mr Baker, Mr J P McInroy. Ms Ann McAllister asked"
+    out, n = redact(text, c)
+    assert out == "For (2) Mr Streatfeild, Mr M J Whiting Against (2) Mr Baker, Mr J P McInroy. [name removed] asked"
+    assert n == 1
