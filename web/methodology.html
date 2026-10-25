@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <!--#include head-->
+    <title>How it works — Where Councils Stand</title>
+    <meta name="description" content="How Where Councils Stand reads councils' minutes, works out party and control on the date, reads named votes and writes sourced briefings." />
+  </head>
+  <body>
+    <!--#include header-->
+    <main id="main">
+      <div class="prose">
+        <h1>How it works</h1>
+        <p class="lede">Where Councils Stand reads the minutes councils already publish, and writes briefings in which every point cites those minutes.</p>
+
+        <h2 class="minute-heading">Where the record comes from</h2>
+        <p>Most councils in England and Wales publish their meetings through <strong>Modern.gov</strong>, a system made by Civica. Each Modern.gov site has a public web service that gives every meeting's agenda, the minutes of each item, and the councillors listed at the meeting with their party on the day. Where Councils Stand reads that service, one request at a time to each council, at least a second apart, and keeps a copy so that each meeting is fetched once.</p>
+        <p>It covers <strong>full council and cabinet meetings since May 2018</strong>, including annual, budget and extraordinary meetings. Councils run by committees, which have no cabinet, are covered through the committees that make their main policy and budget decisions, usually a policy and resources committee. Other committees, cabinet members' individual decisions, and planning and licensing are not included.</p>
+        <p>Where a council publishes a meeting's minutes only as a document, the document is read instead. Some councils' sites refuse automated requests for documents, so some meetings have no minutes here. The <a href="/councils">list of councils</a> shows which councils are covered, and why the rest aren't yet.</p>
+        <p>The record is brought up to date every night. New meetings are added, and minutes from the last four months are read again, because minutes can change until they are approved at the next meeting.</p>
+
+        <h2 class="minute-heading">What minutes are, and aren't</h2>
+        <p>Minutes are a summary of a meeting written by the council's officers, not a word-for-word record. Briefings therefore say what <em>the minutes record</em>, and never present the minutes' summary as a councillor's own words. Quotations are only ever of words in the minutes.</p>
+
+        <h2 class="minute-heading">Party on the date, and party in control</h2>
+        <p>Each meeting's list of councillors records each councillor's party at the time, so a councillor who changed party is shown with the party they had at each meeting. Councils label parties in many ways ("LAB", "Labour", "Lab &amp; Co-op"). These are mapped to one name per party, partly by rules and partly from <a href="https://opencouncildata.co.uk/">Open Council Data</a>'s lists of councillors. Named local groups of independents or residents count as local parties, each under its own name, not as "Independent".</p>
+        <p>A party is <strong>in overall control</strong> when it has more than half the councillors listed at a full council meeting. Otherwise the council is under <strong>no overall control</strong>. This is reported as the council recorded it, as a fact about the date, never as a judgement.</p>
+
+        <h2 class="minute-heading">Named votes</h2>
+        <p>When a council takes a recorded vote, the minutes list who voted for, against and abstained. Councils write these lists in at least nine different ways. Each name is matched to the councillors listed at the meeting, so each vote shows every councillor's party on the date. Names that can't be matched are shown as written.</p>
+        <p>The reading has been checked by hand against the minutes. A first check of 50 votes found three that put councillors on the wrong side, and the parser was fixed. A fresh check of 20 votes after the fixes found none on the wrong side. That's too few to prove the rate is zero, and a larger check is planned. If only one side of a vote could be read, the page says so. Each vote links to the council's own minutes, so you can check it.</p>
+
+        <h2 class="minute-heading">How a briefing is written</h2>
+        <ol>
+          <li><strong>The question is read</strong> into filters: dates, councils, the party in control, kinds of meeting. By default the last four years are searched. Ask about earlier years to go back to May 2018. The filters used are shown above the briefing.</li>
+          <li><strong>The minutes are searched</strong>, both by keyword and by meaning, using a model that runs on the site's own server.</li>
+          <li><strong>The evidence is balanced.</strong> The passages found are grouped by the party in overall control of each council on the date, and drawn from each group in turn, at most two from any one council. The same rules apply to every party.</li>
+          <li><strong>A briefing is written</strong> by an AI model, Claude (made by Anthropic), only from those passages. It is told to report what the minutes record, in neutral words. Each point cites the passage it comes from.</li>
+          <li><strong>The briefing is checked.</strong> Every citation is checked against its passage, and quotations against the minutes. Text that no source supports is marked, and loaded words in the model's own voice are flagged.</li>
+        </ol>
+        <p>If the minutes hold nothing relevant, the briefing says "No records found." rather than guessing. Briefings can still be wrong. Please check the sources, and <a href="/corrections">tell us</a> if something is wrong.</p>
+
+        <h2 class="minute-heading">People who aren't councillors</h2>
+        <p>Minutes also name members of the public (people who speak, ask questions, present petitions, apply for planning permission or object) and council staff. Briefings and pages are limited to councillors' own words and actions. Other people's names are replaced with "[name removed]" before anything is searched, shown or sent to the AI model, and roles are kept ("[name removed], Chief Executive"). The council's own record is unchanged; it remains the council's responsibility. If you are named and something should not be shown, <a href="/corrections?kind=takedown">ask for it to be removed</a>.</p>
+
+        <h2 class="minute-heading">Code and data</h2>
+        <p>The code is open source (AGPL-3.0) on <a href="https://github.com/rj-mitchell/wherecouncilsstand">GitHub</a>, with the decisions behind it and the results of every check.</p>
+      </div>
+    </main>
+    <!--#include footer-->
+    <script type="module" src="/src/static.ts"></script>
+  </body>
+</html>

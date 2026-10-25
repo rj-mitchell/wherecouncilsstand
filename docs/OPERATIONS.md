@@ -90,3 +90,47 @@ Or with cron:
 | `councils parties` | Map stored party labels again (after `parse/parties.py` or `data_static/parties.csv` change) |
 | `councils index` | Rebuild the search index for all councils (keeps vectors of unchanged passages) |
 | `councils embed` | Embed passages not yet embedded |
+
+# Running the website
+
+The website and its API are one service, `councils serve` (FastAPI, in `src/councils/api/`). It serves the built pages
+from `web/dist`, reads the same data folder as the update, and keeps its own small database in `data/state.db`:
+spending, the answer cache, saved briefings and problem reports.
+
+```bash
+cd web && npm ci && npm run build && cd ..          # the pages (Vite, TypeScript, React)
+uv sync --extra embed                               # the service, with the local model for meaning search
+COUNCILS_ANTHROPIC_API_KEY=... uv run councils serve   # http://127.0.0.1:8000
+```
+
+On a server, run it under systemd behind Caddy, which provides HTTPS (units in `deploy/`):
+
+```bash
+echo 'COUNCILS_ANTHROPIC_API_KEY=...' | sudo tee /etc/wherecouncilsstand.env && sudo chmod 600 /etc/wherecouncilsstand.env
+sudo cp deploy/councils-web.service /etc/systemd/system/ && sudo systemctl enable --now councils-web
+sudo cp deploy/Caddyfile /etc/caddy/Caddyfile && sudo systemctl reload caddy
+```
+
+`--behind-proxy` takes each visitor's address from `X-Forwarded-For`, which Caddy sets, and only when the request comes
+from 127.0.0.1. The address is turned into a daily visitor code at once and never stored (privacy notice).
+
+**Costs and limits** are in `config/settings.toml`, `[usage]`. Each new briefing is counted against a visitor's daily
+allowance (`per_visitor_daily_questions`) and the site's daily and monthly caps (`daily_spend_cap_usd`,
+`monthly_spend_cap_usd`). Over a limit, readers still get the sources, which cost nothing. An identical question is
+answered from the cache until the data changes. Spending so far:
+
+```bash
+sqlite3 data/state.db "select day, round(sum(cost_usd), 2) from usage group by day order by day desc limit 14"
+```
+
+**Reports and takedown requests** are in the same database:
+
+```bash
+sqlite3 data/state.db "select id, at, kind, page, message from reports where closed_at is null"
+```
+
+Closing a report deletes the reporter's email address (privacy notice). A saved briefing can be withdrawn with
+`StateDB.withdraw_briefing`; its address then says it has been withdrawn.
+
+When the update has changed the data, the service notices within a request or two: the councils' directory is rebuilt
+when the stored meetings change. The search index is opened afresh for each search.

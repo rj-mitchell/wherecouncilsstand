@@ -164,10 +164,8 @@ def serve(host: str = "127.0.0.1", port: int = 8000,
     from councils.api.app import create_app
 
     s = load_settings()
-    if behind_proxy:
-        s.raw.setdefault("site", {})["behind_proxy"] = True
     uvicorn.run(create_app(s), host=host, port=port, proxy_headers=behind_proxy,
-                forwarded_allow_ips="*" if behind_proxy else None)
+                forwarded_allow_ips="127.0.0.1" if behind_proxy else None)
 
 
 @app.command("pilot-sample")

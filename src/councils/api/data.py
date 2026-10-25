@@ -21,6 +21,14 @@ KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy
 SIDE_ORDER = ("for", "against", "abstain")
 
 
+def _plain_name(name: str) -> str:
+    """"The Deputy Mayor, Councillor Dominique Williams" -> "Dominique Williams": the role is the meeting's, not
+    the person's name."""
+    name = re.sub(r"^(?:the\s+)?(?:(?:deputy|lord|civic|vice)\s+)*(?:mayor|chair(?:man|woman|person)?),?\s*", "", name,
+                  flags=re.I)
+    return re.sub(r"^(?:Councillor|Cllr\.?|Cynghorydd)\s+", "", name.strip())
+
+
 def _iso(d: date | None) -> str | None:
     return d.isoformat() if d else None
 
@@ -212,12 +220,16 @@ class Data:
         members = []
         for r in rows:
             party = c.party_on(r["member_id"], r["date"]) if c and r["member_id"] else ""
-            known = re.sub(r"^(?:Councillor|Cllr|Cynghorydd)\s+", "", c.name_of(r["member_id"])) \
-                if c and r["member_id"] else ""
+            known = _plain_name(c.name_of(r["member_id"])) if c and r["member_id"] else ""
             members.append({"side": r["vote"], "name": known or r["name"],
                             "written": r["name"], "matched": bool(r["member_id"]),
                             "party": people.party_name(party, gss) if party else None})
-        members.sort(key=lambda x: (SIDE_ORDER.index(x["side"]), x["party"] or "~", x["name"]))
+        # each side by party, largest first, then by name
+        size = Counter((m["side"], m["party"]) for m in members)
+        members.sort(key=lambda x: (SIDE_ORDER.index(x["side"]), x["party"] is None, -size[(x["side"], x["party"])],
+                                    x["party"] or "", x["name"]))
+        excerpt = rows[0]["excerpt"]
         return {**(summary or {}), "gss": gss, "council": councils()[gss].name,
+                "from_table": " | " in excerpt and excerpt.rstrip().endswith("members)"),
                 "control": people.party_name(c.control_on(rows[0]["date"]), gss) if c else None,
-                "excerpt": rows[0]["excerpt"], "members": members}
+                "excerpt": excerpt, "members": members}

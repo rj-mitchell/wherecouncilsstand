@@ -85,8 +85,9 @@ MODE_INSTRUCTIONS = {
         "bullets, each one specific finding that answers the question (which councils did what, and when). Each "
         "bullet is a single sentence that states the finding and carries its cited example, joined with 'as when'. "
         "Then one short section per group of councils - a bold label giving the group (for example '**Councils under "
-        "no overall control**'), one sentence characterising what their minutes record that also gives its clearest "
-        "example, then up to two further cited examples as bullets. If named votes are supplied, a short section "
+        "no overall control**'), one sentence characterising what their minutes record that also gives and cites its "
+        "clearest example (a characterisation without a citation is marked as unsupported), then up to two further "
+        "cited examples as bullets. If named votes are supplied, a short section "
         "'**How councillors voted**' follows. End with the short 'About the evidence:' paragraph. Keep it to roughly "
         "300-450 words."
     ),

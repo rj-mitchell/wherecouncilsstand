@@ -125,5 +125,6 @@ class StateDB:
 
     def close_report(self, report_id: int) -> bool:
         with self.connect() as con:
-            return bool(con.execute("UPDATE reports SET closed_at = ? WHERE id = ? AND closed_at IS NULL",
+            # the contact address is used only to reply, and deleted when the report is dealt with (privacy notice)
+            return bool(con.execute("UPDATE reports SET closed_at = ?, contact = '' WHERE id = ? AND closed_at IS NULL",
                                     (utcnow(), report_id)).rowcount)

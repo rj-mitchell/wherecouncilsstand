@@ -1,0 +1,20 @@
+# HTTPS for the website, with certificates from Let's Encrypt. Copy to /etc/caddy/Caddyfile.
+wherecouncilsstand.uk {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+	# built assets have hashed names, so they can be cached for good
+	@assets path /assets/*
+	header @assets Cache-Control "public, max-age=31536000, immutable"
+	reverse_proxy 127.0.0.1:8000 {
+		# briefings stream as server-sent events
+		flush_interval -1
+		header_up X-Forwarded-For {remote_host}
+	}
+}
+
+www.wherecouncilsstand.uk {
+	redir https://wherecouncilsstand.uk{uri} permanent
+}

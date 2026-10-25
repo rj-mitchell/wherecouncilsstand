@@ -1,0 +1,18 @@
+# Where Councils Stand's website and API, behind Caddy (deploy/Caddyfile). See docs/OPERATIONS.md.
+[Unit]
+Description=Where Councils Stand: website
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=councils
+WorkingDirectory=/opt/wherecouncilsstand
+Environment=COUNCILS_DATA_DIR=/opt/wherecouncilsstand/data
+# the Anthropic API key, kept out of this file: COUNCILS_ANTHROPIC_API_KEY=...
+EnvironmentFile=/etc/wherecouncilsstand.env
+ExecStart=/opt/wherecouncilsstand/.venv/bin/councils serve --host 127.0.0.1 --port 8000 --behind-proxy
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

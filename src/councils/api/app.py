@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 REPO_ROOT = Path(__file__).resolve().parents[3]
 KEEP_ALIVE_SECONDS = 15
 # Bump when the briefing instructions or the answer's shape change, so cached answers aren't reused.
-INSTRUCTIONS_VERSION = "1"
+INSTRUCTIONS_VERSION = "2"
 EXAMPLES = [
     "What have councils decided about weekly bin collections since 2023?",
     "How have Reform UK councillors voted on council budgets?",
@@ -130,8 +130,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
 
     def visitor(request: Request) -> str:
         """The visitor's daily code; 429 when over the per-minute limit."""
-        address = request.headers.get("cf-connecting-ip") if site.get("behind_proxy") else None
-        v = visitor_key(state, address or (request.client.host if request.client else None))
+        # behind the proxy, uvicorn takes the address from X-Forwarded-For, which Caddy overwrites (deploy/Caddyfile);
+        # a header the visitor could set themselves is never trusted
+        v = visitor_key(state, request.client.host if request.client else None)
         if not limiter.allow(v):
             raise HTTPException(429, "Too many requests. Please wait a minute and try again.")
         return v

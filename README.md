@@ -27,15 +27,24 @@ It was first run on 20 councils chosen by a fixed rule. It has since loaded 213 
 web service answers. They hold about 30,800 meetings and 7,300 named votes, with each councillor's party on the
 date. The results, and a hand check of the votes, are in [`docs/PILOT.md`](docs/PILOT.md).
 
-The search index and briefing engine, adapted from Where Countries Stand, work from the command line: keyword and
-meaning search over the minutes, evidence balanced across councils and party control, and Claude briefings with
-re-checked citations. There's no website yet.
+The search index and briefing engine, adapted from Where Countries Stand, give keyword and meaning search over the
+minutes, evidence balanced across councils and party control, and Claude briefings with re-checked citations. The
+data is brought up to date every night (`councils update`, [`docs/OPERATIONS.md`](docs/OPERATIONS.md)).
+
+The website (`web/`, served by `councils serve`) has:
+- questions answered as streamed, sourced briefings, each saved at its own address;
+- a page for every council: the party in control over time, members by party, named votes and meetings;
+- a page for every named vote, with each councillor's party on the date;
+- pages on how it works, corrections and takedown requests, and privacy.
+
+It isn't deployed yet. Its look is described in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 | File | What it is |
 |---|---|
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Product decisions made so far. They override everything else. |
 | [`docs/DATA.md`](docs/DATA.md) | Data sources, what the Modern.gov web service returns, and what was found in it |
-| [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | The daily update: what it does, how it copes with failing servers, scheduling |
+| [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | The daily update, and running the website: limits, costs, reports |
+| [`docs/DESIGN.md`](docs/DESIGN.md) | The website's look: the minute book |
 | [`docs/PILOT.md`](docs/PILOT.md) | The 20-council pilot, the full load, and hand checks of the votes |
 
 ## How it works
@@ -106,6 +115,8 @@ uv sync --extra embed && uv run councils embed --max-minutes 30   # meaning sear
 uv run councils search "bin collections" --control NOC
 uv run councils ask "What have Labour-run councils decided about bin collections since 2023?"
 uv run pytest
+cd web && npm ci && npm run build && npm test && cd ..
+uv run councils serve                     # the website, at http://127.0.0.1:8000
 ```
 
 Data is written to `data/` (raw responses and Parquet). `scripts/build_councils.py` rebuilds the council registry.

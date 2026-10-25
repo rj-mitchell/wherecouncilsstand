@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Where Councils Stand">
+  <title>Where Councils Stand</title>
+  <!-- an open minute book: two ruled pages, a margin rule for the minute number on the left -->
+  <rect width="64" height="64" fill="#1f3554"/>
+  <path d="M8 16 Q20 12 31 16 V50 Q20 46 8 50 Z" fill="#f6f3ec"/>
+  <path d="M56 16 Q44 12 33 16 V50 Q44 46 56 50 Z" fill="#f6f3ec"/>
+  <g stroke="#1f3554" stroke-width="1.6" stroke-linecap="square">
+    <path d="M13 22 H11"/><path d="M16 22 H28"/><path d="M16 27 H28"/><path d="M16 32 H26"/>
+    <path d="M13 37 H11"/><path d="M16 37 H28"/><path d="M16 42 H24"/>
+    <path d="M37 22 H52"/><path d="M37 27 H52"/><path d="M37 32 H49"/><path d="M37 37 H52"/><path d="M37 42 H46"/>
+  </g>
+  <path d="M14.5 19 V45" stroke="#b4772e" stroke-width="1"/>
+</svg>
