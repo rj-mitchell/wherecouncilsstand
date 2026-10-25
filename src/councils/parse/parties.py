@@ -24,22 +24,28 @@ NAMES = {
 
 _RULES = [
     ("LAB", r"lab|labour|labour (and |& )?co-?op(erative)?( party)?|lab ?(/|and|&)? ?co-?op|labcop|labco|labourcoop"
-            r"|labour party|labour group|welsh labour( party)?|labour and co-operative party"),
-    ("CON", r"con|cons|conservatives?( party| group)?|conservative (and|&) unionist|tory|tories"),
-    ("LD", r"ld|lib ?dems?|libdems?|liberal democrats?( party| group)?|lib dem group|libdem group"),
-    ("GRN", r"grn|gre|green|greens|green party|green group|the green party|green party and independent group"),
-    ("REF", r"ref|refuk|reform ?uk|reform|reform uk party|reform group|reform uk group"),
-    ("PC", r"pc|plaid|plaid cymru|plaid cymru - the party of wales"),
+            r"|labour party|labour group|welsh labour( party)?|labour and co-operative party|the labour party"
+            # Labour and Co-operative, as councils abbreviate it: "L&C", "LAB-CO", "LCO", "LABC", "LCP", "co-op"
+            r"|l ?(&|and) ?co?(-?op)?|landc|lco|lac|laco|labc|lcp|lab ?(-|&) ?co(-?op(erative)?|p)?|lab&coop"
+            r"|la[bo]?our (&|and) co-?op(erative)?( party)?|co-?op(erative)?( party)?"),
+    ("CON", r"con|cons|conservatives?( party| group)?|conservative (and|&) unionist( party)?|tory|tories|conu"
+            r"|the conservative party( candidate)?"),
+    ("LD", r"ld|lib ?dems?|libdems?|liberal democrats?( party| group)?|lib dem group|libdem group|libdem ?fo(cus)?"
+           r"|wld|welsh liberal democrats?"),
+    ("GRN", r"grn|gre|gp|green|greens|green party|green group|the green party|green party and independent group"),
+    ("REF", r"ref|refuk|ruk|reform ?uk|reform|reform uk party|reform group|reform uk group"),
+    ("PC", r"pc|plaid|plai|plaid cymru|plaid cymru - the party of wales"),
     ("UKIP", r"ukip|uk independence party"),
     ("LIB", r"liberal|liberal party"),
     ("YP", r"your party|yp"),
     ("WPB", r"workers party( of britain)?|wpb"),
     ("SDP", r"sdp|social democratic party"),
-    ("IND", r"ind|independent|independents?( member| councillor)?|non-? ?aligned|unaligned|no party|non political"),
+    ("IND", r"ind|indep|inde|independent|independents?( member| councillor)?|non-? ?aligned|unaligned|no party|non political"),
     ("NONE", r"|none|n/a|-"),
 ]
 _COMPILED = [(code, re.compile(rf"^(?:{pattern})$", re.I)) for code, pattern in _RULES]
-_LOCAL = re.compile(r"independents?\b|residents?\b|association|alliance|first\b|for \w|group$|^r4", re.I)
+_LOCAL = re.compile(r"independents?\b|residents?\b|association|alliance|first\b|for \w|group$|^r4"
+                    r"|\bind(?:s|ep)?\b|(?<=[a-z])Ind\b|^ind-?cons?\b", re.I)
 
 
 @lru_cache(maxsize=1)

@@ -68,6 +68,25 @@ def parse(council: list[str]) -> None:
 
 
 @app.command()
+def parties(council: list[str] = typer.Argument(None, help="GSS codes or names; all loaded councils if none")) -> None:
+    """Map stored attendance's party labels to codes again, after parse/parties.py or data_static/parties.csv change."""
+    from councils import store
+    from councils.parse.parties import normalise
+    from councils.registry import get
+
+    s = load_settings()
+    stored = sorted(p.stem for p in (s.parquet_dir / "attendance").glob("*.parquet"))
+    codes = [get(k).gss for k in council] if council else stored
+    for gss in codes:
+        rows = store.parquet.read(s.parquet_dir, "attendance", gss)
+        for r in rows:
+            r["party"] = normalise(r["party_label"], gss)
+        store.parquet.write(s.parquet_dir, "attendance", gss, rows)
+        typer.echo(json.dumps({"gss": gss, "records": len(rows),
+                               "unrecognised": sum(1 for r in rows if not r["party"] and r["party_label"])}))
+
+
+@app.command()
 def load(status: str = typer.Option("ok", help="councils whose web service had this status"),
          nation: str = typer.Option(None), workers: int = typer.Option(20, help="councils loaded at once"),
          resume: bool = typer.Option(False, help="only parse councils already loaded")) -> None:
