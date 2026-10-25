@@ -10,6 +10,14 @@ from functools import lru_cache
 
 from councils.config import STATIC_DIR
 
+# English regions (ONS codes), and Wales
+REGION_NAMES = {"E12000001": "North East", "E12000002": "North West", "E12000003": "Yorkshire and the Humber",
+                "E12000004": "East Midlands", "E12000005": "West Midlands", "E12000006": "East of England",
+                "E12000007": "London", "E12000008": "South East", "E12000009": "South West", "wales": "Wales"}
+TYPE_NAMES = {"county": "County council", "district": "District council", "unitary": "Unitary council",
+              "metropolitan": "Metropolitan borough council", "london_borough": "London borough council",
+              "city_of_london": "City of London Corporation", "isles_of_scilly": "Council of the Isles of Scilly"}
+
 
 @dataclass(frozen=True)
 class Council:

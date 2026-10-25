@@ -1,0 +1,120 @@
+"""Spending, limits and visitors (as Where They Stand). Every model-written briefing costs money and the site is
+public, so there are limits per visitor and overall. Over the overall cap, briefings stop for the day and the sources
+are still shown, which costs nothing."""
+
+from __future__ import annotations
+
+import hashlib
+import secrets
+import threading
+import time
+from collections import defaultdict, deque
+from typing import Any
+
+from councils.api.state import StateDB, today, utcnow
+
+
+def prices_for(prices: dict[str, Any], model: str | None) -> dict[str, Any]:
+    """The [usage] prices, with a model's own prices (``[usage.models."<model>"]``) on top."""
+    for name, own in (prices.get("models") or {}).items():
+        if model and (model == name or model.startswith(name)):
+            return {**prices, **own}
+    return prices
+
+
+def cost_usd(usage: dict[str, int] | None, prices: dict[str, Any], model: str | None = None) -> float:
+    if not usage:
+        return 0.0
+    p = prices_for(prices, model)
+    price_in = float(p.get("price_input_per_mtok", 2.0))
+    writes = usage.get("cache_write_tokens", 0) or usage.get("cache_creation_input_tokens", 0) or 0
+    reads = usage.get("cache_read_tokens", 0) or usage.get("cache_read_input_tokens", 0) or 0
+    # input_tokens includes cache writes (rag/answer.usage_dict), which are priced higher
+    return round((usage.get("input_tokens", 0) - writes) / 1e6 * price_in
+                 + writes / 1e6 * price_in * float(p.get("cache_write_multiplier", 1.25))
+                 + usage.get("output_tokens", 0) / 1e6 * float(p.get("price_output_per_mtok", 10.0))
+                 + reads / 1e6 * float(p.get("price_cache_read_per_mtok", 0.2)), 6)
+
+
+def visitor_key(state: StateDB, address: str | None) -> str:
+    """A code for a visitor's IP address, for daily limits; the address itself is not kept. The secret mixed in
+    changes every day (UTC) and old ones are deleted, so codes can't be linked across days or turned back into an
+    address."""
+    name = f"visitor_salt:{today()}"
+    salt = state.get(name)
+    if salt is None:
+        with state.connect() as con:
+            con.execute("INSERT OR IGNORE INTO kv (key, value) VALUES (?, ?)", (name, secrets.token_hex(16)))
+            con.execute("DELETE FROM kv WHERE key LIKE 'visitor_salt:%' AND key != ?", (name,))
+        salt = state.get(name)
+    return hashlib.sha256(f"{salt}|{address or '-'}".encode()).hexdigest()[:24]
+
+
+def record_usage(state: StateDB, visitor: str | None, kind: str, model: str | None, usage: dict[str, int] | None,
+                 prices: dict[str, Any]) -> float:
+    if not usage:
+        return 0.0
+    cost = cost_usd(usage, prices, model)
+    with state.connect() as con:
+        con.execute("INSERT INTO usage VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (utcnow(), today(), visitor, kind, model, usage.get("input_tokens", 0),
+                     usage.get("output_tokens", 0),
+                     usage.get("cache_read_tokens", 0) or usage.get("cache_read_input_tokens", 0) or 0,
+                     usage.get("cache_write_tokens", 0) or usage.get("cache_creation_input_tokens", 0) or 0, cost))
+    return cost
+
+
+def spent(state: StateDB, since_day: str) -> float:
+    with state.connect() as con:
+        row = con.execute("SELECT COALESCE(SUM(cost_usd), 0) AS c FROM usage WHERE day >= ?", (since_day,)).fetchone()
+    return float(row["c"])
+
+
+def count_question(state: StateDB, visitor: str) -> int:
+    """Counts a new (not cached) briefing for a visitor today; returns how many they have had."""
+    with state.connect() as con:
+        con.execute("INSERT INTO questions (day, visitor, n) VALUES (?, ?, 1) "
+                    "ON CONFLICT(day, visitor) DO UPDATE SET n = n + 1", (today(), visitor))
+        con.execute("DELETE FROM questions WHERE day < ?", (today(),))
+        return int(con.execute("SELECT n FROM questions WHERE day = ? AND visitor = ?",
+                               (today(), visitor)).fetchone()["n"])
+
+
+def questions_today(state: StateDB, visitor: str) -> int:
+    with state.connect() as con:
+        row = con.execute("SELECT n FROM questions WHERE day = ? AND visitor = ?", (today(), visitor)).fetchone()
+    return int(row["n"]) if row else 0
+
+
+def blocked(state: StateDB, visitor: str, cfg: dict[str, Any]) -> str | None:
+    """Why a new briefing can't be written now, or None."""
+    if questions_today(state, visitor) >= int(cfg.get("per_visitor_daily_questions", 30)):
+        return "You have asked a lot of questions today, so new briefings are paused until tomorrow."
+    if spent(state, today()) >= float(cfg.get("daily_spend_cap_usd", 3.0)):
+        return "The site has reached today's limit on new briefings, which keeps its costs down."
+    if spent(state, today()[:8] + "01") >= float(cfg.get("monthly_spend_cap_usd", 50.0)):
+        return "The site has reached this month's limit on new briefings, which keeps its costs down."
+    return None
+
+
+class RateLimiter:
+    """At most ``per_minute`` requests a minute for each key, in memory."""
+
+    def __init__(self, per_minute: int):
+        self.per_minute = per_minute
+        self.hits: dict[str, deque] = defaultdict(deque)
+        self.lock = threading.Lock()
+
+    def allow(self, key: str) -> bool:
+        now = time.monotonic()
+        with self.lock:
+            q = self.hits[key]
+            while q and now - q[0] > 60:
+                q.popleft()
+            if len(q) >= self.per_minute:
+                return False
+            q.append(now)
+            if len(self.hits) > 10_000:   # forget idle visitors
+                for k in [k for k, v in self.hits.items() if not v or now - v[-1] > 60]:
+                    del self.hits[k]
+            return True

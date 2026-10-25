@@ -73,7 +73,7 @@ def england(http: httpx.Client) -> list[dict]:
         if r.get("end-date") or r.get("local-authority-type") not in TYPES:
             continue
         out.append({"gss": r["statistical-geography"], "reference": r["reference"], "name": r["name"],
-                    "nation": "england", "type": TYPES[r["local-authority-type"]], "region": r.get("region", ""),
+                    "nation": "england", "type": TYPES[r["local-authority-type"]], "region": (r.get("region") or "").split(":")[-1],  # "statistical-geography:E12000006" in a few
                     "website": r.get("website", "")})
     return out
 

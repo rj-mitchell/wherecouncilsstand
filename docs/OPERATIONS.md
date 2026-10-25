@@ -23,9 +23,13 @@ For every council already loaded, 20 at a time and one request at a time to each
 7. **A summary** is printed and appended to `data/updates.jsonl`:
 
    ```json
-   {"finished": "...", "minutes": 41.2, "councils": 213, "changed": 37, "new_meetings": 52, "failed": ["E07000243"],
-    "passages_embedded": 2210, "still_to_embed": 0, "needs_attention": false}
+   {"finished": "2026-10-25T21:05:01", "minutes": 51.7, "councils": 214, "changed": 17, "new_meetings": 23,
+    "failed": ["E07000072", "E07000076"], "passages_embedded": 9927, "still_to_embed": 0, "needs_attention": false}
    ```
+
+   That is the first run, on 25 October 2026. It fetched every meeting from the last 120 days again, so later runs
+   take about as long. The two failures were new meetings that timed out on slow servers. Both councils kept what was
+   stored and were tried again the next day.
 
    It exits with status 1 if `needs_attention` is true.
 

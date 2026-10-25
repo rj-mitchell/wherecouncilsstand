@@ -1,0 +1,323 @@
+"""The web service: questions answered as streamed briefings, search, council and vote pages, saved briefings and
+problem reports. Serves the built web pages (web/dist) too. Run with ``councils serve``.
+
+Adapted from Where They Stand's service, without accounts: the site is public, so new briefings are limited per
+visitor and overall (api/usage.py). Over a limit, the sources are still shown, which costs nothing.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import logging
+import queue
+import threading
+from collections.abc import Iterator
+from datetime import date
+from pathlib import Path
+from typing import Any, Literal
+
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
+
+from councils.api.data import Data
+from councils.api.state import StateDB
+from councils.api.usage import RateLimiter, blocked, count_question, record_usage, visitor_key
+from councils.config import Settings, load_settings
+from councils.rag.pipeline import AskRequest, Pipeline
+from councils.rag.query_parse import QueryPlan, parse_offline
+from councils.registry import REGION_NAMES, TYPE_NAMES
+
+log = logging.getLogger(__name__)
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+KEEP_ALIVE_SECONDS = 15
+# Bump when the briefing instructions or the answer's shape change, so cached answers aren't reused.
+INSTRUCTIONS_VERSION = "1"
+EXAMPLES = [
+    "What have councils decided about weekly bin collections since 2023?",
+    "How have Reform UK councillors voted on council budgets?",
+    "What have councils said about closing public toilets?",
+    "What have councils in Wales decided about second homes and council tax?",
+    "How did councillors vote on declaring a climate emergency?",
+    "What has Barnsley's full council decided about libraries?",
+]
+
+
+class AskBody(BaseModel):
+    question: str = Field(min_length=3, max_length=500)
+    mode: Literal["summary", "comprehensive"] = "summary"
+    plan: dict[str, Any] | None = None
+    history: list[dict[str, str]] = Field(default_factory=list, max_length=6)
+    sources_only: bool = False
+
+
+class ReportBody(BaseModel):
+    kind: Literal["error", "takedown", "other"] = "error"
+    page: str = Field(default="", max_length=500)
+    message: str = Field(min_length=5, max_length=5000)
+    contact: str = Field(default="", max_length=300)
+
+
+def sse(events: Iterator[dict[str, Any]], keep_alive: float = KEEP_ALIVE_SECONDS) -> Iterator[bytes]:
+    """Server-sent events, with a comment line after each few seconds of silence (while the model thinks), so proxies
+    don't close the connection. The events are worked out in their own thread, which stops once the reader has gone."""
+    q: queue.Queue = queue.Queue()
+    gone = threading.Event()
+    end = object()
+
+    def work() -> None:
+        try:
+            for ev in events:
+                q.put(ev)
+                if gone.is_set():
+                    break
+        except Exception as exc:  # passed on, to be raised where the response is being sent
+            q.put(exc)
+        finally:
+            if hasattr(events, "close"):
+                events.close()
+            q.put(end)
+
+    threading.Thread(target=work, name="sse", daemon=True).start()
+    try:
+        while True:
+            try:
+                ev = q.get(timeout=keep_alive)
+            except queue.Empty:
+                yield b": still working\n\n"
+                continue
+            if ev is end:
+                return
+            if isinstance(ev, Exception):
+                raise ev
+            yield f"event: {ev['type']}\ndata: {json.dumps(ev, default=str)}\n\n".encode()
+    finally:
+        gone.set()
+
+
+def cache_key(parts: dict[str, Any]) -> str:
+    return hashlib.sha256(json.dumps(parts, sort_keys=True, default=str).encode()).hexdigest()[:32]
+
+
+def create_app(settings: Settings | None = None, pipeline: Pipeline | None = None,
+               state: StateDB | None = None) -> FastAPI:
+    settings = settings or load_settings()
+    state = state or StateDB(settings.data_dir / "state.db")
+    data = Data(settings)
+    usage_cfg = settings.usage
+    limiter = RateLimiter(int(usage_cfg.get("requests_per_minute", 20)))
+    cache_hours = float(usage_cfg.get("answer_cache_hours", 168))
+    site = settings.section("site")
+    dist = Path(settings.section("paths").get("web_dist", REPO_ROOT / "web" / "dist"))
+    holder: dict[str, Pipeline] = {"p": pipeline} if pipeline is not None else {}
+    lock = threading.Lock()
+    app = FastAPI(title="Where Councils Stand", docs_url="/api/docs", openapi_url="/api/openapi.json")
+
+    def get_pipeline() -> Pipeline:
+        with lock:
+            if "p" not in holder:
+                holder["p"] = Pipeline(settings)
+            return holder["p"]
+
+    def offline_plan(body: AskBody) -> QueryPlan:
+        if body.plan:
+            return QueryPlan.from_dict({"question": body.question, **body.plan})
+        return parse_offline(body.question, date.today(), int(settings.archive.get("default_years", 4)),
+                             settings.start_date)
+
+    def visitor(request: Request) -> str:
+        """The visitor's daily code; 429 when over the per-minute limit."""
+        address = request.headers.get("cf-connecting-ip") if site.get("behind_proxy") else None
+        v = visitor_key(state, address or (request.client.host if request.client else None))
+        if not limiter.allow(v):
+            raise HTTPException(429, "Too many requests. Please wait a minute and try again.")
+        return v
+
+    @app.middleware("http")
+    async def headers(request: Request, call_next):
+        response = await call_next(request)
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        return response
+
+    # ---- about the site ------------------------------------------------------------------------------
+    @app.get("/api/health")
+    def health():
+        return {"ok": True}
+
+    @app.get("/api/meta")
+    def meta():
+        p = get_pipeline()
+        return {"site": {"name": site.get("name", "Where Councils Stand"), "url": site.get("url"),
+                         "donate_url": site.get("donate_url") or None},
+                "totals": data.totals(), "last_update": data.last_update(), "briefings": p.has_model(),
+                "default_years": int(settings.archive.get("default_years", 4)),
+                "start": settings.start_date.isoformat(), "examples": EXAMPLES,
+                "regions": REGION_NAMES, "types": TYPE_NAMES}
+
+    # ---- questions -----------------------------------------------------------------------------------
+    @app.post("/api/ask")
+    def ask(body: AskBody, request: Request):
+        v = visitor(request)
+        p = get_pipeline()
+        req = AskRequest(question=body.question, mode=body.mode, plan=body.plan, history=body.history)
+        options = body.model_dump(exclude={"question"})
+        key = cache_key({"q": " ".join(body.question.lower().split()), **options, "data": data.stamp(),
+                         "model": settings.answer.get("model"), "v": INSTRUCTIONS_VERSION})
+        hit = state.cached(key, cache_hours) if p.has_model() and not body.sources_only else None
+        why_not = None if hit is not None or body.sources_only or not p.has_model() else blocked(state, v, usage_cfg)
+
+        def sources_only(note: str) -> Iterator[dict[str, Any]]:
+            if why_not:   # over a limit: the question is read by the free rules
+                plan = offline_plan(body)
+            else:         # the model reads the question better, for a fraction of a penny
+                plan, used = p.make_plan(req)
+                record_usage(state, v, "parse", settings.answer.get("query_parse_model"), used, usage_cfg)
+            result, sources = p.find(plan, req)
+            yield {"type": "plan", "plan": plan.to_dict(), "usage": None}
+            yield {"type": "sources", "sources": [s.card() for s in sources], "candidates": result.candidates,
+                   "semantic": result.semantic_available, "evidence": result.evidence}
+            yield {"type": "final", "answer": None, "usage": None, "note": note}
+
+        def events() -> Iterator[dict[str, Any]]:
+            if hit is not None:
+                yield from hit
+                return
+            if body.sources_only:
+                yield from sources_only("Sources only: no briefing was written. Ask again without 'Sources only' "
+                                        "for a written briefing.")
+                return
+            if why_not:
+                yield from sources_only(f"{why_not} The sources found are shown below.")
+                return
+            kept: list[dict[str, Any]] = []
+            text: list[str] = []
+            try:
+                for ev in p.run(req):
+                    if ev["type"] == "plan":
+                        record_usage(state, v, "parse", settings.answer.get("query_parse_model"), ev.get("usage"),
+                                     usage_cfg)
+                        ev = {k: val for k, val in ev.items() if k not in ("usage", "parse_error")}
+                    if ev["type"] == "final":
+                        if ev.get("usage"):
+                            record_usage(state, v, "answer", ev.get("model"), ev["usage"], usage_cfg)
+                            count_question(state, v)
+                        ev = {k: val for k, val in ev.items() if k != "usage"}
+                        if ev.get("answer") and not ev["answer"].get("no_records"):
+                            replay = [e for e in kept if e["type"] in ("plan", "sources")]
+                            replay.append({"type": "text", "text": "".join(text)})
+                            ev["briefing_id"] = state.save_briefing(body.question, options, replay + [ev])
+                    if ev["type"] == "text":
+                        text.append(ev["text"])
+                    else:
+                        kept.append(ev)
+                    yield ev
+            except Exception:  # never leave the reader hanging
+                log.exception("ask failed")
+                yield {"type": "error", "message": "The briefing could not be written just now. Any sources found "
+                                                   "are shown above; please try again later."}
+                return
+            final = kept[-1] if kept else {}
+            if final.get("type") == "final" and final.get("answer"):
+                replay = [e for e in kept if e["type"] in ("plan", "sources")]
+                replay += [{"type": "text", "text": "".join(text)}, {**final, "cached": True}]
+                state.store_cached(key, replay)
+
+        return StreamingResponse(sse(events()), media_type="text/event-stream",
+                                 headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+    @app.post("/api/search")
+    def search(body: AskBody, request: Request):
+        """The plan and ranked sources for a question, read by the free built-in rules: no model call."""
+        visitor(request)
+        p = get_pipeline()
+        plan = offline_plan(body)
+        result, sources = p.find(plan, AskRequest(question=body.question, mode=body.mode))
+        return {"plan": plan.to_dict(), "sources": [s.card() for s in sources], "candidates": result.candidates,
+                "semantic": result.semantic_available, "evidence": result.evidence}
+
+    @app.get("/api/briefings/{bid}")
+    def briefing(bid: str):
+        b = state.briefing(bid)
+        if b is None:
+            raise HTTPException(404, "There is no briefing at this address.")
+        if b["withdrawn_at"]:
+            raise HTTPException(410, "This briefing has been withdrawn.")
+        return {"id": b["id"], "at": b["at"], "question": b["question"], "options": b["options"],
+                "events": b["events"]}
+
+    # ---- councils and votes --------------------------------------------------------------------------
+    @app.get("/api/councils")
+    def council_list():
+        return data.directory()
+
+    @app.get("/api/councils/{gss}")
+    def council(gss: str):
+        c = data.council(gss.upper())
+        if c is None:
+            raise HTTPException(404, "There is no council with this code.")
+        return c
+
+    @app.get("/api/votes/{vote_id}")
+    def vote(vote_id: str):
+        v = data.vote(vote_id)
+        if v is None:
+            raise HTTPException(404, "There is no named vote at this address.")
+        return v
+
+    # ---- problems and takedown requests --------------------------------------------------------------
+    @app.post("/api/report")
+    def report(body: ReportBody, request: Request):
+        visitor(request)
+        rid = state.add_report(body.kind, body.page, body.message, body.contact)
+        return {"ok": True, "id": rid}
+
+    # ---- pages ---------------------------------------------------------------------------------------
+    def page(name: str) -> FileResponse:
+        path = dist / f"{name}.html"
+        if not path.exists():
+            raise HTTPException(404, "Not found.")
+        return FileResponse(path, media_type="text/html")
+
+    @app.get("/", include_in_schema=False)
+    def home():
+        return page("index")
+
+    @app.get("/b/{bid}", include_in_schema=False)
+    def shared(bid: str):
+        return page("index")
+
+    @app.get("/councils", include_in_schema=False)
+    def councils_page():
+        return page("councils")
+
+    @app.get("/councils/{gss}", include_in_schema=False)
+    def council_page(gss: str):
+        return page("council")
+
+    @app.get("/votes/{vote_id}", include_in_schema=False)
+    def vote_page(vote_id: str):
+        return page("vote")
+
+    if (dist / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+
+    @app.get("/{name}", include_in_schema=False)
+    def static_page(name: str):
+        """about, methodology, privacy, corrections ..., and files such as icon.svg and robots.txt."""
+        safe = Path(name).name
+        if (dist / safe).is_file():
+            return FileResponse(dist / safe)
+        if (dist / f"{safe}.html").is_file():
+            return FileResponse(dist / f"{safe}.html", media_type="text/html")
+        missing = dist / "404.html"
+        if missing.exists():
+            return HTMLResponse(missing.read_text(encoding="utf-8"), status_code=404)
+        raise HTTPException(404, "Not found.")
+
+    return app

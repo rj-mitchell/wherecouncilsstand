@@ -155,6 +155,21 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
         raise typer.Exit(1)
 
 
+@app.command()
+def serve(host: str = "127.0.0.1", port: int = 8000,
+          behind_proxy: bool = typer.Option(False, help="trust the proxy's forwarded client address")) -> None:
+    """Run the website and its API (build the pages first: cd web && npm run build)."""
+    import uvicorn
+
+    from councils.api.app import create_app
+
+    s = load_settings()
+    if behind_proxy:
+        s.raw.setdefault("site", {})["behind_proxy"] = True
+    uvicorn.run(create_app(s), host=host, port=port, proxy_headers=behind_proxy,
+                forwarded_allow_ips="*" if behind_proxy else None)
+
+
 @app.command("pilot-sample")
 def pilot_sample() -> None:
     """The pilot's councils (docs/PILOT.md)."""

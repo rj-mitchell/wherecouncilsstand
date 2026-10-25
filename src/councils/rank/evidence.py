@@ -46,7 +46,9 @@ def evidence_group(rec: dict[str, Any], group_by: str = "control") -> str:
 
 def group_label(key: str, group_by: str, rec: dict[str, Any] | None = None) -> str:
     if group_by == "region":
-        return "Wales" if key == "wales" else key.replace("-", " ").title()
+        from councils.registry import REGION_NAMES
+
+        return REGION_NAMES.get(key, key)
     if group_by == "type":
         return TYPE_LABELS.get(key, key)
     if group_by == "council":

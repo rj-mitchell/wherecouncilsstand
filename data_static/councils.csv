@@ -55,13 +55,13 @@ E09000001,LND,City of London Corporation,england,city_of_london,E12000007,https:
 E09000033,WSM,City of Westminster,england,london_borough,E12000007,https://www.westminster.gov.uk,https://committees.westminster.gov.uk,ok,probed
 E08000031,WLV,City of Wolverhampton Council,england,metropolitan,E12000005,https://www.wolverhampton.gov.uk,https://wolverhampton.moderngov.co.uk,ok,local-democracy-uk
 E06000014,YOR,City of York Council,england,unitary,E12000003,https://www.york.gov.uk,https://democracy.york.gov.uk,ok,local-democracy-uk
-E07000071,COL,Colchester City Council,england,district,statistical-geography:E12000006,https://www.colchester.gov.uk,,none,
+E07000071,COL,Colchester City Council,england,district,E12000006,https://www.colchester.gov.uk,,none,
 E06000052,CON,Cornwall Council,england,unitary,E12000009,https://www.cornwall.gov.uk,https://democracy.cornwall.gov.uk,ok,local-democracy-uk
 E07000079,COT,Cotswold District Council,england,district,E12000009,https://www.cotswold.gov.uk,https://meetings.cotswold.gov.uk,blocked,local-democracy-uk
 E06000053,IOS,Council of the Isles of Scilly,england,unitary,E12000009,https://www.scilly.gov.uk,https://committees.scilly.gov.uk,ok,probed
 E08000026,COV,Coventry City Council,england,metropolitan,E12000005,https://www.coventry.gov.uk,https://edemocracy.coventry.gov.uk,unreachable,local-democracy-uk
 E07000226,CRW,Crawley Borough Council,england,district,E12000008,https://www.crawley.gov.uk,https://democracy.crawley.gov.uk,ok,local-democracy-uk
-E06000063,CUA,Cumberland Council,england,unitary,spatial-geography:E12000002,https://www.cumberland.gov.uk/,https://cumberland.moderngov.co.uk,ok,local-democracy-uk
+E06000063,CUA,Cumberland Council,england,unitary,E12000002,https://www.cumberland.gov.uk/,https://cumberland.moderngov.co.uk,ok,local-democracy-uk
 E07000096,DAC,Dacorum Borough Council,england,district,E12000006,https://www.dacorum.gov.uk,https://democracy.dacorum.gov.uk,unreachable,local-democracy-uk
 E06000005,DAL,Darlington Borough Council,england,unitary,E12000001,https://www.darlington.gov.uk,https://democracy.darlington.gov.uk,ok,local-democracy-uk
 E07000107,DAR,Dartford Borough Council,england,district,E12000008,https://www.dartford.gov.uk,https://dartford.moderngov.co.uk,ok,local-democracy-uk
