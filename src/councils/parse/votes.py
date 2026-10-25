@@ -357,8 +357,10 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
         side = h.lastgroup or ""
         if side == "none":
             continue                              # "Not voting:", "Absent:": only ends the list before it
-        if not re.search(r"(?:[:\-–—)\d]|\)\.)\s*$", h.group(0)) and not re.search(r"vot|favour|those|members", h.group(0), re.I):
-            continue                              # "For Councillor Gordon": a heading needs a colon unless it says "voting"
+        if not re.search(r"(?:[:\-–—)\d]|\)\.)\s*$", h.group(0)) \
+                and not re.search(rf"vot|favour|those|members|{_OBJ}", h.group(0), re.I):
+            # "For Councillor Gordon": a heading needs a colon unless it says "voting" or names the question
+            continue
         if re.match(r"^\s*councill?or\s+[\w' .-]{1,40}?\s*(?:\(\s*\d+\s*votes?\s*\))?\s*:", raw, re.I) or \
                 re.search(r"\bfor\s+(?:councillor|cllr)\b", h.group(0), re.I):
             sides.append((h, side, None, names_end))   # "FOR COUNCILLOR SHOOB: ...": an election of a person

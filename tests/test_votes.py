@@ -351,3 +351,9 @@ def test_column_table_with_surname_first_cells_and_its_flattened_text():
     assert by_side(found) == {"for": ["23", "24"], "against": ["27"], "abstain": ["28"]}
     text = "Councillors voted as follows for the amendment: FOR AGAINST ABSTAIN BARLOW, Tom WARD, Sue GILL, Ian"
     assert votes.parse(text, TOWN) == []
+
+
+def test_heading_naming_the_question_needs_no_colon():
+    text = ("A recorded vote was taken as follows: For the motion: Councillors Barlow and Williams. Against the motion "
+            "Councillors Ward and Gill. The motion was declared carried.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["27", "28"]}
