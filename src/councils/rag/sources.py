@@ -132,11 +132,15 @@ def record_source(n: int, r: dict[str, Any], lookup: Lookup, group_by: str = "co
     if named:
         title_bits.append("councillors named in this passage: " + "; ".join(x for x in named if x))
     title = " — ".join(b for b in title_bits if b)
-    blocks = blocks_for(r["text"]) + lookup.vote_blocks(r["record_id"], r["gss"], d)
+    votes = lookup.vote_blocks(r["record_id"], r["gss"], d)
+    blocks = blocks_for(r["text"]) + votes
     meta = {k: r.get(k) for k in ("record_id", "date", "gss", "council_name", "committee", "kind", "item_title",
                                   "item_number", "control", "parties", "heading", "ranking")}
     meta["group"] = group_label(evidence_group(r, group_by), group_by, r)
     meta["text"] = r["text"]
+    # the named votes recorded at this item, for the page to show and link to (/votes/<id>)
+    meta["votes"] = [{"vote_id": vid, "text": text} for vid, text in
+                     zip(sorted({v["vote_id"] for v in lookup.votes.get(r["record_id"], [])}), votes, strict=False)]
     return Source(n, "minutes", title, r["url"], blocks, meta)
 
 
