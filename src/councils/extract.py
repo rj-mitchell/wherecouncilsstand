@@ -12,7 +12,7 @@ from collections import defaultdict
 
 from councils import store
 from councils.config import Settings
-from councils.parse import declarations, votes
+from councils.parse import declarations, redact, votes
 from councils.parse.votes import Member
 
 # Roles in Modern.gov attendance lists that aren't elected councillors: staff, members of the public, guests, and
@@ -53,6 +53,7 @@ def run(settings: Settings, gss: str) -> dict:
     items = store.parquet.read(root, "items", gss)
     attendance = store.parquet.read(root, "attendance", gss)
     present, everyone = _pool(attendance)
+    surnames = redact.councillor_surnames({m.name for _, m in everyone})
     vote_rows, decl_rows = [], []
     dropped = 0
     for it in items:
@@ -88,7 +89,8 @@ def run(settings: Settings, gss: str) -> dict:
             vote_rows.append({
                 "vote_id": f"{it['item_id']}:{v.block}", "item_id": it["item_id"], "meeting_id": it["meeting_id"],
                 "gss": gss, "date": it["date"], "year": it["year"], "question": v.question, "outcome": v.outcome,
-                "member_id": v.member_id, "name": v.name, "vote": v.side, "excerpt": v.excerpt,
+                "member_id": v.member_id, "name": v.name, "vote": v.side,
+                "excerpt": redact.redact(v.excerpt, surnames)[0],
             })
         for dcl in declarations.parse(text, here):
             member_id = dcl.member_id
@@ -98,7 +100,7 @@ def run(settings: Settings, gss: str) -> dict:
             decl_rows.append({
                 "item_id": it["item_id"], "meeting_id": it["meeting_id"], "gss": gss, "date": it["date"],
                 "year": it["year"], "member_id": member_id, "name": dcl.name, "interest": dcl.interest,
-                "excerpt": dcl.excerpt,
+                "excerpt": redact.redact(dcl.excerpt, surnames)[0],
             })
     store.parquet.write(root, "votes", gss, vote_rows)
     store.parquet.write(root, "declarations", gss, decl_rows)

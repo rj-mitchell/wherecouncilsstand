@@ -19,7 +19,9 @@ Pilot stage. The data layer works on the real record:
 
 - the registry of all 340 principal councils in England and Wales, and which publish through Modern.gov;
 - loading full council and cabinet meetings from May 2018: minutes, attendance and party on the date;
-- reading named votes and declarations of interest from the minutes.
+- minutes published only as a document, where the council serves documents;
+- reading named votes and declarations of interest from the minutes;
+- removing the names of people who aren't councillors before anything is indexed or shown.
 
 It has been run on 20 councils chosen by a fixed rule. The results are in [`docs/PILOT.md`](docs/PILOT.md). There's no
 search index, briefing engine or website yet: those come next, adapted from Where Countries Stand.

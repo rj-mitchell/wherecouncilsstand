@@ -18,3 +18,5 @@ retries = 3
 # Minutes of a meeting newer than this are fetched again: they are approved, and sometimes corrected, at the
 # next meeting.
 refetch_days = 120
+# Read minutes published only as a document (sources/documents.py).
+read_documents = true

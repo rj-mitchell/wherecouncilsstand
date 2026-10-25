@@ -53,6 +53,10 @@ What was found:
   "Full Council - Council questions".
 - **Servers can be slow.** `GetMeeting` took 7–24 seconds on some councils' servers, which is why the pilot loads
   councils side by side.
+- **A meeting's minutes are attached to the next meeting's agenda**, at the item that approves them. Where a council
+  publishes minutes only as a document, that's where they're found (`sources/documents.py`). Documents come from
+  `mgConvert2PDF.aspx?ID=…`, which many sites, especially Civica-hosted `*.moderngov.co.uk` ones, put behind a
+  browser check that refuses automated requests, although the web service itself answers.
 - **Minutes can change** until approved at the next meeting, so meetings newer than 120 days are fetched again
   (`refetch_days`).
 

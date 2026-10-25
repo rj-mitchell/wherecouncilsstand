@@ -3,6 +3,7 @@
     councils list --status ok                 # councils in scope and their Modern.gov sites
     councils ingest barnsley                  # full council and cabinet meetings since the start date
     councils parse barnsley                   # named votes and declarations of interest, from the minutes
+    councils load --workers 20 --resume       # every council whose web service answers
     councils pilot-sample                     # the pilot's councils, chosen by a fixed, published rule
     councils pilot                            # ingest and parse every pilot council
     councils report                           # the pilot's measurements (docs/PILOT.md)
@@ -61,6 +62,19 @@ def parse(council: list[str]) -> None:
     s = load_settings()
     for key in council:
         typer.echo(json.dumps(extract.run(s, get(key).gss)))
+
+
+@app.command()
+def load(status: str = typer.Option("ok", help="councils whose web service had this status"),
+         nation: str = typer.Option(None), workers: int = typer.Option(20, help="councils loaded at once"),
+         resume: bool = typer.Option(False, help="only parse councils already loaded")) -> None:
+    """Load and parse every council in scope, printing one line per council as it finishes."""
+    from councils import load as load_
+    from councils.registry import councils
+
+    chosen = [c for c in councils().values() if c.modgov_status == status and (not nation or c.nation == nation)]
+    for line in load_.many(load_settings(), chosen, workers=workers, resume=resume):
+        typer.echo(json.dumps(line), nl=True)
 
 
 @app.command("pilot-sample")

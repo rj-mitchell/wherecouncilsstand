@@ -10,11 +10,10 @@ from __future__ import annotations
 import random
 from collections import Counter, defaultdict
 from collections.abc import Iterator
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import duckdb
 
-from councils import extract, ingest, store
+from councils import load, store
 from councils.config import Settings
 from councils.registry import Council, councils
 
@@ -36,21 +35,8 @@ def sample() -> list[Council]:
 
 
 def run(settings: Settings, workers: int = 10) -> Iterator[dict]:
-    """Load and parse each pilot council. Each council is a different server, so they run side by side; requests to
-    any one council stay one at a time."""
-
-    def one(c: Council) -> dict:
-        res = ingest.load(settings, c)
-        line = {"gss": c.gss, "name": c.name, "meetings": res.meetings, "failed": len(res.failed),
-                "committees": sorted({f"{t} ({k})" for t, k in res.committees.values()}), "error": res.error}
-        if res.meetings:
-            line |= extract.run(settings, c.gss)
-        return line
-
-    with ThreadPoolExecutor(workers) as ex:
-        futures = [ex.submit(one, c) for c in sample()]
-        for f in as_completed(futures):
-            yield f.result()
+    """Load and parse each pilot council."""
+    yield from load.many(settings, sample(), workers=workers)
 
 
 def _pct(a: float, b: float) -> str:
@@ -96,13 +82,13 @@ def report(settings: Settings) -> str:
     if missing:
         out += [f"Not loaded: {', '.join(missing)}.", ""]
 
-    out += ["## Minutes by year", "", "| Year | Meetings | With minutes text | Minutes only as a document | "
-            "No minutes yet |", "|---|---|---|---|---|"]
+    out += ["## Minutes by year", "", "| Year | Meetings | With minutes | Of which read from a document | "
+            "No minutes found |", "|---|---|---|---|---|"]
     for y, n, t, pdf in q(f"""
         select year, count(*), count(*) filter (where items_with_minutes > 0),
-               count(*) filter (where items_with_minutes = 0 and minutes_pdf_url <> '')
+               count(*) filter (where minutes_document <> '')
         from meetings where gss in ({ids}) group by year order by year"""):
-        out.append(f"| {y} | {n} | {_pct(t, n)} | {_pct(pdf, n)} | {_pct(n - t - pdf, n)} |")
+        out.append(f"| {y} | {n} | {_pct(t, n)} | {_pct(pdf, n)} | {_pct(n - t, n)} |")
 
     out += ["", "## Party labels", ""]
     labels = q(f"""select party_label, party, count(*) from attendance where gss in ({ids})

@@ -44,27 +44,38 @@ That's slightly behind the earlier survey's 79% for 2018. Each council's page wi
 
 ### Minutes text
 
-85% of meetings have minutes text in the record. By year:
+87% of meetings have minutes. 85% come from the web service's minutes text, and 2% are read from the meeting's
+minutes document. By year:
 
-| Year | Meetings | With minutes text | Minutes only as a document | No minutes yet |
+| Year | Meetings | With minutes | Of which read from a document | No minutes found |
 |---|---|---|---|---|
-| 2018 | 213 | 88% | 0% | 12% |
-| 2019 | 356 | 92% | 0% | 8% |
-| 2020 | 397 | 78% | 2% | 20% |
-| 2021 | 418 | 86% | 3% | 11% |
-| 2022 | 407 | 86% | 3% | 11% |
-| 2023 | 399 | 90% | 3% | 7% |
-| 2024 | 396 | 82% | 9% | 10% |
-| 2025 | 431 | 84% | 7% | 9% |
-| 2026 | 332 | 77% | 12% | 11% |
+| 2018 | 213 | 89% | 0% | 11% |
+| 2019 | 356 | 93% | 1% | 7% |
+| 2020 | 397 | 80% | 2% | 20% |
+| 2021 | 418 | 87% | 1% | 13% |
+| 2022 | 407 | 88% | 2% | 12% |
+| 2023 | 399 | 92% | 2% | 8% |
+| 2024 | 396 | 86% | 5% | 14% |
+| 2025 | 431 | 87% | 3% | 13% |
+| 2026 | 332 | 79% | 1% | 21% |
 
 - **2020** dips because of remote meetings during Covid.
 - **2026** dips because recent minutes aren't approved yet.
-- **The share published only as a document is growing.** Northumberland has put its minutes only in a PDF since
-  2024. **Reading PDF minutes is needed** to keep coverage even (Where Countries Stand's `pdftext.py` is a starting
-  point).
-- **"No minutes yet"** also covers cancelled meetings and meetings whose minutes are attached under a title that
-  doesn't say "minutes".
+
+**Minutes published only as a document.** A meeting's minutes are attached to the agenda of the committee's next
+meeting, at the item that approves them ("02 Minutes 011123" on the January agenda is November's minutes). An
+earlier version of this note counted those attachments as the meeting's own minutes, which overstated how many
+councils publish minutes only as a document; the table above corrects that.
+
+`sources/documents.py` now finds each meeting's own minutes document by the date in its title, extracts the text and
+splits it into the meeting's agenda items. In the pilot this added minutes for 65 meetings: 347 agenda items, plus
+36 meetings kept as one whole document where the item titles couldn't be found.
+
+**Most councils on Civica's hosted `moderngov.co.uk` sites refuse documents** to automated requests from the network
+this ran on: a browser check answers instead, though the web service itself works. 7 of the 16 councils tested
+served documents. The councils with the most meetings still without minutes are all among those that refuse:
+Northumberland (96 meetings, since it moved to documents in 2024), Neath Port Talbot (65) and Lewisham (40). Reading
+them needs a different network, or the councils' agreement to allow the crawler.
 
 ## Named votes
 
@@ -150,9 +161,22 @@ one-member groups or mixed groups ("Independent partnership"), which need a pers
 - Modern.gov attendance lists include **members of the public and council staff** (roles such as "Public",
   "Officer", "Guest"), and co-opted and independent members. These are now dropped when a meeting is loaded, and
   never stored.
-- Minutes name members of the public: speakers, petitioners, people in planning items. The minutes text is stored
-  for search, but briefings and pages must show only councillors' words and actions (docs/DECISIONS.md, 9). **Names
-  of others need to be removed before any extract is shown.** That's the next privacy task.
+- Minutes name members of the public (speakers, petitioners, people in planning items) and council staff.
+  `parse/redact.py` replaces their names with "[name removed]", keeping any role ("[name removed], Chief
+  Executive"). It runs before text is indexed or shown, so neither the site nor the AI model sees them. The raw
+  minutes stay in the store. A name is kept if its surname belongs to one of the council's councillors, because some
+  councils write councillors as "Mrs Hollingsbee" or "Sir Steve Houghton". Names right after "Councillor" or
+  before a councillor's role ("…, Leader of the Council") are never removed.
+
+  In the pilot's minutes it removed 3,080 names, in 1,532 agenda items. In a random sample of 30 removals:
+  - 25 were people who aren't councillors: public speakers and questioners, petitioners, officers, GPs and clergy,
+    and people in honours lists;
+  - 5 were places or job titles removed by mistake ("Hampshire Rose", a school's name). That over-removes, but
+    exposes no one.
+
+  It can miss a name that comes with no telling context (one sample: "the Leader invited Jonathan Davies from …",
+  since fixed). A member of the public who shares a surname with a councillor is kept. Before launch, a larger
+  check should measure misses as well as mistakes. A takedown route covers what slips through.
 - Declarations can include sensitive details about councillors' families. Show the councillor, the item and the kind
   of interest. Show the excerpt only behind a link to the council's own record.
 
@@ -169,8 +193,10 @@ one-member groups or mixed groups ("Independent partnership"), which need a pers
 
 ## Next steps
 
-1. Read minutes that are published only as PDF documents.
-2. Remove the names of people who aren't councillors from anything shown.
+1. ~~Read minutes that are published only as PDF documents.~~ Done where councils serve documents; the rest need
+   another network or the councils' agreement.
+2. ~~Remove the names of people who aren't councillors from anything shown.~~ Done; a larger check of misses is
+   still to do.
 3. Load the remaining councils, and record each council's licence statement.
 4. Check a fresh sample of 50 votes by hand against a set target.
 5. Adapt Where Countries Stand's index and briefing engine to council minutes, with "the minutes record that…"

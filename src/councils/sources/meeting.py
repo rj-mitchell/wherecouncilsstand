@@ -4,6 +4,7 @@ minutes, and who attended."""
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from datetime import date
 
@@ -11,6 +12,10 @@ from lxml import etree
 
 from councils.parse.minutes import to_text, vote_tables
 from councils.sources.modgov import parse_date
+
+# The agenda item at which a meeting approves the minutes of the one before; the earlier minutes are attached to it.
+MINUTES_ITEM = re.compile(r"^\W*(?:\d+[.)]?\s*)?(?:approval of (?:the )?|confirmation of (?:the )?|to (?:approve|confirm) "
+                          r"(?:the )?)?minutes\b|minutes of (?:the )?(?:last|previous|meeting)|^cofnodion", re.I)
 
 
 @dataclass(frozen=True)
@@ -42,14 +47,15 @@ def rows(root: etree._Element, ctx: Context) -> tuple[dict, list[dict], list[dic
     base = ctx.base_url.rstrip("/")
 
     items = []
-    pdfs = []
+    earlier_minutes = []
     for n, it in enumerate(root.iterfind("agendaitems/agendaitem")):
         iid = _t(it, "agendaitemid")
         minutes_html = _t(it, "minutesnonemptyhtmlbody")
         minutes = to_text(minutes_html)
         tables = vote_tables(minutes_html)
         docs = [(_t(doc, "title"), _t(doc, "url")) for doc in it.iterfind("linkeddocuments/linkeddoc")]
-        pdfs += [url for title, url in docs if "minute" in title.lower()]
+        if MINUTES_ITEM.search(_t(it, "agendaitemtitle")):
+            earlier_minutes += [{"title": title, "url": url} for title, url in docs if url]
         items.append({
             "item_id": f"{meeting_key}:{iid}",
             "meeting_id": meeting_key,
@@ -61,6 +67,7 @@ def rows(root: etree._Element, ctx: Context) -> tuple[dict, list[dict], list[dic
             "title": _t(it, "agendaitemtitle"),
             "agenda_text": to_text(_t(it, "agendatext")),
             "minutes_text": minutes,
+            "minutes_source": "html" if minutes else "",
             "vote_tables": json.dumps(tables) if tables else "",
             "is_decision": _bool(it, "isdecision"),
             "is_restricted": _bool(it, "isrestricted"),
@@ -101,7 +108,8 @@ def rows(root: etree._Element, ctx: Context) -> tuple[dict, list[dict], list[dic
         "minutes_published": _bool(root, "minutepublished"),
         "items": len(items),
         "items_with_minutes": sum(1 for i in items if len(i["minutes_text"]) > 40),
-        "minutes_pdf_url": pdfs[0] if pdfs else "",
+        "earlier_minutes": json.dumps(earlier_minutes) if earlier_minutes else "",
+        "minutes_document": "",
         "attendees": len(attendance),
         "url": f"{base}/ieListDocuments.aspx?CId={ctx.committee_id}&MId={mid}",
     }

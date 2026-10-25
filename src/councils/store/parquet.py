@@ -30,7 +30,8 @@ MEETING_SCHEMA = pa.schema([
     ("minutes_published", pa.bool_()),
     ("items", pa.int32()),
     ("items_with_minutes", pa.int32()),
-    ("minutes_pdf_url", pa.string()),   # a document titled as minutes, where there is one
+    ("earlier_minutes", pa.string()),   # JSON: documents attached for approving earlier meetings' minutes
+    ("minutes_document", pa.string()),  # this meeting's own minutes as a document, where its text came from one
     ("attendees", pa.int32()),
     ("url", pa.string()),
 ])
@@ -46,6 +47,7 @@ ITEM_SCHEMA = pa.schema([
     ("title", pa.string()),
     ("agenda_text", pa.string()),
     ("minutes_text", pa.string()),
+    ("minutes_source", pa.string()),    # "html" (the web service) or "document" (the meeting's minutes document)
     ("vote_tables", pa.string()),       # JSON: tables in the minutes that could be named votes (parse/votes.py)
     ("is_decision", pa.bool_()),
     ("is_restricted", pa.bool_()),

@@ -166,6 +166,30 @@ class Client:
                 out.append(MeetingRef(int(mid), committee_id, d, _t(m, "meetingstatus")))
         return out
 
+    def document(self, url: str) -> bytes | None:
+        """A document (usually a PDF) linked from a meeting, cached by its Modern.gov id; None if the site refuses
+        to serve documents to automated requests (many do, behind a browser check)."""
+        doc_id = re.search(r"ID=(\d+)", url) or re.search(r"/s(\d+)/", url)
+        name = doc_id.group(1) if doc_id else re.sub(r"\W+", "_", url)[-80:]
+        path = self.cache / "documents" / f"{name}.pdf"
+        if path.exists():
+            return path.read_bytes()
+        with self._lock:
+            wait = self.interval - (time.monotonic() - self._last)
+            if wait > 0:
+                time.sleep(wait)
+            try:
+                r = self.http.get(url)
+            except httpx.HTTPError as e:
+                raise ModgovError(f"{self.council} document: {e}") from e
+            finally:
+                self._last = time.monotonic()
+        if r.status_code in (401, 403, 429, 503) or not r.content.startswith(b"%PDF"):
+            return None
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(r.content)
+        return r.content
+
     def meeting(self, meeting_id: int, meeting_date: date | None = None, refresh: bool = False) -> etree._Element:
         """The whole meeting: agenda items with their minutes, attendance and documents. Recent meetings are fetched
         again until their minutes have had time to be approved."""

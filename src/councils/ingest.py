@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date
 
@@ -10,6 +11,7 @@ from councils import committees, extract, store
 from councils.config import Settings
 from councils.parse import parties
 from councils.registry import Council, site_sharers
+from councils.sources import documents
 from councils.sources import meeting as meeting_rows
 from councils.sources.modgov import Client, ModgovError
 
@@ -22,6 +24,8 @@ class Result:
     committees: dict[int, tuple[str, str]] = field(default_factory=dict)   # id -> (title, kind)
     meetings: int = 0
     failed: list[int] = field(default_factory=list)
+    documents_read: int = 0
+    documents_refused: bool = False   # the site wouldn't serve documents to automated requests
     error: str = ""
 
 
@@ -82,9 +86,60 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
                 meetings.append(m)
                 items += its
                 attendance += att
+        if settings.modgov.get("read_documents", True):
+            items = _minutes_from_documents(client, meetings, items, res)
     root = settings.parquet_dir
     store.parquet.write(root, "meetings", council.gss, meetings)
     store.parquet.write(root, "items", council.gss, items)
     store.parquet.write(root, "attendance", council.gss, attendance)
     res.meetings = len(meetings)
     return res
+
+
+def _minutes_from_documents(client: Client, meetings: list[dict], items: list[dict], res: Result) -> list[dict]:
+    """For meetings whose minutes aren't in the web service, read them from the minutes document attached to the
+    committee's next meeting (sources/documents.py). Stops at the first refusal: a site that blocks one document
+    blocks them all."""
+    by_meeting: dict[str, list[dict]] = defaultdict(list)
+    for it in items:
+        by_meeting[it["meeting_id"]].append(it)
+    by_committee: dict[int, list[dict]] = defaultdict(list)
+    for m in meetings:
+        by_committee[m["committee_id"]].append(m)
+    extra = []
+    for ms in by_committee.values():
+        ms.sort(key=lambda m: m["date"])
+        for n, m in enumerate(ms):
+            if m["items_with_minutes"] or res.documents_refused or (date.today() - m["date"]).days < 21:
+                continue
+            doc = documents.choose(m["date"], ms[n + 1:])
+            if not doc:
+                continue
+            try:
+                data = client.document(doc["url"])
+            except ModgovError as e:
+                log.warning("%s document: %s", m["meeting_id"], e)
+                continue
+            if data is None:
+                res.documents_refused = True
+                continue
+            text = documents.pdf_text(data)
+            if len(text) < 200:
+                continue
+            res.documents_read += 1
+            own = sorted(by_meeting.get(m["meeting_id"], []), key=lambda i: i["position"])
+            parts = documents.split_into_items(text, own)
+            if parts:
+                for it in own:
+                    if it["item_id"] in parts:
+                        it["minutes_text"], it["minutes_source"] = parts[it["item_id"]], "document"
+            else:   # the items couldn't be found in the document: keep it whole
+                extra.append({**(own[0] if own else {}), "item_id": f"{m['meeting_id']}:minutes",
+                              "meeting_id": m["meeting_id"], "gss": m["gss"], "date": m["date"], "year": m["year"],
+                              "position": -1, "number": "", "title": "Minutes", "agenda_text": "",
+                              "minutes_text": text.strip(), "minutes_source": "document", "vote_tables": "",
+                              "is_decision": False, "is_restricted": False, "is_call_in": False,
+                              "declaration_count": 0, "documents": 0, "url": doc["url"]})
+            m["minutes_document"] = doc["url"]
+            m["items_with_minutes"] = sum(1 for i in own if len(i["minutes_text"]) > 40) or (1 if not parts else 0)
+    return items + extra
