@@ -99,19 +99,20 @@ def pilot_run(workers: int = typer.Option(4, help="councils loaded at once")) ->
 
 
 @app.command("pilot-check")
-def pilot_check(n: int = 15, seed: int = typer.Option(None, help="a different sample")) -> None:
+def pilot_check(n: int = 15, seed: int = typer.Option(None, help="a different sample"),
+                all_councils: bool = typer.Option(False, "--all", help="every council loaded, not just the pilot")) -> None:
     """A random sample of named votes and declarations, with their passages, for checking by hand."""
     from councils import pilot
 
-    typer.echo(pilot.check_sample(load_settings(), n, seed if seed is not None else pilot.SEED))
+    typer.echo(pilot.check_sample(load_settings(), n, seed if seed is not None else pilot.SEED, all_councils))
 
 
 @app.command()
-def report() -> None:
+def report(all_councils: bool = typer.Option(False, "--all", help="every council loaded, not just the pilot")) -> None:
     """The pilot's measurements, as Markdown."""
     from councils import pilot
 
-    typer.echo(pilot.report(load_settings()))
+    typer.echo(pilot.report(load_settings(), all_councils))
 
 
 @app.command()

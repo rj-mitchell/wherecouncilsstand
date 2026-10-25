@@ -43,12 +43,20 @@ def _pct(a: float, b: float) -> str:
     return f"{100 * a / b:.0f}%" if b else "–"
 
 
-def report(settings: Settings) -> str:
+def scope(settings: Settings, everything: bool) -> list[Council]:
+    """The pilot's councils, or every council loaded."""
+    if not everything:
+        return sample()
+    loaded = {p.stem for p in (settings.parquet_dir / "meetings").glob("*.parquet")}
+    return [c for g, c in sorted(councils().items()) if g in loaded]
+
+
+def report(settings: Settings, everything: bool = False) -> str:
     con = duckdb.connect()
     made = store.parquet.attach(con, settings.parquet_dir)
     if "meetings" not in made:
         return "No pilot data loaded."
-    pilot = {c.gss: c for c in sample()}
+    pilot = {c.gss: c for c in scope(settings, everything)}
     ids = ", ".join(f"'{g}'" for g in pilot)
     q = lambda sql: con.execute(sql).fetchall()  # noqa: E731
 
@@ -109,12 +117,12 @@ def report(settings: Settings) -> str:
     return "\n".join(out)
 
 
-def check_sample(settings: Settings, n: int = 15, seed: int = SEED) -> str:
+def check_sample(settings: Settings, n: int = 15, seed: int = SEED, everything: bool = False) -> str:
     """A random sample (fixed seed) of named votes and declarations, each with the passage it was read from, for
     checking by hand against the minutes."""
     con = duckdb.connect()
     store.parquet.attach(con, settings.parquet_dir)
-    ids = ", ".join(f"'{g}'" for g in (c.gss for c in sample()))
+    ids = ", ".join(f"'{g}'" for g in (c.gss for c in scope(settings, everything)))
     rng = random.Random(seed)
     blocks = [r[0] for r in con.execute(f"select distinct vote_id from votes where gss in ({ids}) order by 1").fetchall()]
     out = ["# Named votes"]
