@@ -60,6 +60,14 @@ What was found:
 - **Minutes can change** until approved at the next meeting, so meetings newer than 120 days are fetched again
   (`refetch_days`).
 
+## Party in control
+
+`reference/people.py` reads control from each full council meeting's attendance list, which lists the council's
+members and their parties on the day. A party with more than half of those listed is in overall control; otherwise
+there is no overall control. Because some older lists are incomplete, the longest list within three months is used.
+Control is reported as recorded, as a filter and a grouping, never as a judgement. Each local party counts on its own
+("R4GV"), so two local groups are never added together.
+
 ## Licence
 
 Council documents are the council's copyright. See decision 10 in [`DECISIONS.md`](DECISIONS.md) for how they are

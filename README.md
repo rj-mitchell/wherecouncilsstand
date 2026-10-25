@@ -23,8 +23,11 @@ Pilot stage. The data layer works on the real record:
 - reading named votes and declarations of interest from the minutes;
 - removing the names of people who aren't councillors before anything is indexed or shown.
 
-It has been run on 20 councils chosen by a fixed rule. The results are in [`docs/PILOT.md`](docs/PILOT.md). There's no
-search index, briefing engine or website yet: those come next, adapted from Where Countries Stand.
+It has been run on 20 councils chosen by a fixed rule. The results are in [`docs/PILOT.md`](docs/PILOT.md).
+
+The search index and briefing engine, adapted from Where Countries Stand, work from the command line: keyword and
+meaning search over the minutes, evidence balanced across councils and party control, and Claude briefings with
+re-checked citations. There's no website yet.
 
 | File | What it is |
 |---|---|
@@ -50,6 +53,18 @@ search index, briefing engine or website yet: those come next, adapted from Wher
                                                    │
                                                    ▼
                                            Parquet (zstd, one file per table and council) ─► DuckDB
+                                                   │
+                                                   ▼
+                          names of non-councillors removed (parse/redact.py), passages of ~250 words, each tagged
+                          with council, region, kind of meeting, party in control on the date (reference/people.py)
+                          and the parties of the councillors it names ─► LanceDB: BM25 + vectors (local model)
+                                                   │
+ question ─► filter plan (offline rules, or Claude) ─► deterministic retrieval, ranking, balance across councils
+                                                   │                  and party control (rank/evidence.py)
+                                                   ▼
+                     Claude answers ONLY from the minutes, with search-result citations
+                                                   ▼
+                     verification: citations re-checked, quotations checked, loaded words flagged
 ```
 
 * **Committees.** Only full council and the cabinet are loaded, or for councils run by committees, their main
@@ -61,6 +76,11 @@ search index, briefing engine or website yet: those come next, adapted from Wher
   "Abstentions:") and a list of names. Each name is matched to the members at the meeting, by surname, and by
   initial and surname where two share a surname. "The Mayor" or "The Chair" is the member in that role. A name that
   can't be matched is kept as written.
+* **Briefings.** Minutes are officers' summaries, so briefings say what the minutes record and quote only their
+  words. Evidence is drawn from councils under each party's control, and under no overall control, in turn; the
+  same rules apply to every party (docs/DECISIONS.md, 7 and 12). `ask` needs an Anthropic API key
+  (`COUNCILS_ANTHROPIC_API_KEY`, `ANTHROPIC_API_KEY`, or `data/anthropic_api_key`); without one it shows the
+  evidence it would use.
 * **Politeness.** One request at a time to each council, at least a second apart, with a user agent that names the
   project. Every response is cached.
 
@@ -75,6 +95,10 @@ uv run councils ingest barnsley           # load one council since May 2018 (abo
 uv run councils parse barnsley            # named votes and declarations from its minutes
 uv run councils pilot                     # load and parse the 20 pilot councils
 uv run councils report                    # the pilot's measurements
+uv run councils index                     # keyword index of everything loaded
+uv sync --extra embed && uv run councils embed --max-minutes 30   # meaning search (local model; resumable)
+uv run councils search "bin collections" --control NOC
+uv run councils ask "What have Labour-run councils decided about bin collections since 2023?"
 uv run pytest
 ```
 
