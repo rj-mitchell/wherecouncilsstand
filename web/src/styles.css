@@ -577,7 +577,7 @@ h2 {
 
 .source {
   display: grid;
-  grid-template-columns: 2.6rem 1fr;
+  grid-template-columns: minmax(2.6rem, max-content) 1fr;
   gap: 0 var(--space-s);
   border-block-start: 1px solid var(--rule);
   padding-block: var(--space-s);
@@ -595,6 +595,7 @@ h2 {
   border-inline-end: 3px solid var(--council);
   padding-inline-end: var(--space-xs);
   text-align: end;
+  white-space: nowrap;
 }
 
 .source.cabinet .source-n,
