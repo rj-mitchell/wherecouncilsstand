@@ -1,0 +1,93 @@
+"""The web service on the synthetic store from test_pipeline, with a fake Claude client (no network, no API key)."""
+
+import json
+from datetime import date
+
+import pytest
+from fastapi.testclient import TestClient
+from test_pipeline import BARNSLEY, TODAY, FakeClient, settings  # noqa: F401 - the fixture
+
+from councils import store
+from councils.api.app import create_app
+from councils.api.state import StateDB
+from councils.embed.base import HashingEmbedder
+from councils.engine import Engine
+from councils.rag.pipeline import Pipeline
+
+
+def events(response) -> list[dict]:
+    out = []
+    for chunk in response.text.split("\n\n"):
+        for line in chunk.splitlines():
+            if line.startswith("data: "):
+                out.append(json.loads(line[6:]))
+    return out
+
+
+@pytest.fixture
+def client(settings):  # noqa: F811
+    fake = FakeClient()
+    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), client=fake, today=TODAY)
+    state = StateDB(settings.data_dir / "state.db")
+    app = create_app(settings, pipeline=pipe, state=state)
+    return TestClient(app), fake, state, settings
+
+
+def test_ask_streams_a_briefing_saves_it_and_answers_again_from_the_cache(client):
+    c, fake, state, _ = client
+    r = c.post("/api/ask", json={"question": "What have councils decided about bin collections?"})
+    assert r.status_code == 200 and r.headers["content-type"].startswith("text/event-stream")
+    evs = events(r)
+    assert [e["type"] for e in evs][0:2] == ["plan", "sources"]
+    final = evs[-1]
+    assert final["type"] == "final" and final["answer"]["citations_total"] == 1 and "usage" not in final
+    bid = final["briefing_id"]
+    saved = c.get(f"/api/briefings/{bid}").json()
+    assert saved["question"].startswith("What have councils") and saved["events"][-1]["briefing_id"] == bid
+    # the same question again: from the cache, no second call to the model
+    again = events(c.post("/api/ask", json={"question": "what have councils decided about  bin collections?"}))
+    assert len(fake.calls) == 1 and again[-1]["cached"] is True
+    with state.connect() as con:
+        assert con.execute("SELECT count(*) FROM usage WHERE kind = 'answer'").fetchone()[0] == 1
+
+
+def test_over_the_daily_cap_the_sources_are_still_shown(client):
+    c, fake, state, cfg = client
+    cfg.raw["usage"]["daily_spend_cap_usd"] = 0.0
+    evs = events(c.post("/api/ask", json={"question": "What have councils decided about bin collections?"}))
+    assert not fake.calls
+    assert evs[1]["type"] == "sources" and evs[1]["sources"]
+    assert evs[-1]["answer"] is None and "limit" in evs[-1]["note"]
+
+
+def test_search_councils_votes_and_reports(client):
+    c, _, state, cfg = client
+    r = c.post("/api/search", json={"question": "bin collections in Barnsley"})
+    assert r.status_code == 200 and r.json()["sources"]
+    directory = c.get("/api/councils").json()
+    assert directory["totals"]["loaded"] == 2
+    barnsley = next(x for x in directory["councils"] if x["gss"] == BARNSLEY)
+    assert barnsley["control"]["name"] == "Labour" and barnsley["region_name"] == "Yorkshire and the Humber"
+    store.parquet.write(cfg.parquet_dir, "votes", BARNSLEY, [
+        {"vote_id": f"{BARNSLEY}:1:10:0", "item_id": f"{BARNSLEY}:1:10", "meeting_id": f"{BARNSLEY}:1", "gss": BARNSLEY,
+         "date": date(2025, 2, 26), "year": 2025, "question": "motion", "outcome": "lost", "member_id": m,
+         "name": n, "vote": side, "excerpt": "Upon being put to the vote the motion was lost."}
+        for m, n, side in (("1", "Kitching", "for"), ("2", "Houghton", "against"), ("3", "Franklin", "against"))])
+    page = c.get(f"/api/councils/{BARNSLEY}").json()
+    assert page["votes"][0]["counts"] == {"for": 1, "against": 2, "abstain": 0}
+    assert page["votes"][0]["by_party"]["against"] == [{"party": "Labour", "n": 2}]
+    vote = c.get(f"/api/votes/{BARNSLEY}:1:10:0").json()
+    assert vote["control"] == "Labour" and [m["name"] for m in vote["members"]][0] == "Hannah Kitching"
+    assert c.get("/api/votes/E07000209:9:9:0").status_code == 404
+    assert c.get("/api/councils/E99999999").status_code == 404
+    r = c.post("/api/report", json={"kind": "takedown", "page": "/votes/x", "message": "Please remove my name."})
+    assert r.json()["ok"] and state.reports()[0]["kind"] == "takedown"
+
+
+def test_rate_limit(client):
+    _, _, _, cfg = client
+    cfg.raw["usage"]["requests_per_minute"] = 2
+    app = create_app(cfg, state=StateDB(cfg.data_dir / "s3.db"))
+    t = TestClient(app)
+    codes = [t.post("/api/report", json={"message": "hello there"}).status_code for _ in range(3)]
+    assert codes == [200, 200, 429]

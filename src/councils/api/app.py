@@ -211,7 +211,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                         if ev.get("answer") and not ev["answer"].get("no_records"):
                             replay = [e for e in kept if e["type"] in ("plan", "sources")]
                             replay.append({"type": "text", "text": "".join(text)})
-                            ev["briefing_id"] = state.save_briefing(body.question, options, replay + [ev])
+                            ev["briefing_id"] = state.new_briefing_id()
+                            state.save_briefing(ev["briefing_id"], body.question, options, replay + [ev])
                     if ev["type"] == "text":
                         text.append(ev["text"])
                     else:

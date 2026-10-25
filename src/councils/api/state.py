@@ -87,8 +87,11 @@ class StateDB:
                         (key, utcnow(), json.dumps(events, default=str)))
 
     # saved briefings ------------------------------------------------------------------------------------
-    def save_briefing(self, question: str, options: dict[str, Any], events: list[dict[str, Any]]) -> str:
-        bid = secrets.token_urlsafe(8)
+    @staticmethod
+    def new_briefing_id() -> str:
+        return secrets.token_urlsafe(8)
+
+    def save_briefing(self, bid: str, question: str, options: dict[str, Any], events: list[dict[str, Any]]) -> str:
         with self.connect() as con:
             con.execute("INSERT INTO briefings (id, at, question, options, events) VALUES (?, ?, ?, ?, ?)",
                         (bid, utcnow(), question, json.dumps(options), json.dumps(events, default=str)))
