@@ -45,8 +45,11 @@ What was found:
 - **Attendance lists can be incomplete for older meetings.** Some councillors who left the council are missing from
   older meetings' lists even though the minutes name them in votes. Names are matched to the meeting's attendance
   first, then to anyone recorded at the council's meetings within a year either side.
-- **Some sites serve two councils** that share services (Babergh and Mid Suffolk; Broadland and South Norfolk). Each
-  committee's title starts with its council's name.
+- **Some sites serve two councils** that share services (Babergh and Mid Suffolk; Broadland and South Norfolk; Adur
+  and Worthing; Lewes and Eastbourne). Each committee's title starts with its council's name. High Peak and
+  Staffordshire Moorlands share one site under two host names, with titles such as "Council (HPBC)" and an
+  unprefixed "Cabinet" and "The Executive". Which is whose is set in `data_static/committees.csv`, from the wards of
+  the members who attend. Councils sharing a site were found by comparing their committee lists.
 - **Successor councils can host their predecessors' committees.** Westmorland and Furness's site still holds
   Cumbria County Council's and Barrow Borough Council's committees, with their names as a prefix.
 - **Some councils split full council into several committees** in Modern.gov, for example Lewisham's
