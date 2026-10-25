@@ -261,12 +261,13 @@ per-council table and the year-by-year figures come from `councils report --all`
 - **99% of attendance records have a recognised party**, across 631 different labels. About 25 labels, each a
   breakaway or local group sitting beside a label the council already uses for a party, are left for a person to
   decide (`scripts/party_labels.py` lists them).
-- **About 121 million tokens of minutes text** in 309,852 agenda items, indexed as 520,000 passages.
-- **Storage:** 3.3 GB of cached responses, 180 MB of Parquet, 2.5 GB of search index.
+- **About 121 million tokens of minutes text** in 309,852 agenda items, indexed as 526,700 passages, every one
+  with a vector for meaning search. A hybrid (keyword and meaning) search over all of them takes a few seconds.
+- **Storage:** 3.3 GB of cached responses, 180 MB of Parquet, 3.5 GB of search index.
 - **Time:** two runs of about two hours each, then retries for the last few councils, 20 councils at a time and one
-  request at a time to each. Slow servers set the pace: the last few councils took hours on their own. Embedding for meaning search runs on the machine's own
-  processor at roughly 30 passages a second, so the whole archive takes about five hours. It is resumable, newest
-  first.
+  request at a time to each. Slow servers set the pace: the last few councils took hours on their own. Embedding for meaning search ran on the machine's own
+  processor at roughly 30 passages a second: about five hours for the whole archive, in resumable runs, newest first.
+  Re-indexing keeps the vectors of passages whose text is unchanged, so later runs embed only what changed.
 
 Problems found only at this scale, now fixed:
 
