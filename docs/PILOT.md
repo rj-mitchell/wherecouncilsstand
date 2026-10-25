@@ -241,16 +241,46 @@ one-member groups or mixed groups ("Independent partnership"), which need a pers
 - Declarations can include sensitive details about councillors' families. Show the councillor, the item and the kind
   of interest. Show the excerpt only behind a link to the council's own record.
 
-## What a full launch would take
+## The full load
 
-- **About 215 councils** whose web service answers (201 English and 14 Welsh), at roughly 170 meetings each: about
-  36,000 meetings.
-- **A one-off load of about six hours**, with 20 councils at a time, one request at a time to each.
-  Then a daily update fetches only new and recent meetings.
-- **About 4 GB of cached responses and 200 MB of Parquet.** Minutes text of roughly 125 million tokens to index;
-  meaning search would use a local model, as Where They Stand does, at no API cost.
-- **AI costs depend on briefings asked for, not on how many councils are covered.** A briefing reads the same number
-  of sources whatever the size of the archive, so the cost per briefing will be close to Where They Stand's.
+On 24 and 25 October 2026, every council whose web service answered was loaded the same way, from May 2018. The
+per-council table and the year-by-year figures come from `councils report --all`.
+
+- **213 of the 215 councils whose web service answered** (199 English, 14 Welsh). Stevenage's server returned errors
+  ("502 Bad Gateway") on every try. Lewes was loaded last, once titles carrying the full council name were read.
+- **30,747 meetings**: 13,537 of full council, 16,298 of cabinets, 912 of the policy committees of councils run by
+  committees.
+- **Minutes text for 78–90% of meetings each year**, about 4% read from a document. 2020 is lowest (78%), when
+  meetings moved online. 2026 (81%) includes meetings whose minutes aren't published yet. 14 councils have minutes
+  text for under half their meetings. Most of them publish minutes only as documents that their sites refuse to
+  automated requests: Bolton, St Helens and Tameside (under 3%), and Peterborough, Lichfield and Northumberland
+  (under a quarter).
+- **7,327 named votes in 190 councils, with 278,942 names: 97.1% matched to a member.** 6,502 are at full council,
+  762 at cabinet and 63 at policy committees. The result (carried or lost) is read for 4,948 (68%).
+- **15,662 declarations of interest, 92.9% matched to a member.**
+- **99% of attendance records have a recognised party**, across 631 different labels. About 25 labels, each a
+  breakaway or local group sitting beside a label the council already uses for a party, are left for a person to
+  decide (`scripts/party_labels.py` lists them).
+- **About 121 million tokens of minutes text** in 309,852 agenda items, indexed as 520,000 passages.
+- **Storage:** 3.3 GB of cached responses, 180 MB of Parquet, 2.5 GB of search index.
+- **Time:** two runs of about two hours each, then retries for the last few councils, 20 councils at a time and one
+  request at a time to each. Slow servers set the pace: the last few councils took hours on their own. Embedding for meaning search runs on the machine's own
+  processor at roughly 30 passages a second, so the whole archive takes about five hours. It is resumable, newest
+  first.
+
+Problems found only at this scale, now fixed:
+
+- **High Peak and Staffordshire Moorlands** share one Modern.gov site under two host names, so each council had both
+  councils' executives. They are now separated (see docs/DATA.md).
+- **Full council under other names:** "Cornwall Council", Blackburn with Darwen's "Council Forum", and Eastbourne's
+  and Lewes's "… Borough Council Full Council".
+- **Party labels:** at first 11% of attendance records had a label the rules didn't know. Many were common codes
+  ("GP", "RUK", "L&C"). Learning from Open Council Data also read members who had changed party under their old
+  party, so Reform UK labels were read as Conservative in three councils. Codes are now read from the year nearest
+  each label's use.
+
+**AI costs depend on briefings asked for, not on how many councils are covered.** A briefing reads the same number
+of sources whatever the size of the archive, so the cost per briefing will be close to Where They Stand's.
 
 ## Next steps
 
@@ -258,7 +288,7 @@ one-member groups or mixed groups ("Independent partnership"), which need a pers
    another network or the councils' agreement.
 2. ~~Remove the names of people who aren't councillors from anything shown.~~ Done; a larger check of misses is
    still to do.
-3. Load the remaining councils, and record each council's licence statement.
+3. ~~Load the remaining councils~~ (213 of 215 loaded), and record each council's licence statement.
 4. ~~Check a fresh sample of 50 votes by hand against a set target.~~ Done across all councils: three wrong-side
    errors found and fixed, then none in a fresh 20. A check of 100 or more is still to do before launch.
 5. ~~Adapt Where Countries Stand's index and briefing engine to council minutes, with "the minutes record that…"

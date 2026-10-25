@@ -23,7 +23,9 @@ Pilot stage. The data layer works on the real record:
 - reading named votes and declarations of interest from the minutes;
 - removing the names of people who aren't councillors before anything is indexed or shown.
 
-It has been run on 20 councils chosen by a fixed rule. The results are in [`docs/PILOT.md`](docs/PILOT.md).
+It was first run on 20 councils chosen by a fixed rule. It has since loaded 213 of the 215 councils whose
+web service answers. They hold about 30,700 meetings and 7,300 named votes, with each councillor's party on the
+date. The results, and a hand check of the votes, are in [`docs/PILOT.md`](docs/PILOT.md).
 
 The search index and briefing engine, adapted from Where Countries Stand, work from the command line: keyword and
 meaning search over the minutes, evidence balanced across councils and party control, and Claude briefings with
@@ -33,7 +35,7 @@ re-checked citations. There's no website yet.
 |---|---|
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Product decisions made so far. They override everything else. |
 | [`docs/DATA.md`](docs/DATA.md) | Data sources, what the Modern.gov web service returns, and what was found in it |
-| [`docs/PILOT.md`](docs/PILOT.md) | The 20-council pilot: how the councils were chosen, and what was measured |
+| [`docs/PILOT.md`](docs/PILOT.md) | The 20-council pilot, the full load, and hand checks of the votes |
 
 ## How it works
 
@@ -94,6 +96,8 @@ uv run councils list --status ok          # councils whose Modern.gov web servic
 uv run councils ingest barnsley           # load one council since May 2018 (about 40 minutes: servers are slow)
 uv run councils parse barnsley            # named votes and declarations from its minutes
 uv run councils pilot                     # load and parse the 20 pilot councils
+uv run councils load --workers 20         # every council whose web service answers (hours; --resume continues)
+uv run councils parties                   # map stored party labels again after data_static/parties.csv changes
 uv run councils report                    # the pilot's measurements
 uv run councils index                     # keyword index of everything loaded
 uv sync --extra embed && uv run councils embed --max-minutes 30   # meaning search (local model; resumable)
