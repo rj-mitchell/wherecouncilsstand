@@ -343,3 +343,11 @@ def test_count_then_full_stop():
     text = ("FOR the Amendment (2): Barlow and Williams. AGAINST the Amendment (2). Ward and Gill. ABSTENTIONS (0): "
             "The Amendment on being put, was declared LOST.")
     assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["27", "28"]}
+
+
+def test_column_table_with_surname_first_cells_and_its_flattened_text():
+    tables = [[["FOR", "AGAINST", "ABSTAIN"], ["BARLOW, Tom", "WARD, Sue", "GILL, Ian"], ["WILLIAMS, Ann", "", ""]]]
+    found = votes.parse_tables(tables, TOWN)
+    assert by_side(found) == {"for": ["23", "24"], "against": ["27"], "abstain": ["28"]}
+    text = "Councillors voted as follows for the amendment: FOR AGAINST ABSTAIN BARLOW, Tom WARD, Sue GILL, Ian"
+    assert votes.parse(text, TOWN) == []

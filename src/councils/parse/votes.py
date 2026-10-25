@@ -379,6 +379,9 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
             else:
                 sides.append((h, side, None, names_end))   # "FOR: AGAINST: ABSTAIN:" across columns
             continue
+        if re.match(r"^\s*(?:for|against|abstain\w*)\s+(?:for|against|abstain\w*)\b", raw, re.I):
+            sides.append((h, side, None, names_end))   # "FOR AGAINST ABSTAIN ASHTON, Tony ...": a table's columns lost
+            continue
         if "block vote" in raw.lower():
             sides.append((h, side, None, names_end))   # "Labour block vote of 15 votes": not a vote by name
             continue
@@ -461,7 +464,11 @@ def parse_tables(tables: list[list[list[str]]], members: list[Member], first_blo
             for row in rows[start + 1:]:
                 for side, i in cols.items():
                     if i < len(row) and row[i].strip():
-                        found += [(n, side) for n in split_names(row[i].replace("\n", " "))]
+                        cell = row[i].replace("\n", " ").strip()
+                        # "ASHTON, Tony": one member written surname first, not two names
+                        one = re.fullmatch(r"([A-Z][A-Z'’-]+(?: [A-Z][A-Z'’-]+)?),\s*([A-Z][\w'’-]+(?: [A-Z][\w'’-]+)?)", cell)
+                        names = [f"{one.group(2)} {one.group(1).title()}"] if one else split_names(cell)
+                        found += [(n, side) for n in names]
             if found:
                 outcome = _outcome(context)
                 excerpt = " | ".join(head) + " … (" + str(len(found)) + " members)"
