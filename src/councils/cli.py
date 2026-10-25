@@ -56,15 +56,26 @@ def ingest(council: list[str], start: str = typer.Option(None, "--from", help="Y
                                "error": res.error}))
 
 
-@app.command()
-def parse(council: list[str]) -> None:
-    """Read named votes and declarations of interest from councils' stored minutes."""
+def _parse_one(gss: str) -> dict:
     from councils import extract
+
+    return extract.run(load_settings(), gss)
+
+
+@app.command()
+def parse(council: list[str] = typer.Argument(None, help="GSS codes or names; all loaded councils if none"),
+          workers: int = typer.Option(8, help="councils parsed at once")) -> None:
+    """Read named votes and declarations of interest from councils' stored minutes."""
+    from concurrent.futures import ProcessPoolExecutor
+
     from councils.registry import get
 
     s = load_settings()
-    for key in council:
-        typer.echo(json.dumps(extract.run(s, get(key).gss)))
+    codes = [get(k).gss for k in council] if council else \
+        sorted(p.stem for p in (s.parquet_dir / "items").glob("*.parquet"))
+    with ProcessPoolExecutor(workers) as ex:
+        for line in ex.map(_parse_one, codes):
+            typer.echo(json.dumps(line))
 
 
 @app.command()
