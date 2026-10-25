@@ -7,6 +7,8 @@ data_dir = "data"
 [archive]
 # The record starts in May 2018 for every council (docs/DECISIONS.md, 4).
 start_date = "2018-05-01"
+# Briefings default to this many most recent years unless the question gives dates.
+default_years = 4
 
 [modgov]
 # Identifies the crawler to councils' servers, with a page explaining what it does.
@@ -20,3 +22,43 @@ retries = 3
 refetch_days = 120
 # Read minutes published only as a document (sources/documents.py).
 read_documents = true
+
+[ranking]
+candidates_bm25 = 300
+candidates_vector = 300
+vector_refine_factor = 5
+# Weight of normalised BM25 vs cosine similarity in the relevance score.
+bm25_weight = 0.5
+# Recency factor = floor + (1 - floor) * 0.5 ** (age_years / half_life); half_life = min_half_life_years / slider.
+recency_floor = 0.35
+min_half_life_years = 3.0
+default_recency = 0.4
+# Evidence selection for briefings: balance across councils and the groups chosen (rank/evidence.py).
+max_per_council = 2
+max_per_meeting = 1
+min_relevance_ratio = 0.25
+
+[answer]
+# As Where They Stand and Where Countries Stand: Sonnet writes briefings, Haiku reads the question.
+model = "claude-sonnet-5-5"
+query_parse_model = "claude-haiku-5-5"
+summary_sources = 24
+comprehensive_sources = 40
+summary_effort = "medium"
+comprehensive_effort = "high"
+query_parse_effort = "low"
+max_tokens = 16000
+use_fallbacks = true
+
+[embedding]
+# "fastembed" (local ONNX model; weights fetched once from Hugging Face and pinned)
+# or "hashing" (deterministic, offline; for tests only).
+backend = "fastembed"
+model = "snowflake/snowflake-arctic-embed-xs"
+dim = 384
+passage_words = 250
+batch_size = 8
+
+[usage]
+daily_spend_cap_usd = 3.0
+monthly_spend_cap_usd = 50.0

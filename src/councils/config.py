@@ -34,6 +34,26 @@ class Settings:
     def modgov(self) -> dict[str, Any]:
         return self.section("modgov")
 
+    @property
+    def archive(self) -> dict[str, Any]:
+        return self.section("archive")
+
+    @property
+    def ranking(self) -> dict[str, Any]:
+        return self.section("ranking")
+
+    @property
+    def answer(self) -> dict[str, Any]:
+        return self.section("answer")
+
+    @property
+    def embedding(self) -> dict[str, Any]:
+        return self.section("embedding")
+
+    @property
+    def usage(self) -> dict[str, Any]:
+        return self.section("usage")
+
     # Data layout -------------------------------------------------------------
     @property
     def raw_dir(self) -> Path:
@@ -42,6 +62,14 @@ class Settings:
     @property
     def parquet_dir(self) -> Path:
         return self.data_dir / "parquet"
+
+    @property
+    def index_dir(self) -> Path:
+        return self.data_dir / "index"
+
+    @property
+    def models_dir(self) -> Path:
+        return self.data_dir / "models"
 
 
 def _resolve(path: str | Path) -> Path:

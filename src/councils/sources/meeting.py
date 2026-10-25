@@ -3,6 +3,7 @@ minutes, and who attended."""
 
 from __future__ import annotations
 
+import html
 import json
 import re
 from dataclasses import dataclass
@@ -35,6 +36,11 @@ def _t(el: etree._Element, path: str) -> str:
     return (found.text or "").strip() if found is not None and found.text else ""
 
 
+def _plain(el: etree._Element, path: str) -> str:
+    """A text field with HTML entities decoded ("Members&#39; Announcements")."""
+    return html.unescape(_t(el, path))
+
+
 def _bool(el: etree._Element, path: str) -> bool:
     return _t(el, path).lower() == "true"
 
@@ -63,8 +69,8 @@ def rows(root: etree._Element, ctx: Context) -> tuple[dict, list[dict], list[dic
             "date": d,
             "year": d.year,
             "position": n,
-            "number": _t(it, "fulldisplaynumberformat") or _t(it, "minutesitemnumber"),
-            "title": _t(it, "agendaitemtitle"),
+            "number": _plain(it, "fulldisplaynumberformat") or _t(it, "minutesitemnumber"),
+            "title": _plain(it, "agendaitemtitle"),
             "agenda_text": to_text(_t(it, "agendatext")),
             "minutes_text": minutes,
             "minutes_source": "html" if minutes else "",
@@ -103,7 +109,7 @@ def rows(root: etree._Element, ctx: Context) -> tuple[dict, list[dict], list[dic
         "date": d,
         "year": d.year,
         "status": _t(root, "meetingstatus"),
-        "location": _t(root, "meetinglocation"),
+        "location": _plain(root, "meetinglocation"),
         "webcast": _bool(root, "iswebcast"),
         "minutes_published": _bool(root, "minutepublished"),
         "items": len(items),

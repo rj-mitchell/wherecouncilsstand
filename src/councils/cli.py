@@ -7,6 +7,9 @@
     councils pilot-sample                     # the pilot's councils, chosen by a fixed, published rule
     councils pilot                            # ingest and parse every pilot council
     councils report                           # the pilot's measurements (docs/PILOT.md)
+    councils index && councils embed          # keyword index, then meaning search (slow; resumable)
+    councils search "bin collections" --control NOC
+    councils ask "What have Labour-run councils decided about bin collections since 2023?"
 """
 
 from __future__ import annotations
@@ -109,3 +112,69 @@ def report() -> None:
     from councils import pilot
 
     typer.echo(pilot.report(load_settings()))
+
+
+@app.command()
+def index(council: list[str] = typer.Argument(None, help="GSS codes or names; all loaded councils if none")) -> None:
+    """Build the keyword search index from the stored minutes (names of non-councillors removed)."""
+    from councils.index.build import Indexer
+    from councils.registry import get
+
+    s = load_settings()
+    n = Indexer(s).index_all([get(c).gss for c in council] if council else None)
+    typer.echo(f"{n} passages indexed")
+
+
+@app.command()
+def embed(max_minutes: float = typer.Option(None, help="stop after this long; run again to continue")) -> None:
+    """Embed indexed passages for meaning search, newest first (needs the 'embed' extra)."""
+    from councils.embed.base import get_embedder
+    from councils.index.build import State, embed_pending
+    from councils.index.lance import SearchIndex
+
+    s = load_settings()
+    idx = SearchIndex(s.index_dir, int(s.embedding.get("dim", 384)))
+    n = embed_pending(s, idx, State(s.index_dir / "state.json"), get_embedder(s),
+                      max_seconds=max_minutes * 60 if max_minutes else None)
+    idx.build_indices()
+    typer.echo(f"{n} passages embedded")
+
+
+def _filters(start, end, council, control, party, kind):
+    from councils.engine import Filters
+    from councils.registry import get
+
+    return Filters(date_from=date.fromisoformat(start) if start else None,
+                   date_to=date.fromisoformat(end) if end else None,
+                   councils=[get(c).gss for c in council or []], control=list(control or []),
+                   parties=list(party or []), kinds=list(kind or []))
+
+
+@app.command()
+def search(query: str, start: str = typer.Option(None, "--from"), end: str = typer.Option(None, "--to"),
+           council: list[str] = typer.Option(None), control: list[str] = typer.Option(None),
+           party: list[str] = typer.Option(None), kind: list[str] = typer.Option(None),
+           group_by: str = "control", limit: int = 12) -> None:
+    """Search the minutes and show the balanced evidence a briefing would use (no model call)."""
+    from councils.engine import Engine
+
+    res = Engine(load_settings()).search(query, _filters(start, end, council, control, party, kind),
+                                         limit=limit, group_by=group_by)
+    for r in res.records:
+        typer.echo(f"\n[{r['date']}] {r['heading']}  (control: {r['control']})\n  {r['url']}\n  "
+                   + r["text"][:300].replace("\n", " "))
+    typer.echo(f"\n{len(res.records)} items from {res.candidates} candidates; " + json.dumps(res.evidence, default=str))
+
+
+@app.command()
+def ask(question: str, comprehensive: bool = False, show_plan: bool = True) -> None:
+    """Answer a question with a sourced briefing (needs an Anthropic API key; without one, shows the evidence)."""
+    from councils.rag.pipeline import AskRequest, Pipeline, answer_once
+
+    out = answer_once(Pipeline(load_settings()), AskRequest(question, "comprehensive" if comprehensive else "summary"))
+    if show_plan:
+        typer.echo(json.dumps(out["plan"]["plan"], indent=1, default=str))
+    for src in out["sources"]["sources"]:
+        typer.echo(f"[Source {src['n']}] {src['title']}\n    {src['url']}")
+    final = out["final"]
+    typer.echo("\n" + ((final.get("answer") or {}).get("markdown") or final.get("note") or ""))
