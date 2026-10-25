@@ -1,0 +1,16 @@
+# Bring Where Councils Stand's data up to date: new and recently changed meetings from every council's Modern.gov
+# site, their named votes, the search index. Installed with councils-update.timer (see docs/OPERATIONS.md).
+[Unit]
+Description=Where Councils Stand: update data
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=councils
+WorkingDirectory=/opt/wherecouncilsstand
+Environment=COUNCILS_DATA_DIR=/opt/wherecouncilsstand/data
+# Exits 1 when something needs attention; each run's summary is appended to data/updates.jsonl.
+ExecStart=/opt/wherecouncilsstand/.venv/bin/councils update --embed-minutes 60
+Nice=10
+TimeoutStartSec=4h

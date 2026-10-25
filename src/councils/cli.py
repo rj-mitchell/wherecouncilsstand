@@ -116,7 +116,8 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
            embed_minutes: float = typer.Option(60, help="stop embedding after this long; the next run continues"),
            log_file: str = typer.Option("updates.jsonl", help="appended to, in the data folder")) -> None:
     """The daily update: new and recently changed meetings for every loaded council, their votes, the search index
-    and meaning search. Prints a line per council and a summary, and appends the summary to the log."""
+    and meaning search. Prints a line per council and a summary, and appends the summary to the log. Exits 1 if it
+    needs attention: more than a tenth of councils (and more than five) failed."""
     import time
 
     from councils import load as load_
@@ -145,9 +146,13 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
                "new_meetings": sum(ln.get("new_meetings", 0) for ln in lines),
                "failed": sorted(ln["gss"] for ln in lines if ln.get("error")),
                "passages_embedded": embedded, "still_to_embed": len(indexer.state.unembedded())}
+    # needs attention: many councils failing at once means something on our side, not one council's server
+    summary["needs_attention"] = not lines or len(summary["failed"]) > max(5, len(lines) // 10)
     with open(s.data_dir / log_file, "a", encoding="utf-8") as fh:
         fh.write(json.dumps(summary) + "\n")
     typer.echo(json.dumps(summary))
+    if summary["needs_attention"]:
+        raise typer.Exit(1)
 
 
 @app.command("pilot-sample")

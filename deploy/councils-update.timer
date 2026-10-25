@@ -1,0 +1,11 @@
+[Unit]
+Description=Where Councils Stand: update data once a day
+
+[Timer]
+# UTC, early morning: councils publish minutes during the working day, and their servers are quietest at night.
+OnCalendar=*-*-* 03:17:00 UTC
+RandomizedDelaySec=20min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -35,6 +35,7 @@ re-checked citations. There's no website yet.
 |---|---|
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Product decisions made so far. They override everything else. |
 | [`docs/DATA.md`](docs/DATA.md) | Data sources, what the Modern.gov web service returns, and what was found in it |
+| [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | The daily update: what it does, how it copes with failing servers, scheduling |
 | [`docs/PILOT.md`](docs/PILOT.md) | The 20-council pilot, the full load, and hand checks of the votes |
 
 ## How it works
@@ -98,6 +99,7 @@ uv run councils parse barnsley            # named votes and declarations from it
 uv run councils pilot                     # load and parse the 20 pilot councils
 uv run councils load --workers 20         # every council whose web service answers (hours; --resume continues)
 uv run councils parties                   # map stored party labels again after data_static/parties.csv changes
+uv run councils update                    # the daily update: new and changed meetings, votes, index (docs/OPERATIONS.md)
 uv run councils report                    # the pilot's measurements
 uv run councils index                     # keyword index of everything loaded
 uv sync --extra embed && uv run councils embed --max-minutes 30   # meaning search (local model; resumable)
