@@ -24,7 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from councils import store  # noqa: E402
 from councils.config import STATIC_DIR, load_settings  # noqa: E402
-from councils.parse.parties import NAMES, normalise  # noqa: E402
+from councils.parse.parties import NAMES, normalise, overrides  # noqa: E402
 from councils.registry import councils  # noqa: E402
 
 OCD = "https://opencouncildata.co.uk/csv2.php?y={year}"
@@ -33,9 +33,18 @@ YEARS = tuple(range(2018, 2027))
 # council's own label decides which (see code_for).
 OCD_PARTIES = {"Labour Party": "LAB", "Conservative and Unionist": "CON", "Liberal Democrats": "LD",
                "Green Party (E&W)": "GRN", "Reform UK": "REF", "Plaid Cymru": "PC", "UK Independence Party": "UKIP",
-               "Liberal Party": "LIB", "The Liberal Party": "LIB", "Your Party": "YP", "Workers Party of Britain": "WPB",
+               "Liberal Party": "LIB", "The Liberal Party": "LIB",
+               "UK Independence Party (UKIP)": "UKIP", "Your Party": "YP", "Workers Party of Britain": "WPB",
                "Social Democratic Party": "SDP"}
 SINGLE_INDEPENDENT = re.compile(r"^(?:i|in|ind|ind ind|na|non[- ]?aligned|other|unaligned|nongp|non-grouped)$", re.I)
+
+
+def fits(label: str, name: str) -> bool:
+    """Whether a name could be what a label abbreviates: most of the label's words start like the name's ("Ash Ind",
+    "Ashfield Independents"; "B&HInd", "Brighton & Hove Independents"), not "Ind Lab" and "Breakthrough Party"."""
+    tokens = [t.lower() for t in re.findall(r"[A-Z]?[a-z]+|[A-Z]+(?![a-z])|\d+", label)]
+    initials = {w[0] for w in re.findall(r"[a-z0-9]+", name.lower())}
+    return bool(tokens) and sum(t[0] in initials for t in tokens) * 2 >= len(tokens)
 
 
 def code_for(party: str, label: str) -> str:
@@ -64,7 +73,7 @@ def main() -> None:
     s = load_settings()
     con = duckdb.connect()
     store.parquet.attach(con, s.parquet_dir)
-    rows = con.execute("select gss, party_label, name, max(year) from attendance where party = '' "
+    rows = con.execute("select gss, party_label, name, max(year) from attendance where party in ('', 'LOCAL') "
                        "and party_label <> '' group by all").fetchall()
     # the years each council used each label, to see when a council already has a label for a party
     spans = defaultdict(list)
@@ -73,8 +82,12 @@ def main() -> None:
         spans[gss].append((label, first, last))
     # (council, label) -> {member: the last year the member was recorded with that label}
     by_label: dict[tuple[str, str], dict[str, int]] = defaultdict(dict)
+    name_only: set[tuple[str, str]] = set()    # local parties the rules recognise, still to be named
     for gss, label, name, year in rows:
-        if normalise(label, gss):
+        code = normalise(label, gss)
+        if code == "LOCAL" and (gss, label.strip().lower()) not in overrides():
+            name_only.add((gss, label))
+        elif code:
             continue          # the rules (or an earlier decision) already recognise it
         key = person_key(name)
         by_label[(gss, label)][key] = max(year, by_label[(gss, label)].get(key, 0))
@@ -100,6 +113,15 @@ def main() -> None:
                 history = parties[(ck, p)]
                 votes[history[min(history, key=lambda y: (abs(y - last_used), -y))]] += 1
         found = sum(votes.values())
+        if (gss, label) in name_only:
+            # only the local party's name is wanted ("Ash Ind" -> "Ashfield Independents"); its code stays LOCAL
+            local = [(k, name) for name, k in votes.most_common() if name not in OCD_PARTIES
+                     and name != "Independent / Other" and not normalise(name).replace("LOCAL", "")]
+            if local and local[0][0] >= 2 and local[0][0] * 3 >= found * 2 and fits(label, local[0][1]):
+                out.append({"gss": gss, "label": label, "code": "LOCAL", "party_name": local[0][1],
+                            "evidence": f"{local[0][0]} of {len(people)} members recorded as {local[0][1]} "
+                                        "by Open Council Data"})
+            continue
         if not found:
             print(f"{gss} {label!r}: none of {len(people)} members found", file=sys.stderr)
             continue

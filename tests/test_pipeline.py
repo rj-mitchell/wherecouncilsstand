@@ -172,3 +172,14 @@ def test_reindex_keeps_embeddings_of_unchanged_passages_and_updates_tags(setting
     assert all(v["embedded"] for v in idx.state.data.values())
     vec_rows = idx.index.vectors().search().where(f"gss = '{GUILDFORD}'").limit(None).to_list()
     assert all("GRN" in r["parties"] for r in vec_rows)
+
+
+def test_one_sided_vote_is_marked_as_possibly_incomplete(settings):
+    from councils.rag.sources import Lookup
+    store.parquet.write(settings.parquet_dir, "votes", BARNSLEY, [{
+        "vote_id": f"{BARNSLEY}:1:10:0", "item_id": f"{BARNSLEY}:1:10", "meeting_id": f"{BARNSLEY}:1", "gss": BARNSLEY,
+        "date": date(2025, 2, 26), "year": 2025, "question": "motion", "outcome": "", "member_id": "1",
+        "name": "Kitching", "vote": "for", "excerpt": ""}])
+    blocks = Lookup(settings, {BARNSLEY}).vote_blocks(f"{BARNSLEY}:1:10", BARNSLEY, date(2025, 2, 26))
+    assert len(blocks) == 1 and "Only this side is recorded here" in blocks[0]
+    assert "Kitching (Liberal Democrats)" in blocks[0]

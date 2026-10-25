@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from typing import Any
 
-from councils.parse.parties import NAMES
+from councils.parse.parties import NAMES, local_name
 
 NOC = "NOC"
 
@@ -89,11 +89,12 @@ def build(attendance: list[dict[str, Any]], meetings: list[dict[str, Any]]) -> d
     return out
 
 
-def party_name(code: str) -> str:
+def party_name(code: str, gss: str = "") -> str:
+    """A party code as words. A local party is named as Open Council Data names it at that council (``gss``)."""
     if code == NOC:
         return "No overall control"
     if code.startswith("LOCAL:"):
-        return code[6:]
+        return local_name(code[6:], gss)
     return NAMES.get(code, code or "Party not recorded")
 
 

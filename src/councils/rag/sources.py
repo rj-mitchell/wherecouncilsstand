@@ -92,7 +92,7 @@ class Lookup:
         if not c:
             return ""
         name = re.sub(r"^(?:Councillor|Cllr|Cynghorydd)\s+", "", c.name_of(mid)).strip()
-        party = people.party_name(c.party_on(mid, d)) if c.party_on(mid, d) else "party not recorded"
+        party = people.party_name(c.party_on(mid, d), gss) if c.party_on(mid, d) else "party not recorded"
         return f"Councillor {name} ({party})"
 
     def vote_blocks(self, item_id: str, gss: str, d: date) -> list[str]:
@@ -105,19 +105,24 @@ class Lookup:
             vs = [r for r in rows if r["vote_id"] == vote_id]
             sides: dict[str, list[str]] = defaultdict(list)
             for r in vs:
-                party = people.party_name(c.party_on(r["member_id"], d)) if c and r["member_id"] and \
+                party = people.party_name(c.party_on(r["member_id"], d), gss) if c and r["member_id"] and \
                     c.party_on(r["member_id"], d) else ""
                 sides[r["vote"]].append(f"{r['name']} ({party})" if party else r["name"])
             head = "Named vote recorded in these minutes" + (f" on the {vs[0]['question']}" if vs[0]["question"] else "")
             head += f", {vs[0]['outcome']}" if vs[0]["outcome"] else ""
-            out.append(head + ". " + " ".join(f"{SIDE_LABEL[s]} ({len(names)}): {', '.join(names)}."
-                                              for s, names in sides.items()))
+            text = head + ". " + " ".join(f"{SIDE_LABEL[s]} ({len(names)}): {', '.join(names)}."
+                                          for s, names in sides.items())
+            if len(sides) == 1:
+                # a vote with one side read may be incomplete; say so rather than let it read as the whole vote
+                text += (" Only this side is recorded here: the minutes may give the others in a form that could "
+                         "not be read, or record none.")
+            out.append(text)
         return out
 
 
 def record_source(n: int, r: dict[str, Any], lookup: Lookup, group_by: str = "control") -> Source:
     d = date.fromisoformat(r["date"])
-    control = people.party_name(r["control"]) if r.get("control") else "not recorded"
+    control = people.party_name(r["control"], r["gss"]) if r.get("control") else "not recorded"
     named = [lookup.member(m, d) for m in r.get("members") or []]
     title_bits = [
         f"Minutes of {r['council_name']}, {r['committee']} ({KIND_LABEL.get(r['kind'], r['kind'])}), {fmt_date(d)}",

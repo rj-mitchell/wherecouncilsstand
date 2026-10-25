@@ -55,7 +55,7 @@ def group_label(key: str, group_by: str, rec: dict[str, Any] | None = None) -> s
         return "Control not recorded"
     if key == "NOC":
         return "Councils under no overall control"
-    return f"Councils controlled by {CONTROLLED_BY.get(key, party_name(key))}"
+    return f"Councils controlled by {CONTROLLED_BY.get(key, party_name(key, (rec or {}).get('gss', '')))}"
 
 
 def select_evidence(scored: list[Scored], k: int, *, group_by: str = "control", max_per_council: int = 2,

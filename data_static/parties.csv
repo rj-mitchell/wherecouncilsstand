@@ -30,7 +30,9 @@ E06000033,No Political Party,LOCAL,Independent / Other,3 of 3 members recorded a
 E06000034,NPAIC,LOCAL,Independent / Other,7 of 8 members recorded as Independent / Other by Open Council Data
 E06000036,INDG,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E06000041,ING,LOCAL,Independent / Other,4 of 4 members recorded as Independent / Other by Open Council Data
+E06000043,B&HInd,LOCAL,Brighton & Hove Independents,2 of 3 members recorded as Brighton & Hove Independents by Open Council Data
 E06000043,LP,LAB,Labour Party,decided by hand: 52 of 55 members recorded as Labour Party by Open Council Data; 'LP' (Labour Party) is used beside 'LAB&COOP'
+E06000044,Pompey Ind,LOCAL,Portsmouth Independent Party,7 of 9 members recorded as Portsmouth Independent Party by Open Council Data
 E06000046,AG,LOCAL,Independent / Other,14 of 19 members recorded as Independent / Other by Open Council Data
 E06000046,AGGP,GRN,Green Party (E&W),2 of 2 members recorded as Green Party (E&W) by Open Council Data
 E06000046,AGI,LOCAL,Independent / Other,12 of 14 members recorded as Independent / Other by Open Council Data
@@ -42,6 +44,7 @@ E06000046,IIG,LOCAL,Independent / Other,7 of 8 members recorded as Independent /
 E06000046,IMG,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E06000046,IW Reform,REF,Reform UK,19 of 19 members recorded as Reform UK by Open Council Data
 E06000046,RFUK,REF,Reform UK,3 of 3 members recorded as Reform UK by Open Council Data
+E06000047,DERIND,LOCAL,Derwentside Independents,7 of 8 members recorded as Derwentside Independents by Open Council Data
 E06000047,NEP,LOCAL,The Party Party,4 of 5 members recorded as The Party Party by Open Council Data
 E06000047,SIPBP,LOCAL,Independent / Other,5 of 5 members recorded as Independent / Other by Open Council Data
 E06000052,CIN,LOCAL,Independent / Other,3 of 4 members recorded as Independent / Other by Open Council Data
@@ -53,6 +56,7 @@ E06000057,BI,LOCAL,Independent / Other,2 of 3 members recorded as Independent / 
 E06000057,GP,GRN,Green Party (E&W),3 of 3 members recorded as Green Party (E&W) by Open Council Data
 E06000057,IN,IND,Independent / Other,8 of 11 members recorded as Independent / Other by Open Council Data
 E06000057,NA,IND,Independent / Other,9 of 12 members recorded as Independent / Other by Open Council Data
+E06000058,CCIND,LOCAL,Christchurch Independents,8 of 8 members recorded as Christchurch Independents by Open Council Data
 E06000058,PP,LOCAL,The Party for Poole People Ltd.,7 of 7 members recorded as The Party for Poole People Ltd. by Open Council Data
 E06000058,PPHAM,LOCAL,The Party for Poole People Ltd.,2 of 2 members recorded as The Party for Poole People Ltd. by Open Council Data
 E06000060,INDNET,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
@@ -67,12 +71,14 @@ E07000064,RAoIC,LOCAL,Independent / Other,6 of 8 members recorded as Independent
 E07000066,AI,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E07000072,EFIG,LOCAL,Independent / Other,3 of 3 members recorded as Independent / Other by Open Council Data
 E07000072,LRA,LOCAL,Independent Loughton Residents Association,20 of 20 members recorded as Independent Loughton Residents Association by Open Council Data
+E07000072,R4L,LOCAL,Independent Loughton Residents Association,2 of 2 members recorded as Independent Loughton Residents Association by Open Council Data
 E07000074,MIG,LOCAL,Independent / Other,5 of 7 members recorded as Independent / Other by Open Council Data
 E07000075,AI,LOCAL,Independent / Other,4 of 4 members recorded as Independent / Other by Open Council Data
 E07000075,RDR,LOCAL,Rochford District Residents,8 of 8 members recorded as Rochford District Residents by Open Council Data
 E07000075,RFWI,LOCAL,Independent / Other,3 of 4 members recorded as Independent / Other by Open Council Data
 E07000076,Holland on Sea  Eastcliff Matters,LOCAL,Holland On Sea & Eastcliff Matters,3 of 3 members recorded as Holland On Sea & Eastcliff Matters by Open Council Data
 E07000076,TI,LOCAL,Independent / Other,6 of 7 members recorded as Independent / Other by Open Council Data
+E07000076,Tendring First,LOCAL,Tendring First,4 of 5 members recorded as Tendring First by Open Council Data
 E07000077,RFU,LOCAL,Residents for Uttlesford,34 of 36 members recorded as Residents for Uttlesford by Open Council Data
 E07000077,TEI,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E07000077,UI,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
@@ -80,6 +86,7 @@ E07000081,CIG,LOCAL,Independent / Other,3 of 4 members recorded as Independent /
 E07000082,CI,LOCAL,Independent / Other,4 of 5 members recorded as Independent / Other by Open Council Data
 E07000082,ILG,LOCAL,Independent / Other,4 of 6 members recorded as Independent / Other by Open Council Data
 E07000084,AIN,LOCAL,The All In Party,2 of 2 members recorded as The All In Party by Open Council Data
+E07000084,Basingstoke and Deane Independent Group,LOCAL,Basingstoke & Deane Independents,13 of 14 members recorded as Basingstoke & Deane Independents by Open Council Data
 E07000084,INDP,LOCAL,Independent / Other,4 of 6 members recorded as Independent / Other by Open Council Data
 E07000084,RFM,REF,Reform UK,3 of 3 members recorded as Reform UK by Open Council Data
 E07000085,AISG,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
@@ -134,6 +141,7 @@ E07000141,UNAL,LOCAL,Independent / Other,2 of 2 members recorded as Independent 
 E07000146,PG,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E07000146,WNIG,LOCAL,Independent / Other,3 of 3 members recorded as Independent / Other by Open Council Data
 E07000149,SNI,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
+E07000170,Ash Ind,LOCAL,Ashfield Independents,42 of 48 members recorded as Ashfield Independents by Open Council Data
 E07000171,BF,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E07000171,INDGRP,LOCAL,Independent / Other,4 of 4 members recorded as Independent / Other by Open Council Data
 E07000172,BA,LOCAL,Broxtowe Alliance,19 of 20 members recorded as Broxtowe Alliance by Open Council Data
@@ -141,6 +149,7 @@ E07000172,BIG,LOCAL,Broxtowe Independent Group,5 of 5 members recorded as Broxto
 E07000172,GNPR,LOCAL,Independent / Other,8 of 8 members recorded as Independent / Other by Open Council Data
 E07000173,IND2,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E07000174,Min,LOCAL,Mansfield Independents,4 of 4 members recorded as Mansfield Independents by Open Council Data
+E07000176,RUSH IND,LOCAL,Rushcliffe Independents,2 of 2 members recorded as Rushcliffe Independents by Open Council Data
 E07000178,IOA,LOCAL,Independent Oxford Alliance,4 of 4 members recorded as Independent Oxford Alliance by Open Council Data
 E07000178,OIG,LOCAL,Independent / Other,4 of 5 members recorded as Independent / Other by Open Council Data
 E07000178,RI,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
@@ -186,6 +195,7 @@ E07000234,WRA,LOCAL,Wythall Residents' Association,2 of 3 members recorded as Wy
 E08000001,CF,LOCAL,Independent / Other,3 of 4 members recorded as Independent / Other by Open Council Data
 E08000001,FandKF,LOCAL,Farnworth and Kearsley First Party,4 of 5 members recorded as Farnworth and Kearsley First Party by Open Council Data
 E08000001,HBFI,LOCAL,Horwich & Blackrod First Independents,6 of 8 members recorded as Horwich & Blackrod First Independents by Open Council Data
+E08000002,RAD First,LOCAL,Radcliffe First,10 of 11 members recorded as Radcliffe First by Open Council Data
 E08000004,FIP,LOCAL,Failsworth Independent Party,"5 of 5 members recorded by Open Council Data as local party or group: 3 Failsworth Independent Party, 2 Independent / Other"
 E08000004,IG,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E08000004,OG,LOCAL,Independent / Other,9 of 12 members recorded as Independent / Other by Open Council Data
@@ -209,6 +219,7 @@ E08000016,BIG,LOCAL,Barnsley Independent Group,3 of 3 members recorded as Barnsl
 E08000016,D&V,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E08000017,ADV,LOCAL,Advance UK,2 of 2 members recorded as Advance UK by Open Council Data
 E08000017,IVD,LOCAL,Advance UK,2 of 2 members recorded as Advance UK by Open Council Data
+E08000017,Mexborough First,LOCAL,Mexborough First,3 of 4 members recorded as Mexborough First by Open Council Data
 E08000018,Brexit Party,LOCAL,Independent / Other,10 of 11 members recorded as Independent / Other by Open Council Data
 E08000018,RDP,LOCAL,Independent / Other,9 of 11 members recorded as Independent / Other by Open Council Data
 E08000019,SCC,LOCAL,Independent / Other,6 of 8 members recorded as Independent / Other by Open Council Data

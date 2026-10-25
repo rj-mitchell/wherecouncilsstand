@@ -24,7 +24,8 @@ What the records are
   councillor's own words. Quote only words that are in the minutes.
 - Where a result includes a named vote, it lists the councillors who voted each way, with their party on the date.
   Report votes from that list only, with the item and date. A vote on a motion is not a vote on every part of it,
-  and the minutes do not say why a councillor voted as they did unless they record it.
+  and the minutes do not say why a councillor voted as they did unless they record it. Where only one side is
+  recorded, say so, and don't give totals or a result the list doesn't show.
 - Some text reads "[name removed]": the names of people who are not councillors (members of the public, council
   staff) are removed. Never guess or describe who they were beyond what the passage says (for example "a member of
   the public", "the Chief Executive").

@@ -59,6 +59,21 @@ def overrides() -> dict[tuple[str, str], str]:
         return {(r["gss"], r["label"].strip().lower()): r["code"] for r in csv.DictReader(fh)}
 
 
+@lru_cache(maxsize=1)
+def _local_names() -> dict[tuple[str, str], str]:
+    path = STATIC_DIR / "parties.csv"
+    if not path.exists():
+        return {}
+    with open(path, encoding="utf-8") as fh:
+        return {(r["gss"], r["label"].strip().lower()): r["party_name"] for r in csv.DictReader(fh)
+                if r["code"] == "LOCAL" and r["party_name"] and r["party_name"] != "Independent / Other"}
+
+
+def local_name(label: str, gss: str = "") -> str:
+    """A local party's name as Open Council Data gives it ("RFU" -> "Residents for Uttlesford"), else the label."""
+    return _local_names().get((gss, label.strip().lower()), label)
+
+
 def normalise(label: str | None, gss: str = "") -> str:
     """The party code for a council's label, or "" if it isn't recognised."""
     t = re.sub(r"\s+", " ", (label or "").replace("&amp;", "&")).strip().strip(".")
