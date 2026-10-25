@@ -44,6 +44,8 @@ E06000046,RFUK,REF,Reform UK,3 of 3 members recorded as Reform UK by Open Counci
 E06000047,NEP,LOCAL,The Party Party,4 of 5 members recorded as The Party Party by Open Council Data
 E06000047,SIPBP,LOCAL,Independent / Other,5 of 5 members recorded as Independent / Other by Open Council Data
 E06000052,CIN,LOCAL,Independent / Other,3 of 4 members recorded as Independent / Other by Open Council Data
+E06000052,IAG,LOCAL,Independent / Other,3 of 3 members recorded as Independent / Other by Open Council Data
+E06000052,INA,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E06000052,MK,LOCAL,Mebyon Kernow - The Party for Cornwall,3 of 3 members recorded as Mebyon Kernow - The Party for Cornwall by Open Council Data
 E06000052,MKG,LOCAL,Mebyon Kernow - The Party for Cornwall,3 of 4 members recorded as Mebyon Kernow - The Party for Cornwall by Open Council Data
 E06000057,BI,LOCAL,Independent / Other,2 of 3 members recorded as Independent / Other by Open Council Data
@@ -62,6 +64,8 @@ E07000035,DF,LOCAL,Independent / Other,2 of 2 members recorded as Independent / 
 E07000064,AOI,LOCAL,Independent / Other,13 of 14 members recorded as Independent / Other by Open Council Data
 E07000064,RAoIC,LOCAL,Independent / Other,6 of 8 members recorded as Independent / Other by Open Council Data
 E07000066,AI,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
+E07000072,EFIG,LOCAL,Independent / Other,3 of 3 members recorded as Independent / Other by Open Council Data
+E07000072,LRA,LOCAL,Independent Loughton Residents Association,20 of 20 members recorded as Independent Loughton Residents Association by Open Council Data
 E07000074,MIG,LOCAL,Independent / Other,5 of 7 members recorded as Independent / Other by Open Council Data
 E07000075,AI,LOCAL,Independent / Other,4 of 4 members recorded as Independent / Other by Open Council Data
 E07000075,RDR,LOCAL,Rochford District Residents,8 of 8 members recorded as Rochford District Residents by Open Council Data
@@ -142,6 +146,7 @@ E07000178,RI,LOCAL,Independent / Other,2 of 2 members recorded as Independent / 
 E07000179,HRG,LOCAL,Henley Residents Group,3 of 3 members recorded as Henley Residents Group by Open Council Data
 E07000179,NonGp,IND,Independent,decided by hand: non-grouped members
 E07000179,SORT,LOCAL,Independent / Other,3 of 4 members recorded as Independent / Other by Open Council Data
+E07000198,MDA,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E07000199,UK IP,LOCAL,UK Independence Party (UKIP),2 of 2 members recorded as UK Independence Party (UKIP) by Open Council Data
 E07000200,BU,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E07000200,IC,LOCAL,Independent / Other,11 of 11 members recorded as Independent / Other by Open Council Data
@@ -257,3 +262,5 @@ W06000019,Indies,LOCAL,Independent / Other,28 of 31 members recorded as Independ
 W06000019,MIP,LOCAL,Independent / Other,4 of 4 members recorded as Independent / Other by Open Council Data
 W06000019,WLP,LAB,Labour Party,23 of 27 members recorded as Labour Party by Open Council Data
 W06000022,NIP,LOCAL,Newport Independents Party,4 of 4 members recorded as Newport Independents Party by Open Council Data
+W06000024,IndGrp,LOCAL,Independent / Other,17 of 17 members recorded as Independent / Other by Open Council Data
+W06000024,IndGrp2,LOCAL,Independent / Other,3 of 3 members recorded as Independent / Other by Open Council Data
