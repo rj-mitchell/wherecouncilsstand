@@ -248,16 +248,16 @@ per-council table and the year-by-year figures come from `councils report --all`
 
 - **213 of the 215 councils whose web service answered** (199 English, 14 Welsh). Stevenage's server returned errors
   ("502 Bad Gateway") on every try. Lewes was loaded last, once titles carrying the full council name were read.
-- **30,747 meetings**: 13,537 of full council, 16,298 of cabinets, 912 of the policy committees of councils run by
+- **30,848 meetings**: 13,578 of full council, 16,358 of cabinets, 912 of the policy committees of councils run by
   committees.
 - **Minutes text for 78–90% of meetings each year**, about 4% read from a document. 2020 is lowest (78%), when
   meetings moved online. 2026 (81%) includes meetings whose minutes aren't published yet. 14 councils have minutes
   text for under half their meetings. Most of them publish minutes only as documents that their sites refuse to
   automated requests: Bolton, St Helens and Tameside (under 3%), and Peterborough, Lichfield and Northumberland
   (under a quarter).
-- **7,327 named votes in 190 councils, with 278,942 names: 97.1% matched to a member.** 6,502 are at full council,
-  762 at cabinet and 63 at policy committees. The result (carried or lost) is read for 4,948 (68%).
-- **15,662 declarations of interest, 92.9% matched to a member.**
+- **7,342 named votes in 191 councils, with 279,450 names: 97.1% matched to a member.** 6,517 are at full council,
+  762 at cabinet and 63 at policy committees. The result (carried or lost) is read for 4,960 (68%).
+- **15,748 declarations of interest, 92.9% matched to a member.**
 - **99% of attendance records have a recognised party**, across 631 different labels. About 25 labels, each a
   breakaway or local group sitting beside a label the council already uses for a party, are left for a person to
   decide (`scripts/party_labels.py` lists them).

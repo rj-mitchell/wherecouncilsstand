@@ -24,7 +24,7 @@ Pilot stage. The data layer works on the real record:
 - removing the names of people who aren't councillors before anything is indexed or shown.
 
 It was first run on 20 councils chosen by a fixed rule. It has since loaded 213 of the 215 councils whose
-web service answers. They hold about 30,700 meetings and 7,300 named votes, with each councillor's party on the
+web service answers. They hold about 30,800 meetings and 7,300 named votes, with each councillor's party on the
 date. The results, and a hand check of the votes, are in [`docs/PILOT.md`](docs/PILOT.md).
 
 The search index and briefing engine, adapted from Where Countries Stand, work from the command line: keyword and
