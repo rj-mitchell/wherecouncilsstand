@@ -29,11 +29,11 @@ class Result:
     error: str = ""
 
 
-def selected_committees(client: Client, council: Council) -> dict[int, tuple[str, str]]:
+def selected_committees(client: Client, council: Council, max_age_days: float | None = None) -> dict[int, tuple[str, str]]:
     """The council's committees in scope, by id: (title, kind)."""
     sharers = site_sharers(council)
     out = {}
-    for c in client.committees():
+    for c in client.committees(max_age_days=max_age_days):
         if c.deleted:
             continue
         title = c.title
@@ -49,7 +49,12 @@ def selected_committees(client: Client, council: Council) -> dict[int, tuple[str
     return out
 
 
-def load(settings: Settings, council: Council, start: date | None = None, end: date | None = None) -> Result:
+def load(settings: Settings, council: Council, start: date | None = None, end: date | None = None,
+         update: bool = False) -> Result:
+    """Load a council's meetings in scope from its Modern.gov site (or the cache) and replace its stored rows.
+
+    With ``update``, the committee list is fetched again if over a week old, and nothing is written unless every
+    committee's meetings could be listed: a server that is down mustn't remove meetings already stored."""
     start = start or settings.start_date
     end = end or date.today()
     res = Result(council.gss)
@@ -59,7 +64,7 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
     meetings, items, attendance = [], [], []
     with Client(settings, council.gss, council.modgov_url) as client:
         try:
-            res.committees = selected_committees(client, council)
+            res.committees = selected_committees(client, council, max_age_days=7 if update else None)
         except ModgovError as e:
             res.error = str(e)
             return res
@@ -68,6 +73,9 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
                 refs = client.meetings(cid, start, end)
             except ModgovError as e:
                 log.warning("%s committee %s: %s", council.gss, cid, e)
+                if update:
+                    res.error = f"committee {cid}: {e}"
+                    return res
                 continue
             for ref in refs:
                 if ref.date > end or ref.date < start:
@@ -90,6 +98,9 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
         if settings.modgov.get("read_documents", True):
             items = _minutes_from_documents(client, meetings, items, res)
     root = settings.parquet_dir
+    if update and res.failed:
+        res.error = f"{len(res.failed)} meetings could not be fetched"
+        return res
     store.parquet.write(root, "meetings", council.gss, meetings)
     store.parquet.write(root, "items", council.gss, items)
     store.parquet.write(root, "attendance", council.gss, attendance)

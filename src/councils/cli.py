@@ -110,6 +110,46 @@ def load(status: str = typer.Option("ok", help="councils whose web service had t
         typer.echo(json.dumps(line), nl=True)
 
 
+@app.command()
+def update(council: list[str] = typer.Argument(None, help="GSS codes or names; all loaded councils if none"),
+           workers: int = typer.Option(20, help="councils updated at once"),
+           embed_minutes: float = typer.Option(60, help="stop embedding after this long; the next run continues"),
+           log_file: str = typer.Option("updates.jsonl", help="appended to, in the data folder")) -> None:
+    """The daily update: new and recently changed meetings for every loaded council, their votes, the search index
+    and meaning search. Prints a line per council and a summary, and appends the summary to the log."""
+    import time
+
+    from councils import load as load_
+    from councils.embed.base import get_embedder
+    from councils.index.build import Indexer, embed_pending
+    from councils.registry import councils, get
+
+    s = load_settings()
+    started = time.time()
+    chosen = [get(k) for k in council] if council else list(councils().values())
+    lines = []
+    for line in load_.update(s, chosen, workers=workers):
+        lines.append(line)
+        typer.echo(json.dumps(line))
+    changed = [ln["gss"] for ln in lines if ln.get("changed")]
+    indexer = Indexer(s)
+    for gss in changed:              # one writer at a time; unchanged passages keep their vectors
+        indexer.index_council(gss)
+    if changed:
+        indexer.index.build_indices()
+    embedded = embed_pending(s, indexer.index, indexer.state, get_embedder(s), max_seconds=embed_minutes * 60)
+    if embedded:
+        indexer.index.build_indices()
+    summary = {"finished": time.strftime("%Y-%m-%dT%H:%M:%S"), "minutes": round((time.time() - started) / 60, 1),
+               "councils": len(lines), "changed": len(changed),
+               "new_meetings": sum(ln.get("new_meetings", 0) for ln in lines),
+               "failed": sorted(ln["gss"] for ln in lines if ln.get("error")),
+               "passages_embedded": embedded, "still_to_embed": len(indexer.state.unembedded())}
+    with open(s.data_dir / log_file, "a", encoding="utf-8") as fh:
+        fh.write(json.dumps(summary) + "\n")
+    typer.echo(json.dumps(summary))
+
+
 @app.command("pilot-sample")
 def pilot_sample() -> None:
     """The pilot's councils (docs/PILOT.md)."""

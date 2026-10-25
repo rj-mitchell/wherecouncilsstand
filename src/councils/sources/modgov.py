@@ -128,11 +128,23 @@ class Client:
                 time.sleep(2 * (attempt + 1))
             raise ModgovError(str(last_error))
 
-    def _cached(self, name: str, op: str, refresh: bool = False, **params: str | int) -> str:
+    def _cached(self, name: str, op: str, refresh: bool = False, max_age_days: float | None = None,
+                **params: str | int) -> str:
+        """A cached response, fetched if it isn't cached, if ``refresh``, or if older than ``max_age_days``. If
+        fetching again fails, the cached copy is used: a server that is down mustn't lose what is already known."""
         path = self.cache / name
+        if path.exists() and max_age_days is not None:
+            refresh = refresh or (time.time() - path.stat().st_mtime) > max_age_days * 86_400
         if path.exists() and not refresh:
             return path.read_text(encoding="utf-8")
-        text = self._get(op, **params)
+        try:
+            text = self._get(op, **params)
+        except ModgovError as e:
+            if not path.exists():
+                raise
+            log.warning("%s: %s; using the copy cached %s", self.council, e,
+                        datetime.fromtimestamp(path.stat().st_mtime).date())
+            return path.read_text(encoding="utf-8")
         path.parent.mkdir(parents=True, exist_ok=True)
         tmp = path.with_suffix(path.suffix + ".tmp")
         tmp.write_text(text, encoding="utf-8")
@@ -140,8 +152,8 @@ class Client:
         return text
 
     # Operations ----------------------------------------------------------------
-    def committees(self, refresh: bool = False) -> list[Committee]:
-        root = xml(self._cached("committees.xml", "GetCommittees", refresh=refresh))
+    def committees(self, refresh: bool = False, max_age_days: float | None = None) -> list[Committee]:
+        root = xml(self._cached("committees.xml", "GetCommittees", refresh=refresh, max_age_days=max_age_days))
         out = []
         for c in root.iter("committee"):
             cid = _t(c, "committeeid")
@@ -156,9 +168,12 @@ class Client:
         return out
 
     def meetings(self, committee_id: int, start: date, end: date, refresh: bool = False) -> list[MeetingRef]:
-        name = f"meetings/{committee_id}_{start:%Y%m%d}_{end:%Y%m%d}.xml"
-        text = self._cached(name, "GetMeetings", refresh=refresh, lCommitteeId=committee_id,
-                            sFromDate=ddmmyyyy(start), sToDate=ddmmyyyy(end))
+        """A committee's meetings in a date range. A range running to today is kept as one file and fetched again
+        once a day, so new meetings appear; a range wholly in the past is fetched once."""
+        current = end >= date.today()
+        name = f"meetings/{committee_id}_{start:%Y%m%d}_{'latest' if current else f'{end:%Y%m%d}'}.xml"
+        text = self._cached(name, "GetMeetings", refresh=refresh, max_age_days=0.9 if current else None,
+                            lCommitteeId=committee_id, sFromDate=ddmmyyyy(start), sToDate=ddmmyyyy(end))
         out = []
         for m in xml(text).iter("meeting"):
             mid, d = _t(m, "meetingid"), parse_date(_t(m, "meetingdate"))
@@ -194,10 +209,8 @@ class Client:
         """The whole meeting: agenda items with their minutes, attendance and documents. Recent meetings are fetched
         again until their minutes have had time to be approved."""
         recent = meeting_date is not None and (date.today() - meeting_date).days < self.refetch_days
-        path = self.cache / "meeting" / f"{meeting_id}.xml"
-        stale = recent and path.exists() and (time.time() - path.stat().st_mtime) > 86_400
-        text = self._cached(f"meeting/{meeting_id}.xml", "GetMeeting", refresh=refresh or stale,
-                            lMeetingId=meeting_id)
+        text = self._cached(f"meeting/{meeting_id}.xml", "GetMeeting", refresh=refresh,
+                            max_age_days=0.9 if recent else None, lMeetingId=meeting_id)
         return xml(text)
 
 
