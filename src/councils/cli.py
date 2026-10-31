@@ -8,6 +8,7 @@
     councils pilot                            # ingest and parse every pilot council
     councils report                           # the pilot's measurements (docs/PILOT.md)
     councils index && councils embed          # keyword index, then meaning search (slow; resumable)
+    councils backup --to /backups             # copy the state database (scheduled)
     councils search "bin collections" --control NOC
     councils ask "What have Labour-run councils decided about bin collections since 2023?"
 """
@@ -156,6 +157,18 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
 
 
 @app.command()
+def backup(to: str = typer.Option(..., help="folder for the backups"),
+           keep: int = typer.Option(14, help="how many to keep")) -> None:
+    """Copy the state database (spending, saved briefings, reports): the one thing that cannot be rebuilt."""
+    from pathlib import Path
+
+    from councils.backup import make_backup
+
+    out = make_backup(load_settings().data_dir / "state.db", Path(to), keep)
+    typer.echo(f"backup: {out}" if out else "nothing to back up yet (no state database)")
+
+
+@app.command()
 def serve(host: str = "127.0.0.1", port: int = 8000,
           behind_proxy: bool = typer.Option(False, help="trust the proxy's forwarded client address")) -> None:
     """Run the website and its API (build the pages first: cd web && npm run build)."""
@@ -164,8 +177,11 @@ def serve(host: str = "127.0.0.1", port: int = 8000,
     from councils.api.app import create_app
 
     s = load_settings()
+    # Behind the front door (Where MPs Stand's web server, in another container), the visitor's address comes in
+    # X-Forwarded-For, set by the front door from Cloudflare's header. The container's port is reachable only over the
+    # server's Docker networks, never from outside, so any sender of the header can be trusted.
     uvicorn.run(create_app(s), host=host, port=port, proxy_headers=behind_proxy,
-                forwarded_allow_ips="127.0.0.1" if behind_proxy else None)
+                forwarded_allow_ips="*" if behind_proxy else None, access_log=False)
 
 
 @app.command("pilot-sample")
