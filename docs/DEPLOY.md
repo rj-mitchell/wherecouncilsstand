@@ -58,9 +58,20 @@ Commands are run in `/opt/wherecouncilsstand/deploy`. Any `councils` command run
 
 * **Updates** run once a day (`councils-update.timer`, 03:17 UTC; `docs/OPERATIONS.md`).
 * **New code:** merge it into `main` on GitHub, then `bash /opt/wherecouncilsstand/deploy/update.sh`.
-* **Backups:** everything but the state database can be loaded again from the councils. That database (spending,
-  saved briefings, problem reports) is copied every night (`councils-backup.timer`) to
-  `/opt/wherecouncilsstand/deploy/backups`, the last 14 kept.
+* **Backups:** everything but the state database can be rebuilt. That database (spending, saved briefings,
+  reports) is copied every night (`councils-backup.timer`) to `/opt/wherecouncilsstand/deploy/backups`, the last 14 kept,
+  and to the charity's Backblaze B2 bucket, the last 60 kept there, beside Where MPs Stand's backups (each site's
+  have their own names, and each site deletes only its own old copies). To set up the off-site copy, once, copy the
+  bucket and key from Where MPs Stand's settings and check them:
+  ```bash
+  cd /opt/wherecouncilsstand/deploy
+  for k in BUCKET KEY_ID APPLICATION_KEY; do v=$(grep "^HANSARD_B2_$k=" /opt/hansardgpt/deploy/.env | cut -d= -f2-); \
+    sed -i "/^COUNCILS_B2_$k=/d" .env; echo "COUNCILS_B2_$k=$v" >> .env; done
+  docker compose run --rm -T app councils offsite                  # "ok": true
+  docker compose run --rm -T app councils backup --to /backups     # ends "Off-site copy: stored in ..."
+  ```
+  To get a backup back from B2: download the newest `councils-state-….sqlite.gz` from the bucket, unzip it, and copy it
+  into the data volume as `/data/state.db` with the site stopped.
 * **The privacy notice** (`web/privacy.html`) names Cloudflare, which carries the site's visits, and says requests
   are not logged (`councils serve` turns the access log off, and the front door keeps none). Keep it true when
   changing either.
