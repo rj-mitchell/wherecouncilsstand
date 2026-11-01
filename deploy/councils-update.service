@@ -1,16 +1,15 @@
 # Bring Where Councils Stand's data up to date: new and recently changed meetings from every council's Modern.gov
-# site, their named votes, the search index. Installed with councils-update.timer (see docs/OPERATIONS.md).
+# site, their named votes, the search index, and up to an hour of meaning search. Installed by deploy/update.sh with
+# councils-update.timer (docs/OPERATIONS.md).
 [Unit]
 Description=Where Councils Stand: update data
-Wants=network-online.target
-After=network-online.target
+After=docker.service
+Requires=docker.service
 
 [Service]
 Type=oneshot
-User=councils
-WorkingDirectory=/opt/wherecouncilsstand
-Environment=COUNCILS_DATA_DIR=/opt/wherecouncilsstand/data
-# Exits 1 when something needs attention; each run's summary is appended to data/updates.jsonl.
-ExecStart=/opt/wherecouncilsstand/.venv/bin/councils update --embed-minutes 60
+WorkingDirectory=/opt/wherecouncilsstand/deploy
+# Exits 1 when something needs attention; each run's summary is appended to /data/updates.jsonl.
+ExecStart=/usr/bin/docker compose run --rm -T app councils update --embed-minutes 60
 Nice=10
 TimeoutStartSec=4h

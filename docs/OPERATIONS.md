@@ -50,24 +50,18 @@ Nothing is ever deleted because a server didn't answer.
 
 ## Scheduling
 
-With systemd (the units are in `deploy/`):
+On the server (`docs/DEPLOY.md`), `councils-update.timer` runs it once a day, in a one-off container;
+`deploy/update.sh` installs it. Commands are run in `/opt/wherecouncilsstand/deploy`:
 
 ```bash
-sudo cp deploy/councils-update.service deploy/councils-update.timer /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now councils-update.timer
 systemctl list-timers councils-update.timer       # when it runs next
 journalctl -u councils-update.service -n 100      # the last run's output
-tail -n 5 /opt/wherecouncilsstand/data/updates.jsonl
+systemctl start councils-update.service           # run one now
+docker compose run --rm -T app tail -n 5 /data/updates.jsonl
 ```
 
 It runs at about 03:17 UTC. Councils publish minutes during the working day, and their servers are quietest at night.
-
-Or with cron:
-
-```cron
-17 3 * * *  cd /opt/wherecouncilsstand && .venv/bin/councils update >> data/update.log 2>&1
-```
+It is also clear of the other sites' updates on the shared server.
 
 ## When it reports a problem
 
@@ -103,16 +97,10 @@ uv sync --extra embed                               # the service, with the loca
 COUNCILS_ANTHROPIC_API_KEY=... uv run councils serve   # http://127.0.0.1:8000
 ```
 
-On a server, run it under systemd behind Caddy, which provides HTTPS (units in `deploy/`):
-
-```bash
-echo 'COUNCILS_ANTHROPIC_API_KEY=...' | sudo tee /etc/wherecouncilsstand.env && sudo chmod 600 /etc/wherecouncilsstand.env
-sudo cp deploy/councils-web.service /etc/systemd/system/ && sudo systemctl enable --now councils-web
-sudo cp deploy/Caddyfile /etc/caddy/Caddyfile && sudo systemctl reload caddy
-```
-
-`--behind-proxy` takes each visitor's address from `X-Forwarded-For`, which Caddy sets, and only when the request comes
-from 127.0.0.1. The address is turned into a daily visitor code at once and never stored (privacy notice).
+On the server it runs in a container behind the charity's shared front door (`docs/DEPLOY.md`). `--behind-proxy`
+takes each visitor's address from `X-Forwarded-For`, which the front door sets from Cloudflare's header; the
+container's port is reachable only over the server's Docker networks, never from outside. The address is turned into
+a daily visitor code at once and never stored, and requests are not logged (privacy notice).
 
 **Costs and limits** are in `config/settings.toml`, `[usage]`. Each new briefing is counted against a visitor's daily
 allowance (`per_visitor_daily_questions`) and the site's daily and monthly caps (`daily_spend_cap_usd`,
@@ -120,13 +108,15 @@ allowance (`per_visitor_daily_questions`) and the site's daily and monthly caps 
 answered from the cache until the data changes. Spending so far:
 
 ```bash
-sqlite3 data/state.db "select day, round(sum(cost_usd), 2) from usage group by day order by day desc limit 14"
+docker compose run --rm -T app python -c "import sqlite3; [print(*r) for r in sqlite3.connect('/data/state.db').execute(
+  'select day, round(sum(cost_usd), 2) from usage group by day order by day desc limit 14')]"
 ```
 
 **Reports and takedown requests** are in the same database:
 
 ```bash
-sqlite3 data/state.db "select id, at, kind, page, message from reports where closed_at is null"
+docker compose run --rm -T app python -c "import sqlite3; [print(*r) for r in sqlite3.connect('/data/state.db').execute(
+  'select id, at, kind, page, message from reports where closed_at is null')]"
 ```
 
 Closing a report deletes the reporter's email address (privacy notice). A saved briefing can be withdrawn with

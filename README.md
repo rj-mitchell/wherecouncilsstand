@@ -37,13 +37,15 @@ The website (`web/`, served by `councils serve`) has:
 - a page for every named vote, with each councillor's party on the date;
 - pages on how it works, corrections and takedown requests, and privacy.
 
-It isn't deployed yet. Its look is described in [`docs/DESIGN.md`](docs/DESIGN.md).
+It isn't deployed yet: [`docs/DEPLOY.md`](docs/DEPLOY.md) puts it on the charity's shared server. Its look is described
+in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 | File | What it is |
 |---|---|
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Product decisions made so far. They override everything else. |
 | [`docs/DATA.md`](docs/DATA.md) | Data sources, what the Modern.gov web service returns, and what was found in it |
 | [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | The daily update, and running the website: limits, costs, reports |
+| [`docs/DEPLOY.md`](docs/DEPLOY.md) | Putting the site on the charity's shared server: Docker, Cloudflare, the first load |
 | [`docs/DESIGN.md`](docs/DESIGN.md) | The website's look: the minute book |
 | [`docs/PILOT.md`](docs/PILOT.md) | The 20-council pilot, the full load, and hand checks of the votes |
 

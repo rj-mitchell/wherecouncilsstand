@@ -79,6 +79,6 @@ price_cache_read_per_mtok = 0.01
 
 [site]
 name = "Where Councils Stand"
-url = "https://wherecouncilsstand.uk"
+url = "https://wherecouncilsstand.com"
 # the donation page, once the charity is registered; nothing is shown while it is empty
 donate_url = ""
