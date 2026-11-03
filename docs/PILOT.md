@@ -194,6 +194,75 @@ Against (51)").
 more votes) should confirm the target. Each vote should keep linking to the council's own minutes, so a reader can
 check.
 
+### A check of 100 votes, then 100 more
+
+The 20-vote samples above could only show a wrong-side rate under 1 in 20. So once 70 councils of the full load were
+in, 100 votes were drawn at random from them (seed 2026, `councils pilot-check --all --n 100`) and checked against
+their passages, name by name. The target was still no member on the wrong side.
+
+| First 100 (seed 2026) | Votes |
+|---|---|
+| Right | about 41 |
+| A member missed, or a stray word read as a name | about 35 |
+| Not a vote: sponsors of a motion, or a section number read as a count | 4 |
+| Only a table's summary in the excerpt, so the names couldn't be checked | 12 |
+| **Members on the wrong side** | **9 votes, about 25 members** |
+
+The wrong-side errors had five causes, each now fixed with a test built from the real wording:
+
+- **The side after the names.** "Councillor Gunner voted against the recommendations (1). Councillors Andy Cooper,
+  Alison Cooper, and Greenway abstained from voting (3)." (Arun, four votes; Ipswich). The parser gave each side
+  word the names after it, so the abstainers went against. Such a side now takes the names before it.
+- **A heading that ran on.** "Against the motion None Abstentions Councillor Paul Gray Absent: Councillors Denton, …"
+  (Havant) was read as one heading, putting six absent members against. A heading's words now stop at another
+  side's words or a name.
+- **"Abstentions" with no colon.** "… and Kate Walsh Abstentions Patrick McGinley" (Hyndburn).
+- **A table inside a table.** Lincoln's table repeats its names in rows after a cell that holds whole lists, so
+  members appeared on both sides. Those rows are skipped, and a table that puts one name in two columns is left out.
+- **A count read as names.** "with 46 members voting for" (Bury) gave "for" to the motion's sponsors named before it.
+
+Two safeguards cover what the patterns miss:
+
+- **Counts must agree.** Where the minutes print a count for a side ("(24)", "Total 36", "With 37 in favour and 3
+  voting against"), the names read must match it, or the vote is left out. In the check, most of the votes with a
+  member on the wrong side printed a count that disagreed with the names read.
+- **A vote needs a "for" side** (an empty one, "For: None", is fine). In the check, a missing "for" side always meant
+  a list that hadn't been read.
+
+Names run together without a comma ("W Drew A Garratt", "Dorn: Farmer") are now split where each part is a
+different member. "The Chair of Council, Councillor Ian Pearson" and "the Mayor of Doncaster, Ros Jones" count as
+one member each, and a full stop for a comma ("Holroyd. Howarth") no longer ends a list.
+
+**A fresh 100 (seed 9090, 49 councils), drawn after those fixes:**
+
+| Second 100 (seed 9090) | Votes |
+|---|---|
+| Right | 60 |
+| A member or a side missed, or a stray word | about 20 |
+| Only a table's summary in the excerpt | 15 |
+| **Members on the wrong side** | **2 votes** |
+
+Both were the side-after-names pattern in words the first fix didn't cover: "Cllrs: A, B, … were in favour. Cllrs:
+C, D, … were against" (South Norfolk, 19 members), and "For the Amendment:- S Arif; Brown, Gartside, Harris, Hussain,
+voting for; A Arif, … Y Wright voting against" (Bury, 42 members). Both are now read correctly.
+
+The check also found councillors removed from excerpts as if they were members of the public. "Richard Long, TD" and
+"Councillor Miss Phillipa Tatham BA (Hons)" gave the surnames "td" and "hons", so the councillor wasn't recognised.
+191 of 10,829 attendance names were affected; letters, bracketed words and styles are now passed over.
+
+Across the 88 councils loaded at the time, the changes read 7.8% fewer named votes (2,489 to 2,296), mostly
+votes now left out because their counts disagree, and cut names matched to no member from 3,034 to 2,744.
+
+Every wrong-side vote in both samples is now read correctly or left out. But each sample found a pattern the one
+before it hadn't, so the target isn't yet shown on an untouched sample. Other faults the checks found, which
+lose information but don't misplace anyone:
+
+- The result is often missing where the minutes say only "RESOLVED", and twice it was taken from the amendment
+  just before.
+- Votes between candidates for a post ("Those in favour of Councillor X – 6 …") are read as a vote "for".
+- About one vote in seven is a table whose excerpt shows only its summary, so a reader can't check the names on
+  the page; the link to the minutes is the check.
+
 ## Declarations of interest
 
 **1,116 declarations, 95% matched to a member.** The kind of interest is as the minutes give it: mostly "personal"
@@ -303,8 +372,9 @@ of sources whatever the size of the archive, so the cost per briefing will be cl
 2. ~~Remove the names of people who aren't councillors from anything shown.~~ Done; a larger check of misses is
    still to do.
 3. ~~Load the remaining councils~~ (213 of 215 loaded), and record each council's licence statement.
-4. ~~Check a fresh sample of 50 votes by hand against a set target.~~ Done across all councils: three wrong-side
-   errors found and fixed, then none in a fresh 20. A check of 100 or more is still to do before launch.
+4. ~~Check a fresh sample of 50 votes by hand against a set target.~~ Done across all councils, then twice with
+   100 votes: 9 votes with members on the wrong side, fixed; then 2 in a fresh 100, fixed. A third untouched sample
+   should confirm the target before launch.
 5. ~~Adapt Where Countries Stand's index and briefing engine to council minutes, with "the minutes record that…"
    wording (docs/DECISIONS.md, 7).~~ Done, from the command line.
 6. Retry the 25 councils that blocked automated requests and the 45 that were unreachable, from another network.
