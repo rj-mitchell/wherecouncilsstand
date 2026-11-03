@@ -250,12 +250,31 @@ The check also found councillors removed from excerpts as if they were members o
 "Councillor Miss Phillipa Tatham BA (Hons)" gave the surnames "td" and "hons", so the councillor wasn't recognised.
 191 of 10,829 attendance names were affected; letters, bracketed words and styles are now passed over.
 
-Across the 88 councils loaded at the time, the changes read 7.8% fewer named votes (2,489 to 2,296), mostly
-votes now left out because their counts disagree, and cut names matched to no member from 3,034 to 2,744.
+**A third 100 (seed 31337, 50 councils, 93 of them votes not seen before), drawn after those fixes:**
 
-Every wrong-side vote in both samples is now read correctly or left out. But each sample found a pattern the one
-before it hadn't, so the target isn't yet shown on an untouched sample. Other faults the checks found, which
-lose information but don't misplace anyone:
+| Third 100 (seed 31337) | Votes |
+|---|---|
+| Right | about 75 |
+| A member missed, or a stray word | about 14 |
+| Only a table's summary in the excerpt | 9 |
+| **Members on the wrong side** | **2 votes** |
+
+Durham spelt the heading "Abstenions", so its two abstainers were read as against; this spelling is now read.
+Kirklees's passage began with the previous vote's abstentions, which were read as this vote's. That is now caught
+by a structural rule rather than a pattern: **a vote that puts one member, or one name, on two sides is left out
+entirely.** Every Kirklees vote misread this way had members on two sides. (Before, only that member was unlinked.)
+
+So the rate of votes with a member on the wrong side went from 9 in 100 to 2 in 100, and stayed at 2 in the third
+sample, each time from a wording not seen before. Each of those is now fixed or left out. The rules that don't
+depend on wording (counts must agree, a "for" side is needed, no member on two sides) would have caught at least 2 of the
+4 wrong-side votes in the last two samples (South Norfolk's printed totals, Kirklees's members on two sides). **The target of none is not yet met on an untouched sample**; at this rate
+expect about 1 vote in 100 with an error the rules don't catch. Every vote links to the council's own minutes, and the
+corrections route covers what slips through.
+
+Across the 88 councils loaded at the time, all these changes read 9.7% fewer named votes (2,489 to 2,248), mostly
+votes now left out by the three rules, and cut names matched to no member from 3,034 to 2,520.
+
+Other faults the checks found, which lose information but don't misplace anyone:
 
 - The result is often missing where the minutes say only "RESOLVED", and twice it was taken from the amendment
   just before.
@@ -373,8 +392,9 @@ of sources whatever the size of the archive, so the cost per briefing will be cl
    still to do.
 3. ~~Load the remaining councils~~ (213 of 215 loaded), and record each council's licence statement.
 4. ~~Check a fresh sample of 50 votes by hand against a set target.~~ Done across all councils, then twice with
-   100 votes: 9 votes with members on the wrong side, fixed; then 2 in a fresh 100, fixed. A third untouched sample
-   should confirm the target before launch.
+   100 votes three times: 9, then 2, then 2 votes with members on the wrong side, each fixed or now left out. The
+   target of none isn't met on an untouched sample; the owner should decide whether about 1 in 100 is acceptable
+   for launch, with the corrections route, or whether another round is needed.
 5. ~~Adapt Where Countries Stand's index and briefing engine to council minutes, with "the minutes record that…"
    wording (docs/DECISIONS.md, 7).~~ Done, from the command line.
 6. Retry the 25 councils that blocked automated requests and the 45 that were unreachable, from another network.
