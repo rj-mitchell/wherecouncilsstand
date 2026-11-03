@@ -357,3 +357,13 @@ def test_heading_naming_the_question_needs_no_colon():
     text = ("A recorded vote was taken as follows: For the motion: Councillors Barlow and Williams. Against the motion "
             "Councillors Ward and Gill. The motion was declared carried.")
     assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["27", "28"]}
+
+
+def test_full_stop_for_a_comma_inside_a_list():
+    """Found by the 100-vote check (docs/PILOT.md): "Holroyd. Howarth" dropped Howarth."""
+    from councils.parse.votes import split_names
+
+    assert split_names("The Mayor; Councillors Heslop, Holroyd. Howarth, C. L. B. Hughes and Wright") == \
+        ["The Mayor", "Heslop", "Holroyd", "Howarth", "C. L. B. Hughes", "Wright"]
+    assert split_names("Barnard, Smith. Total, and Jones") == ["Barnard", "Smith", "Jones"]
+    assert split_names("Barnard, D Birkinshaw and T Spencer. Total") == ["Barnard", "D Birkinshaw", "T Spencer"]

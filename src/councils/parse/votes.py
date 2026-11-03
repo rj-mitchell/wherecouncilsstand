@@ -195,6 +195,10 @@ def _unrun(part: str) -> list[str]:
 _SENTENCE_END = re.compile(r"(?<=\w\w)(?<!\bMr)(?<!\bMrs)(?<!\bMs)(?<!\bDr)(?<!\bSt)(?<!\bCllr)\.\s")
 
 
+_LIST_HEADING = re.compile(r"(?:total|totals|none|nil|for|against|abstain\w*|absent|apologies|carried|lost|motion|"
+                           r"amendment|resolved|note|the|voting|votes?)\b", re.I)
+
+
 def split_names(segment: str) -> list[str]:
     """"The Mayor (Councillor Markham), and Councillors Barnard, D Birkinshaw and Smith." -> names."""
     s = re.sub(r"[(\[]\s*\d+\s*(?:votes?|members?|total)?\s*[)\]]", " ", segment, flags=re.I)
@@ -212,8 +216,14 @@ def split_names(segment: str) -> list[str]:
     if len(parts) == 1 and len(parts[0].split()) > 4 and all(w[0].isupper() for w in parts[0].split()):
         parts = _unrun(parts[0])
     names = []
-    for p in parts:
-        p = _SENTENCE_END.split(p)[0].strip(" .:-–")    # "T Spencer. Total": the list ended at the full stop
+    for i, p in enumerate(parts):
+        bits = _SENTENCE_END.split(p)
+        if len(bits) == 2 and i < len(parts) - 1 and len(bits[1].split()) <= 3 and ":" not in bits[1] and \
+                not _LIST_HEADING.match(bits[1].strip()) and looks_like_name(bits[1].strip()):
+            # "Heslop, Holroyd. Howarth, C. Hughes": a full stop for a comma, with the list going on after it
+            names += [b.strip(" .:-–") for b in bits if b.strip(" .:-–") and looks_like_name(b.strip(" .:-–"))]
+            continue
+        p = bits[0].strip(" .:-–")    # "T Spencer. Total": the list ended at the full stop
         if not p or _NONE.match(p) or not _HONOURS.sub(" ", p).strip(" .,"):
             continue                                # "None"; "MBE" or "Mrs" split from a name set out in columns
         if len(p) > 60 or not re.search(r"[A-Za-z]", p) or re.search(r"\d", p) or not looks_like_name(p):
