@@ -384,6 +384,23 @@ Problems found only at this scale, now fixed:
 **AI costs depend on briefings asked for, not on how many councils are covered.** A briefing reads the same number
 of sources whatever the size of the archive, so the cost per briefing will be close to Where They Stand's.
 
+## Back to February 2014?
+
+Decision 4 names extending back to 25 February 2014, when English councils had to start recording named budget
+votes, as the next step. To see what that would add, the 20 pilot councils were loaded for 25 February 2014 to
+30 April 2018 only, into a separate store:
+
+| | Councils |
+|---|---|
+| Minutes online for 2014-2018 | 13 of 20 (1,286 meetings) |
+| ...with named votes | 9 (127 votes; Wirral 41, South Oxfordshire 18, Guildford 17, Stratford-on-Avon 14) |
+| ...with none (Lewisham, Staffordshire, and the three Welsh councils, which the 2014 rule doesn't cover) | 4 |
+| Nothing online before May 2018 (Rother, Hart, Darlington, Northumberland, Manchester, Blaenau Gwent; Westmorland and Furness didn't exist) | 7 |
+
+So extending would add about four years for roughly two councils in three, and nothing for the rest. That makes
+coverage uneven, which decision 4 chose May 2018 to avoid. Each council's page already shows its own coverage
+dates, so it can be done; whether to do it is the owner's decision.
+
 ## Next steps
 
 1. ~~Read minutes that are published only as PDF documents.~~ Done where councils serve documents; the rest need
