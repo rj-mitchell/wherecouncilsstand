@@ -30,14 +30,16 @@ REMOVED = "[name removed]"
 _PART = r"(?:[A-Z][a-z'’]{0,2}[A-Z][a-z'’]+|[A-Z][a-z'’]+)"        # "Smith", "McInroy", "MacDonald", "O'Brien"
 _NAME_WORD = rf"{_PART}(?:-{_PART})?"
 _TITLED = re.compile(
-    rf"\b(?:Mr|Mrs|Ms|Miss|Mx|Dr|Prof|Professor|Sir|Dame|Rev|Revd|Father|Canon)\.?\s+"
+    rf"\b(?:Mr|Mrs|Ms|Miss|Mx|Dr|Prof|Professor|Sir|Dame|(?:(?:Right|Rt|Very)\.?\s+)?(?:Reverend|Reverand|Revd|Rev)|"
+    rf"Father|Canon|Bishop)\.?\s+"
     rf"(?:[A-Z]\.?\s*){{0,3}}{_NAME_WORD}(?:\s+{_NAME_WORD}){{0,2}}"
 )
 _ROLE_WORDS = (r"Chief|Director|Head|Assistant|Corporate|Strategic|Interim|Monitoring|Section 151|Democratic|Service|"
                r"Senior|Principal|Deputy Chief|Executive Director|Officer|Manager|Lead|Solicitor|Clerk|Treasurer|"
                r"Leader of|Programme|Planning|Legal|Finance")
 _FULL = rf"{_NAME_WORD}(?:\s+{_NAME_WORD}){{1,2}}"
-_WITH_ROLE = re.compile(rf"\b(?P<name>{_FULL})(?=\s*\((?:the\s+)?(?:{_ROLE_WORDS})|,\s+(?:the\s+)?(?:{_ROLE_WORDS})\b)")
+_WITH_ROLE = re.compile(rf"\b(?P<name>{_FULL})(?=\s*\((?:the\s+)?(?:{_ROLE_WORDS})|,\s+(?:the\s+)?(?:{_ROLE_WORDS})\b|"
+                        rf"\s+the\s+(?:{_ROLE_WORDS})\b)")   # "David Armiger the Chief Executive" (found by the check)
 _SPEAKING = re.compile(
     rf"(?<!Councillor )(?<!Councillors )(?<!Cllr )(?<!Cllr\. )\b(?P<name>{_FULL})\s+"
     r"(?=asked|spoke|addressed|presented|submitted|read out|thanked|put (?:a|the|her|his|their) question|"
@@ -53,6 +55,15 @@ _DESCRIBED = re.compile(
     rf"(?:,|:|\s+-|\s+–)?\s+(?P<name>(?:(?:Mr|Mrs|Ms|Miss|Mx|Dr)\.?\s+)?(?:[A-Z]\.?\s*){{0,3}}{_FULL}|"
     rf"(?:Mr|Mrs|Ms|Miss|Mx|Dr)\.?\s+(?:[A-Z]\.?\s*){{0,3}}{_NAME_WORD})"
 )
+# A question's header: "Question 1 From: Marcus Simpson To: Cabinet Member for ..." (found by the check)
+_HEADER = re.compile(rf"\b(?:From|Asked by|Questioner|Submitted by|Petitioner|Speaker)\s*:\s*"
+                     rf"(?P<name>(?:[A-Z]\.?\s+){{0,3}}{_NAME_WORD}(?:\s+(?!To\b){_NAME_WORD}){{0,2}})\b")
+# Initials and a surname after the same words as _OBJECT ("Question from M J Ray"), and "read by Lee Stevens"
+_INITIALS = re.compile(rf"\b(?i:question from|questions from|petition from|deputation from|submitted by|read by|"
+                       rf"read out by)\s+(?P<name>(?:[A-Z]\.?\s+){{1,3}}{_NAME_WORD}|{_FULL})\b")
+# A speaker in a transcript, named with their area: "Trevor Hammon (Ifield) It's really a question ..." (found by the
+# check). A councillor written this way is kept by their surname, like any other.
+_TRANSCRIPT = re.compile(rf"(?m)^\s*(?P<name>{_FULL})\s*\([A-Z][a-z]+(?:[ -][A-Z][a-z]+)?\)\s+(?=[A-Z])")
 # Words that make a capitalised phrase a place or an organisation, not a person. Words that are also common surnames
 # (Green, Hill, Hall, Park, Lane, West ...) only count where they can't be one: first, for the second list.
 _ORG_WORDS = {"road", "street", "avenue", "council", "borough", "county", "district", "centre", "center", "school",
@@ -125,7 +136,7 @@ def redact(text: str, councillors: set[str]) -> tuple[str, int]:
         spans.append((start, end))
         return True
 
-    for rx in (_TITLED, _WITH_ROLE, _SPEAKING, _OBJECT, _DESCRIBED):
+    for rx in (_TITLED, _WITH_ROLE, _SPEAKING, _OBJECT, _DESCRIBED, _HEADER, _INITIALS, _TRANSCRIPT):
         for m in rx.finditer(text):
             name = m.group("name") if "name" in rx.groupindex else m.group(0)
             start = m.start("name") if "name" in rx.groupindex else m.start()
