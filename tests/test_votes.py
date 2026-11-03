@@ -367,3 +367,67 @@ def test_full_stop_for_a_comma_inside_a_list():
         ["The Mayor", "Heslop", "Holroyd", "Howarth", "C. L. B. Hughes", "Wright"]
     assert split_names("Barnard, Smith. Total, and Jones") == ["Barnard", "Smith", "Jones"]
     assert split_names("Barnard, D Birkinshaw and T Spencer. Total") == ["Barnard", "D Birkinshaw", "T Spencer"]
+
+
+# Found by the 100-vote check (docs/PILOT.md): each of these put members on the wrong side, or read a vote that
+# wasn't there.
+
+def test_side_given_after_the_names():
+    text = ("A recorded vote was requested. Those voting for recommendations (1) and (2) were Councillors Carr, Smith "
+            "and Markham (3). Councillor Andrews voted against the recommendations (1). Councillors P Birkinshaw and "
+            "D Birkinshaw abstained from voting (2). The Committee RESOLVED that the report be noted.")
+    assert by_side(votes.parse(text, MEMBERS)) == {"for": ["3", "4", "5"], "against": ["6"], "abstain": ["1", "2"]}
+    text = ("Those voting for were Councillors Carr, Smith and Andrews [3]. No Councillors voted against the "
+            "recommendations. Councillors Markham and Lowe-Flello abstained from voting [2]. The Council RESOLVED.")
+    assert by_side(votes.parse(text, MEMBERS)) == {"for": ["3", "4", "6"], "abstain": ["5", "7"]}
+
+
+def test_none_and_absent_are_not_votes():
+    text = ("the vote on this resolution was recorded as follows: For the Motion: Councillor Barlow Councillor Williams "
+            "Councillor Bailey Against the motion None Abstentions Councillor Ian Gill Absent: Councillors Ward and "
+            "Kohler.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24", "25"], "abstain": ["28"]}
+
+
+def test_abstentions_heading_without_a_colon():
+    text = ("For: Tom Barlow and Ann Williams Against: Jo Bailey and Sue Ward Abstentions Ian Gill The AMENDMENT was "
+            "therefore LOST.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["25", "27"], "abstain": ["28"]}
+
+
+def test_names_without_commas_between_them():
+    text = "For (3): Barlow, Williams Bailey. Against (2): Ward: Kohler. The motion was carried."
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24", "25"], "against": ["27", "26"]}
+
+
+def test_count_that_disagrees_with_the_names_leaves_the_vote_out():
+    text = "For (3): Barlow and Williams. Against (1): Ward. The motion was carried."
+    assert votes.parse(text, TOWN) == []
+    text = ("Councillors Barlow, Williams and Bailey voted in favour of the recommendations. Cllr Ward and Kohler "
+            "voted against the recommendations. With 4 in favour and 2 voting against it was RESOLVED.")
+    assert votes.parse(text, TOWN) == []
+
+
+def test_a_count_of_members_is_not_the_names_before_it():
+    text = ("Council considered a motion in the names of Cllr Tom Barlow, Cllr Ann Williams and Cllr Jo Bailey The "
+            "motion was moved by Councillor Barlow and on being put; with 45 members voting for; 1 member voting "
+            "against and the Mayor and six members abstaining, the Mayor declared the motion carried.")
+    assert votes.parse(text, TOWN) == []
+
+
+def test_role_written_before_the_councillor_and_an_elected_mayor():
+    members = TOWN + [Member("30", "Mayor Ros Jones", "Elected Mayor")]
+    text = ("a recorded vote was taken, which was declared as follows:- For - 4 The Chair of Council, Councillor Tom "
+            "Barlow, the Mayor of Doncaster, Ros Jones, and Councillors Ann Williams and Jo Bailey. Against - 0 "
+            "Abstain – 1 Councillor Ian Gill. The recommendations were declared CARRIED.")
+    assert by_side(votes.parse(text, members)) == {"for": ["23", "30", "24", "25"], "abstain": ["28"]}
+
+
+def test_table_inside_a_table_is_not_read_twice():
+    rows = [["For", "Against", "Abstention"],
+            ["Councillor Barlow\n\n\nCouncillor Williams", "Councillor Ward", ""],
+            ["Councillor Barlow"], ["Councillor Williams"], ["Councillor Ward"]]
+    assert by_side(votes.parse_tables([rows], TOWN)) == {"for": ["23", "24"], "against": ["27"]}
+    clash = [["For", "Against", "Abstention"], ["Councillor Barlow", "Councillor Ward", ""],
+             ["Councillor Ward", "", ""]]
+    assert votes.parse_tables([clash], TOWN) == []
