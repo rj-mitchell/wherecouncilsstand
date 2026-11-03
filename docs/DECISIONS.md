@@ -5,7 +5,7 @@ made.
 
 | # | Topic | Decision |
 |---|---|---|
-| 1 | Name and owner | **Where Councils Stand**, a project of the Where They Stand Foundation from day one, with its own domain. Listed under "Planned" in the Charity Commission application. |
+| 1 | Name and owner | **Where Councils Stand**, a project of the charity Where They Stand from day one, with its own domain. Listed under "Planned" in the Charity Commission application. |
 | 2 | Coverage | Principal councils in **England and Wales** whose minutes are published through Civica's **Modern.gov**. Councils on other systems are left out for now; the reason is published. Scotland and Northern Ireland are out of scope. |
 | 3 | Meetings | **Full council and cabinet** (or executive), including annual, budget and extraordinary council meetings and a mayor and cabinet. Not cabinet sub-committees, advisory panels or decisions by individual cabinet members. For councils run under a committee system, which have no cabinet: the committees their constitution gives the main policy and budget decisions, usually a policy and resources committee (`committees.py`, and `data_static/committees.csv` where a council's are named otherwise). A council that changed systems keeps whichever committees it had at the time. |
 | 4 | How far back | **May 2018** for every council, so coverage is even. Each council's page shows its own coverage dates. Extending back to **25 February 2014**, when English councils had to start recording named budget votes, is the next step. |
