@@ -431,3 +431,18 @@ def test_table_inside_a_table_is_not_read_twice():
     clash = [["For", "Against", "Abstention"], ["Councillor Barlow", "Councillor Ward", ""],
              ["Councillor Ward", "", ""]]
     assert votes.parse_tables([clash], TOWN) == []
+
+
+def test_side_given_after_the_names_with_were_or_voting():
+    """Found by the second 100-vote check (docs/PILOT.md)."""
+    text = ("Cllrs: Barlow, Williams, Bailey, were in favour. Cllrs: Ward, Kohler, were against With 3 in favour and 2 "
+            "against, it was RESOLVED to accept the report.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24", "25"], "against": ["27", "26"]}
+    text = ("For the Amendment:- T Barlow; Williams, Bailey, voting for; Ward, Kohler and Gill voting against. The "
+            "amendment was lost.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24", "25"], "against": ["27", "26", "28"]}
+
+
+def test_a_vote_with_no_for_side_is_left_out():
+    text = "Against: Councillors Ward and Kohler. Abstain: Councillor Gill. The motion was carried."
+    assert votes.parse(text, TOWN) == []

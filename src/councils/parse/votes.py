@@ -19,7 +19,7 @@ from dataclasses import dataclass
 
 log = logging.getLogger(__name__)
 _OBJ = r"(?:original |substantive |amended |revised |above )?(?:motion|amendment|recommendations?|resolutions?|budget|proposals?|report|substantive motion|item|objection)"
-_TRAIL = rf"(?:\s+(?:the\s+)?{_OBJ}\s*\(\w{{1,3}}\)(?:\s*(?:,|and)\s*\(\w{{1,3}}\))*|\s+(?:the|this|that)\s+(?:(?!\b(?:are|were|was|is|be|been|recorded|follows|below|vot\w+|none|nil|abstain\w*|abstention\w*|absent|against|councill?ors?|cllrs?)\b)[^:;.()]){{1,90}}?(?=\s*:(?!\d))|\s+(?:on\s+|from\s+)?(?:the|this|that)\s+{_OBJ}(?:\s+(?:to|for|on|relating to|in respect of)\s[^:;.()]{{1,90}}?(?=\s*:))?)?(?:\s+as amended)?(?:\s+below)?(?:,?\s+(?:being\s+)?present at the time of (?:the )?vot(?:e|ing))?(?:\s+were)?"
+_TRAIL = rf"(?:\s+(?:the\s+)?{_OBJ}\s*\(\w{{1,3}}\)(?:\s*(?:,|and)\s*\(\w{{1,3}}\))*|\s+(?:the|this|that)\s+(?:(?!\b(?:are|were|was|is|be|been|recorded|follows|below|vot\w+|none|nil|abstain\w*|abstention\w*|absent|against|councill?ors?|cllrs?)\b)[^:;.()]){{1,90}}?(?=\s*:(?!\d))|\s+(?:on\s+|from\s+)?(?:the|this|that|these|those)\s+{_OBJ}(?:\s+(?:to|for|on|relating to|in respect of)\s[^:;.()]{{1,90}}?(?=\s*:))?)?(?:\s+as amended)?(?:\s+below)?(?:,?\s+(?:being\s+)?present at the time of (?:the )?vot(?:e|ing))?(?:\s+were)?"
 _COUNT = r"(?:\s*\(\s*\d+\s*(?:total|votes?|members)?\s*\))?(?:\s*[-–]?\s*\d+\s*(?:members|councillors|votes)?)?"
 _WHO = r"(?:(?:those|members|councillors)\s+(?:who\s+)?)?"
 SIDES = {
@@ -370,8 +370,10 @@ def _stragglers(flat: str, names_end: int, next_start: int) -> list[tuple[str, s
 _TRAILING = re.compile(r"^(?:(?:those|members|councillors)\s+(?:who\s+)?)?(?:voted|abstained)\b", re.I)
 # The same, ending at the end of its sentence rather than with a colon: "... and Bulman voted against the
 # recommendations. With 37 in favour ..."
-_TRAILING_HEAD = re.compile(r"\b(?:voted\s+(?P<against>against)|voted\s+(?P<for>for|in\s+favour)|(?P<abstain>abstained))\b"
-                            r"[^.;:()\[\]]{0,80}?(?:[(\[]\s*\d+\s*[)\]])?\s*(?:\.\s+|\.?$|;\s*)", re.I)
+_TRAILING_HEAD = re.compile(r"\b(?:(?:voted|voting|were|was)\s+(?P<against>against)|(?:voted|voting|were|was)\s+"
+                            r"(?P<for>for|in\s+favour)|(?P<abstain>abstained))\b"
+                            r"[^.;:()\[\]]{0,80}?(?:[(\[]\s*\d+\s*[)\]])?\s*(?:\.\s+|\.?$|;\s*|,\s+(?=it\b)|(?=\s+(?-i:[A-Z])))",
+                            re.I)
 
 
 @dataclass(frozen=True)
@@ -390,6 +392,11 @@ class _Head:
 
     def group(self, _: int = 0) -> str:
         return self.text
+
+
+def _is_trailing(h) -> bool:
+    """A side given after its names: found by _TRAILING_HEAD, or a heading like "Councillor Gunner voted against"."""
+    return isinstance(h, _Head) or bool(_TRAILING.match(h.group(0)))
 
 
 # "With 37 in favour and 3 voting against": the totals given in a sentence after the lists
@@ -420,7 +427,7 @@ def _resplit(name: str, matcher: Matcher) -> list[str]:
     return [name]
 
 _LEAD = re.compile(r"^\s*(?:the\s+(?:(?:lord|deputy|civic)\s+)*(?:mayor|chair(?:man)?)\b|(?:councill?ors?|cllrs?)\b)", re.I)
-_LEAD_SPLIT = re.compile(r"(?<=\w\w)(?<!\bMr)(?<!\bMrs)(?<!\bMs)(?<!\bDr)(?<!\bSt)(?<!\bCllr)\.\s|[)\]]\s*\.?\s+(?=[A-Z])|[;:?]\s")
+_LEAD_SPLIT = re.compile(r"(?<=\w\w)(?<!\bMr)(?<!\bMrs)(?<!\bMs)(?<!\bDr)(?<!\bSt)(?<!\bCllr)\.\s|[)\]]\s*\.?\s+(?=[A-Z])|[:?]\s")
 # A count printed after the names: "... and Stanley (5)", "... Mrs Wright - total 36"
 _TAIL_COUNT = re.compile(r"(?:[(\[]\s*(\d+)\s*[)\]]|\btotal\s*[:=-]?\s*(\d+))\s*\.?(?:\s+[A-Z]\w*)?\s*$", re.I)
 
@@ -431,7 +438,10 @@ def _lead_names(flat: str, start: int, end: int) -> tuple[int, list[str]] | None
     pieces = list(_LEAD_SPLIT.finditer(before))
     at = pieces[-1].end() if pieces else 0
     lead = before[at:]
-    if not _LEAD.match(lead):
+    parts = [p.strip(" .") for p in re.split(r",|;|\band\b|&", re.sub(r"^\s*(?:councill?ors?|cllrs?)\b\.?", "", lead,
+                                                                       flags=re.I)) if p.strip(" .")]
+    if not _LEAD.match(lead) and not (parts and all(looks_like_name(p) for p in parts)
+                                      and not re.search(r"\b(?:members|those|all|councillors|cllrs)\s*$", lead, re.I)):
         return None
     names = split_names(lead)
     return (start + at, names) if names else None
@@ -441,10 +451,11 @@ def _leads(flat: str, heads: list, matcher: Matcher) -> dict[int, tuple[int, lis
     """For each side given after its names, the names and where they start (None if no names come before it)."""
     leads: dict[int, tuple[int, list[str]] | None] = {}
     for n, h in enumerate(heads):
-        if not _TRAILING.match(h.group(0)) or re.search(r"[:\-–—]\s*$", h.group(0)):
+        if not _is_trailing(h) or re.search(r"[:\-–—]\s*$", h.group(0)):
             continue
         if re.match(r"(?:councillors|members)\b", h.group(0), re.I) and \
-                re.search(r"\bno\s*$", flat[max(0, h.start() - 4):h.start()], re.I):
+                re.search(r"\bno\s*$", flat[max(0, h.start() - 4):h.start()], re.I) or \
+                re.search(r"\bno\s+(?:councillors|members)\s*$", flat[max(0, h.start() - 20):h.start()], re.I):
             leads[n] = (h.start(), [])               # "No Councillors voted against the recommendations."
             continue
         lead = _lead_names(flat, heads[n - 1].end() if n else 0, h.start())
@@ -461,10 +472,18 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
     # A side given after its names ("Councillor Gunner voted against") takes the names before it, and the list
     # before it ends where they start; one with no names before it says nothing about who voted.
     matcher = Matcher(members)
+    trailing = [_Head(m.start(), m.end(), m.group(0), m.lastgroup or "") for m in _TRAILING_HEAD.finditer(flat)]
+    accepted: list[_Head] = []
+    for t in trailing:      # each needs names before it, back to the heading or side before it
+        bound = max([h.end() for h in heads if h.end() <= t.start()] + [k.end() for k in accepted] + [0])
+        if _lead_names(flat, bound, t.start()) or \
+                re.search(r"\bno\s+(?:councillors|members)\s*$", flat[max(0, t.start() - 20):t.start()], re.I):
+            accepted.append(t)
+    trailing = accepted
+    heads = [h for h in heads if _is_trailing(h) or
+             not any(t.start() < h.end() and h.start() < t.end() for t in trailing)]
     taken = [(h.start(), h.end()) for h in heads]
-    for m in _TRAILING_HEAD.finditer(flat):
-        if not any(a < m.end() and m.start() < b for a, b in taken):
-            heads.append(_Head(m.start(), m.end(), m.group(0), m.lastgroup or ""))
+    heads += [t for t in trailing if not any(a < t.end() and t.start() < b for a, b in taken)]
     heads.sort(key=lambda h: h.start())
     leads = _leads(flat, heads, matcher)
     # one with no names before it says nothing about who voted, and is no heading at all
@@ -484,6 +503,8 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
         end = heads[n + 1].start() if n + 1 < len(heads) else len(flat)
         if leads.get(n + 1):
             end = leads[n + 1][0]
+            if end <= h.end() + 3:
+                continue
         segment = flat[h.end():end]
         stop = _STOP.search(segment)
         while stop and not re.search(r"[A-Za-z]", segment[:stop.start()]):
@@ -496,6 +517,8 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
         if not re.search(r"(?:[:\-–—)\d]|\)\.)\s*$", h.group(0)) \
                 and not re.search(rf"vot|favour|those|members|{_OBJ}", h.group(0), re.I) \
                 and not re.fullmatch(r"(?-i:Abstentions?|Against)\s+", h.group(0)) \
+                and not (re.fullmatch(r"(?-i:For|Against|Abstain|Abstentions?)\s+", h.group(0))
+                         and re.match(r"(?:councillors|cllrs)\b", flat[h.end():], re.I)) \
                 and not re.match(r"\s*(?:none|nil)\b", flat[h.end():], re.I):
             # "For Councillor Gordon": a heading needs a colon unless it says "voting" or names the question
             continue
@@ -544,7 +567,7 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
     for entry in sides:
         # a side named again starts a new vote, and so does one far from the last list (another vote's lists)
         if not blocks or entry[1] in {e[1] for e in blocks[-1]} or \
-                entry[0].start() - blocks[-1][-1][3] > 200 and not _TRAILING.match(entry[0].group(0)):
+                entry[0].start() - blocks[-1][-1][3] > 200 and not _is_trailing(entry[0]):
             blocks.append([])
         blocks[-1].append(entry)
 
@@ -553,6 +576,11 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
     # A side whose printed count differs from the names read was misread (a name lost or taken from another list):
     # leave the vote out rather than risk a member on the wrong side (docs/PILOT.md).
     misread = False                              # a vote found but left out: don't read the text another way
+    for entries in blocks:
+        if "for" not in {e[1] for e in entries}:
+            log.debug("no for side: %s", [(e[1], e[2]) for e in entries])
+            misread = True
+    blocks = [entries for entries in blocks if "for" in {e[1] for e in entries}]
     for entries in blocks:
         for e in entries:
             if e[4] is not None and e[4] != len(e[2]):
