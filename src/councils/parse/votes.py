@@ -25,14 +25,14 @@ _WHO = r"(?:(?:those|members|councillors)\s+(?:who\s+)?)?"
 SIDES = {
     "for": rf"{_WHO}(?:votes?\s+|voting\s+|voted\s+)?(?:in\s+favour(?:\s+of)?|for){_TRAIL}{_COUNT}",
     "against": rf"{_WHO}(?:votes?\s+|voting\s+|voted\s+)?(?:against|againt){_TRAIL}{_COUNT}",
-    "abstain": rf"{_WHO}(?:voting\s+to\s+)?(?:abstentions?|abtentions?|absentions?|abstained|abstaining|abstain|abstained from voting)(?:\s+(?:from|on)\s+the\s+vote)?{_TRAIL}{_COUNT}",
+    "abstain": rf"{_WHO}(?:voting\s+to\s+)?(?:abstentions?|abtentions?|absentions?|abstenions?|abstensions?|abstained|abstaining|abstain|abstained from voting)(?:\s+(?:from|on)\s+the\s+vote)?{_TRAIL}{_COUNT}",
     # not a side: ends the list before it ("Not voting: Councillors Bailey ..."; "Absent: ...")
     "none": rf"{_WHO}(?:(?:present\s+)?not\s+voting|did\s+not\s+vote|absent|not\s+present)(?:\s+(?:from|in)\s+the\s+(?:vote|meeting|chamber|room))?{_COUNT}",
 }
 HEADING = re.compile(
     # a heading ends with a colon or dash, or runs straight into "Councillors ..."
     "|".join(rf"(?P<{side}>(?<![\w-]){pattern}(?:\s*(?::-|:|–(?!\d)|—|-(?!\d))\s*|\.?\s+(?=councill?ors?\b|cllrs?\b)|(?<=\))\s*\.?(?:\s+|$)"
-             rf"|(?:(?<=(?-i:Abstentions))|(?<=(?-i:Abstention))|(?<=(?-i:Against)))\s+(?=(?-i:[A-Z][a-z]))"
+             rf"|(?:(?<=(?-i:Abstentions))|(?<=(?-i:Abstention))|(?<=(?-i:Abstenions))|(?<=(?-i:Against)))\s+(?=(?-i:[A-Z][a-z]))"
              rf"|\s+(?=(?:none|nil)\b)))"
              for side, pattern in SIDES.items()),
     re.I,
@@ -210,7 +210,7 @@ def split_names(segment: str) -> list[str]:
     """"The Mayor (Councillor Markham), and Councillors Barnard, D Birkinshaw and Smith." -> names."""
     s = re.sub(r"\s*[(\[]\s*\d+\s*(?:votes?|members?|total)?\s*[)\]]", " ", segment, flags=re.I)
     s = re.sub(r"\s+\.(?=\s|$)", ".", s)                                                # "Stainton [24]. No"
-    s = re.sub(r"\s*[-–—]?\s*\btotal\s*[:=-]?\s*\d+\b", " ", s, flags=re.I)                 # "Mrs Wright - total 36"
+    s = re.sub(r"\s*[-–—]?\s*\btotal\s*[:=-]?\s*(?:\d+\b|$)", " ", s, flags=re.I)          # "Mrs Wright - total 36"
     s = re.sub(r"^\s*\d+\s*(?:votes?)?\s*(?::-|:|-|–|as follows;?-?)\s*", " ", s)      # "FOR: 40:- Bawn, ..."
     s = re.sub(r"^\s*\d+\s+(?=cllrs?\b|councill?ors\b)", " ", s, flags=re.I)              # "12 Cllrs. Bawn, ..."
     s = s.replace("?", " ").replace("~", " ").strip().rstrip(".;")                          # ticks lost as "?"
@@ -507,7 +507,8 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
                 continue
         segment = flat[h.end():end]
         stop = _STOP.search(segment)
-        while stop and not re.search(r"[A-Za-z]", segment[:stop.start()]):
+        while stop and not re.search(r"[A-Za-z]", segment[:stop.start()]) and \
+                re.match(r"\s*the\s+(?:(?:vice|deputy)[- ])?(?:chair|mayor|lord mayor)\b", segment[stop.start():], re.I):
             stop = _STOP.search(segment, max(stop.end(), stop.start() + 1))   # "For - 37 The Chair of Council, ..."
         names_end = h.end() + (stop.start() if stop else len(segment))
         raw = flat[h.end():names_end]
@@ -516,7 +517,7 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
             continue                              # "Not voting:", "Absent:": only ends the list before it
         if not re.search(r"(?:[:\-–—)\d]|\)\.)\s*$", h.group(0)) \
                 and not re.search(rf"vot|favour|those|members|{_OBJ}", h.group(0), re.I) \
-                and not re.fullmatch(r"(?-i:Abstentions?|Against)\s+", h.group(0)) \
+                and not re.fullmatch(r"(?-i:Abstentions?|Abstenions?|Against)\s+", h.group(0)) \
                 and not (re.fullmatch(r"(?-i:For|Against|Abstain|Abstentions?)\s+", h.group(0))
                          and re.match(r"(?:councillors|cllrs)\b", flat[h.end():], re.I)) \
                 and not re.match(r"\s*(?:none|nil)\b", flat[h.end():], re.I):
@@ -562,6 +563,9 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
             continue                     # "for" used in passing, with no names after it
         if stated is None and (tail := _TAIL_COUNT.search(raw)):
             stated = int(tail.group(1) or tail.group(2))
+        elif stated is None and re.search(r"\btotal\s*[:=-]?\s*$", raw, re.I) and \
+                (after := re.match(r"\s*(\d+)\b", flat[names_end:])):
+            stated = int(after.group(1))                 # "L Williams – total 20.": the list stopped at "20."
         sides.append((h, side, names, names_end, stated))
     blocks: list[list[tuple]] = []
     for entry in sides:

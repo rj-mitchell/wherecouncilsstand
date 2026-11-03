@@ -446,3 +446,15 @@ def test_side_given_after_the_names_with_were_or_voting():
 def test_a_vote_with_no_for_side_is_left_out():
     text = "Against: Councillors Ward and Kohler. Abstain: Councillor Gill. The motion was carried."
     assert votes.parse(text, TOWN) == []
+
+
+def test_misspelt_abstentions_and_a_bare_total():
+    """Found by the third 100-vote check (docs/PILOT.md)."""
+    text = ("For: Councillors Barlow and Williams (2) Against: Councillors Ward and Kohler (2) Abstenions Councillors "
+            "Bailey and Gill. The amendment fell.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["27", "26"], "abstain": ["25", "28"]}
+    text = ("For the motion: Councillors Barlow, Williams – total 2. Against the motion: Councillors Ward - total 1. "
+            "Abstentions: None")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["27"]}
+    text = "For the Motion – Barlow and Williams (2) Against the Motion – (0) Motion Carried."
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"]}

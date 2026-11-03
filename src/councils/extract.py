@@ -70,13 +70,14 @@ def run(settings: Settings, gss: str) -> dict:
             matcher = votes.Matcher(members)
             found = [v if v.member_id else votes.Vote(v.block, v.side, v.name, matcher.match(v.name), v.outcome,
                                                        v.question, v.excerpt) for v in found]
-        # The same member matched on two sides of one vote: the match is wrong somewhere, so drop it for both.
+        # The same member (or the same name) on two sides of one vote: a list was read from the wrong place, as when
+        # the previous vote's abstentions start the passage, so leave the whole vote out (docs/PILOT.md).
         sides_by: dict[tuple[int, str], set[str]] = defaultdict(set)
         for v in found:
-            if v.member_id:
-                sides_by[(v.block, v.member_id)].add(v.side)
-        found = [v if not v.member_id or len(sides_by[(v.block, v.member_id)]) == 1 else
-                 votes.Vote(v.block, v.side, v.name, "", v.outcome, v.question, v.excerpt) for v in found]
+            sides_by[(v.block, v.member_id or v.name.lower())].add(v.side)
+        clash = {block for (block, _), sides in sides_by.items() if len(sides) > 1}
+        dropped += len(clash)
+        found = [v for v in found if v.block not in clash]
         # A "vote" in which most names match no member was misread from ordinary text: leave it out.
         by_block: dict[int, list] = defaultdict(list)
         for v in found:
