@@ -236,8 +236,21 @@ one-member groups or mixed groups ("Independent partnership"), which need a pers
     exposes no one.
 
   It can miss a name that comes with no telling context (one sample: "the Leader invited Jonathan Davies from …",
-  since fixed). A member of the public who shares a surname with a councillor is kept. Before launch, a larger
-  check should measure misses as well as mistakes. A takedown route covers what slips through.
+  since fixed). A member of the public who shares a surname with a councillor is kept. A takedown route covers what
+  slips through.
+
+  **Checking for misses.** Two random samples of 100 agenda items each were read for names left in (scratch tools
+  list every capitalised two- or three-word phrase that wasn't removed, for reading by hand):
+  - Sample 1, 100 items from 57 councils: 4 people missed, in 2 patterns. Officers named before their role without a
+    comma ("David Armiger the Chief Executive"), and questioners in a question's header ("Question 1 From: Marcus
+    Simpson To: …", "Question from M J Ray"). Both are now caught.
+  - Sample 2, a fresh 100 items from 60 councils, after those fixes: 8 names removed, all correctly. 2 people
+    missed: a public speaker in a transcript named with their area ("Trevor Hammon (Ifield) It's really a
+    question …"), and a bishop whose title took up the words, so only part of her name went ("the Right Reverend
+    Sophie Jelley" became "[name removed] Jelley"). Both are now caught.
+
+  So about 2 in 100 agenda items still held a name that should have gone, each in a pattern seen once. Expect more
+  one-off patterns. The takedown route, and a repeat of this check after the full load, remain the safeguards.
 - Declarations can include sensitive details about councillors' families. Show the councillor, the item and the kind
   of interest. Show the excerpt only behind a link to the council's own record.
 

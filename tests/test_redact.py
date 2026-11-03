@@ -82,3 +82,30 @@ def test_vote_heading_after_a_titled_councillor_and_mc_names():
     out, n = redact(text, c)
     assert out == "For (2) Mr Streatfeild, Mr M J Whiting Against (2) Mr Baker, Mr J P McInroy. [name removed] asked"
     assert n == 1
+
+
+def test_misses_found_by_the_check():
+    """Found by the check of 100 agenda items across 57 councils (docs/PILOT.md): staff named before their role
+    without a comma, and members of the public in a question's header."""
+    text = ("Councillor J.G. Slater accompanied by David Armiger the Chief Executive and Stephen Brown the Head of "
+            "Local Government Reorganisation, left the meeting. Question 1 From: Marcus Simpson To: Cabinet Member "
+            "for Strategic Planning. Question 2 From: Shibaji Shrestha To: Leader of the Council")
+    out, n = redact(text, {"slater"})
+    assert n == 4 and "Armiger" not in out and "Stephen Brown" not in out and "Simpson" not in out
+    assert "Shrestha" not in out and "Councillor J.G. Slater" in out and "[name removed] the Chief Executive" in out
+    assert "From: [name removed] To: Cabinet Member" in out
+    out, n = redact("2) Question by Jane Doe be read by Lee Stevens. 3) Question from M J Ray How many", set())
+    assert "Stevens" not in out and "Ray" not in out
+    kept, n = redact("Councillor Kim Jones the Leader of the Council spoke.", {"jones"})
+    assert n == 0 and kept.startswith("Councillor Kim Jones")
+
+
+def test_second_check():
+    """Found by the second check (docs/PILOT.md): clergy titled "the Right Reverend", and a public speaker named with
+    their area at the start of a transcript's line."""
+    out, n = redact("a vote of thanks to Right Reverend Sophie Jelley for her service", set())
+    assert "Jelley" not in out and "Sophie" not in out
+    out, n = redact("Thank you.\nTrevor Hammon (Ifield) It's really a question I'm hoping", set())
+    assert "Hammon" not in out and "(Ifield) It's really" in out
+    kept, n = redact("Kim Jones (Ifield) Thank you, Chair.", {"jones"})
+    assert n == 0
