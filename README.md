@@ -2,13 +2,12 @@
 
 **Sourced briefings on what councils in England and Wales have discussed, decided and voted on.**
 
-Where Councils Stand applies the approach of [Where They Stand](https://wheretheystand.uk) to local government. It
+Where Councils Stand applies the approach of [Where MPs Stand](https://wherempsstand.com) to local government. It
 reads the minutes councils already publish for full council and cabinet meetings, and will offer short, balanced
 briefings in which every point cites the council's own record, with each councillor's party on the date. If the
 record holds nothing relevant, it will say "No records found."
 
-It is a project of the Where They Stand Foundation, a charitable incorporated organisation being registered in England
-and Wales. The code is adapted from Where Countries Stand and Where They Stand (same licence, same author).
+It is a project of Where They Stand, which is applying to register as a charity in England and Wales. The code is adapted from Where Countries Stand and Where They Stand (same licence, same author).
 
 > Where Councils Stand is independent. It is not affiliated with or endorsed by any council, the Local Government
 > Association or Civica.
