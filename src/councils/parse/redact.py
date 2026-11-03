@@ -106,12 +106,26 @@ _LIST_MORE = re.compile(rf"^(?:,\s*|\s+and\s+|\s*&\s*)(?P<name>(?:(?:Mr|Mrs|Ms|M
                         rf"{_NAME_WORD}(?:\s+{_NAME_WORD}){{1,2}})")
 
 
+_LETTERS = re.compile(r"\b(?:MBE|OBE|CBE|KBE|DBE|BEM|CMG|JP|DL|TD|RD|KC|QC|MP|MEP|MSc|BSc|BA|MA|BEd|MEd|LLB|LLM|MBA|PhD|"
+                      r"FCA|ACA|FCCA|ACMA|FRSA|FRICS|MRICS|MRTPI|CEng|FIET|Hons|Cert|Dip)\b\.?")
+
+
+_STYLE_WORDS = {"the", "rt", "right", "hon", "honourable", "lord", "lady", "mayor", "deputy", "alderman", "alderwoman",
+                "sheriff", "chief", "commoner", "councillor", "cllr", "chair", "chairman", "vice", "mr", "mrs", "ms",
+                "miss", "dr", "sir", "dame", "former"}
+
+
 def councillor_surnames(names: Iterable[str]) -> set[str]:
     """Surnames of the council's members, from attendance names ("Councillor Dave Leech" -> "leech"), including
     both parts of a double-barrelled name."""
     out = set()
     for n in names:
-        s = _surname(re.sub(r"\b(?:MBE|OBE|CBE|BEM|JP|DL|MSc|BSc|MA|PhD)\b", " ", n))
+        # "Richard Long, TD", "Councillor Miss Phillipa Tatham BA (Hons)": letters after the name aren't the surname
+        # "The Rt. Hon. the Lord Mayor, Alderman Peter Estlin": the first part that is more than titles and roles
+        parts = [re.sub(_LETTERS, " ", re.sub(r"\([^)]*\)", " ", p)) for p in n.split(",")]
+        n = next((p for p in parts if any(w.lower().strip(".") not in _STYLE_WORDS
+                                          for w in re.sub(r"[^\w' -]", " ", p).split())), "")
+        s = _surname(n)
         if s:
             out.add(s)
             out.update(p for p in s.split("-") if len(p) > 2)

@@ -109,3 +109,12 @@ def test_second_check():
     assert "Hammon" not in out and "(Ifield) It's really" in out
     kept, n = redact("Kim Jones (Ifield) Thank you, Chair.", {"jones"})
     assert n == 0
+
+
+def test_letters_after_a_councillors_name():
+    """Found by the 100-vote check: "Richard Long, TD" gave the surname "td", so Mr R Long was removed."""
+    sur = councillor_surnames(["Richard Long, TD", "Councillor Miss Phillipa Tatham BA (Hons)", "Cllr Jo Smith MBE",
+                               "The Rt. Hon. the Lord Mayor, Alderman Peter Estlin", "Tim Hailes (Alderman)"])
+    assert {"long", "tatham", "smith", "estlin", "hailes"} <= sur and "mayor" not in sur
+    out, n = redact("For: Mr R Long and Miss Tatham.", sur)
+    assert n == 0
