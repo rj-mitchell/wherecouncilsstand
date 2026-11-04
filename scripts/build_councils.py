@@ -129,6 +129,15 @@ def main() -> None:
         if c.get("modgov_url"):
             status, _ = probe(s, c["gss"], c["modgov_url"])
             c["modgov_status"] = status
+            if status == "ok":
+                return c
+            # the listed site doesn't answer: the council may have moved it (North East Derbyshire and Torfaen moved
+            # to <name>.moderngov.co.uk, November 2026)
+            listed = c["modgov_url"]
+            for url in candidate_hosts(c.get("website", "") or listed, c["name"]):
+                if url != listed and probe(s, c["gss"], url)[0] == "ok":
+                    c.update(modgov_url=url, modgov_status="ok", modgov_source="probed")
+                    break
             return c
         for url in candidate_hosts(c.get("website", ""), c["name"]):
             status, _ = probe(s, c["gss"], url)
