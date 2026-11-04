@@ -458,3 +458,9 @@ def test_misspelt_abstentions_and_a_bare_total():
     assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["27"]}
     text = "For the Motion – Barlow and Williams (2) Against the Motion – (0) Motion Carried."
     assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"]}
+
+
+def test_aldermen_in_northern_ireland():
+    text = ("For (3): Aldermen Barlow and Williams and Councillor Bailey. Against (1): Alderman Ward. The motion was "
+            "carried.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24", "25"], "against": ["27"]}

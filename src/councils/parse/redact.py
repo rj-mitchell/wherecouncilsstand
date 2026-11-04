@@ -41,7 +41,7 @@ _FULL = rf"{_NAME_WORD}(?:\s+{_NAME_WORD}){{1,2}}"
 _WITH_ROLE = re.compile(rf"\b(?P<name>{_FULL})(?=\s*\((?:the\s+)?(?:{_ROLE_WORDS})|,\s+(?:the\s+)?(?:{_ROLE_WORDS})\b|"
                         rf"\s+the\s+(?:{_ROLE_WORDS})\b)")   # "David Armiger the Chief Executive" (found by the check)
 _SPEAKING = re.compile(
-    rf"(?<!Councillor )(?<!Councillors )(?<!Cllr )(?<!Cllr\. )\b(?P<name>{_FULL})\s+"
+    rf"(?<!Councillor )(?<!Councillors )(?<!Cllr )(?<!Cllr\. )(?<!Alderman )(?<!Aldermen )\b(?P<name>{_FULL})\s+"
     r"(?=asked|spoke|addressed|presented|submitted|read out|thanked|put (?:a|the|her|his|their) question|"
     r"made (?:a|the) (?:statement|deputation|representation))"
 )
@@ -101,7 +101,7 @@ _COUNCILLOR_ROLE = re.compile(r"^\s*[,(]\s*(?:the\s+)?(?:deputy\s+)?(?:leader|ma
 # Words that end a list of names in minutes rather than belong to one.
 _NOT_NAME_TAIL = re.compile(r"(?:\s+(?:Against|For|Abstain\w*|Abstention\w*|Absent|Apologies|Voting|Votes?|Total|None|Nil|"
                             r"Carried|Lost|Resolved|Present|The|And|Amendments?|Motions?|Recommendations?|Substantive))+$")
-_AFTER_COUNCILLOR = re.compile(r"(?:councillors?|cllrs?\.?|cynghorydd)\s*$", re.I)
+_AFTER_COUNCILLOR = re.compile(r"(?:councillors?|cllrs?\.?|cynghorydd|alderm[ae]n)\s*$", re.I)
 _LIST_MORE = re.compile(rf"^(?:,\s*|\s+and\s+|\s*&\s*)(?P<name>(?:(?:Mr|Mrs|Ms|Miss|Mx|Dr)\.?\s+)?(?:[A-Z]\.?\s*){{0,3}}"
                         rf"{_NAME_WORD}(?:\s+{_NAME_WORD}){{1,2}})")
 
