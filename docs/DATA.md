@@ -12,20 +12,34 @@ Built by `scripts/build_councils.py` from:
   and the Regulator of Social Housing do (`SUPERSEDED`). A data folder loaded before this change is moved to the new
   codes by `scripts/recode_councils.py`.
 - **Wales:** the 22 unitary authorities from mySociety's [MapIt](https://mapit.mysociety.org/).
+- **Scotland and Northern Ireland** (in scope from 5 November 2026, decision 2): Scotland's 32 councils (MapIt's
+  unitary authorities) and Northern Ireland's 11 district councils (MapIt's local government districts). Their
+  websites and meetings systems were found by research, November 2026: Modern.gov at 9 (Aberdeen City,
+  Aberdeenshire, Argyll and Bute, City of Edinburgh, Dumfries and Galloway, East Dunbartonshire, Scottish Borders,
+  Belfast, and Derry City and Strabane), CMIS at 8, CoINS at 4 (Falkirk, Glasgow, Shetland, West Lothian), Public
+  Minutes at 2 (Armagh City, Banbridge and Craigavon; Fermanagh and Omagh), and the council's own pages at 20.
 - **Modern.gov sites:** [Local Democracy UK](https://www.local-democracy.uk/data)'s council list (CC BY 4.0), then a
   probe of the usual host names (`democracy.`, `moderngov.`, `modgov.`, `committees.` …) on each remaining council's
   own domain.
 
-Each site was checked with one `GetCommittees` request on 24 October 2026:
+Each site was checked with one `GetCommittees` request on 24 October 2026, again from the live server (which is in
+the UK) on 4 November, and the councils with no site found were researched on 5 November:
 
-| | Answered | Blocked automated requests | Unreachable from here | No Modern.gov site found |
+| | Answered | Blocked automated requests | Unreachable | No Modern.gov site found |
 |---|---|---|---|---|
-| England (318) | 201 | 25 | 39 | 53 |
-| Wales (22) | 14 | 0 | 6 | 2 |
+| England (318) | 251 | 13 | 16 | 38 |
+| Wales (22) | 20 | 0 | 1 | 1 |
+| Scotland (32) | 7 | 0 | 0 | 25 |
+| Northern Ireland (11) | 1 | 0 | 1 | 9 |
 
-"Blocked" and "unreachable" sites may work from another network or later. Several reset connections from the cloud
-network this ran on, and had answered from it earlier the same day. Wales's two without Modern.gov are Conwy and the
-Vale of Glamorgan.
+"Blocked" and "unreachable" sites may work from another network or later: many refuse connections from cloud
+networks, and some from outside the UK ("Connection denied by Geolocation"), but answer the server. A firewall's or
+bot check's page, or a Cloudflare timeout, counts as blocked or unreachable, not as no site. Sites that refuse the
+crawler are asked, not worked around (decision 2).
+
+Councils without Modern.gov use CMIS (hosted at `*.cmis.uk.com` and others, whose robots.txt forbids all crawling, so
+they are left out), CoINS, Public Minutes, Jadu's meetings module, SharePoint, or their own pages. Each would need its
+own reader.
 
 ## Meetings: Modern.gov's web service
 
