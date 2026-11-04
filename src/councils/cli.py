@@ -51,7 +51,11 @@ def ingest(council: list[str], start: str = typer.Option(None, "--from", help="Y
 
     s = load_settings()
     for key in council:
-        res = ingest_.load(s, get(key), date.fromisoformat(start) if start else None)
+        try:
+            res = ingest_.load(s, get(key), date.fromisoformat(start) if start else None)
+        except Exception as exc:  # one council's failure mustn't stop the rest (found on the live server)
+            typer.echo(json.dumps({"council": key, "error": f"{type(exc).__name__}: {exc}"[:300]}))
+            continue
         typer.echo(json.dumps({"gss": res.gss, "meetings": res.meetings, "failed": len(res.failed),
                                "committees": [f"{t} ({k})" for t, k in res.committees.values()],
                                "error": res.error}))
