@@ -1,4 +1,4 @@
-/** Every council in England and Wales: which are covered, from when, and which party is in control. */
+/** Every principal council in the UK: which are covered, from when, and which party is in control. */
 import { StrictMode, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
@@ -36,7 +36,7 @@ function App() {
     <>
       <h1>Councils</h1>
       <p className="lede">
-        {number(rows.filter((r) => r.loaded).length)} of the {number(rows.length)} principal councils in England and Wales are
+        {number(rows.filter((r) => r.loaded).length)} of the {number(rows.length)} principal councils in the UK are
         covered: those whose minutes are published through Modern.gov and could be read. Coverage starts in May 2018.
       </p>
       <div className="filters" role="search">
@@ -47,9 +47,11 @@ function App() {
         <div className="field">
           <label htmlFor="nation">Nation</label>
           <select id="nation" value={nation} onChange={(e) => setNation(e.target.value)}>
-            <option value="">England and Wales</option>
+            <option value="">All of the UK</option>
             <option value="england">England</option>
             <option value="wales">Wales</option>
+            <option value="scotland">Scotland</option>
+            <option value="northern_ireland">Northern Ireland</option>
           </select>
         </div>
         <div className="field">

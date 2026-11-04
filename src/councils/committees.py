@@ -64,13 +64,27 @@ def strip_prefix(title: str, prefixes: list[str]) -> str | None:
     return None
 
 
+def _own_name(title: str, gss: str) -> bool:
+    """Full council titled with the council's own name, as in Scotland ("Aberdeenshire Council", "City of Edinburgh
+    Council", "The Highland Council")."""
+    if not gss:
+        return False
+    from councils.registry import councils
+
+    c = councils().get(gss)
+    if not c:
+        return False
+    t = re.sub(r"^the\s+", "", title.strip(), flags=re.I).lower()
+    return t == re.sub(r"^the\s+", "", c.name, flags=re.I).lower()
+
+
 def kind(title: str, gss: str = "") -> str | None:
     """"council", "cabinet", "policy", or None for every other committee."""
     t = re.sub(r"\s+", " ", title.replace("&amp;", "&")).strip()
     o = overrides().get((gss, t.lower()))
     if o is not None:
         return o or None
-    if COUNCIL.match(t):
+    if COUNCIL.match(t) or _own_name(t, gss):
         return "council"
     if CABINET.match(t):
         return "cabinet"

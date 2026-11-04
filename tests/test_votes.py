@@ -458,3 +458,27 @@ def test_misspelt_abstentions_and_a_bare_total():
     assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"], "against": ["27"]}
     text = "For the Motion – Barlow and Williams (2) Against the Motion – (0) Motion Carried."
     assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24"]}
+
+
+def test_aldermen_in_northern_ireland():
+    text = ("For (3): Aldermen Barlow and Williams and Councillor Bailey. Against (1): Alderman Ward. The motion was "
+            "carried.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24", "25"], "against": ["27"]}
+
+
+def test_full_council_named_after_the_council():
+    """Scotland's full councils are titled with the council's own name ("Aberdeenshire Council")."""
+    from councils.committees import kind
+
+    assert kind("Aberdeenshire Council", "S12000034") == "council"
+    assert kind("The City of Edinburgh Council", "S12000036") == "council"
+    assert kind("Aberdeenshire Council", "S12000036") is None
+
+
+def test_scottish_and_northern_irish_party_labels():
+    from councils.parse.parties import normalise
+
+    for label, code in [("SNP", "SNP"), ("SLD", "LD"), ("SLDFT", "LD"), ("LCo-op", "LAB"), ("AL", "APNI"),
+                        ("PBPA", "PBP"), ("PUP", "PUP"), ("SF", "SF"), ("Sinn Féin", "SF"), ("GP", "GRN"),
+                        ("Scottish Conservative and Unionist", "CON")]:
+        assert normalise(label) == code, label

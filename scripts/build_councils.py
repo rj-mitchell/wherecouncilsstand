@@ -1,9 +1,10 @@
-"""Build data_static/councils.csv: every principal council in England and Wales, and its Modern.gov site if it has one.
+"""Build data_static/councils.csv: every principal council in the UK, and its Modern.gov site if it has one.
 
 Sources (fetched fresh each run):
   * England: MHCLG's local-authority register on planning.data.gov.uk (OGL), current entries only, with type, GSS code
     and region. Combined authorities are left out.
-  * Wales: mySociety MapIt's unitary authorities (GSS codes, ONS names).
+  * Wales and Scotland: mySociety MapIt's unitary authorities; Northern Ireland: its local government districts
+    (GSS codes, ONS names). MapIt has no websites: a council's website is kept from the current councils.csv.
   * Modern.gov sites: Local Democracy UK's council list (CC BY 4.0), then a probe of the usual host names
     (democracy., moderngov., modgov., committees., ...) on each remaining council's own domain.
 
@@ -31,6 +32,7 @@ from councils.sources.modgov import probe  # noqa: E402
 
 REGISTER = "https://files.planning.data.gov.uk/dataset/local-authority.csv"
 MAPIT_UTA = "https://mapit.mysociety.org/areas/UTA"
+MAPIT_LGD = "https://mapit.mysociety.org/areas/LGD"
 LOCAL_DEMOCRACY = "https://www.local-democracy.uk/api/councils"
 
 # GSS codes the register still gives that ONS has replaced. Barnsley and Sheffield were given new codes on 1 April
@@ -43,7 +45,10 @@ TYPES = {"CTY": "county", "NMD": "district", "UA": "unitary", "MD": "metropolita
          "CC": "city_of_london", "SRA": "isles_of_scilly"}
 HOST_PREFIXES = ["democracy", "moderngov", "modgov", "committees", "democratic", "meetings", "councillors",
                  "decisionmaking", "democracy.cityof", "cmttpublic", "mgov", "moderngovwebpublic", "modgov.lb",
-                 "committeemeetings", "councilmeetings", "democraticservices", "minutes", "cabinet"]
+                 "committeemeetings", "councilmeetings", "democraticservices", "minutes", "cabinet", "mygov",
+                 "edemocracy", "mgov", "modgovpub", "councillors"]
+# Modern.gov under a path on the council's main site (Kensington and Chelsea, Fenland, Wychavon)
+PATH_PREFIXES = ["moderngov", "modernGov", "localgov", "Committees", "modern.gov"]
 FIELDS = ["gss", "reference", "name", "nation", "type", "region", "website", "modgov_url", "modgov_status",
           "modgov_source"]
 
@@ -92,10 +97,22 @@ def wales(http: httpx.Client) -> list[dict]:
             for a in areas if a.get("country") == "W"]
 
 
+def scotland_and_northern_ireland(http: httpx.Client) -> list[dict]:
+    """Scotland's 32 councils (single-tier: "unitary") and Northern Ireland's 11 district councils."""
+    out = [{"gss": a["codes"]["gss"], "reference": a["codes"]["gss"], "name": a["name"], "nation": "scotland",
+            "type": "unitary", "region": "scotland", "website": ""}
+           for a in http.get(MAPIT_UTA).json().values() if a.get("country") == "S"]
+    out += [{"gss": a["codes"]["gss"], "reference": a["codes"]["gss"], "name": a["name"], "nation": "northern_ireland",
+             "type": "district", "region": "northern_ireland", "website": ""}
+            for a in http.get(MAPIT_LGD).json().values()]
+    return out
+
+
 def candidate_hosts(website: str, name: str) -> list[str]:
     host = urlparse(website if "://" in website else f"https://{website}").hostname or ""
     domain = host.removeprefix("www.")
     out = [f"https://{p}.{domain}" for p in HOST_PREFIXES] if domain else []
+    out += [f"https://www.{domain}/{p}" for p in PATH_PREFIXES] if domain else []
     slug = re.sub(r"[^a-z]", "", norm(name))
     if slug:
         out.append(f"https://{slug}.moderngov.co.uk")
@@ -106,8 +123,18 @@ def main() -> None:
     s = load_settings()
     ua = {"User-Agent": s.modgov.get("user_agent", "WhereCouncilsStand")}
     with httpx.Client(headers=ua, timeout=60, follow_redirects=True) as http:
-        councils = england(http) + wales(http)
+        councils = england(http) + wales(http) + scotland_and_northern_ireland(http)
         known = http.get(LOCAL_DEMOCRACY).json()["councils"]
+
+    # what the current list knows that the sources don't: websites (MapIt has none) and sites found by hand or by
+    # probing (on the council's own website, or after a move), which are kept over Local Democracy UK's
+    previous = {}
+    if (STATIC_DIR / "councils.csv").exists():
+        with open(STATIC_DIR / "councils.csv", encoding="utf-8") as fh:
+            previous = {r["gss"]: r for r in csv.DictReader(fh)}
+    for c in councils:
+        old = previous.get(c["gss"], {})
+        c["website"] = c.get("website") or old.get("website", "")
 
     by_key = {norm(c["name"]): c for c in councils}
     for k in known:
@@ -124,6 +151,10 @@ def main() -> None:
                 print(f"unmatched in Local Democracy UK: {name}", file=sys.stderr)
                 continue
             c["modgov_url"], c["modgov_source"] = k["baseUrl"].rstrip("/"), "local-democracy-uk"
+    for c in councils:
+        old = previous.get(c["gss"], {})
+        if old.get("modgov_source") in ("council website", "probed", "researched") and old.get("modgov_url"):
+            c["modgov_url"], c["modgov_source"] = old["modgov_url"], old["modgov_source"]
 
     def check(c: dict) -> dict:
         if c.get("modgov_url"):

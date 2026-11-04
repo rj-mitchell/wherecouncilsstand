@@ -31,7 +31,7 @@ SIDES = {
 }
 HEADING = re.compile(
     # a heading ends with a colon or dash, or runs straight into "Councillors ..."
-    "|".join(rf"(?P<{side}>(?<![\w-]){pattern}(?:\s*(?::-|:|–(?!\d)|—|-(?!\d))\s*|\.?\s+(?=councill?ors?\b|cllrs?\b)|(?<=\))\s*\.?(?:\s+|$)"
+    "|".join(rf"(?P<{side}>(?<![\w-]){pattern}(?:\s*(?::-|:|–(?!\d)|—|-(?!\d))\s*|\.?\s+(?=councill?ors?\b|cllrs?\b|alderm[ae]n\b)|(?<=\))\s*\.?(?:\s+|$)"
              rf"|(?:(?<=(?-i:Abstentions))|(?<=(?-i:Abstention))|(?<=(?-i:Abstenions))|(?<=(?-i:Against)))\s+(?=(?-i:[A-Z][a-z]))"
              rf"|\s+(?=(?:none|nil)\b)))"
              for side, pattern in SIDES.items()),
@@ -53,7 +53,7 @@ _STOP = re.compile(
 )
 _OUTCOME = re.compile(r"\b(carried|lost|defeated|fell|was not carried|not carried|agreed|approved|rejected)\b", re.I)
 _HONOURS = re.compile(r"\b(?:BEM|OBE|MBE|CBE|JP|J\.P|DL|KC|QC|MP|MSc|BSc|BA|MA|PhD|FRSA|Dr|Mr|Mrs|Ms|Miss|Cllr|Cllrs|"
-                      r"Councill?ors?|Cynghorydd|Cynghorwyr|Sir|Dame|Rev|Revd|Prof)\b\.?", re.I)
+                      r"Councill?ors?|Cynghorydd|Cynghorwyr|Alderm[ae]n|Ald|Sir|Dame|Rev|Revd|Prof)\b\.?", re.I)
 _ROLE = re.compile(r"\b(?:the\s+|elected\s+)(?:(?:civic|lord|deputy|worshipful(?:\s+the)?)\s+)*(mayor|chair(?:man|woman|person)?|presiding member|vice[- ]chair)\b", re.I)
 # "the Deputy Mayor, Councillor Ed Foley"; "His Worshipful the Mayor Councillor Salim Chowdhury" -> one name
 _ROLE_THEN_NAME = re.compile(
@@ -221,7 +221,7 @@ def split_names(segment: str) -> list[str]:
         # "Councillor Tim Anderson Councillor Jon Askew ...": each "Councillor" starts a name
         s = re.sub(r"\b(?:the (?:deputy )?mayor|the (?:vice[- ])?chair(?:man)?),?\s*(?=councillor)", "", s, flags=re.I)
         s = re.sub(r"\bcouncillor\b", ",", s, flags=re.I)
-    s = re.sub(r"\bcouncill?ors?\b:?|\bcllrs?\b\.?", "", s, flags=re.I)
+    s = re.sub(r"\bcouncill?ors?\b:?|\bcllrs?\b\.?|\balderm[ae]n\b:?", "", s, flags=re.I)    # aldermen: Northern Ireland
     parts = re.split(r",|;|\band\b|&", s)
     if len(parts) == 1 and len(parts[0].split()) > 4 and all(w[0].isupper() for w in parts[0].split()):
         parts = _unrun(parts[0])

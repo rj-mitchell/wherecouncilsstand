@@ -1,7 +1,7 @@
 [project]
 name = "councils"
 version = "0.1.0"
-description = "Where Councils Stand: sourced briefings on what councils in England and Wales have said and decided."
+description = "Where Councils Stand: sourced briefings on what councils across the UK have said and decided."
 readme = "README.md"
 license = "AGPL-3.0-only"
 requires-python = ">=3.12"

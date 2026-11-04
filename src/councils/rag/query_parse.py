@@ -21,7 +21,8 @@ from councils.registry import councils
 
 log = logging.getLogger(__name__)
 
-PartyCode = Literal["LAB", "CON", "LD", "GRN", "REF", "PC", "UKIP", "LIB", "YP", "IND", "NOC"]
+PartyCode = Literal["LAB", "CON", "LD", "GRN", "REF", "PC", "UKIP", "LIB", "YP", "SNP", "DUP", "SF", "SDLP", "UUP",
+                    "APNI", "TUV", "PBP", "IND", "NOC"]
 CouncilType = Literal["county", "district", "unitary", "metropolitan", "london_borough"]
 Kind = Literal["council", "cabinet", "policy"]
 GroupBy = Literal["control", "region", "type", "council"]
@@ -29,6 +30,9 @@ GroupBy = Literal["control", "region", "type", "council"]
 PARTY_WORDS = [
     (r"labour", "LAB"), (r"conservatives?|tor(?:y|ies)", "CON"), (r"lib(?:eral)? dems?|liberal democrats?", "LD"),
     (r"greens?|green party", "GRN"), (r"reform(?: uk)?", "REF"), (r"plaid(?: cymru)?", "PC"),
+    (r"snp|scottish national(?:ists?| party)?", "SNP"), (r"dup|democratic unionists?", "DUP"),
+    (r"sinn f[eé]in", "SF"), (r"sdlp", "SDLP"), (r"uup|ulster unionists?", "UUP"), (r"alliance(?: party)?", "APNI"),
+    (r"tuv", "TUV"), (r"people before profit", "PBP"),
     (r"independents?", "IND"),
 ]
 _RUN = r"(?:-?\s*(?:run|led|controlled|held)|\s+(?:majority|controlled|administrations?))"
@@ -141,8 +145,11 @@ def parse_offline(question: str, today: date | None = None, default_years: int =
         control.append("NOC")
         strip.append("no overall control")
     types = sorted({t for w, t in TYPE_WORDS.items() if w in ql})
-    nations = ["wales"] if re.search(r"\bwelsh councils?\b|\bin wales\b", ql) else \
-        (["england"] if re.search(r"\benglish councils?\b|\bin england\b", ql) else [])
+    nations = [n for n, rx in (("wales", r"\bwelsh councils?\b|\bin wales\b"),
+                               ("england", r"\benglish councils?\b|\bin england\b"),
+                               ("scotland", r"\bscottish councils?\b|\bin scotland\b"),
+                               ("northern_ireland", r"\bnorthern ir(?:eland|ish) councils?\b|\bin northern ireland\b"))
+               if re.search(rx, ql)]
     kinds = [k for k, rx in (("cabinet", r"\bcabinets?\b|\bexecutives?\b"), ("council", r"\bfull councils?\b"))
              if re.search(rx, ql)]
     named = councils_in(question)
@@ -179,7 +186,7 @@ class ParsedQuery(BaseModel):
     councils: list[str] = Field(description="Councils named in the question, as written")
     control: list[PartyCode]
     parties: list[PartyCode]
-    nations: list[Literal["england", "wales"]]
+    nations: list[Literal["england", "wales", "scotland", "northern_ireland"]]
     council_types: list[CouncilType]
     kinds: list[Kind]
     group_by: GroupBy
@@ -188,7 +195,7 @@ class ParsedQuery(BaseModel):
 
 
 def system_prompt(today: date, start: date, default_years: int) -> str:
-    return f"""You convert research questions about what councils in England and Wales have discussed and decided
+    return f"""You convert research questions about what councils in England, Wales, Scotland and Northern Ireland have discussed and decided
 into search filters for their full council and cabinet minutes. Today's date is {today.isoformat()}. The minutes
 cover {start.isoformat()} to today.
 
@@ -200,7 +207,8 @@ Rules:
   date_from to {max(today.year - default_years, start.year)}-01-01 and date_to to null.
 - councils: councils the question names ("Barnsley", "Manchester City Council").
 - control: only when the question asks about councils run by a party ("Labour-run councils", "councils controlled
-  by Reform UK"): LAB, CON, LD, GRN, REF, PC, UKIP, LIB, YP, IND, or NOC for no overall control. When the question
+  by Reform UK"): LAB, CON, LD, GRN, REF, PC, UKIP, LIB, YP, SNP, DUP, SF, SDLP, UUP, APNI (Alliance), TUV, PBP, IND, or NOC for no
+  overall control. When the question
   compares councils run by different parties, leave control empty and set group_by to "control".
 - parties: only when the question asks about what councillors of a party said or did (not who runs the council).
 - nations, council_types, kinds (council = full council, cabinet, policy = committee-system councils' main

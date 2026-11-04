@@ -118,3 +118,8 @@ def test_letters_after_a_councillors_name():
     assert {"long", "tatham", "smith", "estlin", "hailes"} <= sur and "mayor" not in sur
     out, n = redact("For: Mr R Long and Miss Tatham.", sur)
     assert n == 0
+
+
+def test_an_alderman_is_kept():
+    out, n = redact("Alderman Jo Smith spoke in favour, and Ann Other addressed the meeting.", {"smith"})
+    assert "Alderman Jo Smith" in out and "Ann Other" not in out
