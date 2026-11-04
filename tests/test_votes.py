@@ -464,3 +464,12 @@ def test_aldermen_in_northern_ireland():
     text = ("For (3): Aldermen Barlow and Williams and Councillor Bailey. Against (1): Alderman Ward. The motion was "
             "carried.")
     assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24", "25"], "against": ["27"]}
+
+
+def test_full_council_named_after_the_council():
+    """Scotland's full councils are titled with the council's own name ("Aberdeenshire Council")."""
+    from councils.committees import kind
+
+    assert kind("Aberdeenshire Council", "S12000034") == "council"
+    assert kind("The City of Edinburgh Council", "S12000036") == "council"
+    assert kind("Aberdeenshire Council", "S12000036") is None

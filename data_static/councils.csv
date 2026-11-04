@@ -317,6 +317,49 @@ E07000229,WOT,Worthing Borough Council,england,district,E12000008,https://www.ad
 E07000238,WYC,Wychavon District Council,england,district,E12000005,https://www.wychavon.gov.uk,https://mgov.wychavon.gov.uk/modern.gov,ok,researched
 E07000128,WYR,Wyre Borough Council,england,district,E12000002,https://www.wyre.gov.uk,https://wyre.moderngov.co.uk,ok,local-democracy-uk
 E07000239,WYE,Wyre Forest District Council,england,district,E12000005,https://www.wyreforestdc.gov.uk,,none,
+N09000001,N09000001,Antrim and Newtownabbey Borough Council,northern_ireland,district,northern_ireland,https://antrimandnewtownabbey.gov.uk,,none,
+N09000011,N09000011,Ards and North Down Borough Council,northern_ireland,district,northern_ireland,https://www.ardsandnorthdown.gov.uk,,none,
+N09000002,N09000002,"Armagh City, Banbridge and Craigavon Borough Council",northern_ireland,district,northern_ireland,https://www.armaghbanbridgecraigavon.gov.uk,,none,
+N09000003,N09000003,Belfast City Council,northern_ireland,district,northern_ireland,https://www.belfastcity.gov.uk,https://minutes.belfastcity.gov.uk,ok,researched
+N09000004,N09000004,Causeway Coast and Glens Borough Council,northern_ireland,district,northern_ireland,https://www.causewaycoastandglens.gov.uk,,none,
+N09000005,N09000005,Derry City and Strabane District Council,northern_ireland,district,northern_ireland,https://www.derrystrabane.com,https://meetings.derrycityandstrabanedistrict.com,unreachable,researched
+N09000006,N09000006,Fermanagh and Omagh District Council,northern_ireland,district,northern_ireland,https://www.fermanaghomagh.com,,none,
+N09000007,N09000007,Lisburn and Castlereagh City Council,northern_ireland,district,northern_ireland,https://www.lisburncastlereagh.gov.uk,,none,
+N09000009,N09000009,Mid Ulster District Council,northern_ireland,district,northern_ireland,https://www.midulstercouncil.org,,none,
+N09000008,N09000008,Mid and East Antrim Borough Council,northern_ireland,district,northern_ireland,https://www.midandeastantrim.gov.uk,,none,
+N09000010,N09000010,"Newry, Mourne and Down District Council",northern_ireland,district,northern_ireland,https://www.newrymournedown.org,,none,
+S12000033,S12000033,Aberdeen City Council,scotland,unitary,scotland,https://www.aberdeencity.gov.uk,https://aberdeen.moderngov.co.uk,ok,researched
+S12000034,S12000034,Aberdeenshire Council,scotland,unitary,scotland,https://www.aberdeenshire.gov.uk,https://aberdeenshire.moderngov.co.uk,ok,researched
+S12000041,S12000041,Angus Council,scotland,unitary,scotland,https://www.angus.gov.uk,,none,
+S12000035,S12000035,Argyll and Bute Council,scotland,unitary,scotland,https://www.argyll-bute.gov.uk,https://www.argyll-bute.gov.uk/moderngov,ok,researched
+S12000036,S12000036,City of Edinburgh Council,scotland,unitary,scotland,https://www.edinburgh.gov.uk,https://democracy.edinburgh.gov.uk,ok,researched
+S12000005,S12000005,Clackmannanshire Council,scotland,unitary,scotland,https://www.clacks.gov.uk,,none,
+S12000013,S12000013,Comhairle nan Eilean Siar,scotland,unitary,scotland,https://www.cne-siar.gov.uk,,none,
+S12000006,S12000006,Dumfries and Galloway Council,scotland,unitary,scotland,https://www.dumgal.gov.uk,https://dumfriesgalloway.moderngov.co.uk,ok,researched
+S12000042,S12000042,Dundee City Council,scotland,unitary,scotland,https://www.dundeecity.gov.uk,,none,
+S12000008,S12000008,East Ayrshire Council,scotland,unitary,scotland,https://www.east-ayrshire.gov.uk,,none,
+S12000045,S12000045,East Dunbartonshire Council,scotland,unitary,scotland,https://www.eastdunbarton.gov.uk,https://eastdunbarton.moderngov.co.uk,ok,researched
+S12000010,S12000010,East Lothian Council,scotland,unitary,scotland,https://www.eastlothian.gov.uk,,none,
+S12000011,S12000011,East Renfrewshire Council,scotland,unitary,scotland,https://www.eastrenfrewshire.gov.uk,,none,
+S12000014,S12000014,Falkirk Council,scotland,unitary,scotland,https://www.falkirk.gov.uk,,none,
+S12000047,S12000047,Fife Council,scotland,unitary,scotland,https://www.fife.gov.uk,,none,
+S12000049,S12000049,Glasgow City Council,scotland,unitary,scotland,https://www.glasgow.gov.uk,,none,
+S12000018,S12000018,Inverclyde Council,scotland,unitary,scotland,https://www.inverclyde.gov.uk,,none,
+S12000019,S12000019,Midlothian Council,scotland,unitary,scotland,https://www.midlothian.gov.uk,,none,
+S12000021,S12000021,North Ayrshire Council,scotland,unitary,scotland,https://www.north-ayrshire.gov.uk,,none,
+S12000050,S12000050,North Lanarkshire Council,scotland,unitary,scotland,https://www.northlanarkshire.gov.uk,,none,
+S12000023,S12000023,Orkney Islands Council,scotland,unitary,scotland,https://www.orkney.gov.uk,,none,
+S12000048,S12000048,Perth and Kinross Council,scotland,unitary,scotland,https://www.pkc.gov.uk,,none,
+S12000038,S12000038,Renfrewshire Council,scotland,unitary,scotland,https://www.renfrewshire.gov.uk,,none,
+S12000026,S12000026,Scottish Borders Council,scotland,unitary,scotland,https://www.scotborders.gov.uk,https://scottishborders.moderngov.co.uk,ok,researched
+S12000027,S12000027,Shetland Islands Council,scotland,unitary,scotland,https://www.shetland.gov.uk,,none,
+S12000028,S12000028,South Ayrshire Council,scotland,unitary,scotland,https://www.south-ayrshire.gov.uk,,none,
+S12000029,S12000029,South Lanarkshire Council,scotland,unitary,scotland,https://www.southlanarkshire.gov.uk,,none,
+S12000030,S12000030,Stirling Council,scotland,unitary,scotland,https://www.stirling.gov.uk,,none,
+S12000017,S12000017,The Highland Council,scotland,unitary,scotland,https://www.highland.gov.uk,,none,
+S12000020,S12000020,The Moray Council,scotland,unitary,scotland,https://www.moray.gov.uk,,none,
+S12000039,S12000039,West Dunbartonshire Council,scotland,unitary,scotland,https://www.west-dunbarton.gov.uk,,none,
+S12000040,S12000040,West Lothian Council,scotland,unitary,scotland,https://www.westlothian.gov.uk,,none,
 W06000019,W06000019,Blaenau Gwent Council,wales,unitary,wales,,https://democracy.blaenau-gwent.gov.uk,ok,local-democracy-uk
 W06000013,W06000013,Bridgend Council,wales,unitary,wales,,https://democratic.bridgend.gov.uk,ok,local-democracy-uk
 W06000018,W06000018,Caerphilly Council,wales,unitary,wales,,https://democracy.caerphilly.gov.uk,unreachable,local-democracy-uk
