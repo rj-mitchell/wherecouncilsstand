@@ -184,7 +184,7 @@ E08000021,NET,Newcastle City Council,england,metropolitan,E12000001,https://www.
 E07000195,NEC,Newcastle-under-Lyme Borough Council,england,district,E12000005,https://www.newcastle-staffs.gov.uk,https://moderngov.newcastle-staffs.gov.uk,unreachable,local-democracy-uk
 E10000020,NFK,Norfolk County Council,england,county,E12000006,https://www.norfolk.gov.uk,,none,
 E07000043,NDE,North Devon District Council,england,district,E12000009,https://www.northdevon.gov.uk,https://democracy.northdevon.gov.uk,unreachable,local-democracy-uk
-E07000038,NED,North East Derbyshire District Council,england,district,E12000004,https://www.ne-derbyshire.gov.uk,https://democracy.ne-derbyshire.gov.uk,blocked,local-democracy-uk
+E07000038,NED,North East Derbyshire District Council,england,district,E12000004,https://www.ne-derbyshire.gov.uk,https://ne-derbyshire.moderngov.co.uk,ok,probed
 E06000012,NEL,North East Lincolnshire Council,england,unitary,E12000003,https://www.nelincs.gov.uk,,none,
 E07000099,NHE,North Hertfordshire District Council,england,district,E12000006,https://www.north-herts.gov.uk,https://democracy.north-herts.gov.uk,ok,local-democracy-uk
 E07000139,NKE,North Kesteven District Council,england,district,E12000004,https://www.n-kesteven.gov.uk,https://democracy.n-kesteven.gov.uk,none,local-democracy-uk
@@ -336,6 +336,6 @@ W06000009,W06000009,Pembrokeshire Council,wales,unitary,wales,,https://mgenglish
 W06000023,W06000023,Powys Council,wales,unitary,wales,,https://powys.moderngov.co.uk,ok,local-democracy-uk
 W06000016,W06000016,Rhondda Cynon Taf Council,wales,unitary,wales,,https://rctcbc.moderngov.co.uk,ok,local-democracy-uk
 W06000011,W06000011,Swansea Council,wales,unitary,wales,,https://democracy.swansea.gov.uk,ok,local-democracy-uk
-W06000020,W06000020,Torfaen Council,wales,unitary,wales,,https://moderngov.torfaen.gov.uk,unreachable,local-democracy-uk
+W06000020,W06000020,Torfaen Council,wales,unitary,wales,,https://torfaen.moderngov.co.uk,ok,probed
 W06000014,W06000014,Vale of Glamorgan Council,wales,unitary,wales,,,none,
 W06000006,W06000006,Wrexham Council,wales,unitary,wales,,https://moderngov.wrexham.gov.uk,unreachable,local-democracy-uk
