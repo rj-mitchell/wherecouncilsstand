@@ -33,6 +33,12 @@ REGISTER = "https://files.planning.data.gov.uk/dataset/local-authority.csv"
 MAPIT_UTA = "https://mapit.mysociety.org/areas/UTA"
 LOCAL_DEMOCRACY = "https://www.local-democracy.uk/api/councils"
 
+# GSS codes the register still gives that ONS has replaced. Barnsley and Sheffield were given new codes on 1 April
+# 2019, when the boundary between them moved; the register's "statistical-geography" still has the old ones. Other
+# publishers (ONS, the Regulator of Social Housing) use the new ones, so the old ones are swapped here.
+SUPERSEDED = {"E08000016": "E08000038",  # Barnsley
+              "E08000019": "E08000039"}  # Sheffield
+
 TYPES = {"CTY": "county", "NMD": "district", "UA": "unitary", "MD": "metropolitan", "LBO": "london_borough",
          "CC": "city_of_london", "SRA": "isles_of_scilly"}
 HOST_PREFIXES = ["democracy", "moderngov", "modgov", "committees", "democratic", "meetings", "councillors",
@@ -72,7 +78,8 @@ def england(http: httpx.Client) -> list[dict]:
     for r in rows:
         if r.get("end-date") or r.get("local-authority-type") not in TYPES:
             continue
-        out.append({"gss": r["statistical-geography"], "reference": r["reference"], "name": r["name"],
+        gss = SUPERSEDED.get(r["statistical-geography"], r["statistical-geography"])
+        out.append({"gss": gss, "reference": r["reference"], "name": r["name"],
                     "nation": "england", "type": TYPES[r["local-authority-type"]], "region": (r.get("region") or "").split(":")[-1],  # "statistical-geography:E12000006" in a few
                     "website": r.get("website", "")})
     return out

@@ -215,14 +215,11 @@ E08000013,NLWI,LOCAL,Newton-le-Willows Independents,3 of 3 members recorded as N
 E08000013,RI,LOCAL,Rainhill Independents,3 of 3 members recorded as Rainhill Independents by Open Council Data
 E08000015,INDCON,LOCAL,Independent Conservative,decided by hand: a group separate from the Conservative group; 2 of 3 members recorded as Conservative by Open Council Data
 E08000015,INDG,LOCAL,Independent / Other,4 of 5 members recorded as Independent / Other by Open Council Data
-E08000016,BIG,LOCAL,Barnsley Independent Group,3 of 3 members recorded as Barnsley Independent Group by Open Council Data
-E08000016,D&V,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E08000017,ADV,LOCAL,Advance UK,2 of 2 members recorded as Advance UK by Open Council Data
 E08000017,IVD,LOCAL,Advance UK,2 of 2 members recorded as Advance UK by Open Council Data
 E08000017,Mexborough First,LOCAL,Mexborough First,3 of 4 members recorded as Mexborough First by Open Council Data
 E08000018,Brexit Party,LOCAL,Independent / Other,10 of 11 members recorded as Independent / Other by Open Council Data
 E08000018,RDP,LOCAL,Independent / Other,9 of 11 members recorded as Independent / Other by Open Council Data
-E08000019,SCC,LOCAL,Independent / Other,6 of 8 members recorded as Independent / Other by Open Council Data
 E08000028,ST,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
 E08000033,Indcllr,LOCAL,Independent / Other,3 of 3 members recorded as Independent / Other by Open Council Data
 E08000034,CAL,LOCAL,Independent / Other,8 of 8 members recorded as Independent / Other by Open Council Data
@@ -232,6 +229,9 @@ E08000034,VIG,LOCAL,Independent / Other,3 of 3 members recorded as Independent /
 E08000035,G&SI,LOCAL,Garforth and Swillington Independents Party,3 of 3 members recorded as Garforth and Swillington Independents Party by Open Council Data
 E08000035,LIP,LOCAL,Independent / Other,2 of 3 members recorded as Independent / Other by Open Council Data
 E08000035,MBI,LOCAL,Morley Borough Independents,7 of 9 members recorded as Morley Borough Independents by Open Council Data
+E08000038,BIG,LOCAL,Barnsley Independent Group,3 of 3 members recorded as Barnsley Independent Group by Open Council Data
+E08000038,D&V,LOCAL,Independent / Other,2 of 2 members recorded as Independent / Other by Open Council Data
+E08000039,SCC,LOCAL,Independent / Other,6 of 8 members recorded as Independent / Other by Open Council Data
 E09000004,RefU,REF,Reform UK,7 of 7 members recorded as Reform UK by Open Council Data
 E09000010,CF,LOCAL,Independent / Other,5 of 7 members recorded as Independent / Other by Open Council Data
 E09000012,HISC,LOCAL,Independent / Other,3 of 3 members recorded as Independent / Other by Open Council Data

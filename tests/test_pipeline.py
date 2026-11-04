@@ -15,7 +15,7 @@ from councils.rag.pipeline import AskRequest, Pipeline, answer_once
 from councils.rag.query_parse import parse_offline
 
 TODAY = date(2026, 10, 24)
-BARNSLEY, GUILDFORD = "E08000016", "E07000209"
+BARNSLEY, GUILDFORD = "E08000038", "E07000209"
 
 
 class FakeStream:
@@ -183,3 +183,25 @@ def test_one_sided_vote_is_marked_as_possibly_incomplete(settings):
     blocks = Lookup(settings, {BARNSLEY}).vote_blocks(f"{BARNSLEY}:1:10", BARNSLEY, date(2025, 2, 26))
     assert len(blocks) == 1 and "Only this side is recorded here" in blocks[0]
     assert "Kitching (Liberal Democrats)" in blocks[0]
+
+
+def test_councils_stored_under_replaced_codes_can_be_moved(tmp_path):
+    import importlib.util
+    import sys
+    from pathlib import Path
+
+    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    sys.path.insert(0, str(scripts))
+    spec = importlib.util.spec_from_file_location("recode_councils", scripts / "recode_councils.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    raw, pq = tmp_path / "raw", tmp_path / "parquet"
+    (raw / "modgov" / "E08000016" / "meeting").mkdir(parents=True)
+    (raw / "modgov" / "E08000016" / "meeting" / "1.xml").write_text("<x/>")
+    (pq / "items").mkdir(parents=True)
+    (pq / "items" / "E08000016.parquet").write_text("old")
+    assert mod.recode(raw, pq, "E08000016", "E08000038", dry_run=True)
+    assert (raw / "modgov" / "E08000016").exists()
+    mod.recode(raw, pq, "E08000016", "E08000038", dry_run=False)
+    assert (raw / "modgov" / "E08000038" / "meeting" / "1.xml").exists()
+    assert not (raw / "modgov" / "E08000016").exists() and not (pq / "items" / "E08000016.parquet").exists()

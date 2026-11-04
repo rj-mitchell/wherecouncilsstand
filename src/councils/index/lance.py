@@ -7,7 +7,7 @@ Two tables share the same filter columns:
 * ``vectors``   one embedding per passage. Filled by the (slower, resumable) embedding job; hybrid search uses
   whatever is embedded so far.
 
-Rows are keyed by ``source_key`` (one council and year, such as ``E08000016:2024``), so reloading a council's year
+Rows are keyed by ``source_key`` (one council and year, such as ``E08000038:2024``), so reloading a council's year
 replaces its rows. Each passage carries its council's nation, type and region, the kind of meeting, the party in
 control of the council on the date, and the parties of the councillors the passage names, so a question about any of
 these is a filter on the passages themselves. Passage text has had the names of people who aren't councillors
@@ -35,7 +35,7 @@ VECTORS = "vectors"
 FILTER_FIELDS = [
     ("passage_id", pa.string()),
     ("record_id", pa.string()),          # the agenda item: "<gss>:<meeting id>:<item id>"
-    ("source_key", pa.string()),         # council and year: "E08000016:2024"
+    ("source_key", pa.string()),         # council and year: "E08000038:2024"
     ("gss", pa.string()),
     ("nation", pa.string()),             # england, wales
     ("council_type", pa.string()),       # district, unitary, metropolitan, london_borough, county, ...

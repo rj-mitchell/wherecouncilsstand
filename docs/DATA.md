@@ -7,6 +7,10 @@ Built by `scripts/build_councils.py` from:
 - **England:** MHCLG's [local-authority register](https://www.planning.data.gov.uk/dataset/local-authority) on
   planning.data.gov.uk (Open Government Licence): current entries, with each council's type, GSS code and region.
   Combined authorities are left out. 318 councils.
+  The register still gives Barnsley and Sheffield the GSS codes ONS replaced on 1 April 2019, when the boundary
+  between them moved (E08000016, E08000019); `build_councils.py` uses the current ones (E08000038, E08000039), as ONS
+  and the Regulator of Social Housing do (`SUPERSEDED`). A data folder loaded before this change is moved to the new
+  codes by `scripts/recode_councils.py`.
 - **Wales:** the 22 unitary authorities from mySociety's [MapIt](https://mapit.mysociety.org/).
 - **Modern.gov sites:** [Local Democracy UK](https://www.local-democracy.uk/data)'s council list (CC BY 4.0), then a
   probe of the usual host names (`democracy.`, `moderngov.`, `modgov.`, `committees.` …) on each remaining council's
