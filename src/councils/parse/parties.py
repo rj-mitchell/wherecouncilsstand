@@ -21,7 +21,7 @@ NAMES = {
     "SDP": "Social Democratic Party", "SNP": "Scottish National Party", "ALBA": "Alba Party",
     "DUP": "Democratic Unionist Party", "SF": "Sinn Féin", "SDLP": "Social Democratic and Labour Party",
     "UUP": "Ulster Unionist Party", "APNI": "Alliance Party", "TUV": "Traditional Unionist Voice",
-    "PBP": "People Before Profit", "AONTU": "Aontú", "IND": "Independent", "LOCAL": "Local party or group",
+    "PBP": "People Before Profit", "AONTU": "Aontú", "PUP": "Progressive Unionist Party", "IND": "Independent", "LOCAL": "Local party or group",
     "NONE": "No party recorded",
 }
 
@@ -31,11 +31,11 @@ _RULES = [
             r"|the labour party"
             # Labour and Co-operative, as councils abbreviate it: "L&C", "LAB-CO", "LCO", "LABC", "LCP", "co-op"
             r"|l ?(&|and) ?co?(-?op)?|landc|lco|lac|laco|labc|lcp|lab ?(-|&) ?co(-?op(erative)?|p)?|lab&coop"
-            r"|la[bo]?our (&|and) co-?op(erative)?( party)?|co-?op(erative)?( party)?"),
+            r"|la[bo]?our (&|and) co-?op(erative)?( party)?|co-?op(erative)?( party)?|l ?co-?op"),
     ("CON", r"con|cons|conservatives?( party| group)?|conservative (and|&) unionist( party)?|tory|tories|conu"
             r"|the conservative party( candidate)?|scottish conservatives?( and unionists?)?( party)?"),
     ("LD", r"ld|lib ?dems?|libdems?|liberal democrats?( party| group)?|lib dem group|libdem group|libdem ?fo(cus)?"
-           r"|wld|welsh liberal democrats?|scottish liberal democrats?"),
+           r"|wld|welsh liberal democrats?|scottish liberal democrats?|sld|sldft"),
     ("GRN", r"grn|gre|gp|green|greens|green party( candidate)?|green group|the green party"
             r"|green party and independent group|scottish greens?( party)?|scottish green party|green party ni"
             r"|green party northern ireland"),
@@ -53,9 +53,10 @@ _RULES = [
     ("SF", r"sf|sinn f[eé]in"),
     ("SDLP", r"sdlp|social democratic (and|&) labour( party)?"),
     ("UUP", r"uup|ulster unionists?( party)?"),
-    ("APNI", r"apni|all|alliance|alliance party( of northern ireland)?"),
+    ("APNI", r"apni|all?|alliance|alliance party( of northern ireland)?"),
     ("TUV", r"tuv|traditional unionist voice"),
-    ("PBP", r"pbp|people before profit( alliance)?"),
+    ("PBP", r"pbpa?|people before profit( alliance)?"),
+    ("PUP", r"pup|progressive unionists?( party)?"),
     ("AONTU", r"aont[uú]"),
     ("IND", r"i|ind|ind ind|indy|indep|inde|independent|independant|independents?( member| councillor)?|non-? ?aligned|unaligned|no party|non political"),
     ("NONE", r"|none|n/a|-"),

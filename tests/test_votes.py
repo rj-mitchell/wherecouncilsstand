@@ -473,3 +473,12 @@ def test_full_council_named_after_the_council():
     assert kind("Aberdeenshire Council", "S12000034") == "council"
     assert kind("The City of Edinburgh Council", "S12000036") == "council"
     assert kind("Aberdeenshire Council", "S12000036") is None
+
+
+def test_scottish_and_northern_irish_party_labels():
+    from councils.parse.parties import normalise
+
+    for label, code in [("SNP", "SNP"), ("SLD", "LD"), ("SLDFT", "LD"), ("LCo-op", "LAB"), ("AL", "APNI"),
+                        ("PBPA", "PBP"), ("PUP", "PUP"), ("SF", "SF"), ("Sinn Féin", "SF"), ("GP", "GRN"),
+                        ("Scottish Conservative and Unionist", "CON")]:
+        assert normalise(label) == code, label

@@ -31,7 +31,7 @@ SIDES = {
 }
 HEADING = re.compile(
     # a heading ends with a colon or dash, or runs straight into "Councillors ..."
-    "|".join(rf"(?P<{side}>(?<![\w-]){pattern}(?:\s*(?::-|:|–(?!\d)|—|-(?!\d))\s*|\.?\s+(?=councill?ors?\b|cllrs?\b)|(?<=\))\s*\.?(?:\s+|$)"
+    "|".join(rf"(?P<{side}>(?<![\w-]){pattern}(?:\s*(?::-|:|–(?!\d)|—|-(?!\d))\s*|\.?\s+(?=councill?ors?\b|cllrs?\b|alderm[ae]n\b)|(?<=\))\s*\.?(?:\s+|$)"
              rf"|(?:(?<=(?-i:Abstentions))|(?<=(?-i:Abstention))|(?<=(?-i:Abstenions))|(?<=(?-i:Against)))\s+(?=(?-i:[A-Z][a-z]))"
              rf"|\s+(?=(?:none|nil)\b)))"
              for side, pattern in SIDES.items()),
