@@ -209,6 +209,12 @@ class Indexer:
 
     def index_all(self, gss_codes: list[str] | None = None) -> int:
         codes = gss_codes or sorted(p.stem for p in (self.settings.parquet_dir / "items").glob("*.parquet"))
+        known = councils()
+        for gss in [g for g in codes if g not in known]:
+            # stored under a code no longer in councils.csv (Barnsley's and Sheffield's old codes: run
+            # scripts/recode_councils.py); skipped rather than stopping the whole index
+            log.warning("%s is stored but isn't in councils.csv: skipped (see scripts/recode_councils.py)", gss)
+        codes = [g for g in codes if g in known]
         total = 0
         for gss in codes:
             n = self.index_council(gss)
