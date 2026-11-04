@@ -122,7 +122,7 @@ E07000227,HOR,Horsham District Council,england,district,E12000008,https://www.ho
 E06000010,KHL,Hull City Council,england,unitary,E12000003,https://www.hullcc.gov.uk,,none,
 E07000011,HUN,Huntingdonshire District Council,england,district,E12000006,https://www.huntingdonshire.gov.uk,https://democracy.huntingdonshire.gov.uk/moderngov,unreachable,local-democracy-uk
 E07000120,HYN,Hyndburn Borough Council,england,district,E12000002,https://www.hyndburnbc.gov.uk,https://democracy.hyndburnbc.gov.uk,ok,local-democracy-uk
-E07000202,IPS,Ipswich Borough Council,england,district,E12000006,https://www.ipswich.gov.uk,https://democracy.ipswich.gov.uk,none,local-democracy-uk
+E07000202,IPS,Ipswich Borough Council,england,district,E12000006,https://www.ipswich.gov.uk,https://democracy.ipswich.gov.uk,blocked,council website
 E06000046,IOW,Isle of Wight Council,england,unitary,E12000008,https://www.iow.gov.uk/,https://iow.moderngov.co.uk,ok,local-democracy-uk
 E10000016,KEN,Kent County Council,england,county,E12000008,https://www.kent.gov.uk,https://democracy.kent.gov.uk,ok,local-democracy-uk
 E08000034,KIR,Kirklees Council,england,metropolitan,E12000003,https://www.kirklees.gov.uk,https://democracy.kirklees.gov.uk,ok,local-democracy-uk
@@ -187,7 +187,7 @@ E07000043,NDE,North Devon District Council,england,district,E12000009,https://ww
 E07000038,NED,North East Derbyshire District Council,england,district,E12000004,https://www.ne-derbyshire.gov.uk,https://ne-derbyshire.moderngov.co.uk,ok,probed
 E06000012,NEL,North East Lincolnshire Council,england,unitary,E12000003,https://www.nelincs.gov.uk,,none,
 E07000099,NHE,North Hertfordshire District Council,england,district,E12000006,https://www.north-herts.gov.uk,https://democracy.north-herts.gov.uk,ok,local-democracy-uk
-E07000139,NKE,North Kesteven District Council,england,district,E12000004,https://www.n-kesteven.gov.uk,https://democracy.n-kesteven.gov.uk,none,local-democracy-uk
+E07000139,NKE,North Kesteven District Council,england,district,E12000004,https://www.n-kesteven.gov.uk,https://democracy.n-kesteven.gov.uk,blocked,council website
 E06000013,NLN,North Lincolnshire Council,england,unitary,E12000003,https://www.northlincs.gov.uk,https://northlincolnshire.moderngov.co.uk,ok,local-democracy-uk
 E07000147,NNO,North Norfolk District Council,england,district,E12000006,https://www.northnorfolk.org/,https://modgov.north-norfolk.gov.uk,unreachable,local-democracy-uk
 E06000061,NNUA,North Northamptonshire Council,england,unitary,E12000004,https://www.northnorthants.gov.uk/,https://northnorthants.moderngov.co.uk,ok,local-democracy-uk
@@ -299,7 +299,7 @@ E07000241,WEW,Welwyn Hatfield Borough Council,england,district,E12000006,https:/
 E06000037,WBK,West Berkshire Council,england,unitary,E12000008,https://www.westberks.gov.uk,https://decisionmaking.westberks.gov.uk,unreachable,local-democracy-uk
 E07000047,WDE,West Devon Borough Council,england,district,E12000009,https://www.westdevon.gov.uk,https://democracy.swdevon.gov.uk,none,local-democracy-uk
 E07000127,WLA,West Lancashire Borough Council,england,district,E12000002,https://www.westlancs.gov.uk,https://democracy.westlancs.gov.uk,ok,local-democracy-uk
-E07000142,WLI,West Lindsey District Council,england,district,E12000004,https://www.west-lindsey.gov.uk,https://democracy.west-lindsey.gov.uk,none,local-democracy-uk
+E07000142,WLI,West Lindsey District Council,england,district,E12000004,https://www.west-lindsey.gov.uk,https://democracy.west-lindsey.gov.uk,blocked,council website
 E06000062,WNUA,West Northamptonshire Council,england,unitary,E12000004,https://www.westnorthants.gov.uk/,https://westnorthants.moderngov.co.uk,ok,local-democracy-uk
 E07000181,WOX,West Oxfordshire District Council,england,district,E12000008,https://www.westoxon.gov.uk,https://meetings.westoxon.gov.uk,blocked,local-democracy-uk
 E07000245,WSK,West Suffolk Council,england,district,E12000006,https://www.westsuffolk.gov.uk,https://democracy.westsuffolk.gov.uk,unreachable,local-democracy-uk
