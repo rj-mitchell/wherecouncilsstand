@@ -5,7 +5,7 @@ E07000224,ARU,Arun District Council,england,district,E12000008,https://www.arun.
 E07000170,ASH,Ashfield District Council,england,district,E12000004,https://www.ashfield.gov.uk,https://ashfield.moderngov.co.uk,ok,local-democracy-uk
 E07000105,ASF,Ashford Borough Council,england,district,E12000008,https://www.ashford.gov.uk,https://ashford.moderngov.co.uk,ok,local-democracy-uk
 E07000200,BAB,Babergh District Council,england,district,E12000006,https://www.babergh.gov.uk,https://baberghmidsuffolk.moderngov.co.uk,ok,local-democracy-uk
-E08000016,BNS,Barnsley Metropolitan Borough Council,england,metropolitan,E12000003,https://www.barnsley.gov.uk,https://barnsleymbc.moderngov.co.uk,ok,local-democracy-uk
+E08000038,BNS,Barnsley Metropolitan Borough Council,england,metropolitan,E12000003,https://www.barnsley.gov.uk,https://barnsleymbc.moderngov.co.uk,ok,local-democracy-uk
 E07000066,BAI,Basildon Borough Council,england,district,E12000006,https://www.basildon.gov.uk,https://www.basildonmeetings.info,ok,local-democracy-uk
 E07000084,BAN,Basingstoke and Deane Borough Council,england,district,E12000008,https://www.basingstoke.gov.uk,https://democracy.basingstoke.gov.uk,ok,local-democracy-uk
 E07000171,BAE,Bassetlaw District Council,england,district,E12000004,https://www.bassetlaw.gov.uk,https://bassetlaw.moderngov.co.uk,ok,local-democracy-uk
@@ -233,7 +233,7 @@ E08000006,SLF,Salford City Council,england,metropolitan,E12000002,https://www.sa
 E08000028,SAW,Sandwell Metropolitan Borough Council,england,metropolitan,E12000005,https://www.sandwell.gov.uk,https://sandwell.moderngov.co.uk,ok,local-democracy-uk
 E08000014,SFT,Sefton Metropolitan Borough Council,england,metropolitan,E12000002,https://www.sefton.gov.uk,https://modgov.sefton.gov.uk,blocked,local-democracy-uk
 E07000111,SEV,Sevenoaks District Council,england,district,E12000008,https://www.sevenoaks.gov.uk,https://sevenoaks.moderngov.co.uk,ok,local-democracy-uk
-E08000019,SHF,Sheffield City Council,england,metropolitan,E12000003,https://www.sheffield.gov.uk,https://democracy.sheffield.gov.uk,ok,local-democracy-uk
+E08000039,SHF,Sheffield City Council,england,metropolitan,E12000003,https://www.sheffield.gov.uk,https://democracy.sheffield.gov.uk,ok,local-democracy-uk
 E06000051,SHR,Shropshire Council,england,unitary,E12000005,https://www.shropshire.gov.uk,https://shropshire.gov.uk/committee-services,ok,local-democracy-uk
 E06000039,SLG,Slough Borough Council,england,unitary,E12000008,https://www.slough.gov.uk,https://democracy.slough.gov.uk,ok,local-democracy-uk
 E08000029,SOL,Solihull Metropolitan Borough Council,england,metropolitan,E12000005,https://www.solihull.gov.uk,https://democracy.solihull.gov.uk,unreachable,local-democracy-uk
