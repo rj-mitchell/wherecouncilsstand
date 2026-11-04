@@ -18,22 +18,27 @@ from councils.config import STATIC_DIR
 NAMES = {
     "LAB": "Labour", "CON": "Conservative", "LD": "Liberal Democrats", "GRN": "Green", "REF": "Reform UK",
     "PC": "Plaid Cymru", "UKIP": "UKIP", "LIB": "Liberal Party", "YP": "Your Party", "WPB": "Workers Party",
-    "SDP": "Social Democratic Party", "IND": "Independent", "LOCAL": "Local party or group",
+    "SDP": "Social Democratic Party", "SNP": "Scottish National Party", "ALBA": "Alba Party",
+    "DUP": "Democratic Unionist Party", "SF": "Sinn Féin", "SDLP": "Social Democratic and Labour Party",
+    "UUP": "Ulster Unionist Party", "APNI": "Alliance Party", "TUV": "Traditional Unionist Voice",
+    "PBP": "People Before Profit", "AONTU": "Aontú", "IND": "Independent", "LOCAL": "Local party or group",
     "NONE": "No party recorded",
 }
 
 _RULES = [
     ("LAB", r"lab|labour|labour (and |& )?co-?op(erative)?( party)?|lab ?(/|and|&)? ?co-?op|labcop|labco|labourcoop"
-            r"|labour party|labour group|welsh labour( party)?|labour and co-operative party|the labour party"
+            r"|labour party|labour group|welsh labour( party)?|scottish labour( party)?|labour and co-operative party"
+            r"|the labour party"
             # Labour and Co-operative, as councils abbreviate it: "L&C", "LAB-CO", "LCO", "LABC", "LCP", "co-op"
             r"|l ?(&|and) ?co?(-?op)?|landc|lco|lac|laco|labc|lcp|lab ?(-|&) ?co(-?op(erative)?|p)?|lab&coop"
             r"|la[bo]?our (&|and) co-?op(erative)?( party)?|co-?op(erative)?( party)?"),
     ("CON", r"con|cons|conservatives?( party| group)?|conservative (and|&) unionist( party)?|tory|tories|conu"
-            r"|the conservative party( candidate)?"),
+            r"|the conservative party( candidate)?|scottish conservatives?( and unionists?)?( party)?"),
     ("LD", r"ld|lib ?dems?|libdems?|liberal democrats?( party| group)?|lib dem group|libdem group|libdem ?fo(cus)?"
-           r"|wld|welsh liberal democrats?"),
+           r"|wld|welsh liberal democrats?|scottish liberal democrats?"),
     ("GRN", r"grn|gre|gp|green|greens|green party( candidate)?|green group|the green party"
-            r"|green party and independent group"),
+            r"|green party and independent group|scottish greens?( party)?|scottish green party|green party ni"
+            r"|green party northern ireland"),
     ("REF", r"ref|refuk|ruk|reform ?uk|reform|reform uk party|reform group|reform uk group"),
     ("PC", r"pc|plaid|plai|plaid cymru|plaid cymru - the party of wales"),
     ("UKIP", r"ukip|uk independence party"),
@@ -41,6 +46,17 @@ _RULES = [
     ("YP", r"your party|yp"),
     ("WPB", r"workers party( of britain)?|wpb"),
     ("SDP", r"sdp|social democratic party"),
+    # Scotland and Northern Ireland (before the local-party rule, which would take "Alliance" for a local group)
+    ("SNP", r"snp|scottish national party|scottish national|scottish nationalists?"),
+    ("ALBA", r"alba|alba party"),
+    ("DUP", r"dup|democratic unionists?( party)?"),
+    ("SF", r"sf|sinn f[eé]in"),
+    ("SDLP", r"sdlp|social democratic (and|&) labour( party)?"),
+    ("UUP", r"uup|ulster unionists?( party)?"),
+    ("APNI", r"apni|all|alliance|alliance party( of northern ireland)?"),
+    ("TUV", r"tuv|traditional unionist voice"),
+    ("PBP", r"pbp|people before profit( alliance)?"),
+    ("AONTU", r"aont[uú]"),
     ("IND", r"i|ind|ind ind|indy|indep|inde|independent|independant|independents?( member| councillor)?|non-? ?aligned|unaligned|no party|non political"),
     ("NONE", r"|none|n/a|-"),
 ]

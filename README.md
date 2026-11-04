@@ -1,6 +1,6 @@
 # Where Councils Stand
 
-**Sourced briefings on what councils in England and Wales have discussed, decided and voted on.**
+**Sourced briefings on what councils across the UK have discussed, decided and voted on.**
 
 Where Councils Stand applies the approach of [Where MPs Stand](https://wherempsstand.com) to local government. It
 reads the minutes councils already publish for full council and cabinet meetings, and will offer short, balanced
@@ -16,7 +16,7 @@ It is a project of Where They Stand, which is applying to register as a charity 
 
 Pilot stage. The data layer works on the real record:
 
-- the registry of all 340 principal councils in England and Wales, and which publish through Modern.gov;
+- the registry of every principal council in the UK (England, Wales, Scotland and Northern Ireland), and which publish through Modern.gov;
 - loading full council and cabinet meetings from May 2018: minutes, attendance and party on the date;
 - minutes published only as a document, where the council serves documents;
 - reading named votes and declarations of interest from the minutes;
