@@ -20,8 +20,8 @@ of cached responses and 18 MB of stored meetings), plus the search index. An Ant
    "Cloudflare protection"):
    * the holding page is a Cloudflare Worker, `wherecouncilsstand-holding` (in the cio repo, `holding/wherecouncilsstand/`):
      remove its custom domain first (Workers & Pages > wherecouncilsstand-holding > Settings > Domains & Routes);
-   * an **A** record for `@` pointing at the server, **Proxied**, and `www` redirected to it by a redirect rule; SSL/TLS **Full (strict)**, and an **origin certificate** for wherecouncilsstand.com (leave its
-   page open).
+   * an **A** record for `@` pointing at the server, **Proxied**, and `www` redirected to it by a redirect rule;
+   * SSL/TLS **Full (strict)**, and an **origin certificate** for wherecouncilsstand.com (leave its page open).
 2. **Code and settings**, on the server, as root:
    ```bash
    git clone https://github.com/rj-mitchell/wherecouncilsstand /opt/wherecouncilsstand
