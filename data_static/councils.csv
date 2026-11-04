@@ -39,7 +39,7 @@ E10000003,CAM,Cambridgeshire County Council,england,county,E12000006,https://www
 E07000192,CAN,Cannock Chase District Council,england,district,E12000005,https://www.cannockchasedc.gov.uk,,none,
 E07000106,CAT,Canterbury City Council,england,district,E12000008,https://www.canterbury.gov.uk,https://democracy.canterbury.gov.uk,unreachable,local-democracy-uk
 E07000069,CAS,Castle Point Borough Council,england,district,E12000006,https://www.castlepoint.gov.uk,,none,
-E06000056,CBF,Central Bedfordshire Council,england,unitary,E12000006,https://www.centralbedfordshire.gov.uk,,none,
+E06000056,CBF,Central Bedfordshire Council,england,unitary,E12000006,https://www.centralbedfordshire.gov.uk,https://centralbeds.moderngov.co.uk,ok,council website
 E07000130,CHA,Charnwood Borough Council,england,district,E12000004,https://www.charnwood.gov.uk,https://charnwood.moderngov.co.uk,ok,local-democracy-uk
 E07000070,CHL,Chelmsford City Council,england,district,E12000006,https://www.chelmsford.gov.uk,,none,
 E07000078,CHT,Cheltenham Borough Council,england,district,E12000009,https://www.cheltenham.gov.uk,https://democracy.cheltenham.gov.uk,blocked,local-democracy-uk
@@ -92,7 +92,7 @@ E07000036,ERE,Erewash Borough Council,england,district,E12000004,https://www.ere
 E10000012,ESS,Essex County Council,england,county,E12000006,https://www.essex.gov.uk/,,none,
 E07000041,EXE,Exeter City Council,england,district,E12000009,https://www.exeter.gov.uk,https://committees.exeter.gov.uk,blocked,local-democracy-uk
 E07000087,FAR,Fareham Borough Council,england,district,E12000008,https://www.fareham.gov.uk,https://moderngov.fareham.gov.uk,ok,local-democracy-uk
-E07000010,FEN,Fenland District Council,england,district,E12000006,https://www.fenland.gov.uk,https://moderngov.fenland.gov.uk,unreachable,local-democracy-uk
+E07000010,FEN,Fenland District Council,england,district,E12000006,https://www.fenland.gov.uk,https://www.fenland.gov.uk/localgov,blocked,council website
 E07000112,SHE,Folkestone and Hythe Council,england,district,E12000008,https://www.folkestone-hythe.gov.uk,https://folkestone-hythe.moderngov.co.uk,ok,local-democracy-uk
 E07000080,FOE,Forest of Dean District Council,england,district,E12000009,https://www.fdean.gov.uk,https://meetings.fdean.gov.uk,blocked,local-democracy-uk
 E07000119,FYL,Fylde Borough Council,england,district,E12000002,https://www.fylde.gov.uk,,none,
@@ -140,7 +140,7 @@ E09000002,BDG,London Borough of Barking and Dagenham,england,london_borough,E120
 E09000003,BNE,London Borough of Barnet,england,london_borough,E12000007,https://www.barnet.gov.uk,https://barnet.moderngov.co.uk,ok,local-democracy-uk
 E09000004,BEX,London Borough of Bexley,england,london_borough,E12000007,https://www.bexley.gov.uk,https://democracy.bexley.gov.uk,ok,probed
 E09000005,BEN,London Borough of Brent,england,london_borough,E12000007,https://www.brent.gov.uk,https://democracy.brent.gov.uk,ok,local-democracy-uk
-E09000006,BRY,London Borough of Bromley,england,london_borough,E12000007,https://www.bromley.gov.uk,,none,
+E09000006,BRY,London Borough of Bromley,england,london_borough,E12000007,https://www.bromley.gov.uk,https://cds.bromley.gov.uk,ok,council website
 E09000007,CMD,London Borough of Camden,england,london_borough,E12000007,https://www.camden.gov.uk,https://democracy.camden.gov.uk,blocked,probed
 E09000008,CRY,London Borough of Croydon,england,london_borough,E12000007,https://www.croydon.gov.uk,https://democracy.croydon.gov.uk,ok,local-democracy-uk
 E09000009,EAL,London Borough of Ealing,england,london_borough,E12000007,https://www.ealing.gov.uk,https://ealing.moderngov.co.uk,ok,local-democracy-uk
@@ -167,7 +167,7 @@ E09000032,WND,London Borough of Wandsworth,england,london_borough,E12000007,http
 E06000032,LUT,Luton Borough Council,england,unitary,E12000006,https://www.luton.gov.uk,https://democracy.luton.gov.uk,blocked,probed
 E07000110,MAI,Maidstone Borough Council,england,district,E12000008,https://www.maidstone.gov.uk,https://meetings.maidstone.gov.uk,ok,local-democracy-uk
 E07000074,MAL,Maldon District Council,england,district,E12000006,https://www.maldon.gov.uk,https://democracy.maldon.gov.uk,ok,local-democracy-uk
-E07000235,MAV,Malvern Hills District Council,england,district,E12000005,https://www.malvernhills.gov.uk,,none,
+E07000235,MAV,Malvern Hills District Council,england,district,E12000005,https://www.malvernhills.gov.uk,https://moderngov.malvernhills.gov.uk,ok,council website
 E08000003,MAN,Manchester City Council,england,metropolitan,E12000002,https://www.manchester.gov.uk,https://democracy.manchester.gov.uk,ok,local-democracy-uk
 E07000174,MAS,Mansfield District Council,england,district,E12000004,https://www.mansfield.gov.uk,https://mansfield.moderngov.co.uk,ok,local-democracy-uk
 E06000035,MDW,Medway Council,england,unitary,E12000008,https://www.medway.gov.uk,https://democracy.medway.gov.uk,unreachable,local-democracy-uk
