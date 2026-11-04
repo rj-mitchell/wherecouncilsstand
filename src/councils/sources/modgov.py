@@ -214,6 +214,10 @@ class Client:
         return xml(text)
 
 
+_REFUSAL = re.compile(r"has been blocked|request rejected|connection denied|incapsula|_Incapsula_Resource|"
+                      r"access denied|captcha|just a moment|attention required|bot (?:check|protection)", re.I)
+
+
 def probe(settings: Settings, council: str, base_url: str) -> tuple[str, int]:
     """("ok", number of committees), ("blocked", HTTP status), ("unreachable", 0) when the connection fails, or
     ("none", HTTP status) when the site answers without a Modern.gov web service. Not cached."""
@@ -231,6 +235,12 @@ def probe(settings: Settings, council: str, base_url: str) -> tuple[str, int]:
         return "ok", int(m.group(1)) if m else 0
     if r.status_code in (401, 403, 429, 503):
         return "blocked", r.status_code
+    # a firewall or bot check, not the absence of a site: "The URL you requested has been blocked" (with 500),
+    # Imperva's check (with 200), "Connection denied by Geolocation", "Request Rejected"
+    if _REFUSAL.search(r.text[:5000]):
+        return "blocked", r.status_code
+    if r.status_code in (502, 504, 520, 521, 522, 523, 524):
+        return "unreachable", r.status_code           # a proxy (Cloudflare) couldn't reach the site
     return "none", r.status_code
 
 

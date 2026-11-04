@@ -45,7 +45,10 @@ TYPES = {"CTY": "county", "NMD": "district", "UA": "unitary", "MD": "metropolita
          "CC": "city_of_london", "SRA": "isles_of_scilly"}
 HOST_PREFIXES = ["democracy", "moderngov", "modgov", "committees", "democratic", "meetings", "councillors",
                  "decisionmaking", "democracy.cityof", "cmttpublic", "mgov", "moderngovwebpublic", "modgov.lb",
-                 "committeemeetings", "councilmeetings", "democraticservices", "minutes", "cabinet"]
+                 "committeemeetings", "councilmeetings", "democraticservices", "minutes", "cabinet", "mygov",
+                 "edemocracy", "mgov", "modgovpub", "councillors"]
+# Modern.gov under a path on the council's main site (Kensington and Chelsea, Fenland, Wychavon)
+PATH_PREFIXES = ["moderngov", "modernGov", "localgov", "Committees", "modern.gov"]
 FIELDS = ["gss", "reference", "name", "nation", "type", "region", "website", "modgov_url", "modgov_status",
           "modgov_source"]
 
@@ -109,6 +112,7 @@ def candidate_hosts(website: str, name: str) -> list[str]:
     host = urlparse(website if "://" in website else f"https://{website}").hostname or ""
     domain = host.removeprefix("www.")
     out = [f"https://{p}.{domain}" for p in HOST_PREFIXES] if domain else []
+    out += [f"https://www.{domain}/{p}" for p in PATH_PREFIXES] if domain else []
     slug = re.sub(r"[^a-z]", "", norm(name))
     if slug:
         out.append(f"https://{slug}.moderngov.co.uk")
