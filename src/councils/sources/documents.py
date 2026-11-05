@@ -41,7 +41,8 @@ def dates_in(title: str) -> set[date]:
         add(int(y), int(m), int(d))
     for y, m, d in re.findall(r"\b(\d{4})[./-](\d{1,2})[./-](\d{1,2})\b", t):
         add(int(y), int(m), int(d))
-    for d, mon, y in re.findall(r"\b(\d{1,2})(?:st|nd|rd|th)?\s+([a-z]{3,9})\.?,?\s+(\d{4}|\d{2})\b", t):
+    # a lookahead, so "03-01 minutes 15 may 2024" isn't read as "01 minutes 15" and the real date missed
+    for d, mon, y in re.findall(r"\b(?=(\d{1,2})(?:\s?(?:st|nd|rd|th))?\s+([a-z]{3,9})\.?,?\s+(\d{4}|\d{2})\b)", t):
         if mon in MONTHS:
             add(int(y), MONTHS[mon], int(d))
     for run in re.findall(r"(?<!\d)(\d{6}|\d{8})(?!\d)", t):   # "011123", "17012024", "20240117"

@@ -524,3 +524,43 @@ def test_a_lost_space_before_amendment():
     text = ("(For the Motion (as adjusted): Councillors Barlow, Williams and Bailey. ForAmendment 2: Councillors Ward "
             "and Kohler.) Decision To approve the motion.")
     assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24", "25"], "against": ["27", "26"]}
+
+
+SUNDERLAND = [Member(str(i), f"Councillor {n}", "") for i, n in enumerate(
+    ["A Atkinson", "B Ball", "C Beck", "E Gibson", "P Gibson", "D Appleby", "M Dixon", "K Kelly"])]
+
+
+def test_one_member_to_a_line_keeps_each_name():
+    text = ("Upon being put to the vote the motion was carried with 5 Members voting in favour:-\n"
+            "Councillors Atkinson\nBall\nBeck\n\nGibson, E.\nGibson, P.\n"
+            "And 2 Members voting against:-\nCouncillors Appleby\n\nDixon, M\n(Following the declaration")
+    found = votes.parse(votes.line_lists(text), SUNDERLAND)
+    assert sorted(v.name for v in found if v.side == "for") == ["Atkinson", "Ball", "Beck", "E. Gibson", "P. Gibson"]
+    assert sorted(v.name for v in found if v.side == "against") == ["Appleby", "M Dixon"]
+
+
+def test_a_count_before_the_heading_must_match_the_names():
+    # "with 5 voting in favour" but four names read: a name was lost, so the vote is left out
+    text = ("The motion was carried with 5 Members voting in favour:- Councillors Atkinson, Ball, Beck, Kelly "
+            "and 2 Members voting against:- Councillors Appleby and M Dixon.")
+    assert votes.parse(text, SUNDERLAND) == []
+
+
+def test_a_spelled_count_is_read():
+    text = ("Upon being put to the vote, with four Members voting in favour:- Councillors Atkinson, Ball, Beck, Kelly. "
+            "Two Members voted against:- Councillors Appleby and M Dixon.")
+    found = votes.parse(text, SUNDERLAND)
+    assert len([v for v in found if v.side == "for"]) == 4 and len([v for v in found if v.side == "against"]) == 2
+
+
+def test_the_next_sides_count_is_not_a_name():
+    text = ("The amendment was lost by: 3 votes in favour: Councillors Atkinson, Ball, Kelly To 2 votes against: "
+            "Councillors Appleby, M Dixon. The motion was then put.")
+    found = votes.parse(text, SUNDERLAND)
+    assert sorted(v.name for v in found if v.side == "for") == ["Atkinson", "Ball", "Kelly"]
+
+
+def test_a_thousands_comma_is_no_count():
+    text = ("Revised Savings 9,539 32,835 For the Amendment: Councillors Atkinson, Ball and Kelly. "
+            "Against the Amendment: Councillors Appleby and M Dixon.")
+    assert len(votes.parse(text, SUNDERLAND)) == 5
