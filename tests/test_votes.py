@@ -564,3 +564,20 @@ def test_a_thousands_comma_is_no_count():
     text = ("Revised Savings 9,539 32,835 For the Amendment: Councillors Atkinson, Ball and Kelly. "
             "Against the Amendment: Councillors Appleby and M Dixon.")
     assert len(votes.parse(text, SUNDERLAND)) == 5
+
+
+def test_declarations_by_members_named_by_title():
+    """Shetland (and Kent, Rutland) name councillors by title: "Mr G Smith, Mr T Smith and Ms Macdonald declared an
+    interest". Only councillors at the meeting are read, since an officer can be "Mr" too."""
+    ms = [Member("1", "Gary Smith", ""), Member("2", "Theo Smith", ""), Member("3", "Catherine Macdonald", ""),
+          Member("4", "Andrew McGuire", ""), Member("5", "Ann Scott", "")]
+    found = declarations.parse("Declarations of Interest Mr G Smith, Mr T Smith and Ms Macdonald declared an interest "
+                               "in Item 5, as Members of the Shetland College Board.", ms)
+    assert [(d.name, d.member_id) for d in found] == [("Mr G Smith", "1"), ("Mr T Smith", "2"), ("Ms Macdonald", "3")]
+    assert declarations.parse("Mr Jonathan Belford, Executive Manager, declared an interest in item 3.", ms) == []
+    # a buyer's name before the councillor's is not part of the declaration (West Lothian)
+    found = declarations.parse("Item 6 - Proposed Sale of Land to Mr Stewart Councillor Andrew McGuire declared an "
+                               "interest in that he had engaged in discussions.", ms)
+    assert [d.member_id for d in found] == ["4"]
+    # "Councillor Mrs Scott" is read once
+    assert len(declarations.parse("Councillor Mrs Scott declared a personal interest in item 4.", ms)) == 1

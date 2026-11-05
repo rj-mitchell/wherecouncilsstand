@@ -44,3 +44,19 @@ def test_shared_site_prefix():
     assert strip_prefix("Babergh Cabinet", ["Babergh"]) == "Cabinet"
     assert strip_prefix("Mid Suffolk Council", ["Babergh"]) is None
     assert strip_prefix("Mid Suffolk Council", ["Mid Suffolk"]) == "Council"
+
+
+def test_full_council_under_its_own_name_with_or_without_its_kind():
+    """Flintshire's full council is "Flintshire County Council"; the registry calls it "Flintshire Council"."""
+    from councils.committees import kind
+
+    assert kind("Flintshire County Council", "W06000005") == "council"
+    assert kind("Flintshire County Council Cabinet", "W06000005") is None
+    assert kind("Hampshire County Council", "E07000085") is None          # not East Hampshire's own name
+
+
+def test_full_councils_with_their_own_titles():
+    from councils.committees import kind
+
+    assert kind("Court of Common Council", "E09000001") == "council"     # the City of London
+    assert kind("Council Assembly", "E09000028") == "council"            # Southwark

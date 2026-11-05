@@ -198,6 +198,38 @@ def pager_target(text: str, grid: str, page: int) -> str | None:
     return None
 
 
+def date_filter(text: str, start: date) -> dict[str, str] | None:
+    """The fields that set a committee page's own "meetings from ... to ..." filter (Luton's pages show only the
+    current council year until it is set), and press its Submit button; None if the page has no such filter, or it
+    already lists meetings from ``start``."""
+    root = lhtml.fromstring(text)
+    names = {el.get("name") for el in root.xpath("//input[@name]")}
+    base = next((n.rsplit("$", 1)[0] for n in names if n.endswith("$datePickerMeetingsFrom")), None)
+    button = next((n for n in names if n.endswith("$btnSubmitMeetingsFilter")), None)
+    if not base or not button:
+        return None
+    shown_from = root.xpath(f"//input[@name='{base}$datePickerMeetingsFrom']/@value")
+    try:
+        if shown_from and date.fromisoformat(shown_from[0]) <= start:
+            return None                     # the page already lists meetings from the start
+    except ValueError:
+        pass
+    # only the "from" date: the page's own "to" date reaches past today, to meetings already arranged
+    stamp = start.strftime("%Y-%m-%d-00-00-00")
+    return {button: "Submit",
+            f"{base}$datePickerMeetingsFrom": start.isoformat(),
+            f"{base}$datePickerMeetingsFrom$dateInput": start.strftime("%d %B %Y"),
+            base.replace("$", "_") + "_datePickerMeetingsFrom_dateInput_ClientState": json.dumps(
+                {"enabled": True, "emptyMessage": "", "validationText": stamp, "valueAsString": stamp,
+                 "lastSetTextBoxValue": start.strftime("%d %B %Y")})}
+
+
+def listed_from(text: str) -> date | None:
+    """The "from" date a committee page's meeting filter shows."""
+    m = re.search(r'name="[^"]*\$datePickerMeetingsFrom"[^>]*value="(\d{4}-\d\d-\d\d)"', text)
+    return date.fromisoformat(m.group(1)) if m else None
+
+
 def form_fields(text: str) -> dict[str, str]:
     """The page's form, as a browser would post it (hidden fields, text inputs and checked boxes; no buttons)."""
     root = lhtml.fromstring(text)
@@ -640,7 +672,7 @@ class Client:
         tmp.replace(path)
 
     def page(self, name: str, url: str, refresh: bool = False, max_age_days: float | None = None,
-             postback: tuple[str, str] | None = None) -> tuple[str, bool]:
+             postback: tuple[str, str] | None = None, fields: dict[str, str] | None = None) -> tuple[str, bool]:
         """(page, fetched now). A cached copy is used unless it is missing, ``refresh`` is set or it is older than
         ``max_age_days``. ``postback`` is (the page posted from, the control's postback target). If fetching again
         fails, a cached copy is used: a server that is down mustn't lose what is already known."""
@@ -651,6 +683,7 @@ class Client:
             if postback:
                 data = form_fields(postback[0])
                 data["__EVENTTARGET"], data["__EVENTARGUMENT"] = postback[1], ""
+                data.update(fields or {})          # a form's own fields, as a person would fill them in
                 r = self._request("POST", url, data)
             else:
                 r = self._request("GET", url)
@@ -737,6 +770,15 @@ def list_meetings(client: Client, committee: CommitteeRef, start: date, end: dat
             max_age = 30
     first, fresh = client.page(f"{key}/first", committee.url, max_age_days=max_age)
     cur, total = pager(first, "gridMeetings")
+    if filled := date_filter(first, start):
+        # the page lists meetings only from a later date (one council year, at Luton) until its own date filter is
+        # set: set it from the start, as a person would. A committee that began later keeps its own first date
+        # (Nottinghamshire's Cabinet, 2022), and then the page as first shown is used.
+        filtered, fresh_filtered = client.page(f"{key}/from", committee.url, refresh=fresh, postback=(first, ""),
+                                               fields=filled)
+        if (listed_from(filtered) or date.max) < (listed_from(first) or date.max):
+            first, fresh = filtered, fresh or fresh_filtered
+            cur, total = pager(first, "gridMeetings")
     pages = {cur: first}
     refs = {m.id: m for m in meeting_links(first, committee.url)}
 

@@ -20,7 +20,12 @@ from councils.parse.votes import Matcher, Member, flatten, split_names
 _KIND = (r"(?:disclosable pecuniary|other registrable|non[- ]registrable|non[- ]pecuniary|pecuniary|personal and "
          r"prejudicial|prejudicial|personal|significant|registrable|declarable|private|other)")
 DECLARED = re.compile(
-    rf"(?P<who>(?:the (?:mayor|chair(?:man)?)\s*\(?)?(?:councillors?|cllrs?\.?)\s+[^.;]{{1,200}}?)\s+"
+    rf"(?P<who>(?:the (?:mayor|chair(?:man)?)\s*\(?)?(?:councillors?|cllrs?\.?)\s+[^.;]{{1,200}}?"
+    # Shetland names its councillors by title: "Mr G Smith, Mr T Smith and Ms Macdonald declared an interest"
+    # (not one inside "Councillor Mrs Scott", read by the line above)
+    rf"|(?<!councillor )(?<!councillors )(?<!cllr )(?<!cllr\. )(?-i:\b(?:Mr|Mrs|Ms|Miss|Dr))\.?\s+(?-i:[A-Z])"
+    # and not across a "Councillor": "... to Mr Stewart Councillor Andrew McGuire declared" is the councillor's
+    rf"(?:(?!\bcouncill?ors?\b|\bcllrs?\b)[^.;]){{0,200}}?)\s+"
     rf"(?:(?:both|each|all)\s+)?(?:declared|declare|disclosed|reported|made a declaration of)\s+(?:an?\s+|their\s+|his\s+|her\s+)?"
     rf"(?P<kind>{_KIND}(?:\s+(?:and|or)\s+{_KIND})?)?\s*(?:interests?|declarations?)",
     re.I,
@@ -55,9 +60,12 @@ def parse(text: str, members: list[Member]) -> list[Declaration]:
             end = flat.find(". ", m.end())
             excerpt = flat[start:end + 1 if end > 0 else len(flat)].strip()[:600]
             kind = re.sub(r"\s+", " ", (m.group("kind") or "").lower()).replace("non pecuniary", "non-pecuniary")
+            titled = not re.match(r"(?:the |councill?ors?\b|cllrs?\b)", m.group("who"), re.I)
             for name in split_names(re.sub(r"^the (?:mayor|chair(?:man)?)\s*\(?", "", m.group("who"), flags=re.I)):
                 if re.search(r"\d", name) or len(name.split()) > 4:
                     continue
+                if titled and not matcher.match(name):
+                    continue          # "Mr X" may be an officer: only a councillor at the meeting is read
                 key = (name.lower(), m.start())
                 if key in seen:
                     continue

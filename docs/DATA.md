@@ -78,6 +78,9 @@ What was found:
   publishes minutes only as a document, that's where they're found (`sources/documents.py`). Documents come from
   `mgConvert2PDF.aspx?ID=…`, which many sites, especially Civica-hosted `*.moderngov.co.uk` ones, put behind a
   browser check that refuses automated requests, although the web service itself answers.
+- **A committee whose meetings can't be listed** (East Hampshire's council meetings, once, November 2026) is tried
+  again; if it fails twice, nothing is stored for the council, so the next load or update tries again, rather than
+  storing it with a committee missing.
 - **A meeting record without a readable date** (six councils, November 2026) takes the date the committee's list of
   meetings gave; one with no date at all is skipped and counted as failed, rather than stopping the council.
 - **Certificates.** Some councils' servers leave out the intermediate certificate linking theirs to a trusted root
@@ -137,6 +140,10 @@ What was found:
   where the count printed before each list ("with 55 Members voting in favour:-", "Nine Members voted against") is
   the number of names read: about half its recorded votes (45 of about 100, 2018–2026). Norwich mostly records
   counts ("with 31 members voting in favour"), with its few named votes in brackets.
+- **A committee page that lists only one council year** (Luton) until its own "meetings from" filter is set has the
+  filter set to the start date, as a person would, and is then paged as usual. Only the "from" date is set, so
+  meetings already arranged stay listed; a committee that began later keeps its own first date
+  (Nottinghamshire's Cabinet, 2022), and its page is used as first shown.
 - **A committee whose meetings can't be listed** (paging failed: Sunderland's council meetings, once, November
   2026) is tried again; if it fails twice, nothing is stored for the council, so the next load or update tries again,
   rather than storing it with a committee missing.

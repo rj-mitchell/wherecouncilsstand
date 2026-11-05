@@ -74,8 +74,14 @@ def _own_name(title: str, gss: str) -> bool:
     c = councils().get(gss)
     if not c:
         return False
-    t = re.sub(r"^the\s+", "", title.strip(), flags=re.I).lower()
-    return t == re.sub(r"^the\s+", "", c.name, flags=re.I).lower()
+    return _bare(title) == _bare(c.name)
+
+
+def _bare(name: str) -> str:
+    """A council's name without "the" and its kind of council: "Flintshire County Council" and "Flintshire Council"
+    are the same council."""
+    s = re.sub(r"^the\s+", "", name.strip(), flags=re.I).lower()
+    return re.sub(r"\b(?:county|borough|city|district|metropolitan|royal)\s+(?=(?:\w+\s+)*council$)", "", s).strip()
 
 
 def kind(title: str, gss: str = "") -> str | None:
