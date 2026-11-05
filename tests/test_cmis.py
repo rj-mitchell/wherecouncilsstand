@@ -192,6 +192,19 @@ def test_robots_rules_are_matched_ignoring_case(robots_txt, tmp_path, monkeypatc
         assert not c.allowed("https://www.nottinghamshire.gov.uk/dms/document.ashx?a=1")
 
 
+def test_a_rule_for_this_crawler_by_name_is_honoured(robots_txt, tmp_path, monkeypatch):
+    """A council that lets us in with "User-agent: WhereCouncilsStand" (as our letters ask) must be read, though
+    everyone else is still kept out; robotparser alone would match the rule against "Mozilla"."""
+    robots_txt("User-agent: WhereCouncilsStand\nAllow: /\n\nUser-agent: *\nDisallow: /\n")
+    monkeypatch.setenv("COUNCILS_DATA_DIR", str(tmp_path))
+    settings = load_settings()
+    ua = settings.modgov["user_agent"]
+    assert robots.robot_name(ua) == "WhereCouncilsStand"
+    assert robots.allowed("https://essex.cmis.uk.com/essexcmis5/Meetings.aspx", ua)
+    robots_txt("User-agent: *\nDisallow: /\n")
+    assert not robots.allowed("https://essex.cmis.uk.com/essexcmis5/Meetings.aspx", ua)
+
+
 def test_a_date_after_other_numbers_in_a_title_is_read():
     """Sunderland: "03-01 Minutes 15 May 2024" was read as "01 minutes 15", and the date missed (documents.py)."""
     assert cmis.documents.dates_in("03-01 Minutes 15 May 2024") == {date(2024, 5, 15)}
