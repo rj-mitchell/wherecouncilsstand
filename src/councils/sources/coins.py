@@ -135,7 +135,7 @@ class Client:
                     self._last = time.monotonic()
                     last_error = e
                 time.sleep(2 * (attempt + 1))
-            raise CoinsError(str(last_error))
+            raise CoinsError(str(last_error)) from last_error
 
     def page(self, rel: str, name: str, max_age_days: float | None = None, refresh: bool = False) -> str:
         """A page, from the cache unless it isn't cached, ``refresh``, or it is older than ``max_age_days``. If
@@ -771,8 +771,10 @@ def _clean_title(title: str) -> str:
 def fetch(settings: Settings, council: Council, start: date, end: date, update: bool = False):
     """``(Result, meetings, items, attendance)``, rows as the Modern.gov path makes them (sources/meeting.py)."""
     from councils.ingest import Result
+    from councils.sources.streak import TimeoutStreak
 
     res = Result(council.gss)
+    streak = TimeoutStreak(settings, council.gss)
     meetings: list[dict] = []
     items: list[dict] = []
     attendance: list[dict] = []
@@ -828,7 +830,12 @@ def fetch(settings: Settings, council: Council, start: date, end: date, update: 
                 except CoinsError as e:
                     log.warning("%s meeting %s: %s", council.gss, ref.id, e)
                     res.failed.append(ref.id)
+                    if stop := streak.failed(ref.id, e):
+                        log.warning("%s %s", council.gss, stop)
+                        res.error = stop
+                        return res, [], [], []
                     continue
+                streak.ok()
                 sittings.append(Sitting(ref, agenda, body))
         sittings.sort(key=lambda s: (s.ref.date, s.ref.id))
         for n, sitting in enumerate(sittings):
@@ -839,7 +846,12 @@ def fetch(settings: Settings, council: Council, start: date, end: date, update: 
             except CoinsError as e:
                 log.warning("%s meeting %s: %s", council.gss, sitting.ref.id, e)
                 res.failed.append(sitting.ref.id)
+                if stop := streak.failed(sitting.ref.id, e):
+                    log.warning("%s %s", council.gss, stop)
+                    res.error = stop
+                    return res, [], [], []
                 continue
+            streak.ok()
             meetings.append(m)
             items += its
             attendance += att

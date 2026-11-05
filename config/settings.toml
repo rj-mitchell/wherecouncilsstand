@@ -17,6 +17,9 @@ user_agent = "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.c
 min_interval_seconds = 1.0
 timeout_seconds = 40
 retries = 3
+# Stop loading a council after this many meetings in a row time out: its service isn't answering in time, and
+# nothing is stored, so the next load or update tries again (sources/streak.py). 0 never stops.
+timeouts_in_a_row = 2
 # Minutes of a meeting newer than this are fetched again: they are approved, and sometimes corrected, at the
 # next meeting.
 refetch_days = 120

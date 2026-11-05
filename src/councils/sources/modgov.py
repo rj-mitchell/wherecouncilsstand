@@ -129,7 +129,7 @@ class Client:
                     if self._complete_chain(e):
                         continue                     # verified with the intermediates the site left out
                 time.sleep(2 * (attempt + 1))
-            raise ModgovError(str(last_error))
+            raise ModgovError(str(last_error)) from last_error
 
     def _complete_chain(self, error: Exception) -> bool:
         """A site whose certificate chain lacks an intermediate (tls.py): fetch it, as a browser would, and connect

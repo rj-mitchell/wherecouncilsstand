@@ -38,6 +38,7 @@ For every council already loaded, 20 at a time and one request at a time to each
 | Risk | What happens |
 |---|---|
 | A council's server is down, slow or refuses a request | A response cached earlier is used instead, and the run carries on. If something it needs isn't cached (a meeting list for today, a new meeting), that council is left exactly as stored and reported under `failed`. It is tried again the next day. |
+| A council's meetings keep timing out | After two meetings in a row time out (`timeouts_in_a_row` in `config/settings.toml`), that council is stopped rather than waiting about two minutes on each of its meetings (Epping Forest, November 2026). Nothing is stored for it, and it is tried again the next day; meetings already fetched come from the cache. |
 | A server fails for several days | The council keeps its stored meetings. It stays in `failed` until its server answers. |
 | Many councils fail at once | More likely a problem on our side (the network, the disk). The run exits 1 (`needs_attention`). |
 | A run is interrupted | Each council is written only when its update is complete, so a council is either as it was or fully updated. The next run carries on. Embedding resumes where it stopped. |

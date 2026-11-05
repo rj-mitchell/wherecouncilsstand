@@ -652,6 +652,7 @@ class Client:
                 except httpx.HTTPError as e:
                     self._last = time.monotonic()
                     last_error = CmisError(f"{self.council}: {type(e).__name__}: {url}")
+                    last_error.__cause__ = e
                 time.sleep(2 * (attempt + 1))
             raise last_error or CmisError(url)
 
@@ -957,8 +958,10 @@ def apply_minutes(meeting: dict, items: list[dict], attendance: list[dict], text
 def fetch(settings: Settings, council: Council, start: date, end: date, update: bool = False):
     """(Result, meetings, items, attendance) for a council on CMIS, in the rows the Modern.gov path writes."""
     from councils.ingest import Result
+    from councils.sources.streak import TimeoutStreak
 
     res = Result(council.gss)
+    streak = TimeoutStreak(settings, council.gss)
     base = (council.modgov_url or "").rstrip("/")
     if not base:
         res.error = "no CMIS site"
@@ -1011,7 +1014,12 @@ def fetch(settings: Settings, council: Council, start: date, end: date, update: 
                     except (CmisError, ValueError) as e:
                         log.warning("%s meeting %s: %s", council.gss, ref.id, e)
                         res.failed.append(ref.id)
+                        if stop := streak.failed(ref.id, e):
+                            log.warning("%s %s", council.gss, stop)
+                            res.error = stop
+                            return res, [], [], []
                         continue
+                    streak.ok()
                     meetings.append(m)
                     items += its
                     attendance += att
