@@ -23,6 +23,8 @@ _SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-Z\"“(])")
 BLOCK_WORDS = 70
 KIND_LABEL = {"council": "full council", "cabinet": "cabinet", "policy": "policy committee"}
 SIDE_LABEL = {"for": "For", "against": "Against", "abstain": "Abstained"}
+# a Scottish division is between a motion and an amendment: its sides are each for something (parse/votes.py)
+SCOTTISH_SIDE_LABEL = {"for": "For the motion", "against": "For the amendment", "abstain": "Abstained"}
 
 
 @dataclass
@@ -108,9 +110,12 @@ class Lookup:
                 party = people.party_name(c.party_on(r["member_id"], d), gss) if c and r["member_id"] and \
                     c.party_on(r["member_id"], d) else ""
                 sides[r["vote"]].append(f"{r['name']} ({party})" if party else r["name"])
-            head = "Named vote recorded in these minutes" + (f" on the {vs[0]['question']}" if vs[0]["question"] else "")
+            head = "Named vote recorded in these minutes" + (
+                " between a motion and an amendment" if vs[0]["question"] == "motion or amendment"
+                else f" on the {vs[0]['question']}" if vs[0]["question"] else "")
             head += f", {vs[0]['outcome']}" if vs[0]["outcome"] else ""
-            text = head + ". " + " ".join(f"{SIDE_LABEL[s]} ({len(names)}): {', '.join(names)}."
+            labels = SCOTTISH_SIDE_LABEL if vs[0]["question"] == "motion or amendment" else SIDE_LABEL
+            text = head + ". " + " ".join(f"{labels[s]} ({len(names)}): {', '.join(names)}."
                                           for s, names in sides.items())
             if len(sides) == 1:
                 # a vote with one side read may be incomplete; say so rather than let it read as the whole vote

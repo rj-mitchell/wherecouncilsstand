@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { getVote, type VotePage } from "./api";
 import { Mark, Tally } from "./components/VoteMarks";
-import { KIND_LABEL, longDate, markNav, SIDE_LABEL, setTitle } from "./format";
+import { KIND_LABEL, longDate, markNav, setTitle, sideLabel, voteOn } from "./format";
 
 function App() {
   const id = decodeURIComponent(location.pathname.split("/")[2] || "");
@@ -28,11 +28,11 @@ function App() {
       <h1>{v.item || "Named vote"}</h1>
       <p className="lede">
         {KIND_LABEL[v.kind] || v.committee}, {longDate(v.date)}
-        {v.question ? `: a named vote on the ${v.question}` : ": a named vote"}
+        {`: a named vote${voteOn(v.question)}`}
         {v.outcome ? `, ${v.outcome}` : ""}.
       </p>
       <p>
-        <Tally counts={v.counts} />
+        <Tally counts={v.counts} question={v.question} />
       </p>
       <p className="small">
         Party in overall control of the council on the date: {v.control || "not recorded"}. Each councillor's party is the one
@@ -52,7 +52,7 @@ function App() {
             <section key={side} className="vote-side">
               <h3>
                 <Mark side={side} />
-                {SIDE_LABEL[side]} ({members.length}):
+                {sideLabel(side, v.question)} ({members.length}):
               </h3>
               <ul>
                 {members.map((m, i) => (

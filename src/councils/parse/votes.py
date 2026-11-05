@@ -19,7 +19,7 @@ from dataclasses import dataclass
 
 log = logging.getLogger(__name__)
 _OBJ = r"(?:original |substantive |amended |revised |above )?(?:motion|amendment|recommendations?|resolutions?|budget|proposals?|report|substantive motion|item|objection)"
-_TRAIL = rf"(?:\s+(?:the\s+)?{_OBJ}\s*\(\w{{1,3}}\)(?:\s*(?:,|and)\s*\(\w{{1,3}}\))*|\s+(?:the|this|that)\s+(?:(?!\b(?:are|were|was|is|be|been|recorded|follows|below|vot\w+|none|nil|abstain\w*|abstention\w*|absent|against|councill?ors?|cllrs?)\b)[^:;.()]){{1,90}}?(?=\s*:(?!\d))|\s+(?:on\s+|from\s+)?(?:the|this|that|these|those)\s+{_OBJ}(?:\s+(?:to|for|on|relating to|in respect of)\s[^:;.()]{{1,90}}?(?=\s*:))?)?(?:\s+as amended)?(?:\s+below)?(?:,?\s+(?:being\s+)?present at the time of (?:the )?vot(?:e|ing))?(?:\s+were)?"
+_TRAIL = rf"(?:\s+(?:the\s+)?amendment\s+(?:\d{{1,2}}|[A-Z])\b|\s+(?:the\s+)?{_OBJ}\s*\(\w{{1,3}}\)(?:\s*(?:,|and)\s*\(\w{{1,3}}\))*|\s+(?:the|this|that)\s+(?:(?!\b(?:are|were|was|is|be|been|recorded|follows|below|vot\w+|none|nil|abstain\w*|abstention\w*|absent|against|councill?ors?|cllrs?)\b)[^:;.()]){{1,90}}?(?=\s*:(?!\d))|\s+(?:on\s+|from\s+)?(?:the|this|that|these|those)\s+{_OBJ}(?:\s+(?:to|for|on|relating to|in respect of)\s[^:;.()]{{1,90}}?(?=\s*:))?)?(?:\s+as amended)?(?:\s*\(as (?:adjusted|amended)\))?(?:\s+below)?(?:,?\s+(?:being\s+)?present at the time of (?:the )?vot(?:e|ing))?(?:\s+were)?"
 _COUNT = r"(?:\s*\(\s*\d+\s*(?:total|votes?|members)?\s*\))?(?:\s*[-–]?\s*\d+\s*(?:members|councillors|votes)?)?"
 _WHO = r"(?:(?:those|members|councillors)\s+(?:who\s+)?)?"
 SIDES = {
@@ -199,7 +199,7 @@ def _unrun(part: str) -> list[str]:
     return out
 
 
-_SENTENCE_END = re.compile(r"(?<=\w\w)(?<!\bMr)(?<!\bMrs)(?<!\bMs)(?<!\bDr)(?<!\bSt)(?<!\bCllr)\.\s")
+_SENTENCE_END = re.compile(r"(?<=\w\w)(?<!\bMr)(?<!\bMrs)(?<!\bMs)(?<!\bDr)(?<!\bSt)(?<!\bCllr)\.\)?\s")
 
 
 _LIST_HEADING = re.compile(r"(?:total|totals|none|nil|for|against|abstain\w*|absent|apologies|carried|lost|motion|"
@@ -214,6 +214,8 @@ def split_names(segment: str) -> list[str]:
     s = re.sub(r"^\s*\d+\s*(?:votes?)?\s*(?::-|:|-|–|as follows;?-?)\s*", " ", s)      # "FOR: 40:- Bawn, ..."
     s = re.sub(r"^\s*\d+\s+(?=cllrs?\b|councill?ors\b)", " ", s, flags=re.I)              # "12 Cllrs. Bawn, ..."
     s = s.replace("?", " ").replace("~", " ").strip().rstrip(".;")                          # ticks lost as "?"
+    while s.endswith(")") and s.count("(") < s.count(")"):     # "... Ward and Kohler.)": the minutes' own bracket
+        s = s[:-1].rstrip(" .;")
     s = _ROLE_THEN_NAME.sub(lambda m: f"{m.group(1)} (Councillor {m.group(2)})", s)
     s = _ELECTED_MAYOR.sub(lambda m: f"{m.group(1)} ({m.group(2)})", s)
     if len(re.findall(r"\bcouncillor\b", s, re.I)) >= 2 and len(re.findall(r",|;|\band\b", s)) < \
@@ -247,6 +249,9 @@ def split_names(segment: str) -> list[str]:
         else:
             out.append(n)
     return out
+
+
+MOTION_OR_AMENDMENT = "motion or amendment"   # a Scottish division: "for" is the motion, "against" the amendment
 
 
 def _question(heading: str) -> str:
@@ -326,6 +331,7 @@ def _stated(heading: str) -> int | None:
     what was voted on ("Those voting for recommendations (1) and (2) were")."""
     heading = re.sub(rf"{_OBJ}\s*\(\w{{1,3}}\)(?:\s*(?:,|and)\s*\(\w{{1,3}}\))*(?=\s+(?:were|was)\b)", " ", heading,
                      flags=re.I)
+    heading = re.sub(r"\bamendment\s+(?:\d{1,2}|[A-Z])\b", " ", heading, flags=re.I)   # "For Amendment 1": its number
     m = re.search(r"(\d+)\D*$", heading)
     return int(m.group(1)) if m else None
 
@@ -466,6 +472,8 @@ def _leads(flat: str, heads: list, matcher: Matcher) -> dict[int, tuple[int, lis
 def parse(text: str, members: list[Member]) -> list[Vote]:
     """Every named vote in one agenda item's minutes."""
     flat = flatten(text)
+    # "ForAmendment 2:", a lost space (Edinburgh): read as a heading, not as part of the list before it
+    flat = re.sub(r"\b(For|Against)(?=(?:Amendment|Motion)\b)", r"\1 ", flat)
     heads = list(HEADING.finditer(flat))
     if not heads:
         return _parse_alternative(flat, Matcher(members))
@@ -567,6 +575,34 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
                 (after := re.match(r"\s*(\d+)\b", flat[names_end:])):
             stated = int(after.group(1))                 # "L Williams – total 20.": the list stopped at "20."
         sides.append((h, side, names, names_end, stated))
+    # Scotland's divisions are between a motion and an amendment ("For the motion: ... For the amendment: ..."):
+    # the amendment's supporters are the vote's second side, and the question says so (MOTION_OR_AMENDMENT)
+    # A division with more than two options (a motion and amendments 1, 2 and 3) can't be shown as two sides: it's
+    # left out (found in Edinburgh's minutes, where all the options' supporters were otherwise read as "for").
+    scottish: set[int] = set()
+    many_options = False
+    i = 0
+    option = re.compile(r"\b(?:motion|amendment)\b", re.I)
+    while i < len(sides):
+        h, side = sides[i][0], sides[i][1]
+        if side == "for" and option.search(h.group(0)):
+            j = i + 1
+            while j < len(sides) and sides[j][1] == "for" and re.search(r"\bamendment\b", sides[j][0].group(0), re.I) \
+                    and not re.search(r"\bmotion\b", sides[j][0].group(0), re.I):
+                j += 1                  # a new "For the motion" starts the next division (Edinburgh lists them twice)
+            first_is_motion = not re.search(r"\bamendment", h.group(0), re.I)
+            second_is_amendment = j - i == 2 and re.search(r"\bamendment\b", sides[i + 1][0].group(0), re.I)
+            if j - i == 2 and first_is_motion and second_is_amendment:
+                sides[i + 1] = (sides[i + 1][0], "against", *sides[i + 1][2:])
+                scottish.add(id(sides[i + 1][0]))
+            elif j - i >= 2:     # more than two options, or two amendments with no motion
+                log.debug("a division with %d options: left out", j - i)
+                many_options = True
+                for k in range(i, j):
+                    sides[k] = (sides[k][0], sides[k][1], None, *sides[k][3:])
+            i = max(j, i + 1)
+        else:
+            i += 1
     blocks: list[list[tuple]] = []
     for entry in sides:
         # a side named again starts a new vote, and so does one far from the last list (another vote's lists)
@@ -607,7 +643,7 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
         kept.append(entries)
     blocks = kept
     if not blocks:
-        return [] if misread else _parse_alternative(flat, matcher)     # "for the next 3-5 years:" was the only heading
+        return [] if misread or many_options else _parse_alternative(flat, matcher)     # "for the next 3-5 years:" was the only heading
     out: list[Vote] = []
     for b, entries in enumerate(blocks):
         start = entries[0][0].start()
@@ -616,7 +652,8 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
         next_start = blocks[b + 1][0][0].start() if b + 1 < len(blocks) else len(flat)
         outcome = _outcome_near(flat, start, names_end, prev_end, next_start)
         excerpt = flat[max(prev_end, start - 200):min(next_start, names_end + 150)][:1500]
-        question = next((q for q in (_question(e[0].group(0)) for e in entries) if q), "")
+        question = MOTION_OR_AMENDMENT if any(id(e[0]) in scottish for e in entries) else \
+            next((q for q in (_question(e[0].group(0)) for e in entries) if q), "")
         seen: dict[tuple[str, str], str] = {}
         listed = [(side, names) for _, side, names, *_ in entries]
         listed += [(side, [name]) for side, name in _stragglers(flat, names_end, next_start)]
