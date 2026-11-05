@@ -53,7 +53,7 @@ LETTERS: dict[str, tuple[str, str, bool]] = {
     "E07000196": ("info@sstaffs.gov.uk", "Democratic Services team", True),
     # Second batch: councils whose sites refuse the server, don't answer it, or (found from the server) forbid
     # crawling; addresses found 5 November 2026. Not yet: Camden and Sefton (only named officers' addresses),
-    # Warrington (address hidden on its page), Anglesey (no address published).
+    # Anglesey (no address published).
     "E07000177": ("democracy@cherwell-dc.gov.uk", "Democratic and Elections team", False),
     "E07000010": ("memberservices@fenland.gov.uk", "Member Services team", False),
     "E07000086": ("democratic.services@eastleigh.gov.uk", "Democratic Services team", False),
@@ -68,6 +68,8 @@ LETTERS: dict[str, tuple[str, str, bool]] = {
     "E07000195": ("democraticservices@newcastle-staffs.gov.uk", "Democratic Services team", False),
     "E06000035": ("democratic.services@medway.gov.uk", "Democratic Services team", False),
     "E07000106": ("democracy@canterbury.gov.uk", "Democratic Services team", False),
+    # behind the "email the democratic services team" link on warrington.gov.uk/committees
+    "E06000007": ("democraticservices@warrington.gov.uk", "Democratic Services team", False),
 }
 
 SCOTLAND_NI = ("scotland", "northern_ireland")
