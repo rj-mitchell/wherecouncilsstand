@@ -89,7 +89,12 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
                     res.failed.append(ref.id)
                     continue
                 ctx = meeting_rows.Context(council.gss, council.name, council.modgov_url, cid, title, kind)
-                m, its, att = meeting_rows.rows(root, ctx)
+                try:
+                    m, its, att = meeting_rows.rows(root, ctx, ref.date)
+                except ValueError as e:              # a record that can't be read: this meeting, not the council
+                    log.warning("%s meeting %s: %s", council.gss, ref.id, e)
+                    res.failed.append(ref.id)
+                    continue
                 # Members of the public and council staff in the attendance list aren't stored (docs/DECISIONS.md, 9).
                 att = [a for a in att if extract.is_councillor(a["role"])]
                 for a in att:

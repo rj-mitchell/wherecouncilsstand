@@ -17,11 +17,13 @@ import time
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 import httpx
 from lxml import etree
 
 from councils.config import Settings
+from councils.sources import tls
 
 log = logging.getLogger(__name__)
 
@@ -54,7 +56,7 @@ def ddmmyyyy(d: date) -> str:
 
 def parse_date(text: str | None) -> date | None:
     text = (text or "").strip()
-    for fmt in ("%d/%m/%Y", "%d/%m/%Y %H:%M:%S"):
+    for fmt in ("%d/%m/%Y", "%d/%m/%Y %H:%M:%S", "%Y-%m-%d", "%Y-%m-%dT%H:%M:%S", "%d/%m/%Y %H:%M"):
         try:
             return datetime.strptime(text, fmt).date()
         except ValueError:
@@ -89,11 +91,10 @@ class Client:
         self.interval = float(cfg.get("min_interval_seconds", 1.0))
         self.retries = int(cfg.get("retries", 3))
         self.refetch_days = int(cfg.get("refetch_days", 120))
-        self.http = httpx.Client(
-            headers={"User-Agent": cfg.get("user_agent", "WhereCouncilsStand")},
-            timeout=float(cfg.get("timeout_seconds", 40)),
-            follow_redirects=True,
-        )
+        self._http_options = {"headers": {"User-Agent": cfg.get("user_agent", "WhereCouncilsStand")},
+                              "timeout": float(cfg.get("timeout_seconds", 40)), "follow_redirects": True}
+        self.http = httpx.Client(**self._http_options)
+        self._chain_completed = False
         self._last = 0.0
         self._lock = self._locks.setdefault(council, threading.Lock())
 
@@ -125,8 +126,23 @@ class Client:
                 except httpx.HTTPError as e:
                     self._last = time.monotonic()
                     last_error = e
+                    if self._complete_chain(e):
+                        continue                     # verified with the intermediates the site left out
                 time.sleep(2 * (attempt + 1))
             raise ModgovError(str(last_error))
+
+    def _complete_chain(self, error: Exception) -> bool:
+        """A site whose certificate chain lacks an intermediate (tls.py): fetch it, as a browser would, and connect
+        again, still verifying. True if the client was rebuilt."""
+        if self._chain_completed or not tls.is_incomplete_chain(error):
+            return False
+        self._chain_completed = True
+        ctx = tls.completed_context(urlparse(self.base).hostname or "")
+        if ctx is None:
+            return False
+        self.http.close()
+        self.http = httpx.Client(verify=ctx, **self._http_options)
+        return True
 
     def _cached(self, name: str, op: str, refresh: bool = False, max_age_days: float | None = None,
                 **params: str | int) -> str:

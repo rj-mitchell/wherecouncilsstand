@@ -45,10 +45,15 @@ def _bool(el: etree._Element, path: str) -> bool:
     return _t(el, path).lower() == "true"
 
 
-def rows(root: etree._Element, ctx: Context) -> tuple[dict, list[dict], list[dict]]:
+def rows(root: etree._Element, ctx: Context, listed: date | None = None) -> tuple[dict, list[dict], list[dict]]:
     """(meeting, items, attendance) for one meeting."""
     mid = int(_t(root, "meetingid"))
-    d: date = parse_date(_t(root, "meetingdate"))  # type: ignore[assignment]
+    # the meeting's own date, else the one the committee's list of meetings gave (a meeting record with its date
+    # missing stopped six councils loading, November 2026)
+    found = parse_date(_t(root, "meetingdate")) or listed
+    if found is None:
+        raise ValueError(f"meeting {mid} has no date")
+    d: date = found
     meeting_key = f"{ctx.gss}:{mid}"
     base = ctx.base_url.rstrip("/")
 
