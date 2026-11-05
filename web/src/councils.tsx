@@ -5,13 +5,20 @@ import "./styles.css";
 import { getCouncils, type CouncilRow } from "./api";
 import { markNav, monthYear, number, setTitle } from "./format";
 
-const WHY_NOT: Record<string, string> = {
-  blocked: "Its meetings site refused automated requests.",
-  unreachable: "Its meetings site couldn't be reached.",
-  none: "It doesn't publish its minutes through a system we can read yet.",
-  robots: "Its meetings site asks automated readers not to visit (robots.txt).",
-  ok: "Its meetings site returned errors when loaded.",
-};
+const RATING: Record<string, string> = { green: "Working", amber: "Partly working", red: "Not working" };
+
+function Rating({ r }: { r: CouncilRow }) {
+  return (
+    <>
+      <span className={`rag rag-${r.rating}`}>{RATING[r.rating]}</span>
+      {r.reasons.map((why) => (
+        <div key={why} className="muted">
+          {why}
+        </div>
+      ))}
+    </>
+  );
+}
 
 function App() {
   const [rows, setRows] = useState<CouncilRow[] | null>(null);
@@ -19,6 +26,7 @@ function App() {
   const [q, setQ] = useState("");
   const [nation, setNation] = useState("");
   const [control, setControl] = useState("");
+  const [rating, setRating] = useState("");
   useEffect(() => {
     setTitle("Councils");
     getCouncils().then((d) => setRows(d.councils)).catch((e: Error) => setError(e.message));
@@ -30,7 +38,10 @@ function App() {
   if (error) return <p className="notice">The list of councils couldn't be loaded: {error}</p>;
   if (!rows) return <p className="progress">Loading the councils</p>;
   const match = (r: CouncilRow) =>
-    (!q || r.name.toLowerCase().includes(q.toLowerCase())) && (!nation || r.nation === nation);
+    (!q || r.name.toLowerCase().includes(q.toLowerCase())) &&
+    (!nation || r.nation === nation) &&
+    (!rating || r.rating === rating);
+  const count = (k: string) => rows.filter((r) => r.rating === k).length;
   const covered = rows.filter((r) => r.loaded && match(r) && (!control || r.control?.name === control));
   const missing = rows.filter((r) => !r.loaded && match(r));
   return (
@@ -38,7 +49,14 @@ function App() {
       <h1>Councils</h1>
       <p className="lede">
         {number(rows.filter((r) => r.loaded).length)} of the {number(rows.length)} principal councils in the UK are
-        covered: those whose minutes are published through Modern.gov and could be read. Coverage starts in May 2018.
+        covered: those whose minutes are published through a system we can read (Modern.gov, CMIS or CoINS). Coverage
+        starts in May 2018.
+      </p>
+      <p>
+        <span className="rag rag-green">Working</span> {number(count("green"))} ·{" "}
+        <span className="rag rag-amber">Partly working</span> {number(count("amber"))} ·{" "}
+        <span className="rag rag-red">Not working</span> {number(count("red"))}. Each council's rating is worked out from
+        what is loaded, and kept up to date by the nightly update.
       </p>
       <div className="filters" role="search">
         <div className="field">
@@ -53,6 +71,15 @@ function App() {
             <option value="wales">Wales</option>
             <option value="scotland">Scotland</option>
             <option value="northern_ireland">Northern Ireland</option>
+          </select>
+        </div>
+        <div className="field">
+          <label htmlFor="rating">How well it works</label>
+          <select id="rating" value={rating} onChange={(e) => setRating(e.target.value)}>
+            <option value="">Any</option>
+            <option value="green">Working</option>
+            <option value="amber">Partly working</option>
+            <option value="red">Not working</option>
           </select>
         </div>
         <div className="field">
@@ -75,6 +102,7 @@ function App() {
               <th className="num wide-only">Meetings</th>
               <th className="num">Named votes</th>
               <th className="wide-only">From</th>
+              <th>How well it works</th>
             </tr>
           </thead>
           <tbody>
@@ -88,6 +116,9 @@ function App() {
                 <td className="num wide-only">{number(r.meetings)}</td>
                 <td className="num">{number(r.named_votes)}</td>
                 <td className="wide-only">{monthYear(r.from)}</td>
+                <td>
+                  <Rating r={r} />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -112,7 +143,9 @@ function App() {
                 {missing.map((r) => (
                   <tr key={r.gss}>
                     <td>{r.name}</td>
-                    <td>{WHY_NOT[r.status] || "Not loaded yet."}</td>
+                    <td>
+                      <Rating r={r} />
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { getCouncil, type CouncilPage } from "./api";
 import { Tally } from "./components/VoteMarks";
-import { KIND_LABEL, longDate, markNav, monthYear, number, partyColour, setTitle } from "./format";
+import { KIND_LABEL, longDate, markNav, monthYear, number, partyColour, setTitle, voteOn } from "./format";
 
 const PAGE = 25;
 
@@ -123,10 +123,10 @@ function App() {
                     </h3>
                     <p className="meta">
                       {KIND_LABEL[v.kind] || v.committee} · {longDate(v.date)}
-                      {v.question ? ` · on the ${v.question}` : ""}
+                      {v.question ? ` ·${voteOn(v.question)}` : ""}
                       {v.outcome ? ` · ${v.outcome}` : ""}
                     </p>
-                    <Tally counts={v.counts} />
+                    <Tally counts={v.counts} question={v.question} />
                     {v.partial && <p className="small">Only one side could be read from the minutes.</p>}
                   </div>
                 </li>
