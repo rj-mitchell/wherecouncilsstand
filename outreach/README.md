@@ -14,3 +14,6 @@ A letter already sent is skipped, so the command is safe to repeat. Replies arri
 A council that agrees by adding "User-agent: WhereCouncilsStand / Allow: /" to its robots.txt is read at the next
 load (`sources/robots.py` checks rules under that name). One that agrees by email, leaving robots.txt as it is,
 needs its permission recorded in the registry before it is read.
+
+Councils that publish no email address get a letter for post instead, in the batch's `post/` folder (the send
+command above doesn't take it). Print it, sign it and post it; it asks for a reply by email.
