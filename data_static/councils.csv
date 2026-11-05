@@ -72,7 +72,7 @@ E10000008,DEV,Devon County Council,england,county,E12000009,https://www.devon.go
 E08000017,DNC,Doncaster Metropolitan Borough Council,england,metropolitan,E12000003,https://www.doncaster.gov.uk,https://doncaster.moderngov.co.uk,ok,local-democracy-uk,modgov
 E06000059,DST,Dorset Council,england,unitary,E12000009,https://www.dorsetcouncil.gov.uk,https://moderngov.dorsetcouncil.gov.uk,ok,local-democracy-uk,modgov
 E07000108,DOV,Dover District Council,england,district,E12000008,https://www.dover.gov.uk,https://moderngov.dover.gov.uk,ok,local-democracy-uk,modgov
-E08000027,DUD,Dudley Metropolitan Borough Council,england,metropolitan,E12000005,https://www.dudley.gov.uk,https://cmis.dudley.gov.uk/cmis5,unreachable,researched,cmis
+E08000027,DUD,Dudley Metropolitan Borough Council,england,metropolitan,E12000005,https://www.dudley.gov.uk,https://dudley.cmis.uk.com,robots,researched,cmis
 E06000047,DUR,Durham County Council,england,unitary,E12000001,https://www.durham.gov.uk,https://durham.moderngov.co.uk,ok,probed,modgov
 E07000009,ECA,East Cambridgeshire District Council,england,district,E12000006,https://www.eastcambs.gov.uk,,none,,modgov
 E07000040,EDE,East Devon District Council,england,district,E12000009,https://eastdevon.gov.uk,https://democracy.eastdevon.gov.uk,ok,local-democracy-uk,modgov
@@ -247,8 +247,8 @@ E07000141,SKE,South Kesteven District Council,england,district,E12000004,https:/
 E07000149,SNO,South Norfolk District Council,england,district,E12000006,https://www.south-norfolk.gov.uk,https://southnorfolkandbroadland.moderngov.co.uk,ok,local-democracy-uk,modgov
 E07000179,SOX,South Oxfordshire District Council,england,district,E12000008,https://www.southoxon.gov.uk,https://democratic.southoxon.gov.uk,ok,local-democracy-uk,modgov
 E07000126,SRI,South Ribble Borough Council,england,district,E12000002,https://www.southribble.gov.uk,https://southribble.moderngov.co.uk,ok,local-democracy-uk,modgov
-E07000196,SST,South Staffordshire Council,england,district,E12000005,https://www.sstaffs.gov.uk,https://services.sstaffs.gov.uk/cmis,ok,researched,cmis
-E08000023,STY,South Tyneside Council,england,metropolitan,E12000001,https://www.southtyneside.info,https://portal.southtyneside.info/cmis5,ok,researched,cmis
+E07000196,SST,South Staffordshire Council,england,district,E12000005,https://www.sstaffs.gov.uk,https://southstaffs.cmis.uk.com,robots,researched,cmis
+E08000023,STY,South Tyneside Council,england,metropolitan,E12000001,https://www.southtyneside.info,https://portal.southtyneside.info/cmis5,none,researched,cmis
 E06000045,STH,Southampton City Council,england,unitary,E12000008,https://www.southampton.gov.uk/,https://www.southampton.gov.uk/moderngov,blocked,researched,modgov
 E06000033,SOS,Southend-on-Sea Borough Council,england,unitary,E12000006,https://www.southend.gov.uk,https://democracy.southend.gov.uk,ok,local-democracy-uk,modgov
 E07000213,SPE,Spelthorne Borough Council,england,district,E12000008,https://www.spelthorne.gov.uk,https://democracy.spelthorne.gov.uk,ok,local-democracy-uk,modgov

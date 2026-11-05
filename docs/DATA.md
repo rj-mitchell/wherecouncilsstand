@@ -37,8 +37,8 @@ networks, and some from outside the UK ("Connection denied by Geolocation"), but
 bot check's page, or a Cloudflare timeout, counts as blocked or unreachable, not as no site. Sites that refuse the
 crawler are asked, not worked around (decision 2).
 
-Councils without Modern.gov use CMIS (hosted at `*.cmis.uk.com` and others, whose robots.txt forbids all crawling, so
-they are left out), CoINS, Public Minutes, Jadu's meetings module, SharePoint, or their own pages. Each would need its
+Councils without Modern.gov use CMIS (those hosted at `*.cmis.uk.com` and others forbid all crawling in robots.txt, so
+they are left out; councils' own CMIS sites that allow it are read, below), CoINS, Public Minutes, Jadu's meetings module, SharePoint, or their own pages. Each would need its
 own reader.
 
 ## Meetings: Modern.gov's web service
@@ -80,6 +80,55 @@ What was found:
   browser check that refuses automated requests, although the web service itself answers.
 - **Minutes can change** until approved at the next meeting, so meetings newer than 120 days are fetched again
   (`refetch_days`).
+
+## Meetings: CMIS sites
+
+Civica's CMIS (and Nottinghamshire's variant of it, "DMS") is an ASP.NET (DotNetNuke) site with no web service, so
+`sources/cmis.py` reads its public pages as a browser would. Every response is cached, gzipped, under
+`data/raw/cmis/<council>/`. Councils on CMIS have `system` `cmis` in `councils.csv`; `modgov_url` holds the site's
+base address.
+
+**Robots and refusals.** Every page is checked against the site's robots.txt (`sources/robots.py`) before it is
+fetched, with paths also compared ignoring case, as these IIS sites treat them, and any `Crawl-delay` is honoured. A
+site whose robots.txt forbids its pages gets "robots.txt forbids crawling" and nothing is read. That covers every
+Civica-hosted site (`*.cmis.uk.com`, `*.cmis-ni.org`), whose robots.txt is `Disallow: /`; South Staffordshire and
+Dudley have moved to such sites since the registry was built. Nottinghamshire allows its pages but forbids its
+documents (`Disallow: /DMS/Document.ashx`), so its meetings, agendas and attendance load without minutes. A 401, 403,
+429 or a bot check's page stops the council's load with an error; it isn't retried or worked around. (A redirect to
+`login.aspx`, as Norwich's home page does, is a page that needs a login, not a refusal: it is skipped.)
+
+| Page | Used for |
+|---|---|
+| `Committees.aspx`, and the site's other pages of committees its navigation links ("Former committees", "Historical committees", Sunderland's committees by council year, leaving out years before the start) | Committees, by id and title, linked as `…/ctl/ViewCMIS_CommitteeDetails/mid/<m>/id/<committee>/Default.aspx`. Their kind comes from `committees.py` as for Modern.gov |
+| A committee's page | Its meetings, ten to a page of a grid, oldest first. The page around today is shown first; the others are reached by the grid's own postbacks (the form posted back, as the page's links do), walking back to the start date |
+| A meeting's page, `…/ctl/ViewMeetingPublic/mid/<m>/Meeting/<id>/Committee/<committee>/Default.aspx` | Date, status, venue; the agenda, where the council enters one (Norwich and Nottinghamshire do, Sunderland and Warwick don't), with each item's number, title, text, documents and a link to any decision; minutes per item where entered (none of the sites seen do); its documents; grids of members attended, other members in attendance, apologies and absent, and declarations of interest, 25 to a page, the further pages reached by postback |
+| `Document.ashx?…` | Minutes documents (PDF). The address is encrypted but stable, and the cache is keyed by it |
+| A councillor's page, `…/ctl/ViewCMIS_Person/…/id/<person>/Default.aspx` | Party and ward history, each with from and to dates |
+
+What was found:
+
+- **Minutes are documents.** A meeting's own minutes are usually on its own page ("Minutes of the Full Council meeting
+  held on 27 January 2026", Norwich; "Minutes Additonal Council 15 July 2026", Warwick), or at the next meeting's
+  item approving them (Sunderland: "02 - Minutes of the last ordinary meeting of the Council held on 30 January
+  2019"). Titles may be written as one word ("02-MinutesOfLastMeetingHeldOn3March2021") or without the year ("Public
+  Minutes of 9 February Cabinet meeting"); both are read. The document is split into the agenda's items where the
+  site has an agenda (`documents.split_into_items`), and otherwise kept whole as one "Minutes" item.
+- **Some CMIS PDFs have cross-reference offsets a few bytes out**, from an update CMIS appends (Sunderland). pdfminer
+  reads none of their text; the offsets are corrected (`cmis.repair_pdf`) and the document read again.
+- **Some minutes are scanned images** (Warwick's 2018–19 minutes), with no text to read; they aren't read (there is
+  no OCR).
+- **Attendance** comes from the meeting's grids, with CMIS's own id for each councillor as `member_id`. Roles aren't
+  in the grids: "the Mayor" or "the Chair" is taken from the minutes' "Present:" list ("The Mayor (Councillor L
+  Scanlan) in the Chair", "Kendrick (Lord Mayor)"). Where a meeting's grids are empty, the attendance is read from that
+  list, with an id made from the name as written ("sands-m") and no party.
+- **Party on the date** comes from each councillor's party history, which CMIS keeps with dates for former
+  councillors too. Where no entry covers the meeting's date, the party is left blank, never guessed. Labels are the
+  party's name ("Labour", "Liberal Democrats"), mapped to codes as for Modern.gov.
+- **Votes**: Sunderland records named votes as columns of surnames, some as "Smith, A", which the votes parser reads
+  only in part; Norwich mostly records counts ("with 31 members voting in favour"), with its few named votes in
+  brackets.
+- **Slow pages**: each page is 100–200 KB of ASP.NET form, and a council of eight years takes about 1,000 requests
+  (half an hour at a request a second).
 
 ## Party in control
 
