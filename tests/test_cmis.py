@@ -243,3 +243,50 @@ def test_a_committees_pages_are_walked_back_to_the_start_date():
     refs = cmis.list_meetings(FakeClient(), committee, date(2025, 6, 1), date(2026, 4, 1))
     assert posted == ["dnn$ctr585$ViewCommitteeDetails$gridMeetings$ctl00$ctl03$ctl01$ctl09"]   # page 8, once
     assert [r.id for r in refs] == [11499, 11500, 11501, 11502, 11503, 11699, 11504]
+
+
+def test_a_committee_whose_meetings_cant_be_listed_stores_nothing(tmp_path, monkeypatch):
+    """Sunderland loaded with its Cabinet but not its Council (November 2026): a listing that fails is tried again,
+    and if it fails twice the council isn't stored half-loaded, so the next load tries again."""
+    from councils.registry import Council
+
+    class FakeClient:
+        requests = 0
+
+        def __init__(self, *a, **k):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def allowed(self, url):
+            return True
+
+    council_ref = cmis.CommitteeRef(1, "Council", "https://x.example/c1")
+    cabinet_ref = cmis.CommitteeRef(2, "Cabinet", "https://x.example/c2")
+    calls = {"Council": 0}
+
+    def listing(client, committee, start, end):
+        if committee.title == "Council":
+            calls["Council"] += 1
+            if calls["Council"] <= fails:
+                raise cmis.CmisError("asked for page 3, got 1")
+        return []
+
+    monkeypatch.setattr(cmis, "Client", FakeClient)
+    monkeypatch.setattr(cmis, "find_committees", lambda *a, **k: [council_ref, cabinet_ref])
+    monkeypatch.setattr(cmis, "list_meetings", listing)
+    monkeypatch.setattr(cmis, "_parties", lambda *a, **k: None)
+    monkeypatch.setattr(cmis.time, "sleep", lambda s: None)
+    monkeypatch.setenv("COUNCILS_DATA_DIR", str(tmp_path))
+    council = Council("E08000024", "SND", "Sunderland City Council", "england", "metropolitan", "E12000001",
+                      "https://x.example", "ok", "cmis")
+    fails = 2
+    res, meetings, items, attendance = cmis.fetch(load_settings(), council, date(2018, 5, 1), date(2026, 11, 5))
+    assert res.error.startswith("committee Council:") and calls["Council"] == 2
+    fails, calls["Council"] = 1, 0
+    res, meetings, items, attendance = cmis.fetch(load_settings(), council, date(2018, 5, 1), date(2026, 11, 5))
+    assert res.error == "" and calls["Council"] == 2

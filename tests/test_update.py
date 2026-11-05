@@ -122,3 +122,24 @@ def test_update_adds_new_meetings_and_keeps_stored_ones_when_the_server_is_down(
     fake.meetings.pop()
     lines = list(load.update(s, [council], workers=1))
     assert lines[0]["changed"] is False and not lines[0].get("error")
+
+
+def test_a_meeting_record_without_its_date_takes_the_listed_date(env, monkeypatch):
+    """Six councils failed to load (November 2026) on a meeting record whose date couldn't be read: the date the
+    committee's list gave is used, and the council loads."""
+    s, fake = env
+    fake.meetings = [(101, date(2019, 3, 1)), (102, date(2020, 6, 4))]
+    real = fake.get
+
+    def blank_date(client, op, **params):
+        text = real(client, op, **params)
+        if op == "GetMeeting" and params["lMeetingId"] in (102, "102"):
+            text = text.replace("<meetingdate>04/06/2020</meetingdate>", "<meetingdate></meetingdate>")
+        return text
+
+    monkeypatch.setattr(modgov.Client, "_get", lambda self, op, **p: blank_date(self, op, **p))
+    council = replace(get(GUILDFORD), modgov_url="https://example.org")
+    res = ingest.load(s, council)
+    assert res.error == "" and res.meetings == 2 and not res.failed
+    dates = {m["meeting_id"]: m["date"] for m in store.parquet.read(s.parquet_dir, "meetings", GUILDFORD)}
+    assert dates[f"{GUILDFORD}:102"] == date(2020, 6, 4)

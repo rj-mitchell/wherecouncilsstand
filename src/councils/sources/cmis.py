@@ -944,16 +944,22 @@ def fetch(settings: Settings, council: Council, start: date, end: date, update: 
         res.committees = {cid: (c.title, k) for cid, (c, k) in chosen.items()}
         try:
             for cid, (c, kind) in sorted(chosen.items()):
-                try:
-                    listed = list_meetings(client, c, start, end)
-                except Refused:
-                    raise
-                except CmisError as e:
-                    log.warning("%s committee %s: %s", council.gss, cid, e)
-                    if update:
-                        res.error = f"committee {cid}: {e}"
-                        return res, [], [], []
-                    continue
+                listed = None
+                for attempt in (1, 2):
+                    try:
+                        listed = list_meetings(client, c, start, end)
+                        break
+                    except Refused:
+                        raise
+                    except CmisError as e:
+                        log.warning("%s committee %s (attempt %d): %s", council.gss, cid, attempt, e)
+                        error = e
+                        time.sleep(5 * attempt)
+                if listed is None:
+                    # Not a council with one committee missing (Sunderland's council meetings were lost so,
+                    # November 2026): nothing is stored, so the next load or update tries again.
+                    res.error = f"committee {c.title}: {error}"
+                    return res, [], [], []
                 for ref in listed:
                     try:
                         text, extra, _ = fetch_meeting(client, ref)
