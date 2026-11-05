@@ -18,6 +18,51 @@ from councils.reference import people
 from councils.registry import REGION_NAMES, TYPE_NAMES, councils
 
 KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy committee"}
+
+# How well each council works, for the councils page: red (not loaded), amber (loaded with a gap) or green.
+NOT_LOADED = {
+    "robots": "Its meetings site asks automated readers not to visit (robots.txt).",
+    "blocked": "Its meetings site refuses automated requests.",
+    "unreachable": "Its meetings site couldn't be reached.",
+    "none": "It doesn't publish its minutes through a system we can read yet.",
+    "ok": "Its meetings site answers, but it hasn't been loaded yet or failed to load.",
+}
+MIN_WITH_MINUTES = 0.7          # share of meetings with minutes text
+STALE_DAYS = 120                # no meeting for this long
+LATE_START = date(2019, 12, 31) # records that begin after this (May 2018 is the start)
+MIN_PARTY = 0.8                 # share of attendance with a party
+# councils created since May 2018, whose records start later as a matter of course (E06000058 BCP ... E06000066
+# Somerset)
+NEW_COUNCILS = {f"E060000{n}" for n in range(58, 67)}
+
+
+def rating(row: dict[str, Any], attendance: int = 0, with_party: int = 0, today: date | None = None
+           ) -> tuple[str, list[str]]:
+    """("green" | "amber" | "red", the reasons in plain words)."""
+    today = today or date.today()
+    if not row.get("loaded"):
+        return "red", [NOT_LOADED.get(row.get("status", ""), "Not loaded yet.")]
+    gaps = []
+    share = row.get("with_minutes") or 0
+    if share < MIN_WITH_MINUTES:
+        gaps.append(f"Minutes text for only {round(share * 100)}% of meetings (often published only as documents "
+                    "the site wouldn't serve, or not yet).")
+    last = date.fromisoformat(row["to"]) if row.get("to") else None
+    if last and (today - last).days > STALE_DAYS:
+        gaps.append(f"No meeting since {last.strftime('%B %Y')}.")
+    first = date.fromisoformat(row["from"]) if row.get("from") else None
+    if first and first > LATE_START and row.get("gss") not in NEW_COUNCILS:
+        gaps.append(f"Records start in {first.strftime('%B %Y')}, not May 2018.")
+    if not attendance:
+        gaps.append("No attendance records, so votes can't be matched to councillors.")
+    elif with_party < MIN_PARTY * attendance:
+        gaps.append(f"Party recorded for only {round(100 * with_party / attendance)}% of attendance, so votes can't "
+                    "all be read by party.")
+    if gaps:
+        return "amber", gaps
+    since = "since " + first.strftime("%B %Y") if first else ""
+    return "green", [f"Meetings {since}, minutes text for {round(share * 100)}% of them, attendance and parties "
+                     "recorded."]
 SIDE_ORDER = ("for", "against", "abstain")
 
 
@@ -76,6 +121,9 @@ class Data:
             "FROM meetings GROUP BY gss").fetchall()} if "meetings" in names else {}
         votes = {r[0]: r[1] for r in con.execute(
             "SELECT gss, count(DISTINCT vote_id) FROM votes GROUP BY gss").fetchall()} if "votes" in names else {}
+        attendance = {r[0]: (r[1], r[2]) for r in con.execute(
+            "SELECT gss, count(*), sum((coalesce(party, '') NOT IN ('', 'NONE'))::int) FROM attendance GROUP BY gss"
+        ).fetchall()} if "attendance" in names else {}
         out = []
         for c in councils().values():
             m = meetings.get(c.gss)
@@ -87,11 +135,13 @@ class Data:
                 row |= {"meetings": m[0], "council_meetings": m[1], "cabinet_meetings": m[2],
                         "policy_meetings": m[3], "from": _iso(m[4]), "to": _iso(m[5]),
                         "with_minutes": round(float(m[6] or 0), 3), "named_votes": votes.get(c.gss, 0)}
+            row["rating"], row["reasons"] = rating(row, *attendance.get(c.gss, (0, 0)))
             out.append(row)
         out.sort(key=lambda r: r["name"])
         self._directory = out
         loaded = [r for r in out if r["loaded"]]
         self._totals = {"councils": len(out), "loaded": len(loaded),
+                        "ratings": dict(Counter(r["rating"] for r in out)),
                         "meetings": sum(r["meetings"] for r in loaded),
                         "named_votes": sum(r["named_votes"] for r in loaded),
                         "from": min((r["from"] for r in loaded), default=None),

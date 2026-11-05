@@ -482,3 +482,45 @@ def test_scottish_and_northern_irish_party_labels():
                         ("PBPA", "PBP"), ("PUP", "PUP"), ("SF", "SF"), ("Sinn Féin", "SF"), ("GP", "GRN"),
                         ("Scottish Conservative and Unionist", "CON")]:
         assert normalise(label) == code, label
+
+
+def test_scottish_division_between_a_motion_and_an_amendment():
+    """Edinburgh: "(For the motion (as adjusted): Councillors ... For the amendment: Councillors ...)"."""
+    text = ("Voting For the motion (as adjusted) For the amendment - - 3 votes 2 votes (For the motion (as adjusted): "
+            "Councillors Barlow, Williams and Bailey. For the amendment: Councillors Ward and Kohler.) Decision To "
+            "approve the adjusted motion.")
+    found = votes.parse(text, TOWN)
+    assert by_side(found) == {"for": ["23", "24", "25"], "against": ["27", "26"]}
+    assert {v.question for v in found} == {votes.MOTION_OR_AMENDMENT}
+    plain = votes.parse("For the motion: Councillors Barlow and Williams. Against the motion: Councillor Ward.", TOWN)
+    assert {v.question for v in plain} == {"motion"}
+
+
+def test_a_division_with_more_than_two_options_is_left_out():
+    """Edinburgh: "For the Motion: ... For Amendment 1: ... For Amendment 2: ..." can't be shown as two sides."""
+    text = ("The voting was as follows: (For the Motion: Councillors Barlow and Williams. For Amendment 1: Councillors "
+            "Bailey and Gill. For Amendment 2: Councillors Ward and Kohler.) Decision To approve the motion.")
+    assert votes.parse(text, TOWN) == []
+    text = ("The voting was as follows: (For the Motion (as adjusted): Councillors Barlow, Williams and Bailey. For "
+            "Amendment 2: Councillors Ward and Kohler.) Decision To approve the motion.")
+    found = votes.parse(text, TOWN)
+    assert by_side(found) == {"for": ["23", "24", "25"], "against": ["27", "26"]}
+    assert {v.question for v in found} == {votes.MOTION_OR_AMENDMENT}
+
+
+def test_an_amendments_number_is_not_its_count():
+    text = ("The voting was as follows: (For the motion: Councillors Barlow, Williams and Bailey. For Amendment 1: "
+            "Councillors Ward and Kohler.) Decision To approve the motion.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24", "25"], "against": ["27", "26"]}
+
+
+def test_a_vote_between_two_amendments_is_left_out():
+    text = ("Second vote, between the amendments. The voting was as follows: (For Amendment 1: Councillors Barlow and "
+            "Williams. For Amendment 2: Councillors Ward and Kohler.) Decision To approve Amendment 1.")
+    assert votes.parse(text, TOWN) == []
+
+
+def test_a_lost_space_before_amendment():
+    text = ("(For the Motion (as adjusted): Councillors Barlow, Williams and Bailey. ForAmendment 2: Councillors Ward "
+            "and Kohler.) Decision To approve the motion.")
+    assert by_side(votes.parse(text, TOWN)) == {"for": ["23", "24", "25"], "against": ["27", "26"]}

@@ -20,6 +20,17 @@ export const number = (n: number | undefined | null) => (n ?? 0).toLocaleString(
 export const KIND_LABEL: Record<string, string> = { council: "Full council", cabinet: "Cabinet", policy: "Policy committee" };
 
 export const SIDE_LABEL = { for: "For", against: "Against", abstain: "Abstained" } as const;
+/** A Scottish division is between a motion and an amendment: each side is for something. */
+export const MOTION_OR_AMENDMENT = "motion or amendment";
+export function sideLabel(side: keyof typeof SIDE_LABEL, question?: string | null): string {
+  if (question === MOTION_OR_AMENDMENT) return { for: "For the motion", against: "For the amendment", abstain: "Abstained" }[side];
+  return SIDE_LABEL[side];
+}
+/** "a named vote on the amendment"; "a named vote between a motion and an amendment" */
+export function voteOn(question?: string | null): string {
+  if (!question) return "";
+  return question === MOTION_OR_AMENDMENT ? " between a motion and an amendment" : ` on the ${question}`;
+}
 
 /** The CSS colour variable for a party code, for charts only (docs/DESIGN.md). */
 export function partyColour(code: string): string {
