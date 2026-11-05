@@ -61,7 +61,15 @@ export type AskEvent =
 
 export type Meta = {
   site: { name: string; url: string; donate_url: string | null };
-  totals: { councils: number; loaded: number; meetings: number; named_votes: number; from: string; to: string };
+  totals: {
+    councils: number;
+    loaded: number;
+    meetings: number;
+    named_votes: number;
+    from: string;
+    to: string;
+    ratings?: Record<string, number>;
+  };
   last_update: { finished: string } | null;
   briefings: boolean;
   default_years: number;
@@ -93,6 +101,9 @@ export type CouncilRow = {
   with_minutes?: number;
   named_votes?: number;
   control?: Control;
+  /** How well the council works here: green (fully), amber (with a gap), red (not loaded). */
+  rating: "green" | "amber" | "red";
+  reasons: string[];
 };
 
 export type VoteSummary = {
