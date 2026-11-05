@@ -143,3 +143,26 @@ def test_a_meeting_record_without_its_date_takes_the_listed_date(env, monkeypatc
     assert res.error == "" and res.meetings == 2 and not res.failed
     dates = {m["meeting_id"]: m["date"] for m in store.parquet.read(s.parquet_dir, "meetings", GUILDFORD)}
     assert dates[f"{GUILDFORD}:102"] == date(2020, 6, 4)
+
+
+def test_a_committee_whose_meetings_cant_be_listed_stores_nothing(env, monkeypatch):
+    """East Hampshire loaded with its Cabinet but not its Council (November 2026): a listing that fails is tried
+    again, and if it fails twice nothing is stored, so the next load tries again."""
+    s, fake = env
+    monkeypatch.setattr(ingest.time, "sleep", lambda secs: None)
+    real = fake.get
+    failures = {"left": 2}
+
+    def flaky(client, op, **params):
+        if op == "GetMeetings" and failures["left"]:
+            failures["left"] -= 1
+            raise ModgovError("502 Bad Gateway")
+        return real(client, op, **params)
+
+    monkeypatch.setattr(modgov.Client, "_get", lambda self, op, **p: flaky(self, op, **p))
+    council = replace(get(GUILDFORD), modgov_url="https://example.org")
+    res = ingest.load(s, council)
+    assert res.error.startswith("committee Council:") and stored(s) == []
+    failures["left"] = 1
+    res = ingest.load(s, council)
+    assert res.error == "" and stored(s) == [f"{GUILDFORD}:101"]

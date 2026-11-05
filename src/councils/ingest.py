@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date
@@ -71,14 +72,21 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
             res.error = str(e)
             return res
         for cid, (title, kind) in sorted(res.committees.items()):
-            try:
-                refs = client.meetings(cid, start, end)
-            except ModgovError as e:
-                log.warning("%s committee %s: %s", council.gss, cid, e)
-                if update:
-                    res.error = f"committee {cid}: {e}"
-                    return res
-                continue
+            refs = None
+            for attempt in (1, 2):
+                try:
+                    refs = client.meetings(cid, start, end)
+                    break
+                except ModgovError as e:
+                    log.warning("%s committee %s (attempt %d): %s", council.gss, cid, attempt, e)
+                    error = e
+                    if attempt == 1:
+                        time.sleep(10)
+            if refs is None:
+                # Not a council with a committee missing (East Hampshire's council meetings were lost so,
+                # November 2026): nothing is stored, so the next load or update tries again.
+                res.error = f"committee {title}: {error}"
+                return res
             for ref in refs:
                 if ref.date > end or ref.date < start:
                     continue

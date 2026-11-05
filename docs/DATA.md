@@ -78,6 +78,9 @@ What was found:
   publishes minutes only as a document, that's where they're found (`sources/documents.py`). Documents come from
   `mgConvert2PDF.aspx?ID=…`, which many sites, especially Civica-hosted `*.moderngov.co.uk` ones, put behind a
   browser check that refuses automated requests, although the web service itself answers.
+- **A committee whose meetings can't be listed** (East Hampshire's council meetings, once, November 2026) is tried
+  again; if it fails twice, nothing is stored for the council, so the next load or update tries again, rather than
+  storing it with a committee missing.
 - **A meeting record without a readable date** (six councils, November 2026) takes the date the committee's list of
   meetings gave; one with no date at all is skipped and counted as failed, rather than stopping the council.
 - **Certificates.** Some councils' servers leave out the intermediate certificate linking theirs to a trusted root
