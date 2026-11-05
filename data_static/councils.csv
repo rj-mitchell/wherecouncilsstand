@@ -65,7 +65,7 @@ E06000063,CUA,Cumberland Council,england,unitary,E12000002,https://www.cumberlan
 E07000096,DAC,Dacorum Borough Council,england,district,E12000006,https://www.dacorum.gov.uk,https://democracy.dacorum.gov.uk,ok,local-democracy-uk,modgov
 E06000005,DAL,Darlington Borough Council,england,unitary,E12000001,https://www.darlington.gov.uk,https://democracy.darlington.gov.uk,ok,local-democracy-uk,modgov
 E07000107,DAR,Dartford Borough Council,england,district,E12000008,https://www.dartford.gov.uk,https://dartford.moderngov.co.uk,ok,local-democracy-uk,modgov
-E06000015,DER,Derby City Council,england,unitary,E12000004,https://www.derby.gov.uk,https://cmis.derby.gov.uk/cmis5,unreachable,researched,cmis
+E06000015,DER,Derby City Council,england,unitary,E12000004,https://www.derby.gov.uk,https://democracy.derby.gov.uk,robots,researched,cmis
 E10000007,DBY,Derbyshire County Council,england,county,E12000004,https://www.derbyshire.gov.uk,https://democracy.derbyshire.gov.uk,ok,local-democracy-uk,modgov
 E07000035,DEB,Derbyshire Dales District Council,england,district,E12000004,https://www.derbyshiredales.gov.uk,https://democracy.derbyshiredales.gov.uk,ok,local-democracy-uk,modgov
 E10000008,DEV,Devon County Council,england,county,E12000009,https://www.devon.gov.uk,https://democracy.devon.gov.uk,ok,local-democracy-uk,modgov
@@ -119,7 +119,7 @@ E07000098,HER,Hertsmere Borough Council,england,district,E12000006,https://www.h
 E07000037,HIG,High Peak Borough Council,england,district,E12000004,https://www.highpeak.gov.uk,https://democracy.highpeak.gov.uk,ok,local-democracy-uk,modgov
 E07000132,HIN,Hinckley and Bosworth Borough Council,england,district,E12000004,https://www.hinckley-bosworth.gov.uk,https://moderngov.hinckley-bosworth.gov.uk,ok,local-democracy-uk,modgov
 E07000227,HOR,Horsham District Council,england,district,E12000008,https://www.horsham.gov.uk,https://horsham.moderngov.co.uk,ok,local-democracy-uk,modgov
-E06000010,KHL,Hull City Council,england,unitary,E12000003,https://www.hullcc.gov.uk,https://cmis.hullcc.gov.uk/cmis,unreachable,researched,cmis
+E06000010,KHL,Hull City Council,england,unitary,E12000003,https://www.hullcc.gov.uk,https://cmis.hullcc.gov.uk/cmis,robots,researched,cmis
 E07000011,HUN,Huntingdonshire District Council,england,district,E12000006,https://www.huntingdonshire.gov.uk,https://democracy.huntingdonshire.gov.uk/moderngov,ok,local-democracy-uk,modgov
 E07000120,HYN,Hyndburn Borough Council,england,district,E12000002,https://www.hyndburnbc.gov.uk,https://democracy.hyndburnbc.gov.uk,ok,local-democracy-uk,modgov
 E07000202,IPS,Ipswich Borough Council,england,district,E12000006,https://www.ipswich.gov.uk,https://democracy.ipswich.gov.uk,blocked,council website,modgov
@@ -158,12 +158,12 @@ E09000023,LEW,London Borough of Lewisham,england,london_borough,E12000007,https:
 E09000024,MRT,London Borough of Merton,england,london_borough,E12000007,https://www.merton.gov.uk,https://democracy.merton.gov.uk,ok,local-democracy-uk,modgov
 E09000025,NWM,London Borough of Newham,england,london_borough,E12000007,https://www.newham.gov.uk,https://mgov.newham.gov.uk,unreachable,local-democracy-uk,modgov
 E09000026,RDB,London Borough of Redbridge,england,london_borough,E12000007,https://www.redbridge.gov.uk,https://moderngov.redbridge.gov.uk,ok,local-democracy-uk,modgov
-E09000027,RIC,London Borough of Richmond upon Thames,england,london_borough,E12000007,https://www.richmond.gov.uk,https://cabnet.richmond.gov.uk,ok,local-democracy-uk,modgov
+E09000027,RIC,London Borough of Richmond upon Thames,england,london_borough,E12000007,https://www.richmond.gov.uk,https://cabnet.richmond.gov.uk,blocked,local-democracy-uk,modgov
 E09000028,SWK,London Borough of Southwark,england,london_borough,E12000007,https://www.southwark.gov.uk,https://moderngov.southwark.gov.uk,ok,local-democracy-uk,modgov
 E09000029,STN,London Borough of Sutton,england,london_borough,E12000007,https://www.sutton.gov.uk,https://moderngov.sutton.gov.uk,ok,local-democracy-uk,modgov
 E09000030,TWH,London Borough of Tower Hamlets,england,london_borough,E12000007,https://www.towerhamlets.gov.uk,https://democracy.towerhamlets.gov.uk,ok,local-democracy-uk,modgov
 E09000031,WFT,London Borough of Waltham Forest,england,london_borough,E12000007,https://www.walthamforest.gov.uk/,https://democracy.walthamforest.gov.uk,ok,local-democracy-uk,modgov
-E09000032,WND,London Borough of Wandsworth,england,london_borough,E12000007,https://www.wandsworth.gov.uk,https://democracy.wandsworth.gov.uk,ok,local-democracy-uk,modgov
+E09000032,WND,London Borough of Wandsworth,england,london_borough,E12000007,https://www.wandsworth.gov.uk,https://democracy.wandsworth.gov.uk,blocked,local-democracy-uk,modgov
 E06000032,LUT,Luton Borough Council,england,unitary,E12000006,https://www.luton.gov.uk,https://democracy.luton.gov.uk/cmis5public,blocked,researched,cmis
 E07000110,MAI,Maidstone Borough Council,england,district,E12000008,https://www.maidstone.gov.uk,https://meetings.maidstone.gov.uk,ok,local-democracy-uk,modgov
 E07000074,MAL,Maldon District Council,england,district,E12000006,https://www.maldon.gov.uk,https://democracy.maldon.gov.uk,ok,local-democracy-uk,modgov
@@ -289,7 +289,7 @@ E07000077,UTT,Uttlesford District Council,england,district,E12000006,https://www
 E07000180,VAL,Vale of White Horse District Council,england,district,E12000008,https://www.whitehorsedc.gov.uk,https://democratic.whitehorsedc.gov.uk,ok,local-democracy-uk,modgov
 E08000036,WKF,Wakefield Metropolitan District Council,england,metropolitan,E12000003,https://www.wakefield.gov.uk,https://wakefield.moderngov.co.uk,ok,local-democracy-uk,modgov
 E08000030,WLL,Walsall Metropolitan Borough Council,england,metropolitan,E12000005,https://www.walsall.gov.uk,https://cmispublic.walsall.gov.uk/cmis,robots,researched,cmis
-E06000007,WRT,Warrington Borough Council,england,unitary,E12000002,https://www.warrington.gov.uk,https://cmis.warrington.gov.uk/cmis5,unreachable,researched,cmis
+E06000007,WRT,Warrington Borough Council,england,unitary,E12000002,https://www.warrington.gov.uk,https://cmis.warrington.gov.uk/cmis5,robots,researched,cmis
 E07000222,WAW,Warwick District Council,england,district,E12000005,https://www.warwickdc.gov.uk,https://estates10.warwickdc.gov.uk/cmis,ok,researched,cmis
 E10000031,WAR,Warwickshire County Council,england,county,E12000005,https://www.warwickshire.gov.uk,https://democracy.warwickshire.gov.uk,ok,local-democracy-uk,modgov
 E07000103,WAT,Watford Borough Council,england,district,E12000006,https://www.watford.gov.uk,https://watford.moderngov.co.uk,ok,local-democracy-uk,modgov
