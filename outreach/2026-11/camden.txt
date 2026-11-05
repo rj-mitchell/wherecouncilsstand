@@ -1,0 +1,26 @@
+To: vicky.wemyss-cooke@camden.gov.uk, donna.alexander-morrison@camden.gov.uk
+Subject: Permission to read London Borough of Camden's published minutes (Where Councils Stand)
+
+Dear Vicky Wemyss-Cooke and Donna Alexander-Morrison,
+
+I'm writing to you because the council's deputation form names you as its Democratic Services contacts. If this belongs with a colleague, please could you pass it on? Thank you.
+
+I'm writing from Where Councils Stand (https://wherecouncilsstand.com), an independent public website that helps people find out what their council has discussed, decided and voted on. It reads the minutes councils already publish of the meetings of full council and cabinet, from May 2018 onwards, and every point it makes links back to the council's own record. It is a project of Where They Stand, which is applying to register as a charity in England and Wales.
+
+Your committee site, https://democracy.camden.gov.uk, refuses requests from our server: the web service Modern.gov provides for reading meetings (mgWebService.asmx) answers "403 Forbidden". This may be a firewall or bot-protection setting rather than a choice about this kind of use. We have left London Borough of Camden out rather than try to get round it. We would like to include Camden, so I'm writing to ask whether you would be willing to let our server's requests through. It is at 151.247.219.240, and identifies itself as "WhereCouncilsStand" (the full user agent is below). If you'd rather we read the published minutes some other way, I'd be glad to hear it.
+
+How it would read your site:
+
+- Only what is public: Modern.gov's web service for the committees, meetings, attendance and minutes of full council and cabinet, and minutes published as documents.
+- At most one request a second. Every response is kept once fetched, so nothing is read twice.
+- The first load is a few hundred requests. After that, a daily check for new meetings, re-reading only meetings from the last four months, because minutes can be corrected when they are approved.
+- It identifies itself as: Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)
+- Names of people who aren't councillors are removed before anything is shown.
+
+If you would rather we didn't, we will keep Camden out, and the site will say why it isn't included. I'm happy to answer any questions, or to change how it reads the site to suit you.
+
+Kind regards,
+
+Where They Stand
+wheretheystanduk@gmail.com
+https://wherecouncilsstand.com

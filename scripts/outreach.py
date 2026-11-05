@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import csv
 import re
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -52,8 +53,7 @@ LETTERS: dict[str, tuple[str, str, bool]] = {
     "S12000029": ("committees@southlanarkshire.gov.uk", "Committee Services team", False),
     "E07000196": ("info@sstaffs.gov.uk", "Democratic Services team", True),
     # Second batch: councils whose sites refuse the server, don't answer it, or (found from the server) forbid
-    # crawling; addresses found 5 November 2026. Not yet: Camden and Sefton (only named officers' addresses),
-    # Anglesey (no address published).
+    # crawling; addresses found 5 November 2026.
     "E07000177": ("democracy@cherwell-dc.gov.uk", "Democratic and Elections team", False),
     "E07000010": ("memberservices@fenland.gov.uk", "Member Services team", False),
     "E07000086": ("democratic.services@eastleigh.gov.uk", "Democratic Services team", False),
@@ -72,6 +72,20 @@ LETTERS: dict[str, tuple[str, str, bool]] = {
     "E06000007": ("democraticservices@warrington.gov.uk", "Democratic Services team", False),
 }
 
+# Councils that publish only named officers' addresses: written to by name (gss: address(es), greeting, why them)
+NAMED: dict[str, tuple[str, str, str]] = {
+    "E09000007": ("vicky.wemyss-cooke@camden.gov.uk, donna.alexander-morrison@camden.gov.uk",
+                  "Vicky Wemyss-Cooke and Donna Alexander-Morrison",
+                  "the council's deputation form names you as its Democratic Services contacts"),
+    "E08000014": ("debbie.campbell@sefton.gov.uk", "Debbie Campbell",
+                  "the council's committee pages name you as its Senior Democratic Services Officer"),
+}
+
+# Councils that publish no email address: a letter for post (gss: the address, one line to a line)
+POST: dict[str, str] = {
+    "W06000001": "Democratic Services\nIsle of Anglesey County Council\nCouncil Offices\nLlangefni\nLL77 7TW",
+}
+
 SCOTLAND_NI = ("scotland", "northern_ireland")
 
 
@@ -87,7 +101,7 @@ def short_name(name: str) -> str:
     return s.strip() or name
 
 
-def letter(row: dict, address: str, greeting: str, passed_on: bool) -> str:
+def letter(row: dict, address: str, greeting: str, passed_on: bool, why_you: str = "", by_post: str = "") -> str:
     name, short, url = row["name"], short_name(row["name"]), row["modgov_url"]
     hosted = bool(re.search(r"\.cmis(?:-ni)?\.(?:uk\.com|org)\b", url))
     status, modgov = row["modgov_status"], row["system"] == "modgov"
@@ -97,6 +111,9 @@ def letter(row: dict, address: str, greeting: str, passed_on: bool) -> str:
         parts.append(f"Dear colleague,\n\nI couldn't find a direct address for {greeting.replace(' team', '')}, "
                      "so please could you pass this on to them? Thank you.\n")
     parts.append(f"Dear {greeting},\n")
+    if why_you:
+        parts.append(f"I'm writing to you because {why_you}. If this belongs with a colleague, please could you pass "
+                     "it on? Thank you.\n")
     parts.append(
         f"I'm writing from Where Councils Stand ({SITE}), an independent public website that helps people find out "
         "what their council has discussed, decided and voted on. It reads the minutes councils already publish of "
@@ -163,6 +180,11 @@ def letter(row: dict, address: str, greeting: str, passed_on: bool) -> str:
     subject = f"Permission to read {name}'s published minutes (Where Councils Stand)"
     if passed_on:
         subject = f"For Democratic Services: {subject[0].lower()}{subject[1:]}"
+    if by_post:
+        # a letter for post: the address and date at the top, replies asked for by email (it says so above)
+        parts[-1] = (f"I would be grateful for a reply by email, to wheretheystanduk@gmail.com.\n\nKind regards,\n\n"
+                     f"{SIGNATURE}\n")
+        return f"{by_post}\n\n{date.today():%-d %B %Y}\n\nRe: {subject}\n\n" + "\n".join(parts)
     return f"To: {address}\nSubject: {subject}\n\n" + "\n".join(parts)
 
 
@@ -177,7 +199,17 @@ def main() -> None:
     for gss, (address, greeting, passed_on) in LETTERS.items():
         row = rows[gss]
         (out / f"{slug(row['name'])}.txt").write_text(letter(row, address, greeting, passed_on))
-    print(f"{len(LETTERS)} letters in {out.relative_to(ROOT)}")
+    for gss, (address, greeting, why_you) in NAMED.items():
+        row = rows[gss]
+        (out / f"{slug(row['name'])}.txt").write_text(letter(row, address, greeting, False, why_you))
+    post = out / "post"          # not sent by mail.sh (its command takes the batch's own folder)
+    post.mkdir(exist_ok=True)
+    for gss, postal in POST.items():
+        row = rows[gss]
+        (post / f"{slug(row['name'])}.txt").write_text(letter(row, "", "Democratic Services team", False,
+                                                              by_post=postal))
+    print(f"{len(LETTERS) + len(NAMED)} letters to send in {out.relative_to(ROOT)}, {len(POST)} to post in "
+          f"{post.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
