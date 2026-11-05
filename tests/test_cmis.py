@@ -290,3 +290,25 @@ def test_a_committee_whose_meetings_cant_be_listed_stores_nothing(tmp_path, monk
     fails, calls["Council"] = 1, 0
     res, meetings, items, attendance = cmis.fetch(load_settings(), council, date(2018, 5, 1), date(2026, 11, 5))
     assert res.error == "" and calls["Council"] == 2
+
+
+def _filter_page(shown_from: str) -> str:
+    p = "dnn$ctr381$ViewCommitteeDetails"
+    return (f'<html><body><form><input name="{p}$datePickerMeetingsFrom" type="text" value="{shown_from}"/>'
+            f'<input name="{p}$datePickerMeetingsFrom$dateInput" type="text" value="19 May 2026"/>'
+            f'<input name="{p}$datePickerMeetingsTo" type="text" value="2027-02-05"/>'
+            f'<input type="submit" name="{p}$btnSubmitMeetingsFilter" value="Submit"/></form></body></html>')
+
+
+def test_a_committee_page_listing_one_year_has_its_date_filter_set_from_the_start():
+    """Luton's committee pages list only the current council year until their own "meetings from" filter is set."""
+    p = "dnn$ctr381$ViewCommitteeDetails"
+    fields = cmis.date_filter(_filter_page("2026-05-19"), date(2018, 5, 1))
+    assert fields[f"{p}$datePickerMeetingsFrom"] == "2018-05-01"
+    assert fields[f"{p}$datePickerMeetingsFrom$dateInput"] == "01 May 2018"
+    assert fields[f"{p}$btnSubmitMeetingsFilter"] == "Submit"
+    assert not any("datePickerMeetingsTo" in k for k in fields)       # the page's own "to" date is kept
+    assert cmis.listed_from(_filter_page("2026-05-19")) == date(2026, 5, 19)
+    # a page already listing from the start, or with no filter, is left as it is
+    assert cmis.date_filter(_filter_page("2018-01-01"), date(2018, 5, 1)) is None
+    assert cmis.date_filter("<html><body><form></form></body></html>", date(2018, 5, 1)) is None

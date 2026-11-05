@@ -137,6 +137,10 @@ What was found:
   where the count printed before each list ("with 55 Members voting in favour:-", "Nine Members voted against") is
   the number of names read: about half its recorded votes (45 of about 100, 2018–2026). Norwich mostly records
   counts ("with 31 members voting in favour"), with its few named votes in brackets.
+- **A committee page that lists only one council year** (Luton) until its own "meetings from" filter is set has the
+  filter set to the start date, as a person would, and is then paged as usual. Only the "from" date is set, so
+  meetings already arranged stay listed; a committee that began later keeps its own first date
+  (Nottinghamshire's Cabinet, 2022), and its page is used as first shown.
 - **A committee whose meetings can't be listed** (paging failed: Sunderland's council meetings, once, November
   2026) is tried again; if it fails twice, nothing is stored for the council, so the next load or update tries again,
   rather than storing it with a committee missing.
