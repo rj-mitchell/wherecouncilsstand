@@ -30,3 +30,10 @@ def test_red_gives_the_reason():
     r, why = rating({"loaded": False, "status": "robots"}, today=TODAY)
     assert r == "red" and "robots.txt" in why[0]
     assert "refuses" in rating({"loaded": False, "status": "blocked"}, today=TODAY)[1][0]
+
+
+def test_no_full_council_meetings_is_a_gap():
+    """Sunderland was loaded once with its Cabinet's meetings alone, and rated green."""
+    r, why = rating({**GOOD, "council_meetings": 0, "cabinet_meetings": 88}, 1000, 990, TODAY)
+    assert r == "amber" and "full council" in why[0]
+    assert rating({**GOOD, "council_meetings": 70, "cabinet_meetings": 88}, 1000, 990, TODAY)[0] == "green"

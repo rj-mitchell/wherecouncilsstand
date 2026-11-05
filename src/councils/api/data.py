@@ -43,6 +43,10 @@ def rating(row: dict[str, Any], attendance: int = 0, with_party: int = 0, today:
     if not row.get("loaded"):
         return "red", [NOT_LOADED.get(row.get("status", ""), "Not loaded yet.")]
     gaps = []
+    if row.get("council_meetings") == 0:
+        # most named votes are at full council (Sunderland, loaded once with its Cabinet alone)
+        gaps.append("No full council meetings read, only its cabinet or committees, so most named votes are "
+                    "missing.")
     share = row.get("with_minutes") or 0
     if share < MIN_WITH_MINUTES:
         gaps.append(f"Minutes text for only {round(share * 100)}% of meetings (often published only as documents "
