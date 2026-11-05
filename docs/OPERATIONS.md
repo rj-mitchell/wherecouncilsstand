@@ -60,6 +60,10 @@ systemctl start councils-update.service           # run one now
 docker compose run --rm -T app tail -n 5 /data/updates.jsonl
 ```
 
+If a run, or the nightly backup, fails (exits 1 when something needs attention, or stops with an error), the server
+emails wheretheystanduk@gmail.com with the result and the run's last log lines, at most once every six hours. That is
+set up once for every site on the server (Where They Stand's `docs/HOSTING.md`, "Email from the server").
+
 It runs at about 03:17 UTC. Councils publish minutes during the working day, and their servers are quietest at night.
 It is also clear of the other sites' updates on the shared server.
 
