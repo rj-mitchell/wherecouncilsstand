@@ -274,6 +274,17 @@ corrections route covers what slips through.
 Across the 88 councils loaded at the time, all these changes read 9.7% fewer named votes (2,489 to 2,248), mostly
 votes now left out by the three rules, and cut names matched to no member from 3,034 to 2,520.
 
+**Counts before the lists (November 2026).** A count printed just before a heading ("carried with 55 Members voting
+in favour:-", "And 13 Members voting against", "Nine Members voted against", "lost by: 13 votes in favour:") is now
+that side's count, and the vote is left out unless it is the number of names read; spelled counts are read
+("forty-two"). The next side's count at the end of a list ("Tunnacliffe To 24 votes against") is no longer taken as
+part of the last name. Built for Sunderland (CMIS), whose lists were read with most names lost; across the 169
+Modern.gov councils stored here it changed 17 items at 9 councils. Most are votes whose names don't add up to the
+printed count, now left out (Cambridge, Windsor and Maidenhead, Swale, Bury, and elections of a person at Guildford,
+Basingstoke and Three Rivers). Cambridge's lists are now read whole, and Eastbourne gains two votes that add up. In
+the 2014–2019 sample, Wirral's 2016 budget votes, two of which had been merged with their sides swapped, are read as
+four.
+
 Other faults the checks found, which lose information but don't misplace anyone:
 
 - The result is often missing where the minutes say only "RESOLVED", and twice it was taken from the amendment

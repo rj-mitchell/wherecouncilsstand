@@ -434,6 +434,28 @@ def _resplit(name: str, matcher: Matcher) -> list[str]:
 
 _LEAD = re.compile(r"^\s*(?:the\s+(?:(?:lord|deputy|civic)\s+)*(?:mayor|chair(?:man)?)\b|(?:councill?ors?|cllrs?)\b)", re.I)
 _LEAD_SPLIT = re.compile(r"(?<=\w\w)(?<!\bMr)(?<!\bMrs)(?<!\bMs)(?<!\bDr)(?<!\bSt)(?<!\bCllr)\.\s|[)\]]\s*\.?\s+(?=[A-Z])|[:?]\s")
+# A count printed just before a heading: "carried with 55 voting in favour:-", "And 13 Members voting against:-"
+_UNITS = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+_TENS = ["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+_NUMBER = (rf"\d{{1,3}}|(?:{'|'.join(_TENS)})(?:[- ]\s*(?:{'|'.join(_UNITS[:9])}))?|"
+           rf"{'|'.join(sorted(_UNITS, key=len, reverse=True))}")
+
+
+def _number(word: str) -> int:
+    """"42", "forty- two", "Fifty-five", "thirteen" -> the number."""
+    if word.isdigit():
+        return int(word)
+    parts = re.split(r"[- ]\s*", word.lower())
+    tens = (_TENS.index(parts[0]) + 2) * 10 if parts[0] in _TENS else 0
+    units = _UNITS.index(parts[-1]) + 1 if parts[-1] in _UNITS else 0
+    return tens + units
+
+
+# Not "Total: 25 Against:" or "Against: 0 Abstentions:", which are the last side's; "Speding Nine Members voted
+# against" (a capital: a new sentence), "Wood. P. 39 Members voting against" (Sunderland's columns), "as follows:- 62
+# members voting for:-"
+_COUNT_BEFORE = re.compile(rf"(?:\b(?:with|and|by:?|to)\s+|(?<!\d)[,.]\s*|:-\s*|(?<=\s)(?=(?-i:[A-Z][a-z])))({_NUMBER})\s+$",
+                           re.I)
 # A count printed after the names: "... and Stanley (5)", "... Mrs Wright - total 36"
 _TAIL_COUNT = re.compile(r"(?:[(\[]\s*(\d+)\s*[)\]]|\btotal\s*[:=-]?\s*(\d+))\s*\.?(?:\s+[A-Z]\w*)?\s*$", re.I)
 
@@ -467,6 +489,43 @@ def _leads(flat: str, heads: list, matcher: Matcher) -> dict[int, tuple[int, lis
         lead = _lead_names(flat, heads[n - 1].end() if n else 0, h.start())
         leads[n] = (lead[0], [x for name in lead[1] for x in _resplit(name, matcher)]) if lead else None
     return leads
+
+
+# One member to a line, as Sunderland prints its lists: "Atkinson", "Gibson, E.", "Snowdon, D E", "J Heron"
+_LINE_NAME = re.compile(r"(?:[A-Z]\.?\s+){0,2}[A-Z][\w'’-]+(?:,\s*[A-Z]\.?(?:\s*[A-Z]\.?)?)?")
+
+
+def line_lists(text: str) -> str:
+    """A list written one member to a line keeps its breaks as commas, which flattening would lose ("Councillors
+    Atkinson\nBall\nGibson, E.\nGibson, P." -> "Councillors Atkinson, Ball, E. Gibson, P. Gibson,"): five or
+    more such lines in a row, blank lines allowed, or two or more after "Councillors". For minutes known to be laid
+    out so (CMIS's PDFs): elsewhere a name may be broken over two lines ("H\nBlagbrough"), which this would split."""
+    lines = text.split("\n")
+
+    def name(line: str) -> str | None:
+        s = re.sub(r"^\s*(?:councill?ors|cllrs)\b\.?:?", "", line.strip(), flags=re.I).strip()
+        if not s or not _LINE_NAME.fullmatch(s) or _LIST_HEADING.fullmatch(s.split(",")[0].split()[-1]) or \
+                s.split(",")[0].split()[-1].lower() in ("councillors", "councillor", "members", "none", "nil"):
+            return None
+        surname, _, initials = s.partition(",")
+        return f"{initials.strip()} {surname.strip()}".strip() if initials else s
+
+    out, i = [], 0
+    while i < len(lines):
+        run, j = [], i
+        while j < len(lines) and (not lines[j].strip() or name(lines[j])):
+            if lines[j].strip():
+                run.append(j)
+            j += 1
+        first = re.match(r"^\s*(?:councill?ors|cllrs)\b\.?:?", lines[run[0]], re.I) if run else None
+        if len(run) >= (2 if first else 5):
+            out.append((first.group(0).strip() + " " if first else "") +
+                       ", ".join(name(lines[k]) for k in run) + ",")
+            i = run[-1] + 1
+        else:
+            out.append(lines[i])
+            i += 1
+    return "\n".join(out)
 
 
 def parse(text: str, members: list[Member]) -> list[Vote]:
@@ -520,6 +579,8 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
             stop = _STOP.search(segment, max(stop.end(), stop.start() + 1))   # "For - 37 The Chair of Council, ..."
         names_end = h.end() + (stop.start() if stop else len(segment))
         raw = flat[h.end():names_end]
+        if not stop and n + 1 < len(heads) and (count := _COUNT_BEFORE.search(raw)):
+            raw = raw[:count.start()]            # "Tunnacliffe To 24 votes against": the next side's count
         side = h.lastgroup or ""
         if side == "none":
             continue                              # "Not voting:", "Absent:": only ends the list before it
@@ -540,6 +601,9 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
             continue
         lead = re.match(r"^\s*(\d+)\b\s*(?:votes?|members|councillors)?(?![:\w])", raw)
         stated = _stated(h.group(0))
+        before = None if stated is not None else _COUNT_BEFORE.search(flat[max(0, h.start() - 30):h.start()])
+        if before:
+            stated = _number(before.group(1))     # "carried with 55 voting in favour:-", "And 13 Members voting against"
         if lead and stated is None:
             stated, raw = int(lead.group(1)), raw[lead.end():]     # "For - 65 Against - 0 ..."
         names = [x for name in split_names(raw) for x in _resplit(name, matcher)]
@@ -557,6 +621,9 @@ def parse(text: str, members: list[Member]) -> list[Vote]:
         if "block vote" in raw.lower():
             sides.append((h, side, None, names_end, None))   # "Labour block vote of 15 votes": not a vote by name
             continue
+        if stated and before and len(names) > stated:
+            sides.append((h, side, names, names_end, stated))   # "And 1 abstention:- Councillor Bewick Guy, Heron, ...":
+            continue                                             # the columns ran together: the count check drops it
         if stated and len(names) > stated * 1.5 + 2:
             # far more names than the count, as when both lists follow both headings ("For the Motion (31)
             # Against the Motion (13) Councillors ..."), or the list runs on into the text: leave this side out

@@ -124,9 +124,13 @@ What was found:
 - **Party on the date** comes from each councillor's party history, which CMIS keeps with dates for former
   councillors too. Where no entry covers the meeting's date, the party is left blank, never guessed. Labels are the
   party's name ("Labour", "Liberal Democrats"), mapped to codes as for Modern.gov.
-- **Votes**: Sunderland records named votes as columns of surnames, some as "Smith, A", which the votes parser reads
-  only in part; Norwich mostly records counts ("with 31 members voting in favour"), with its few named votes in
-  brackets.
+- **Votes**: Sunderland prints its recorded votes one member to a line ("Atkinson", "Gibson, E."), which flattening
+  the text would run together, so the reader turns such lists into commas (`votes.line_lists`) before storing the
+  minutes; only for CMIS, since Modern.gov's text breaks single names over lines ("H" / "Blagbrough"). Sunderland's
+  PDFs also run columns together ("And 1 abstention:- Councillor Bewick Guy, Heron, ..."), so a vote is kept only
+  where the count printed before each list ("with 55 Members voting in favour:-", "Nine Members voted against") is
+  the number of names read: about half its recorded votes (45 of about 100, 2018–2026). Norwich mostly records
+  counts ("with 31 members voting in favour"), with its few named votes in brackets.
 - **Slow pages**: each page is 100–200 KB of ASP.NET form, and a council of eight years takes about 1,000 requests
   (half an hour at a request a second).
 

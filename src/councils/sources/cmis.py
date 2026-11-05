@@ -46,6 +46,7 @@ from lxml import html as lhtml
 from councils import committees as committee_kinds
 from councils import extract
 from councils.config import Settings
+from councils.parse import votes
 from councils.parse.minutes import to_text, vote_tables
 from councils.registry import Council
 from councils.sources import documents, robots
@@ -876,14 +877,15 @@ def apply_minutes(meeting: dict, items: list[dict], attendance: list[dict], text
     meeting["minutes_document"] = url
     meeting["minutes_published"] = True
     own = sorted(items, key=lambda i: i["position"])
-    parts = documents.split_into_items(text, own) if own else None
+    listed = votes.line_lists(text)     # Sunderland's recorded votes: one member to a line
+    parts = documents.split_into_items(listed, own) if own else None
     extra = []
     if parts:
         for it in own:
             if it["item_id"] in parts and not it["minutes_text"]:
                 it["minutes_text"], it["minutes_source"] = parts[it["item_id"]], "document"
     else:
-        extra.append(_whole(meeting, text, url))
+        extra.append(_whole(meeting, listed, url))
     meeting["items_with_minutes"] = sum(1 for i in own if len(i["minutes_text"]) > 40) or (1 if extra else 0)
     present = present_list(text)
     by_surname: dict[str, list[dict]] = {}
