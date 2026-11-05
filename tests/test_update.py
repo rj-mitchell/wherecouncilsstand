@@ -166,3 +166,53 @@ def test_a_committee_whose_meetings_cant_be_listed_stores_nothing(env, monkeypat
     failures["left"] = 1
     res = ingest.load(s, council)
     assert res.error == "" and stored(s) == [f"{GUILDFORD}:101"]
+
+
+def test_a_council_whose_meetings_keep_timing_out_is_stopped(env, monkeypatch):
+    """Epping Forest's service took about 40 seconds a meeting and timed out on most (November 2026): after two
+    meetings in a row time out the council is stopped, nothing is stored, and the next load tries again. A meeting
+    that fails some other way, or one that loads, starts the count again."""
+    import httpx
+
+    s, fake = env
+    fake.meetings = [(101 + i, date(2019, 3, 1) + timedelta(days=i)) for i in range(6)]
+    real = fake.get
+    timing_out = {102, 104, 105, 106}     # 103 fails another way, so 102 alone isn't two in a row
+    tried = []
+
+    def slow(client, op, **params):
+        if op == "GetMeeting":
+            mid = int(params["lMeetingId"])
+            tried.append(mid)
+            if mid in timing_out:
+                raise ModgovError("The read operation timed out") from httpx.ReadTimeout("The read operation timed out")
+            if mid == 103:
+                raise ModgovError("502 Bad Gateway")
+        return real(client, op, **params)
+
+    monkeypatch.setattr(modgov.Client, "_get", lambda self, op, **p: slow(self, op, **p))
+    council = replace(get(GUILDFORD), modgov_url="https://example.org")
+    res = ingest.load(s, council)
+    assert res.error.startswith("stopped after 2 meetings in a row timed out (104, 105)")
+    assert tried == [101, 102, 103, 104, 105] and stored(s) == []      # 106 never asked for
+
+    timing_out.clear()
+    monkeypatch.setattr(modgov.Client, "_get", lambda self, op, **p: real(self, op, **p))
+    res = ingest.load(s, council)
+    assert res.error == "" and len(stored(s)) == 6
+
+
+def test_timeouts_are_recognised_through_the_readers_errors():
+    import httpx
+
+    from councils.sources.streak import is_timeout
+
+    try:
+        try:
+            raise httpx.ReadTimeout("The read operation timed out")
+        except httpx.HTTPError as e:
+            raise ModgovError(str(e)) from e
+    except ModgovError as e:
+        assert is_timeout(e)
+    assert is_timeout(RuntimeError("E07000072: ConnectTimeout: https://example.org/x"))   # how CMIS names it
+    assert not is_timeout(ModgovError("502 Bad Gateway"))

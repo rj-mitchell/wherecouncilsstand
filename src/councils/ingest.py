@@ -15,6 +15,7 @@ from councils.registry import Council, site_sharers
 from councils.sources import documents
 from councils.sources import meeting as meeting_rows
 from councils.sources.modgov import Client, ModgovError
+from councils.sources.streak import TimeoutStreak
 
 log = logging.getLogger(__name__)
 
@@ -65,6 +66,7 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
         res.error = "no Modern.gov site"
         return res
     meetings, items, attendance = [], [], []
+    streak = TimeoutStreak(settings, council.gss)
     with Client(settings, council.gss, council.modgov_url) as client:
         try:
             res.committees = selected_committees(client, council, max_age_days=7 if update else None)
@@ -95,7 +97,12 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
                 except ModgovError as e:
                     log.warning("%s meeting %s: %s", council.gss, ref.id, e)
                     res.failed.append(ref.id)
+                    if stop := streak.failed(ref.id, e):
+                        log.warning("%s %s", council.gss, stop)
+                        res.error = stop
+                        return res
                     continue
+                streak.ok()
                 ctx = meeting_rows.Context(council.gss, council.name, council.modgov_url, cid, title, kind)
                 try:
                     m, its, att = meeting_rows.rows(root, ctx, ref.date)
