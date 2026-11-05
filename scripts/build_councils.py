@@ -50,7 +50,7 @@ HOST_PREFIXES = ["democracy", "moderngov", "modgov", "committees", "democratic",
 # Modern.gov under a path on the council's main site (Kensington and Chelsea, Fenland, Wychavon)
 PATH_PREFIXES = ["moderngov", "modernGov", "localgov", "Committees", "modern.gov"]
 FIELDS = ["gss", "reference", "name", "nation", "type", "region", "website", "modgov_url", "modgov_status",
-          "modgov_source"]
+          "modgov_source", "system"]
 
 
 def norm(name: str) -> str:
@@ -155,8 +155,11 @@ def main() -> None:
         old = previous.get(c["gss"], {})
         if old.get("modgov_source") in ("council website", "probed", "researched") and old.get("modgov_url"):
             c["modgov_url"], c["modgov_source"] = old["modgov_url"], old["modgov_source"]
+        c["system"] = old.get("system") or "modgov"
 
     def check(c: dict) -> dict:
+        if c.get("system", "modgov") != "modgov":    # CMIS and CoINS sites are checked by their own readers
+            return {**c, "modgov_status": previous.get(c["gss"], {}).get("modgov_status", "none")}
         if c.get("modgov_url"):
             status, _ = probe(s, c["gss"], c["modgov_url"])
             c["modgov_status"] = status

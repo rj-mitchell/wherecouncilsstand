@@ -28,8 +28,9 @@ class Council:
     nation: str
     type: str
     region: str
-    modgov_url: str
-    modgov_status: str
+    modgov_url: str         # the base address of the council's meetings site (Modern.gov, CMIS or CoINS)
+    modgov_status: str      # "ok", "blocked", "unreachable", "robots" (its robots.txt forbids crawling) or "none"
+    system: str = "modgov"  # which reader: "modgov" (sources/modgov.py), "cmis" or "coins"
 
     @property
     def short_name(self) -> str:
@@ -45,7 +46,7 @@ def councils() -> dict[str, Council]:
     with open(STATIC_DIR / "councils.csv", encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
     return {r["gss"]: Council(r["gss"], r["reference"], r["name"], r["nation"], r["type"], r["region"],
-                              r["modgov_url"], r["modgov_status"]) for r in rows}
+                              r["modgov_url"], r["modgov_status"], r.get("system") or "modgov") for r in rows}
 
 
 def get(key: str) -> Council:

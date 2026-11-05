@@ -6,10 +6,11 @@ import { getCouncils, type CouncilRow } from "./api";
 import { markNav, monthYear, number, setTitle } from "./format";
 
 const WHY_NOT: Record<string, string> = {
-  blocked: "Its Modern.gov site refused automated requests.",
-  unreachable: "Its Modern.gov site couldn't be reached.",
-  none: "It doesn't publish its minutes through Modern.gov.",
-  ok: "Its Modern.gov site returned errors when loaded.",
+  blocked: "Its meetings site refused automated requests.",
+  unreachable: "Its meetings site couldn't be reached.",
+  none: "It doesn't publish its minutes through a system we can read yet.",
+  robots: "Its meetings site asks automated readers not to visit (robots.txt).",
+  ok: "Its meetings site returned errors when loaded.",
 };
 
 function App() {

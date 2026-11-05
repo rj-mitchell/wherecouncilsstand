@@ -57,6 +57,8 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
     committee's meetings could be listed: a server that is down mustn't remove meetings already stored."""
     start = start or settings.start_date
     end = end or date.today()
+    if council.system != "modgov":
+        return _load_other(settings, council, start, end, update)
     res = Result(council.gss)
     if not council.modgov_url:
         res.error = "no Modern.gov site"
@@ -101,6 +103,29 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
     if update and res.failed:
         res.error = f"{len(res.failed)} meetings could not be fetched"
         return res
+    store.parquet.write(root, "meetings", council.gss, meetings)
+    store.parquet.write(root, "items", council.gss, items)
+    store.parquet.write(root, "attendance", council.gss, attendance)
+    res.meetings = len(meetings)
+    return res
+
+
+def _load_other(settings: Settings, council: Council, start: date, end: date, update: bool) -> Result:
+    """A council on another meetings system (CMIS, CoINS): its reader fetches the same rows the Modern.gov path makes,
+    and they are written the same way (nothing is written if the reader reports an error)."""
+    from importlib import import_module
+
+    try:
+        reader = import_module(f"councils.sources.{council.system}")
+    except ModuleNotFoundError:
+        return Result(council.gss, error=f"no reader for {council.system}")
+    res, meetings, items, attendance = reader.fetch(settings, council, start, end, update)
+    for a in attendance:
+        a["party"] = parties.normalise(a.get("party_label", ""), council.gss)
+    if res.error or (update and res.failed):
+        res.error = res.error or f"{len(res.failed)} meetings could not be fetched"
+        return res
+    root = settings.parquet_dir
     store.parquet.write(root, "meetings", council.gss, meetings)
     store.parquet.write(root, "items", council.gss, items)
     store.parquet.write(root, "attendance", council.gss, attendance)
