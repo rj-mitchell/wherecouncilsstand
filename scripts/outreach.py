@@ -51,6 +51,23 @@ LETTERS: dict[str, tuple[str, str, bool]] = {
     "E07000039": ("democraticservices@southderbyshire.gov.uk", "Democratic Services team", False),
     "S12000029": ("committees@southlanarkshire.gov.uk", "Committee Services team", False),
     "E07000196": ("info@sstaffs.gov.uk", "Democratic Services team", True),
+    # Second batch: councils whose sites refuse the server, don't answer it, or (found from the server) forbid
+    # crawling; addresses found 5 November 2026. Not yet: Camden and Sefton (only named officers' addresses),
+    # Warrington (address hidden on its page), Anglesey (no address published).
+    "E07000177": ("democracy@cherwell-dc.gov.uk", "Democratic and Elections team", False),
+    "E07000010": ("memberservices@fenland.gov.uk", "Member Services team", False),
+    "E07000086": ("democratic.services@eastleigh.gov.uk", "Democratic Services team", False),
+    "E07000220": ("contact.centre@rugby.gov.uk", "Democratic Services team", True),
+    "E09000027": ("democratic.services@richmond.gov.uk", "Democratic Services team", False),
+    # Wandsworth's democracy page links "email Committee Services" to this officer (the team serves Richmond too)
+    "E09000032": ("peter.sass@richmondandwandsworth.gov.uk", "Committee Services team", False),
+    "E06000015": ("committee@derby.gov.uk", "Democratic Services team", False),
+    "E06000010": ("democratic.services@hullcc.gov.uk", "Democratic Services team", False),
+    "E10000025": ("committeesdemocraticservices@oxfordshire.gov.uk", "Democratic Services team", False),
+    "E08000029": ("connectcc@solihull.gov.uk", "Democratic Services team", True),
+    "E07000195": ("democraticservices@newcastle-staffs.gov.uk", "Democratic Services team", False),
+    "E06000035": ("democratic.services@medway.gov.uk", "Democratic Services team", False),
+    "E07000106": ("democracy@canterbury.gov.uk", "Democratic Services team", False),
 }
 
 SCOTLAND_NI = ("scotland", "northern_ireland")
@@ -71,6 +88,7 @@ def short_name(name: str) -> str:
 def letter(row: dict, address: str, greeting: str, passed_on: bool) -> str:
     name, short, url = row["name"], short_name(row["name"]), row["modgov_url"]
     hosted = bool(re.search(r"\.cmis(?:-ni)?\.(?:uk\.com|org)\b", url))
+    status, modgov = row["modgov_status"], row["system"] == "modgov"
     main = "full council and cabinet" if row["nation"] not in SCOTLAND_NI else "full council and its main policy committee"
     parts = []
     if passed_on:
@@ -82,7 +100,24 @@ def letter(row: dict, address: str, greeting: str, passed_on: bool) -> str:
         "what their council has discussed, decided and voted on. It reads the minutes councils already publish of "
         f"the meetings of {main}, from May 2018 onwards, and every point it makes links back to the council's own record. "
         "It is a project of Where They Stand, which is applying to register as a charity in England and Wales.\n")
-    if hosted:
+    if status == "blocked":
+        parts.append(
+            f"Your committee site, {url}, refuses requests from our server: "
+            + ("the web service Modern.gov provides for reading meetings (mgWebService.asmx) answers \"403 Forbidden\". "
+               if modgov else "it answers \"403 Forbidden\". ")
+            + f"This may be a firewall or bot-protection setting rather than a choice about this kind of use. We have "
+            f"left {name} out rather than try to get round it. We would like to include {short}, so I'm writing to "
+            "ask whether you would be willing to let our server's requests through. It is at 151.247.219.240, and "
+            "identifies itself as \"WhereCouncilsStand\" (the full user agent is below). If you'd rather we read the "
+            "published minutes some other way, I'd be glad to hear it.\n")
+    elif status == "unreachable":
+        parts.append(
+            f"Your committee site, {url}, is public, but it doesn't answer requests from our server: the connection "
+            "is refused, cut off or times out. This may be a firewall setting that turns away addresses in data centres. We "
+            f"have left {name} out for now. We would like to include {short}, so I'm writing to ask whether you would "
+            "be willing to let our server's requests through. It is at 151.247.219.240, and identifies itself as "
+            "\"WhereCouncilsStand\" (the full user agent is below).\n")
+    elif hosted:
         parts.append(
             f"Your committee site, {url}, is hosted for you by Civica, and its robots.txt file asks automated tools "
             f"not to read it (as on every committee site Civica hosts that we have looked at). We have respected that and left "
@@ -102,19 +137,26 @@ def letter(row: dict, address: str, greeting: str, passed_on: bool) -> str:
             "would still be kept out):\n\n"
             "   User-agent: WhereCouncilsStand\n   Allow: /\n\n"
             "2. or reply to confirm you are content for us to read the public meeting pages and published minutes.\n")
+    if modgov:
+        reading = ("- Only what is public: Modern.gov's web service for the committees, meetings, attendance and "
+                   f"minutes of {main}, and minutes published as documents.\n"
+                   "- At most one request a second. Every response is kept once fetched, so nothing is read twice.\n"
+                   "- The first load is a few hundred requests. After that, a daily check for new meetings, re-reading "
+                   "only meetings from the last four months, because minutes can be corrected when they are approved.\n")
+    else:
+        reading = (f"- Only public pages: the committee and meeting pages, attendance, and the published minutes of {main}.\n"
+                   "- At most one request a second, following any Crawl-delay you set. Every page is kept once "
+                   "fetched, so nothing is read twice.\n"
+                   "- The first load is roughly 1,000 pages over about half an hour. After that, a daily check for "
+                   "new meetings, re-reading only meetings from the last four months, because minutes can be "
+                   "corrected when they are approved.\n")
     parts.append(
-        "How it would read your site:\n\n"
-        f"- Only public pages: the committee and meeting pages, attendance, and the published minutes of {main}.\n"
-        "- At most one request a second, following any Crawl-delay you set. Every page is kept once fetched, so "
-        "nothing is read twice.\n"
-        "- The first load is roughly 1,000 pages over about half an hour. After that, a daily check for new "
-        "meetings, re-reading only meetings from the last four months, because minutes can be corrected when they "
-        "are approved.\n"
-        f"- It identifies itself as: {USER_AGENT}\n"
+        "How it would read your site:\n\n" + reading
+        + f"- It identifies itself as: {USER_AGENT}\n"
         "- Names of people who aren't councillors are removed before anything is shown.\n")
     parts.append(
-        f"If you would rather we didn't, we will keep {short} out, and the site will say that the council's site "
-        "doesn't allow it. I'm happy to answer any questions, or to change how it reads the site to suit you.\n")
+        f"If you would rather we didn't, we will keep {short} out, and the site will say why it isn't included. "
+        "I'm happy to answer any questions, or to change how it reads the site to suit you.\n")
     parts.append(f"Kind regards,\n\n{SIGNATURE}\n")
     subject = f"Permission to read {name}'s published minutes (Where Councils Stand)"
     if passed_on:

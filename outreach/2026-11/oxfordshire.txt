@@ -1,0 +1,24 @@
+To: committeesdemocraticservices@oxfordshire.gov.uk
+Subject: Permission to read Oxfordshire County Council's published minutes (Where Councils Stand)
+
+Dear Democratic Services team,
+
+I'm writing from Where Councils Stand (https://wherecouncilsstand.com), an independent public website that helps people find out what their council has discussed, decided and voted on. It reads the minutes councils already publish of the meetings of full council and cabinet, from May 2018 onwards, and every point it makes links back to the council's own record. It is a project of Where They Stand, which is applying to register as a charity in England and Wales.
+
+Your committee site, https://mycouncil.oxfordshire.gov.uk, is public, but it doesn't answer requests from our server: the connection is refused, cut off or times out. This may be a firewall setting that turns away addresses in data centres. We have left Oxfordshire County Council out for now. We would like to include Oxfordshire, so I'm writing to ask whether you would be willing to let our server's requests through. It is at 151.247.219.240, and identifies itself as "WhereCouncilsStand" (the full user agent is below).
+
+How it would read your site:
+
+- Only what is public: Modern.gov's web service for the committees, meetings, attendance and minutes of full council and cabinet, and minutes published as documents.
+- At most one request a second. Every response is kept once fetched, so nothing is read twice.
+- The first load is a few hundred requests. After that, a daily check for new meetings, re-reading only meetings from the last four months, because minutes can be corrected when they are approved.
+- It identifies itself as: Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)
+- Names of people who aren't councillors are removed before anything is shown.
+
+If you would rather we didn't, we will keep Oxfordshire out, and the site will say why it isn't included. I'm happy to answer any questions, or to change how it reads the site to suit you.
+
+Kind regards,
+
+Where They Stand
+wheretheystanduk@gmail.com
+https://wherecouncilsstand.com

@@ -26,7 +26,7 @@ How it would read your site:
 - It identifies itself as: Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)
 - Names of people who aren't councillors are removed before anything is shown.
 
-If you would rather we didn't, we will keep Harborough out, and the site will say that the council's site doesn't allow it. I'm happy to answer any questions, or to change how it reads the site to suit you.
+If you would rather we didn't, we will keep Harborough out, and the site will say why it isn't included. I'm happy to answer any questions, or to change how it reads the site to suit you.
 
 Kind regards,
 
