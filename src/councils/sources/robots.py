@@ -7,6 +7,7 @@ an error page) allows everything, as the standard says; one that times out is tr
 
 from __future__ import annotations
 
+import re
 from functools import lru_cache
 from urllib.parse import urlparse
 from urllib.robotparser import RobotFileParser
@@ -28,7 +29,15 @@ def _parser(origin: str, user_agent: str) -> RobotFileParser | None:
     return rp
 
 
+def robot_name(user_agent: str) -> str:
+    """The name a robots.txt names this crawler by: "WhereCouncilsStand" in "Mozilla/5.0 (compatible;
+    WhereCouncilsStand/0.1; +…)". robotparser matches a rule against the text before the first "/", which for the
+    whole user agent is "Mozilla", so a council's "User-agent: WhereCouncilsStand" rule would otherwise be missed."""
+    m = re.search(r"compatible;\s*([\w.-]+)/", user_agent)
+    return m.group(1) if m else user_agent
+
+
 def allowed(url: str, user_agent: str) -> bool:
     u = urlparse(url)
     rp = _parser(f"{u.scheme}://{u.netloc}", user_agent)
-    return rp is not None and rp.can_fetch(user_agent, url)
+    return rp is not None and rp.can_fetch(robot_name(user_agent), url)
