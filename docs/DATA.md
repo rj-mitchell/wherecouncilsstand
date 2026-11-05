@@ -128,12 +128,12 @@ retries and refetching of recent meetings as Modern.gov.
   current member fits, and takes CoINS's member id. Otherwise (former councillors) the id is the name as a slug
   ("allan-casey"), the same wherever the minutes write the name the same way.
 * **Party limits.** CoINS gives only each current councillor's current party; there is no party on the date. So a
-  party is recorded only for a current councillor, and only at meetings since the last ordinary election (5 May
-  2022), when it is the party they hold now. Before then, and for former councillors, the party is left blank: it
-  is never guessed. A councillor who changed party during this term is shown with the new party at earlier
-  meetings of the term too. This is known to happen: Glasgow's members pages list Your Party councillors, a party
-  founded in 2025.
-  Party in control is therefore read only for the current term. Labels are mapped as for Modern.gov; a site's
+  party is recorded only for a current councillor, and only at meetings in the last year (and since the last
+  ordinary election, 5 May 2022). Earlier, and for former councillors, the party is left blank: it is never guessed.
+  The year limits the risk of showing a councillor who changed party with the new party at earlier meetings (it does
+  happen: Glasgow's members pages list Your Party councillors, a party founded in 2025), at the cost of party data
+  for most of the record. These councils are rated "partly working" on the councils page for that reason.
+  Party in control is therefore read only for the last year. Labels are mapped as for Modern.gov; a site's
   abbreviation in brackets ("Scottish Green Party (SGP)") is dropped, and `parties.csv` maps Shetland's "- None"
   (no party), Falkirk's "Scottish Labour and Co-operative Party" and "Non-Aligned Independent".
 * **Named votes** (November 2026). Scottish councils vote on a motion against an amendment, not for against

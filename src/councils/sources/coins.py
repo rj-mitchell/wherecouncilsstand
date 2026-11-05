@@ -17,8 +17,8 @@ minutes are the "Minute of meeting ... held on <date>" paper on the committee's 
 
 Meeting pages don't list attendance, so it is read from the sederunt at the top of the minutes ("Present: ...").
 Members are matched to the members pages by name; a party is given only to a current councillor, and only at
-meetings since the last ordinary election, when the members pages' party is theirs. Former councillors' parties
-are left blank: they are never guessed.
+meetings in the last year (and since the last ordinary election), when the members pages' party is likely to be
+theirs. Former councillors' parties are left blank: they are never guessed.
 
 Every response is cached under ``raw/coins/<council>/``. Requests to a site are spaced at least
 ``min_interval_seconds`` apart, with the crawler's own user agent, and robots.txt is checked before each one.
@@ -35,7 +35,7 @@ import threading
 import time
 import unicodedata
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from urllib.parse import quote_plus, urljoin
 
@@ -51,6 +51,7 @@ log = logging.getLogger(__name__)
 
 # Scottish councils' ordinary elections. A current councillor's party on the members pages is theirs since the last
 # one; before it they may have stood for another party, or not been a councillor.
+PARTY_WINDOW_DAYS = 365
 SCOTTISH_ELECTIONS = [date(2012, 5, 3), date(2017, 5, 4), date(2022, 5, 5), date(2027, 5, 6)]
 
 
@@ -800,7 +801,10 @@ def fetch(settings: Settings, council: Council, start: date, end: date, update: 
             k = committees.kind(b.title, council.gss)
             if k:
                 res.committees[b.id] = (b.title, k)
-        term = _term_start(read_on)
+        # a current councillor's party is applied only to the last year's meetings, and not before this term: a
+        # councillor who changed party earlier in the term would otherwise be shown with the new party at meetings
+        # before the change (the members pages give only today's party)
+        term = max(_term_start(read_on), read_on - timedelta(days=PARTY_WINDOW_DAYS))
         sittings: list[Sitting] = []
         for bid, (title, _) in sorted(res.committees.items()):
             body = Body(bid, title)

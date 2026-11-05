@@ -229,8 +229,9 @@ def test_fetch_rows_have_the_modgov_keys(settings):
     bell = next(a for a in attendance if a["name"] == "Richard Bell")
     assert (bell["member_id"], bell["role"], bell["attendance"]) == ("2394", "Chair", "Present")
     kerr = next(a for a in attendance if a["name"] == "Thomas Kerr")
-    # a party is read only from the members pages, for a current councillor at a meeting since the last election
-    assert kerr["party_label"] == "Reform UK"
+    # a party is read only from the members pages, for a current councillor, at a meeting in the last year (and since
+    # the last election): this meeting is from January 2024, so it is left blank, never guessed
+    assert kerr["party_label"] == ("Reform UK" if (attendance[0]["date"] - coins.date.today()).days > -365 else "")
     assert all(a["party_label"] in ("", "Reform UK") for a in attendance)
     # names that aren't on the members pages, or at full council, aren't kept from a committee's sederunt
     assert all(a["member_id"].isdigit() for a in attendance)
