@@ -15,8 +15,8 @@ for its democratic services team (or its general address, asking for it to be pa
 from __future__ import annotations
 
 import csv
-from datetime import date
 import re
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
