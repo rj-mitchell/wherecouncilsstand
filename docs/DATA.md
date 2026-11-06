@@ -6,7 +6,8 @@ Built by `scripts/build_councils.py` from:
 
 - **England:** MHCLG's [local-authority register](https://www.planning.data.gov.uk/dataset/local-authority) on
   planning.data.gov.uk (Open Government Licence): current entries, with each council's type, GSS code and region.
-  Combined authorities are left out. 318 councils.
+  Combined authorities and the Greater London Authority are left out: strategic authorities are listed by hand (below,
+  "Strategic authorities"). 317 councils.
   The register still gives Barnsley and Sheffield the GSS codes ONS replaced on 1 April 2019, when the boundary
   between them moved (E08000016, E08000019); `build_councils.py` uses the current ones (E08000038, E08000039), as ONS
   and the Regulator of Social Housing do (`SUPERSEDED`). A data folder loaded before this change is moved to the new
@@ -89,6 +90,44 @@ What was found:
   the chain must still end at a trusted root and the name must still match.
 - **Minutes can change** until approved at the next meeting, so meetings newer than 120 days are fetched again
   (`refetch_days`).
+
+## Strategic authorities (decisions 17 to 20)
+
+England's strategic authorities are listed by hand, beside the councils, in **`data_static/strategic_authorities.csv`**
+(20 on 6 November 2026), from the research note [`research/strategic-authorities.md`](research/strategic-authorities.md):
+each with its ONS `E47` code (or a provisional key, `SA-CUMBRIA` and so on, for the four created in 2026, until ONS
+publishes one; the GLA keeps London's region code, `E12000007`), its statutory kind and category under the 2026 Act,
+when it was created, the regions it spans (Greater Lincolnshire spans two; it is filed under the East Midlands, where
+most of its people live), its meetings site and status, and, where the status alone doesn't say why it isn't covered,
+the reason. `build_councils.py` leaves combined authorities and the GLA out of `councils.csv`; this file is checked by
+hand each quarter against legislation.gov.uk.
+
+- **`data_static/authority_councils.csv`**: each authority's constituent councils (and non-constituent councils where
+  confirmed: York on West Yorkshire's board), with from and to dates where a council joined or left after the
+  authority was created. In a two-tier area the county is the constituent council, except in Cambridgeshire and
+  Peterborough, whose districts are constituent too.
+- **`data_static/mayors.csv`**: each mayor, the party they were elected for, and from the day of their election to the
+  day they left office (from Wikipedia's list of metro mayors, as of June 2026, and the research note; the dates
+  before 2024 should be checked against the authorities' own records). Between two mayors (Greater Manchester, 18 June
+  to 30 July 2026) there is none.
+- **Committees** (decision 18): each pilot authority's board, overview and scrutiny committees and any committee of
+  the mayor's decisions are named in `committees.csv`, with the reason, and checked against their committee lists as
+  their web services gave them on 6 November 2026 (`tests/fixtures/modgov/`). None of the 13 lists the mayor's
+  decisions as a live committee: West Midlands' "Mayoral Decision" is marked deleted, so nothing is read from it unless
+  it returns. Lancashire's are on Lancashire County Council's site, so only the committees named are taken, and the
+  county's own are unaffected.
+- **Members** (decision 20, `authority.py`): Modern.gov's attendance for an authority names the body each member
+  represents ("Bradford Council", "Tameside MBC"), which is matched to the council. Each member is the mayor, a
+  constituent or non-constituent member, a substitute, a co-opted member, or an appointed member who isn't a
+  councillor (named nowhere: name and member id dropped, and removed from the minutes). A councillor's party on the date
+  is their home council's record where the site has it (first initial and surname, one match within a year), otherwise
+  the authority's; `party_source` says which.
+- **Control** (decision 19): the mayor's party on the date, as `MAYOR:LAB`, or `SA:NONE` (no single party) with no
+  mayor, never a council's party in overall control.
+- **What was seen** (two meetings, 6 November 2026): West Yorkshire's board minutes are in the web service, with votes
+  as counts ("For: 8 Against: 0 Abstentions: 2") and no names; Greater Manchester's are published only as a document
+  on the next agenda, and its attendance wasn't updated after the meeting (everyone "Expected"). Expect few named votes:
+  the one the law requires is on a mayor's budget when it is challenged.
 
 ## Robots.txt (decision 21)
 

@@ -240,7 +240,12 @@ def update_index(settings: Settings, changed: list[str], embedder: Embedder,
     idx = indexer.index
     # councils whose record is withheld (decision 21) but still in the index: their passages are removed
     held = set(withheld_codes())
-    changed = list(changed) + sorted({k.split(":")[0] for k in indexer.state.data} & held - set(changed))
+    indexed = {k.split(":")[0] for k in indexer.state.data}
+    changed = list(changed) + sorted(indexed & held - set(changed))
+    # councils loaded but never indexed (a first load, such as the strategic authorities' backfill, writes the store
+    # without indexing): indexed now. One with no minutes text yet is looked at again each night, which costs little.
+    stored = {p.stem for p in (settings.parquet_dir / "items").glob("*.parquet")}
+    changed += sorted(g for g in stored - indexed - held - set(changed) if g in councils())
     for gss in changed:              # one writer at a time; unchanged passages keep their vectors
         indexer.index_council(gss)
     done = []

@@ -242,3 +242,25 @@ def test_questions_about_authorities_are_read():
     assert parse_offline("What has the West Yorkshire mayor said about trams?").filters.councils == ["E47000003"]
     # a region's name alone is not the authority
     assert parse_offline("What have councils in the West Midlands decided about libraries?").filters.councils == []
+
+
+def test_the_nightly_update_indexes_an_authority_loaded_by_the_backfill(tmp_path):
+    """`councils load --type strategic_authority` writes the store without indexing; the next update indexes what
+    was loaded but never indexed, tagged with the mayor's party."""
+    from test_pipeline import item, meeting
+
+    from councils import store
+    from councils.embed.base import HashingEmbedder
+    from councils.index.build import Indexer, update_index
+
+    s = replace(load_settings(**{"embedding.backend": "hashing", "embedding.dim": 64}), data_dir=tmp_path)
+    gss, d = "E47000003", date(2026, 1, 22)
+    store.parquet.write(s.parquet_dir, "meetings", gss, [{**meeting(gss, 1501, d), "kind": "board"}])
+    store.parquet.write(s.parquet_dir, "items", gss, [item(gss, 1501, 1, d, "Bus Franchising",
+                                                           "RESOLVED that bus franchising be introduced.")])
+    store.parquet.write(s.parquet_dir, "attendance", gss, [])
+    store.parquet.write(s.parquet_dir, "votes", gss, [])
+    out = update_index(s, [], HashingEmbedder(64))
+    assert out["index"] == "built" and out["passages_embedded"] == 1
+    rows = Indexer(s).index.passages().to_arrow().to_pylist()
+    assert [(r["gss"], r["control"], r["council_type"]) for r in rows] == [(gss, "MAYOR:LAB", "strategic_authority")]

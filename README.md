@@ -26,6 +26,14 @@ shared server. It is still being built and tested, and says so on every page.
   votes and declarations of interest. Names of people who aren't councillors are removed before anything is indexed
   or shown. On 6 November 2026 the live site held 295 of the 383 councils, with about 43,300 meetings and 8,900 named
   votes. The data is brought up to date every night (`councils update`, [`docs/OPERATIONS.md`](docs/OPERATIONS.md)).
+- **Strategic authorities** (decisions 17 to 20, 6 November 2026). England's 20 strategic authorities are listed
+  beside the 382 councils, and a pilot of 13 (those on a Modern.gov web service that answers and allows reading) is
+  ready to load on the server: their boards, mayor's decisions and overview and scrutiny committees, members with their
+  role and their party from their home council, and their mayor's party in place of a party in control. Each has a
+  page linked both ways with its councils, and is in briefings.
+- **Robots.txt** (decision 21). Every reader now checks it, Modern.gov's included. 44 councils' Modern.gov sites (and
+  the GLA's) forbid reading: they are listed as "Permission asked", the 41 already loaded are withheld (kept, not
+  shown), and letters are drafted in [`outreach/2026-11-robots/`](outreach/2026-11-robots/).
 - **The website** (`web/`, served by `councils serve`): questions answered as streamed, sourced briefings, each saved
   at its own address; a page for every council (the party in control over time, members by party, named votes and
   meetings, and links to Where Landlords Stand); a page for every named vote; pages on how it works, corrections and
@@ -117,7 +125,8 @@ How the site works, for readers, is on its [How it works](https://wherecouncilss
 ```
 
 * **Committees.** Only full council and the cabinet are loaded, or for councils run by committees, their main
-  policy committees (docs/DECISIONS.md, 3).
+  policy committees (docs/DECISIONS.md, 3). For strategic authorities, the board, the mayor's decisions and overview
+  and scrutiny committees (18), named for each in `data_static/committees.csv`.
 * **Party on the date.** Each meeting's attendance records the party each member had at the time. Councils' labels
   ("LAB", "Labour", "Labour & Co-operative") are mapped to one code per party. Named local groups count as local
   parties, not "Independent".
@@ -131,7 +140,7 @@ How the site works, for readers, is on its [How it works](https://wherecouncilss
   (`COUNCILS_ANTHROPIC_API_KEY`, `ANTHROPIC_API_KEY`, or `data/anthropic_api_key`); without one it shows the
   evidence it would use.
 * **Politeness.** One request at a time to each council, at least a second apart, with a user agent that names the
-  project. Every response is cached.
+  project, and only where the site's robots.txt allows it (21). Every response is cached.
 
 ## Try it
 
@@ -144,6 +153,7 @@ uv run councils ingest barnsley           # load one council since May 2018 (abo
 uv run councils parse barnsley            # named votes and declarations from its minutes
 uv run councils pilot                     # load and parse the 20 pilot councils
 uv run councils load --workers 20         # every council whose web service answers (hours; --resume continues)
+uv run councils load --type strategic_authority --workers 13   # the strategic authorities' pilot (about an hour)
 uv run councils parties                   # map stored party labels again after data_static/parties.csv changes
 uv run councils update                    # the daily update: new and changed meetings, votes, index (docs/OPERATIONS.md)
 uv run councils report                    # the pilot's measurements
@@ -174,7 +184,9 @@ Data is written to `data/` (raw responses and Parquet). `scripts/build_councils.
 - **Vote accuracy.** About 1 named vote in 100 has a councillor on the wrong side (three hand-checked samples of 100,
   [`docs/PILOT.md`](docs/PILOT.md)). This is accepted for the alpha (decision 15) and said on the How it works page.
 - **Coverage.** Councils whose minutes aren't published through Modern.gov, CMIS or CoINS, and those whose sites
-  refuse the crawler or forbid it in robots.txt, are left out, with the reason shown. Councils were asked for
+  refuse the crawler or forbid it in robots.txt, are left out, with the reason shown. So are 7 of the 20 strategic
+  authorities: three publish on their own web pages, two are on sites that forbid reading, one is on a site that
+  refused automated requests, and one's meetings couldn't be found. Councils were asked for
   permission ([`outreach/`](outreach/)).
 - **Minutes are summaries** written by council officers, not word-for-word records, and briefings are written by AI:
   they are checked automatically against the minutes, and can still be wrong.
