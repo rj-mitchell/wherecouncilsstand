@@ -205,3 +205,11 @@ def test_councils_stored_under_replaced_codes_can_be_moved(tmp_path):
     mod.recode(raw, pq, "E08000016", "E08000038", dry_run=False)
     assert (raw / "modgov" / "E08000038" / "meeting" / "1.xml").exists()
     assert not (raw / "modgov" / "E08000016").exists() and not (pq / "items" / "E08000016.parquet").exists()
+
+
+def test_the_claude_client_gives_up_after_five_minutes(monkeypatch):
+    from councils.rag.answer import make_client
+
+    monkeypatch.setenv("COUNCILS_ANTHROPIC_API_KEY", "test-key")
+    client = make_client()
+    assert client.timeout.read == 300.0 and client.timeout.connect == 10.0 and client.max_retries == 2
