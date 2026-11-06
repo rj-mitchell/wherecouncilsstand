@@ -149,3 +149,12 @@ def test_a_saved_briefing_is_checked_again_when_shown(client):
     assert [s["status"] for s in shown["segments"]] == ["connective", "cited", "unsupported"]
     assert shown["unsupported_segments"] == 1 and shown["loaded_words"] == 1
     assert shown["segments"][2]["loaded"] == [{"start": 10, "end": 16, "word": "fiasco"}]
+
+
+def test_old_answers_are_deleted_from_the_cache(tmp_path):
+    state = StateDB(tmp_path / "state.db")
+    with state.connect() as con:
+        con.execute("INSERT INTO answer_cache (key, at, events) VALUES ('old', '2026-01-01T00:00:00+00:00', '[]')")
+    state.store_cached("new", [{"type": "final"}], max_hours=168)
+    with state.connect() as con:
+        assert [r[0] for r in con.execute("SELECT key FROM answer_cache")] == ["new"]

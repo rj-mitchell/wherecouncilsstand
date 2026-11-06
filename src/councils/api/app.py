@@ -247,7 +247,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             if final.get("type") == "final" and final.get("answer"):
                 replay = [e for e in kept if e["type"] in ("plan", "sources")]
                 replay += [{"type": "text", "text": "".join(text)}, {**final, "cached": True}]
-                state.store_cached(key, replay)
+                state.store_cached(key, replay, cache_hours)
 
         def guarded() -> Iterator[dict[str, Any]]:
             """A briefing about to be written is reserved at its estimated cost while it runs, and the limits are
