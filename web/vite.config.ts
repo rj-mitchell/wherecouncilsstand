@@ -6,17 +6,18 @@ import react from "@vitejs/plugin-react";
 
 const here = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
-/** Pages share one head, header and footer: <!--#include header--> pulls in partials/header.html. */
+/** Pages share one head, header and footer: <!--#include header--> pulls in partials/header.html, and
+ * <!--#include family/shelf--> the Where They Stand family kit's public/family/shelf.html (README, "In the family"). */
 function partials(): Plugin {
+  const file = (name: string) =>
+    name.startsWith("family/") ? here(`./public/${name}.html`) : here(`./partials/${name}.html`);
   return {
     name: "html-partials",
     transformIndexHtml: {
       order: "pre",
       handler: (html) => {
         for (let depth = 0; depth < 5 && html.includes("<!--#include "); depth++) {
-          html = html.replace(/<!--#include ([\w-]+)-->/g, (_m, name: string) =>
-            readFileSync(here(`./partials/${name}.html`), "utf8"),
-          );
+          html = html.replace(/<!--#include ((?:family\/)?[\w-]+)-->/g, (_m, name: string) => readFileSync(file(name), "utf8"));
         }
         return html;
       },
@@ -24,7 +25,9 @@ function partials(): Plugin {
   };
 }
 
-const pages = ["index", "councils", "council", "vote", "about", "methodology", "privacy", "corrections", "404"];
+const pages = [
+  "index", "councils", "council", "vote", "about", "methodology", "privacy", "corrections", "accessibility", "terms", "404",
+];
 
 export default defineConfig({
   plugins: [partials(), react()],

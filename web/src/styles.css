@@ -2,9 +2,11 @@
  * Where Councils Stand — styles (docs/DESIGN.md).
  *
  * The look of a council's minute book: typed minutes on a faintly warm white page, numbered in the margin,
- * headings in capitals between rules, decisions introduced by RESOLVED. Blue for full council, ochre for cabinet.
- * Shared with Where They Stand: OKLCH tokens holding light and dark values, one fluid type scale, logical
- * properties, square corners, hover only where hover exists, and motion only when it is welcome.
+ * headings in capitals between rules, decisions introduced by RESOLVED. Bound in Buckram brown, the site's cloth in
+ * the Where They Stand family, which also brown marks full council; slate grey marks cabinet. Headings are in Source
+ * Serif 4 from the family kit (public/family). Shared with Where MPs Stand: OKLCH tokens holding light and dark
+ * values, one fluid type scale, logical properties, square corners, hover only where hover exists, and motion only
+ * when it is welcome.
  */
 
 @import "@fontsource-variable/literata/opsz.css";
@@ -58,27 +60,32 @@ button {
 :root {
   color-scheme: light dark;
 
-  --paper: light-dark(oklch(98.6% 0.006 85), oklch(18.5% 0.025 255));
-  --paper-raised: light-dark(oklch(100% 0 0), oklch(22% 0.028 255));
-  --paper-sunk: light-dark(oklch(95.8% 0.009 85), oklch(15.5% 0.022 255));
+  /* dark mode is a near-neutral slate black, close to the family shelf's (public/family/family.css) */
+  --paper: light-dark(oklch(98.6% 0.006 85), oklch(19% 0.008 230));
+  --paper-raised: light-dark(oklch(100% 0 0), oklch(22.5% 0.009 230));
+  --paper-sunk: light-dark(oklch(95.8% 0.009 85), oklch(16% 0.007 230));
   --ink: light-dark(oklch(21% 0.012 255), oklch(93% 0.01 85));
-  --ink-soft: color-mix(in oklch, var(--ink) 74%, var(--paper));
-  --ink-faint: color-mix(in oklch, var(--ink) 58%, var(--paper));
-  --rule: color-mix(in oklch, var(--ink) 14%, var(--paper));
-  --rule-strong: color-mix(in oklch, var(--ink) 78%, var(--paper));
+  --ink-soft: color-mix(in oklab, var(--ink) 74%, var(--paper));
+  --ink-faint: color-mix(in oklab, var(--ink) 58%, var(--paper));
+  --rule: color-mix(in oklab, var(--ink) 14%, var(--paper));
+  --rule-strong: color-mix(in oklab, var(--ink) 78%, var(--paper));
 
-  /* the meetings: the minute book's binding for full council, ochre for cabinet */
-  --council: light-dark(oklch(40% 0.07 255), oklch(78% 0.08 250));
-  --cabinet: light-dark(oklch(48% 0.09 65), oklch(80% 0.1 75));
-  --binding: oklch(30% 0.05 255);
+  /* the binding: Buckram brown, the site's cloth in the Where They Stand family (#6E4A2A; in dark mode the family's
+     lifted cloth #865A33 as a fill, and its tan #D8AE84 for text). It is the identity colour: the mark, the phase
+     tag, links, focus rings, buttons, and full council. */
+  --binding: light-dark(oklch(44.2% 0.0675 61.3), oklch(50.7% 0.079 61));
   --on-binding: oklch(96% 0.01 85);
+  --council: light-dark(oklch(44.2% 0.0675 61.3), oklch(77.9% 0.0745 66.4));
+  /* the second kind of meeting: cabinet and policy committees, in slate grey, well away from the brown in hue and
+     from every party's colour */
+  --cabinet: light-dark(oklch(46% 0.035 240), oklch(80% 0.035 240));
 
   --accent: var(--council);
-  --accent-subtle: color-mix(in oklch, var(--accent) 10%, var(--paper));
-  --on-accent: light-dark(oklch(98% 0.005 85), oklch(17% 0.02 255));
-  --warn: light-dark(oklch(50% 0.12 62), oklch(82% 0.12 78));
-  --warn-subtle: color-mix(in oklch, var(--warn) 13%, var(--paper));
-  --danger: light-dark(oklch(50% 0.17 27), oklch(76% 0.14 25));
+  --accent-subtle: color-mix(in oklab, var(--accent) 10%, var(--paper));
+  --on-accent: light-dark(oklch(98% 0.005 85), oklch(19% 0.008 230));
+  /* notices and unsupported text: amber, yellower than the brown so a warning never reads as the site's own colour */
+  --warn: light-dark(oklch(55% 0.125 82), oklch(84% 0.12 88));
+  --warn-subtle: color-mix(in oklab, var(--warn) 13%, var(--paper));
 
   /* the colours readers associate with each party, for charts only (docs/DESIGN.md) */
   --party-LAB: light-dark(#c8102e, #ff7a85);
@@ -165,7 +172,6 @@ h2 {
 
 /* a minute's heading: capitals between rules */
 .minute-heading {
-  font-family: var(--sans);
   font-size: var(--step--1);
   font-weight: 650;
   letter-spacing: 0.08em;
@@ -234,16 +240,43 @@ h2 {
   text-decoration: none;
 }
 
+/* the site's mark, an open minute book (partials/mark.html), bound in the cloth. In dark mode the cloth is the
+   family's lifted brown, at 3:1 against the page, and a gilt edge keeps the square's outline */
+.site-mark {
+  flex: none;
+}
+.site-mark__cloth {
+  fill: var(--binding);
+  stroke: light-dark(transparent, oklch(80% 0.1 89));
+  stroke-width: 3;
+}
+.site-mark__lines {
+  stroke: var(--binding);
+}
+
 .wordmark {
   display: block;
+  font-family: var(--wts-serif, var(--serif));
   font-size: var(--step-2);
   font-weight: 700;
   line-height: 1.1;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.005em;
 }
 
-.tagline,
-.independence-line {
+/* the site's name, and under it the family's endorsement (public/family: "A Where They Stand project"), lined up
+   with the name rather than the mark */
+.masthead-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: var(--space-xs);
+}
+
+.masthead-brand .wts-endorse {
+  margin-inline-start: calc(44px + var(--space-s));
+}
+
+.tagline {
   display: block;
   font-style: italic;
   color: var(--ink-soft);
@@ -281,10 +314,15 @@ h2 {
 
 /* ---- footer ----------------------------------------------------------------------------------- */
 
+/* the site's own footer, then the family's shelf (public/family/shelf.html), which runs the full width */
+.site-footer {
+  margin-block-start: var(--space-l);
+}
+
 .footer {
   max-width: var(--wide);
   margin-inline: auto;
-  padding: var(--space-m) var(--space-m) var(--space-xl);
+  padding: var(--space-m) var(--space-m) 0;
   border-block-start: 1px solid var(--rule-strong);
   font-family: var(--sans);
   font-size: var(--step--1);
@@ -478,7 +516,6 @@ h2 {
 
 .answer h2,
 .answer h3 {
-  font-family: var(--sans);
   font-size: var(--step--1);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -628,12 +665,55 @@ h2 {
 }
 
 .group-heading {
-  font-family: var(--sans);
   font-size: var(--step--1);
   font-weight: 650;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-block: var(--space-l) 0;
+}
+
+/* ---- a sister site's links (components/Sister.tsx): quiet, under the sister's name and spine ---------------------- */
+
+.sister {
+  display: flex;
+  gap: var(--space-s);
+  align-items: start;
+  max-width: var(--measure);
+  margin-block: var(--space-m);
+  padding-block: var(--space-s);
+  border-block: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: var(--step--1);
+}
+
+.sister .wts-spine {
+  margin-block-start: 0.15em;
+}
+
+.sister-name {
+  margin: 0 0 var(--space-xs);
+  font-family: var(--wts-serif, var(--serif));
+  font-weight: 600;
+}
+
+.sister ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.sister-ask {
+  font-family: var(--sans);
+  font-size: var(--step--1);
+  margin-block: var(--space-s) 0;
+}
+
+.sister-ask .wts-spine {
+  display: inline-block;
+  vertical-align: -0.3em;
+  margin-inline-end: var(--space-xs);
 }
 
 /* ---- votes: neutral marks ---------------------------------------------------------------------- */
@@ -840,6 +920,7 @@ th.num {
   .phase-banner,
   .site-nav,
   .footer-nav,
+  .wts-shelf,
   .ask-form,
   .agenda {
     display: none;
@@ -863,8 +944,8 @@ th.num {
 
 /* Coverage (councils page): how much of a council's record the site reads, never a judgement of the council. Neutral
    square marks, like the votes': filled for full, half filled for partial, outlined for not yet. A word as well as
-   the mark, and no colour. */
-.coverage {
+   the mark, and no colour. (Not .coverage: that is the home page's line of totals, which must wrap.) */
+.coverage-status {
   font-family: var(--sans);
   font-size: var(--step--1);
   font-weight: 600;

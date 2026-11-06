@@ -11,7 +11,7 @@ describe("CoverageLabel", () => {
         <CoverageLabel c="not_yet" />
       </>,
     );
-    expect([...container.querySelectorAll(".coverage")].map((e) => e.textContent)).toEqual(["Full", "Partial", "Not yet"]);
+    expect([...container.querySelectorAll(".coverage-status")].map((e) => e.textContent)).toEqual(["Full", "Partial", "Not yet"]);
     expect([...container.querySelectorAll(".mark")].map((e) => e.className)).toEqual([
       "mark coverage-full",
       "mark coverage-partial",

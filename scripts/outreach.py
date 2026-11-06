@@ -3,7 +3,7 @@ forbid or refuse the crawler are asked, not worked around).
 
     uv run python scripts/outreach.py
 
-writes one letter per council in outreach/<batch>/, ready for Where They Stand's deploy/mail.sh to send from the
+writes one letter per council in outreach/<batch>/, ready for Where MPs Stand's deploy/mail.sh to send from the
 charity's Gmail account (docs/HOSTING.md there, "Email from the server"):
 
     bash /opt/hansardgpt/deploy/mail.sh send /opt/wherecouncilsstand/outreach/2026-11/*.txt

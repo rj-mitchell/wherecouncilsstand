@@ -1,0 +1,43 @@
+name: CI
+
+# Lint and tests for the Python service and the web front end, on every push and pull request.
+# The family kit in web/public/family is checked by tests/test_family.py against the hash in its own VERSION file
+# (no copy edited by hand, no file missing). Whether it is the latest kit needs the charity's private repository, so
+# that is a step before merging, not here: README, "In the family".
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.32"
+      - run: uv python install 3.12
+      - run: uv sync --frozen --python 3.12
+      - run: uv run ruff check
+      - run: uv run pytest
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build

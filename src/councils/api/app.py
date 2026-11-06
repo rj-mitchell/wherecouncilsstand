@@ -1,7 +1,7 @@
 """The web service: questions answered as streamed briefings, search, council and vote pages, saved briefings and
 problem reports. Serves the built web pages (web/dist) too. Run with ``councils serve``.
 
-Adapted from Where They Stand's service, without accounts: the site is public, so new briefings are limited per
+Adapted from Where MPs Stand's service, without accounts: the site is public, so new briefings are limited per
 visitor and overall (api/usage.py). Over a limit, the sources are still shown, which costs nothing.
 """
 
@@ -372,10 +372,21 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
 
     if (dist / "assets").exists():
         app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+    # the Where They Stand family kit (web/public/family: icons, the shared stylesheet and fonts, the link card)
+    if (dist / "family").exists():
+        app.mount("/family", StaticFiles(directory=dist / "family"), name="family")
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    def favicon():
+        """Browsers ask for /favicon.ico whatever the page says: the kit's icon, the site's spine in its cloth."""
+        path = dist / "family" / "favicon.ico"
+        if not path.is_file():
+            raise HTTPException(404, "Not found.")
+        return FileResponse(path, media_type="image/vnd.microsoft.icon")
 
     @app.get("/{name}", include_in_schema=False)
     def static_page(name: str):
-        """about, methodology, privacy, corrections ..., and files such as icon.svg and robots.txt."""
+        """about, methodology, privacy, corrections ..., and files such as robots.txt."""
         safe = Path(name).name
         if (dist / safe).is_file():
             return FileResponse(dist / safe)

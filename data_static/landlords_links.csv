@@ -1,0 +1,297 @@
+gss,area_name,area_slug,area_landlords,council_landlord,council_landlord_slug
+E06000001,Hartlepool,hartlepool,15,,
+E06000002,Middlesbrough,middlesbrough,18,,
+E06000003,Redcar and Cleveland,redcar-and-cleveland,18,,
+E06000004,Stockton-on-Tees,stockton-on-tees,17,,
+E06000005,Darlington,darlington,22,Darlington Borough Council,darlington-borough-council
+E06000006,Halton,halton,16,,
+E06000007,Warrington,warrington,18,,
+E06000008,Blackburn with Darwen,blackburn-with-darwen,13,,
+E06000009,Blackpool,blackpool,15,Blackpool Borough Council,blackpool-borough-council
+E06000010,"Kingston upon Hull, City of",kingston-upon-hull-city-of,19,Kingston upon Hull City Council,kingston-upon-hull-city-council
+E06000011,East Riding of Yorkshire,east-riding-of-yorkshire,23,East Riding Of Yorkshire Council,east-riding-of-yorkshire-council
+E06000012,North East Lincolnshire,north-east-lincolnshire,15,,
+E06000013,North Lincolnshire,north-lincolnshire,16,,
+E06000014,York,york,20,City of York Council,city-of-york-council
+E06000015,Derby,derby,24,Derby City Council,derby-city-council
+E06000016,Leicester,leicester,23,Leicester City Council,leicester-city-council
+E06000017,Rutland,rutland,12,,
+E06000018,Nottingham,nottingham,26,Nottingham City Council,nottingham-city-council
+E06000019,"Herefordshire, County of",herefordshire-county-of,22,,
+E06000020,Telford and Wrekin,telford-and-wrekin,16,,
+E06000021,Stoke-on-Trent,stoke-on-trent,19,Stoke on Trent City Council,stoke-on-trent-city-council
+E06000022,Bath and North East Somerset,bath-and-north-east-somerset,18,,
+E06000023,"Bristol, City of",bristol-city-of,28,Bristol City Council,bristol-city-council
+E06000024,North Somerset,north-somerset,27,,
+E06000025,South Gloucestershire,south-gloucestershire,20,,
+E06000026,Plymouth,plymouth,16,,
+E06000027,Torbay,torbay,18,,
+E06000030,Swindon,swindon,22,Swindon Borough Council,swindon-borough-council
+E06000031,Peterborough,peterborough,23,,
+E06000032,Luton,luton,17,Luton Borough Council,luton-borough-council
+E06000033,Southend-on-Sea,southend-on-sea,18,Southend on Sea City Council,southend-on-sea-city-council
+E06000034,Thurrock,thurrock,15,Thurrock Council,thurrock-council
+E06000035,Medway,medway,23,Medway Council,medway-council
+E06000036,Bracknell Forest,bracknell-forest,20,,
+E06000037,West Berkshire,west-berkshire,22,,
+E06000038,Reading,reading,22,Reading Borough Council,reading-borough-council
+E06000039,Slough,slough,25,Slough Borough Council,slough-borough-council
+E06000040,Windsor and Maidenhead,windsor-and-maidenhead,14,,
+E06000041,Wokingham,wokingham,20,Wokingham Borough Council,wokingham-borough-council
+E06000042,Milton Keynes,milton-keynes,35,Milton Keynes City Council,milton-keynes-city-council
+E06000043,Brighton and Hove,brighton-and-hove,20,Brighton and Hove City Council,brighton-and-hove-city-council
+E06000044,Portsmouth,portsmouth,19,Portsmouth City Council,portsmouth-city-council
+E06000045,Southampton,southampton,25,Southampton City Council,southampton-city-council
+E06000046,Isle of Wight,isle-of-wight,6,,
+E06000047,County Durham,county-durham,21,,
+E06000049,Cheshire East,cheshire-east,32,,
+E06000050,Cheshire West and Chester,cheshire-west-and-chester,31,Cheshire West and Chester Council,cheshire-west-and-chester-council
+E06000051,Shropshire,shropshire,20,Shropshire Council,shropshire-council
+E06000052,Cornwall,cornwall,24,Cornwall Council,cornwall-council
+E06000053,Isles of Scilly,isles-of-scilly,1,,
+E06000054,Wiltshire,wiltshire,35,Wiltshire Council,wiltshire-council
+E06000055,Bedford,bedford,22,,
+E06000056,Central Bedfordshire,central-bedfordshire,28,Central Bedfordshire Council,central-bedfordshire-council
+E06000057,Northumberland,northumberland,18,Northumberland County Council,northumberland-county-council
+E06000058,Bournemouth Christchurch and Poole,bournemouth-christchurch-and-poole,20,"Bournemouth, Christchurch and Poole Council",bournemouth-christchurch-and-poole-council
+E06000059,Dorset,dorset,23,,
+E06000060,Buckinghamshire,buckinghamshire,35,,
+E06000061,North Northamptonshire,north-northamptonshire,32,North Northamptonshire Council,north-northamptonshire-council
+E06000062,West Northamptonshire,west-northamptonshire,36,West Northamptonshire Council,west-northamptonshire-council
+E06000063,Cumberland,cumberland,12,,
+E06000064,Westmorland and Furness,westmorland-and-furness,16,Westmorland and Furness Council,westmorland-and-furness-council
+E06000065,North Yorkshire,north-yorkshire,35,North Yorkshire Council,north-yorkshire-council
+E06000066,Somerset,somerset,31,Somerset Council,somerset-council
+E07000008,Cambridge,cambridge,19,Cambridge City Council,cambridge-city-council
+E07000009,East Cambridgeshire,east-cambridgeshire,22,,
+E07000010,Fenland,fenland,22,,
+E07000011,Huntingdonshire,huntingdonshire,29,,
+E07000012,South Cambridgeshire,south-cambridgeshire,25,South Cambridgeshire District Council,south-cambridgeshire-district-council
+E07000032,Amber Valley,amber-valley,18,,
+E07000033,Bolsover,bolsover,19,Bolsover District Council,bolsover-district-council
+E07000034,Chesterfield,chesterfield,21,Chesterfield Borough Council,chesterfield-borough-council
+E07000035,Derbyshire Dales,derbyshire-dales,11,,
+E07000036,Erewash,erewash,16,,
+E07000037,High Peak,high-peak,20,High Peak Borough Council,high-peak-borough-council
+E07000038,North East Derbyshire,north-east-derbyshire,20,North East Derbyshire District Council,north-east-derbyshire-district-council
+E07000039,South Derbyshire,south-derbyshire,19,South Derbyshire District Council,south-derbyshire-district-council
+E07000040,East Devon,east-devon,20,East Devon District Council,east-devon-district-council
+E07000041,Exeter,exeter,19,Exeter City Council,exeter-city-council
+E07000042,Mid Devon,mid-devon,18,Mid Devon District Council,mid-devon-district-council
+E07000043,North Devon,north-devon,11,,
+E07000044,South Hams,south-hams,18,,
+E07000045,Teignbridge,teignbridge,18,,
+E07000046,Torridge,torridge,10,,
+E07000047,West Devon,west-devon,16,,
+E07000061,Eastbourne,eastbourne,17,Eastbourne Borough Council,eastbourne-borough-council
+E07000062,Hastings,hastings,12,,
+E07000063,Lewes,lewes,22,Lewes District Council,lewes-district-council
+E07000064,Rother,rother,15,,
+E07000065,Wealden,wealden,19,Wealden District Council,wealden-district-council
+E07000066,Basildon,basildon,18,Basildon Borough Council,basildon-borough-council
+E07000067,Braintree,braintree,25,,
+E07000068,Brentwood,brentwood,13,Brentwood Borough Council,brentwood-borough-council
+E07000069,Castle Point,castle-point,13,Castle Point Borough Council,castle-point-borough-council
+E07000070,Chelmsford,chelmsford,20,,
+E07000071,Colchester,colchester,24,Colchester City Council,colchester-city-council
+E07000072,Epping Forest,epping-forest,15,Epping Forest District Council,epping-forest-district-council
+E07000073,Harlow,harlow,17,Harlow District Council,harlow-district-council
+E07000074,Maldon,maldon,15,,
+E07000075,Rochford,rochford,11,,
+E07000076,Tendring,tendring,22,Tendring District Council,tendring-district-council
+E07000077,Uttlesford,uttlesford,26,Uttlesford District Council,uttlesford-district-council
+E07000078,Cheltenham,cheltenham,20,Cheltenham Borough Council,cheltenham-borough-council
+E07000079,Cotswold,cotswold,16,,
+E07000080,Forest of Dean,forest-of-dean,19,,
+E07000081,Gloucester,gloucester,20,,
+E07000082,Stroud,stroud,24,Stroud District Council,stroud-district-council
+E07000083,Tewkesbury,tewkesbury,19,,
+E07000084,Basingstoke and Deane,basingstoke-and-deane,24,,
+E07000085,East Hampshire,east-hampshire,20,,
+E07000086,Eastleigh,eastleigh,18,,
+E07000087,Fareham,fareham,22,Fareham Borough Council,fareham-borough-council
+E07000088,Gosport,gosport,14,Gosport Borough Council,gosport-borough-council
+E07000089,Hart,hart,13,,
+E07000090,Havant,havant,20,,
+E07000091,New Forest,new-forest,18,New Forest District Council,new-forest-district-council
+E07000092,Rushmoor,rushmoor,18,,
+E07000093,Test Valley,test-valley,16,,
+E07000094,Winchester,winchester,20,Winchester City Council,winchester-city-council
+E07000095,Broxbourne,broxbourne,11,,
+E07000096,Dacorum,dacorum,19,Dacorum Borough Council,dacorum-borough-council
+E07000098,Hertsmere,hertsmere,22,,
+E07000099,North Hertfordshire,north-hertfordshire,24,,
+E07000102,Three Rivers,three-rivers,18,,
+E07000103,Watford,watford,19,,
+E07000105,Ashford,ashford,21,Ashford Borough Council,ashford-borough-council
+E07000106,Canterbury,canterbury,18,Canterbury City Council,canterbury-city-council
+E07000107,Dartford,dartford,18,Dartford Borough Council,dartford-borough-council
+E07000108,Dover,dover,20,Dover District Council,dover-district-council
+E07000109,Gravesham,gravesham,15,Gravesham Borough Council,gravesham-borough-council
+E07000110,Maidstone,maidstone,22,,
+E07000111,Sevenoaks,sevenoaks,11,,
+E07000112,Folkestone and Hythe,folkestone-and-hythe,18,Folkestone and Hythe District Council,folkestone-and-hythe-district-council
+E07000113,Swale,swale,19,,
+E07000114,Thanet,thanet,17,Thanet District Council,thanet-district-council
+E07000115,Tonbridge and Malling,tonbridge-and-malling,17,,
+E07000116,Tunbridge Wells,tunbridge-wells,20,,
+E07000117,Burnley,burnley,14,,
+E07000118,Chorley,chorley,15,,
+E07000119,Fylde,fylde,15,,
+E07000120,Hyndburn,hyndburn,15,,
+E07000121,Lancaster,lancaster,20,Lancaster City Council,lancaster-city-council
+E07000122,Pendle,pendle,20,,
+E07000123,Preston,preston,22,,
+E07000124,Ribble Valley,ribble-valley,16,,
+E07000125,Rossendale,rossendale,14,,
+E07000126,South Ribble,south-ribble,16,,
+E07000127,West Lancashire,west-lancashire,26,West Lancashire Borough Council,west-lancashire-borough-council
+E07000128,Wyre,wyre,16,,
+E07000129,Blaby,blaby,17,,
+E07000130,Charnwood,charnwood,20,Charnwood Borough Council,charnwood-borough-council
+E07000131,Harborough,harborough,15,,
+E07000132,Hinckley and Bosworth,hinckley-and-bosworth,18,Hinckley and Bosworth Borough Council,hinckley-and-bosworth-borough-council
+E07000133,Melton,melton,17,Melton Borough Council,melton-borough-council
+E07000134,North West Leicestershire,north-west-leicestershire,19,North West Leicestershire District Council,north-west-leicestershire-district-council
+E07000135,Oadby and Wigston,oadby-and-wigston,20,Oadby and Wigston Borough Council,oadby-and-wigston-borough-council
+E07000136,Boston,boston,9,,
+E07000137,East Lindsey,east-lindsey,15,,
+E07000138,Lincoln,lincoln,16,City of Lincoln Council,city-of-lincoln-council
+E07000139,North Kesteven,north-kesteven,17,North Kesteven District Council,north-kesteven-district-council
+E07000140,South Holland,south-holland,13,South Holland District Council,south-holland-district-council
+E07000141,South Kesteven,south-kesteven,19,South Kesteven District Council,south-kesteven-district-council
+E07000142,West Lindsey,west-lindsey,12,,
+E07000143,Breckland,breckland,19,,
+E07000144,Broadland,broadland,15,,
+E07000145,Great Yarmouth,great-yarmouth,13,Great Yarmouth Borough Council,great-yarmouth-borough-council
+E07000146,King's Lynn and West Norfolk,king-s-lynn-and-west-norfolk,15,,
+E07000147,North Norfolk,north-norfolk,15,,
+E07000148,Norwich,norwich,17,Norwich City Council,norwich-city-council
+E07000149,South Norfolk,south-norfolk,17,,
+E07000170,Ashfield,ashfield,22,Ashfield District Council,ashfield-district-council
+E07000171,Bassetlaw,bassetlaw,23,Bassetlaw District Council,bassetlaw-district-council
+E07000172,Broxtowe,broxtowe,16,Broxtowe Borough Council,broxtowe-borough-council
+E07000173,Gedling,gedling,23,,
+E07000174,Mansfield,mansfield,21,Mansfield District Council,mansfield-district-council
+E07000175,Newark and Sherwood,newark-and-sherwood,20,Newark and Sherwood District Council,newark-and-sherwood-district-council
+E07000176,Rushcliffe,rushcliffe,25,,
+E07000177,Cherwell,cherwell,27,,
+E07000178,Oxford,oxford,21,Oxford City Council,oxford-city-council
+E07000179,South Oxfordshire,south-oxfordshire,24,,
+E07000180,Vale of White Horse,vale-of-white-horse,21,,
+E07000181,West Oxfordshire,west-oxfordshire,20,,
+E07000192,Cannock Chase,cannock-chase,17,Cannock Chase District Council,cannock-chase-district-council
+E07000193,East Staffordshire,east-staffordshire,15,,
+E07000194,Lichfield,lichfield,17,,
+E07000195,Newcastle-under-Lyme,newcastle-under-lyme,16,,
+E07000196,South Staffordshire,south-staffordshire,13,,
+E07000197,Stafford,stafford,14,,
+E07000198,Staffordshire Moorlands,staffordshire-moorlands,18,,
+E07000199,Tamworth,tamworth,17,Tamworth Borough Council,tamworth-borough-council
+E07000200,Babergh,babergh,17,Babergh District Council,babergh-district-council
+E07000202,Ipswich,ipswich,17,Ipswich Borough Council,ipswich-borough-council
+E07000203,Mid Suffolk,mid-suffolk,18,Mid Suffolk District Council,mid-suffolk-district-council
+E07000207,Elmbridge,elmbridge,11,,
+E07000208,Epsom and Ewell,epsom-and-ewell,14,,
+E07000209,Guildford,guildford,19,Guildford Borough Council,guildford-borough-council
+E07000210,Mole Valley,mole-valley,12,,
+E07000211,Reigate and Banstead,reigate-and-banstead,21,,
+E07000212,Runnymede,runnymede,16,Runnymede Borough Council,runnymede-borough-council
+E07000213,Spelthorne,spelthorne,9,,
+E07000214,Surrey Heath,surrey-heath,14,,
+E07000215,Tandridge,tandridge,17,Tandridge District Council,tandridge-district-council
+E07000216,Waverley,waverley,19,Waverley Borough Council,waverley-borough-council
+E07000217,Woking,woking,19,Woking Borough Council,woking-borough-council
+E07000218,North Warwickshire,north-warwickshire,14,North Warwickshire Borough Council,north-warwickshire-borough-council
+E07000219,Nuneaton and Bedworth,nuneaton-and-bedworth,24,Nuneaton And Bedworth Borough Council,nuneaton-and-bedworth-borough-council
+E07000220,Rugby,rugby,21,Rugby Borough Council,rugby-borough-council
+E07000221,Stratford-on-Avon,stratford-on-avon,19,,
+E07000222,Warwick,warwick,18,Warwick District Council,warwick-district-council
+E07000223,Adur,adur,14,Adur District Council,adur-district-council
+E07000224,Arun,arun,22,Arun District Council,arun-district-council
+E07000225,Chichester,chichester,19,,
+E07000226,Crawley,crawley,16,Crawley Borough Council,crawley-borough-council
+E07000227,Horsham,horsham,21,,
+E07000228,Mid Sussex,mid-sussex,26,,
+E07000229,Worthing,worthing,15,,
+E07000234,Bromsgrove,bromsgrove,15,,
+E07000235,Malvern Hills,malvern-hills,13,,
+E07000236,Redditch,redditch,17,Redditch Borough Council,redditch-borough-council
+E07000237,Worcester,worcester,17,,
+E07000238,Wychavon,wychavon,15,,
+E07000239,Wyre Forest,wyre-forest,13,,
+E07000240,St Albans,st-albans,18,St Albans City and District Council,st-albans-city-and-district-council
+E07000241,Welwyn Hatfield,welwyn-hatfield,22,Welwyn Hatfield Borough Council,welwyn-hatfield-borough-council
+E07000242,East Hertfordshire,east-hertfordshire,26,,
+E07000243,Stevenage,stevenage,22,Stevenage Borough Council,stevenage-borough-council
+E07000244,East Suffolk,east-suffolk,19,East Suffolk Council,east-suffolk-council
+E07000245,West Suffolk,west-suffolk,25,,
+E08000001,Bolton,bolton,18,,
+E08000002,Bury,bury,20,Bury Metropolitan Borough Council,bury-metropolitan-borough-council
+E08000003,Manchester,manchester,27,Manchester City Council,manchester-city-council
+E08000004,Oldham,oldham,15,Oldham Metropolitan Borough Council,oldham-metropolitan-borough-council
+E08000005,Rochdale,rochdale,19,,
+E08000006,Salford,salford,24,Salford City Council,salford-city-council
+E08000007,Stockport,stockport,22,Stockport Metropolitan Borough Council,stockport-metropolitan-borough-council
+E08000008,Tameside,tameside,19,,
+E08000009,Trafford,trafford,26,,
+E08000010,Wigan,wigan,21,Wigan Council,wigan-council
+E08000011,Knowsley,knowsley,17,,
+E08000012,Liverpool,liverpool,22,,
+E08000013,St. Helens,st-helens,21,,
+E08000014,Sefton,sefton,22,,
+E08000015,Wirral,wirral,18,,
+E08000017,Doncaster,doncaster,23,City of Doncaster Council,city-of-doncaster-council
+E08000018,Rotherham,rotherham,21,Rotherham Metropolitan Borough Council,rotherham-metropolitan-borough-council
+E08000021,Newcastle upon Tyne,newcastle-upon-tyne,15,Newcastle City Council,newcastle-city-council
+E08000022,North Tyneside,north-tyneside,15,North Tyneside Council,north-tyneside-council
+E08000023,South Tyneside,south-tyneside,16,South Tyneside Council,south-tyneside-council
+E08000024,Sunderland,sunderland,22,,
+E08000025,Birmingham,birmingham,35,Birmingham City Council,birmingham-city-council
+E08000026,Coventry,coventry,19,,
+E08000027,Dudley,dudley,19,Dudley Metropolitan Borough Council,dudley-metropolitan-borough-council
+E08000028,Sandwell,sandwell,20,Sandwell Metropolitan Borough Council,sandwell-metropolitan-borough-council
+E08000029,Solihull,solihull,19,Solihull Metropolitan Borough Council,solihull-metropolitan-borough-council
+E08000030,Walsall,walsall,20,,
+E08000031,Wolverhampton,wolverhampton,21,City of Wolverhampton Council,city-of-wolverhampton-council
+E08000032,Bradford,bradford,24,,
+E08000033,Calderdale,calderdale,18,,
+E08000034,Kirklees,kirklees,22,Kirklees Metropolitan Borough Council,kirklees-metropolitan-borough-council
+E08000035,Leeds,leeds,30,Leeds City Council,leeds-city-council
+E08000036,Wakefield,wakefield,19,,
+E08000037,Gateshead,gateshead,18,Gateshead Metropolitan Borough Council,gateshead-metropolitan-borough-council
+E08000038,Barnsley,barnsley,18,Barnsley Metropolitan Borough Council,barnsley-metropolitan-borough-council
+E08000039,Sheffield,sheffield,23,Sheffield City Council,sheffield-city-council
+E09000001,City of London,city-of-london,4,City of London Corporation,city-of-london-corporation
+E09000002,Barking and Dagenham,barking-and-dagenham,18,London Borough of Barking and Dagenham,london-borough-of-barking-and-dagenham
+E09000003,Barnet,barnet,31,London Borough of Barnet,london-borough-of-barnet
+E09000004,Bexley,bexley,19,,
+E09000005,Brent,brent,28,London Borough of Brent,london-borough-of-brent
+E09000006,Bromley,bromley,27,,
+E09000007,Camden,camden,22,London Borough of Camden Council,london-borough-of-camden-council
+E09000008,Croydon,croydon,29,London Borough of Croydon,london-borough-of-croydon
+E09000009,Ealing,ealing,31,London Borough of Ealing,london-borough-of-ealing
+E09000010,Enfield,enfield,26,London Borough of Enfield,london-borough-of-enfield
+E09000011,Greenwich,greenwich,20,Royal Borough of Greenwich,royal-borough-of-greenwich
+E09000012,Hackney,hackney,25,London Borough of Hackney,london-borough-of-hackney
+E09000013,Hammersmith and Fulham,hammersmith-and-fulham,27,London Borough of Hammersmith and Fulham,london-borough-of-hammersmith-and-fulham
+E09000014,Haringey,haringey,29,Haringey London Borough Council,haringey-london-borough-council
+E09000015,Harrow,harrow,24,London Borough of Harrow,london-borough-of-harrow
+E09000016,Havering,havering,20,London Borough of Havering Council,london-borough-of-havering-council
+E09000017,Hillingdon,hillingdon,28,London Borough of Hillingdon,london-borough-of-hillingdon
+E09000018,Hounslow,hounslow,25,London Borough of Hounslow,london-borough-of-hounslow
+E09000019,Islington,islington,22,London Borough of Islington,london-borough-of-islington
+E09000020,Kensington and Chelsea,kensington-and-chelsea,20,Royal Borough of Kensington and Chelsea,royal-borough-of-kensington-and-chelsea
+E09000021,Kingston upon Thames,kingston-upon-thames,26,Royal Borough of Kingston Upon Thames,royal-borough-of-kingston-upon-thames
+E09000022,Lambeth,lambeth,28,London Borough of Lambeth,london-borough-of-lambeth
+E09000023,Lewisham,lewisham,24,London Borough of Lewisham,london-borough-of-lewisham
+E09000024,Merton,merton,19,,
+E09000025,Newham,newham,28,London Borough of Newham,london-borough-of-newham
+E09000026,Redbridge,redbridge,25,London Borough of Redbridge,london-borough-of-redbridge
+E09000027,Richmond upon Thames,richmond-upon-thames,16,,
+E09000028,Southwark,southwark,27,Southwark Council,southwark-council
+E09000029,Sutton,sutton,25,London Borough of Sutton,london-borough-of-sutton
+E09000030,Tower Hamlets,tower-hamlets,29,London Borough of Tower Hamlets,london-borough-of-tower-hamlets
+E09000031,Waltham Forest,waltham-forest,27,London Borough of Waltham Forest,london-borough-of-waltham-forest
+E09000032,Wandsworth,wandsworth,21,London Borough of Wandsworth,london-borough-of-wandsworth
+E09000033,Westminster,westminster,21,City of Westminster Council,city-of-westminster-council

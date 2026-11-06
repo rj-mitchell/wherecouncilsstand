@@ -3,6 +3,7 @@ import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { getCouncil, type CouncilPage } from "./api";
+import { SisterLinks } from "./components/Sister";
 import { Tally } from "./components/VoteMarks";
 import { KIND_LABEL, longDate, markNav, monthYear, number, partyColour, setTitle, voteOn } from "./format";
 
@@ -21,8 +22,35 @@ function App() {
       })
       .catch((e: Error) => setError(e.message));
   }, [gss]);
-  if (error) return <p className="notice">{error}</p>;
+  if (error)
+    return (
+      <>
+        <h1>Council</h1>
+        <p className="notice">{error}</p>
+      </>
+    );
   if (!c) return <p className="progress">Loading the council</p>;
+  const ll = c.landlords;
+  const landlords = ll && (ll.council || ll.area) && (
+    <SisterLinks site="landlords">
+      <ul>
+        {ll.council && (
+          <li>
+            <a href={ll.council.url}>{ll.council.name} as a landlord</a>
+          </li>
+        )}
+        {ll.area && (
+          <li>
+            <a href={ll.area.url}>
+              {ll.area.landlords === 1
+                ? `The social landlord with homes in ${ll.area.name}`
+                : `The ${number(ll.area.landlords)} social landlords with homes in ${ll.area.name}`}
+            </a>
+          </li>
+        )}
+      </ul>
+    </SisterLinks>
+  );
   const short = c.name.replace(/ (Metropolitan Borough|Borough|District|County|City|County Borough) Council$| Council$/, "");
   return (
     <>
@@ -31,10 +59,13 @@ function App() {
       </p>
       <h1>{c.name}</h1>
       {!c.loaded ? (
-        <p className="notice">
-          This council isn't covered yet. {c.reasons.join(" ")} Councils are covered when their minutes are published
-          through a system the site can read (Modern.gov, CMIS or CoINS) and their site can be read.
-        </p>
+        <>
+          <p className="notice">
+            This council isn't covered yet. {c.reasons.join(" ")} Councils are covered when their minutes are published
+            through a system the site can read (Modern.gov, CMIS or CoINS) and their site can be read.
+          </p>
+          {landlords}
+        </>
       ) : (
         <>
           <p className="lede">
@@ -63,6 +94,7 @@ function App() {
               Ask about {short}
             </a>
           </p>
+          {landlords}
 
           {c.seats && (
             <>

@@ -393,7 +393,7 @@ Problems found only at this scale, now fixed:
   each label's use.
 
 **AI costs depend on briefings asked for, not on how many councils are covered.** A briefing reads the same number
-of sources whatever the size of the archive, so the cost per briefing will be close to Where They Stand's.
+of sources whatever the size of the archive, so the cost per briefing will be close to Where MPs Stand's.
 
 ## Back to February 2014?
 

@@ -1,6 +1,6 @@
 """British spelling for model-written text: a deterministic safety net behind the prompt rule.
 
-Only the model's own words are changed. Text inside quotation marks is quoted parliamentary material and is
+Only the model's own words are changed. Text inside quotation marks is quoted from the minutes and is
 never touched, even when a quotation runs across several answer segments. The word list is deliberately
 conservative: only spellings that are unambiguous in British English are converted (``practice``/``practise``,
 ``license``/``licence``, ``meter``/``metre``, ``draft``, ``judgment`` and similar are left alone). Capitalised

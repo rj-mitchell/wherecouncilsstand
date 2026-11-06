@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { ask, getBriefing, getCouncils, getMeta, type Answer, type AskEvent, type Meta, type Plan, type SourceCard } from "./api";
 import { BriefingText } from "./components/Briefing";
+import { AskSister } from "./components/Sister";
 import { PlanChips } from "./components/PlanChips";
 import { Sources } from "./components/Sources";
 import { longDate, markNav, monthYear, number, setTitle } from "./format";
@@ -205,6 +206,7 @@ function App() {
                 )}
               </>
             )}
+            {s.phase === "done" && s.question && <AskSister site="mps" question={s.question} />}
           </article>
         )}
         <Sources sources={s.sources} />
