@@ -71,6 +71,7 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:8000/councils/E08000038 | grep -q "Members by party"
+          curl -fsS http://127.0.0.1:8000/councils/E47000002 | grep -q "Constituent councils"
           curl -fsS http://127.0.0.1:8000/sitemap.xml | grep -q "/votes/E08000038:1:10:0"
       - name: Accessibility check (axe, WCAG 2.2 AA, light and dark, desktop and phone)
         run: |
