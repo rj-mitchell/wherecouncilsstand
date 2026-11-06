@@ -41,3 +41,45 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+
+  # The built site, served on a small made-up record (scripts/fixture_site.py), checked with axe in Chromium: light
+  # and dark, desktop and phone, and the pages the server sends with readable text with their scripts blocked. Fails
+  # on any serious or critical WCAG 2.2 AA problem, or a page that scrolls sideways.
+  accessibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.32"
+      - run: uv python install 3.12
+      - run: uv sync --frozen --python 3.12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Build the pages
+        working-directory: web
+        run: npm ci && npm run build
+      - name: Start the site on the made-up record
+        run: |
+          uv run python scripts/fixture_site.py "$RUNNER_TEMP/fixture"
+          COUNCILS_DATA_DIR="$RUNNER_TEMP/fixture" nohup uv run councils serve --port 8000 > "$RUNNER_TEMP/serve.log" 2>&1 &
+          for i in $(seq 1 60); do
+            curl -fsS http://127.0.0.1:8000/api/health && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8000/councils/E08000038 | grep -q "Members by party"
+          curl -fsS http://127.0.0.1:8000/sitemap.xml | grep -q "/votes/E08000038:1:10:0"
+      - name: Accessibility check (axe, WCAG 2.2 AA, light and dark, desktop and phone)
+        run: |
+          mkdir -p "$RUNNER_TEMP/a11y" && cp scripts/a11y.mjs "$RUNNER_TEMP/a11y/"
+          cd "$RUNNER_TEMP/a11y"
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund playwright@1.47.2 axe-core@4.10.0
+          npx playwright install --with-deps chromium
+          node a11y.mjs http://127.0.0.1:8000
+      - name: Show the site's log if anything failed
+        if: failure()
+        run: cat "$RUNNER_TEMP/serve.log" || true
