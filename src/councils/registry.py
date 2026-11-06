@@ -17,7 +17,7 @@ REGION_NAMES = {"E12000001": "North East", "E12000002": "North West", "E12000003
                 "scotland": "Scotland", "northern_ireland": "Northern Ireland"}
 TYPE_NAMES = {"county": "County council", "district": "District council", "unitary": "Unitary council",
               "metropolitan": "Metropolitan borough council", "london_borough": "London borough council",
-              "city_of_london": "City of London Corporation", "isles_of_scilly": "Council of the Isles of Scilly"}
+              "city_of_london": "City of London Corporation", "strategic_authority": "Strategic authority"}
 
 
 @dataclass(frozen=True)

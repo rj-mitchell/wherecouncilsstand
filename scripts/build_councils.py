@@ -42,7 +42,7 @@ SUPERSEDED = {"E08000016": "E08000038",  # Barnsley
               "E08000019": "E08000039"}  # Sheffield
 
 TYPES = {"CTY": "county", "NMD": "district", "UA": "unitary", "MD": "metropolitan", "LBO": "london_borough",
-         "CC": "city_of_london", "SRA": "isles_of_scilly"}
+         "CC": "city_of_london", "SRA": "strategic_authority"}
 HOST_PREFIXES = ["democracy", "moderngov", "modgov", "committees", "democratic", "meetings", "councillors",
                  "decisionmaking", "democracy.cityof", "cmttpublic", "mgov", "moderngovwebpublic", "modgov.lb",
                  "committeemeetings", "councilmeetings", "democraticservices", "minutes", "cabinet", "mygov",

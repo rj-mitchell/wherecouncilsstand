@@ -26,7 +26,7 @@ from councils.reference.people import party_name
 
 TYPE_LABELS = {"county": "County councils", "district": "District councils", "unitary": "Unitary councils",
                "metropolitan": "Metropolitan borough councils", "london_borough": "London borough councils",
-               "city_of_london": "City of London", "isles_of_scilly": "Isles of Scilly"}
+               "city_of_london": "City of London", "strategic_authority": "Strategic authorities"}
 GROUP_BY = ("control", "region", "type", "council")
 CONTROLLED_BY = {"LAB": "Labour", "CON": "the Conservatives", "LD": "the Liberal Democrats", "GRN": "the Greens",
                  "REF": "Reform UK", "PC": "Plaid Cymru", "UKIP": "UKIP", "LIB": "the Liberal Party",
