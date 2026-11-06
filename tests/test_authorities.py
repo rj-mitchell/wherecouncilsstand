@@ -103,3 +103,102 @@ def test_lancashire_county_councils_own_committees_are_unchanged(cached):
     with cached("lancashire", "E10000017") as client:
         chosen = ingest.selected_committees(client, get("E10000017"))
     assert sorted(kind for _, kind in chosen.values()) == ["cabinet", "council"]
+
+
+def _meeting_rows(name: str, gss: str, mid: int, committee: int, title: str, kind: str = "board"):
+    from lxml import etree
+
+    from councils.sources import meeting as meeting_rows
+
+    root = etree.fromstring((FIXTURES / f"{name}_meeting_{mid}.xml").read_bytes())
+    ctx = meeting_rows.Context(gss, get(gss).name, get(gss).modgov_url, committee, title, kind)
+    return meeting_rows.rows(root, ctx)
+
+
+def test_members_roles_parties_and_who_is_named(tmp_path):
+    """West Yorkshire's board, 22 January 2026: the mayor, the five councils' leaders, York's members (a
+    non-constituent council), members for political balance, substitutes, the business board's chair and her
+    substitute (not councillors), a guest and an officer. Leeds is stored here (one made-up row), so Alan Lamb's party
+    is taken from Leeds' record, not the authority's."""
+    from councils import authority, store
+    from councils.parse.redact import REMOVED
+
+    leeds = "E08000035"
+    store.parquet.write(tmp_path, "meetings", leeds, [{"meeting_id": f"{leeds}:9", "gss": leeds, "kind": "council",
+                                                       "date": date(2025, 11, 12)}])
+    store.parquet.write(tmp_path, "attendance", leeds, [
+        {"meeting_id": f"{leeds}:9", "gss": leeds, "date": date(2025, 11, 12), "year": 2025, "member_id": "77",
+         "member_type": "U", "name": "Councillor Alan Lamb", "role": "Committee Member", "attendance": "Present",
+         "party_label": "Conservative", "party": "CON", "ward": ""}])
+    meeting, items, att = _meeting_rows("west_yorkshire", "E47000003", 1501, 133, "Combined Authority Board")
+    rows, removed = authority.classify(att, get("E47000003"), tmp_path)
+    by = {r["name"]: r for r in rows}
+    assert by["Mayor Tracy Brabin"]["member_role"] == "mayor" and by["Mayor Tracy Brabin"]["party"] == "LAB"
+    hinchcliffe = by["Councillor Susan Hinchcliffe"]
+    assert hinchcliffe["member_role"] == "constituent" and hinchcliffe["home_gss"] == "E08000032"
+    assert hinchcliffe["party"] == "LAB" and hinchcliffe["party_source"] == "authority"   # Bradford isn't stored here
+    assert by["Councillor Claire Douglas"]["member_role"] == "non_constituent"                # York
+    assert by["Councillor Matthew Morley"]["member_role"] == "substitute"
+    lamb = by["Councillor Alan Lamb"]
+    assert lamb["party"] == "CON" and lamb["party_source"] == "home council" and lamb["home_gss"] == leeds
+    appointed = [r for r in rows if r["member_role"] == "appointed"]
+    assert len(appointed) == 2 and all(r["name"] == REMOVED and not r["member_id"] for r in appointed)
+    assert removed == ["Mandy Ridyard", "Asma Iqbal"] or sorted(removed) == ["Asma Iqbal", "Mandy Ridyard"]
+    assert not any(r["role"] in ("Officer", "Guest") for r in rows)
+    text = "Mandy Ridyard reported on the Business Board. Ms Ridyard thanked members. M Ridyard left."
+    assert "Ridyard" not in authority.remove_names(text, removed)
+
+
+def test_the_mayor_is_told_by_name_on_the_date():
+    """Greater Manchester, 27 June 2025: "GM Mayor Andy Burnham"; leaders listed by their council's short name or
+    abbreviation ("Tameside MBC", "Trafford")."""
+    from councils import authority
+
+    meeting, items, att = _meeting_rows("greater_manchester", "E47000001", 5831, 136,
+                                        "Greater Manchester Combined Authority")
+    assert meeting["items_with_minutes"] == 0       # its minutes are published as a document on a later agenda
+    rows, removed = authority.classify(att, get("E47000001"), Path("/nonexistent"))
+    roles = {r["name"]: r["member_role"] for r in rows}
+    assert roles["GM Mayor Andy Burnham"] == "mayor"
+    assert roles["Councillor Eleanor Wills"] == "constituent"
+    assert {r["home_gss"] for r in rows if r["name"] == "Councillor Tom Ross"} == {"E08000009"}   # Trafford
+    assert removed == [] and all(r["member_id"] for r in rows)
+
+
+def test_home_councils_are_found_from_the_body_named():
+    from councils.authority import home_council
+
+    assert home_council("Tameside MBC", "E47000001") == "E08000008"
+    assert home_council("Bradford Council", "E47000003") == "E08000032"
+    assert home_council("City of York Council", "E47000003") == "E06000014"
+    assert home_council("West Yorkshire Business Board", "E47000003") == ""
+    assert home_council("Leeds City Council", "E47000003") == "E08000035"
+
+
+def test_an_authority_is_loaded_like_a_council(tmp_path, monkeypatch):
+    """West Yorkshire through the reader, from its own responses: the board and scrutiny committees, its meeting of
+    22 January 2026 with members' roles, and no appointed member's name stored anywhere."""
+    from councils import store
+
+    s = replace(load_settings(**{"modgov.read_documents": False}), data_dir=tmp_path)
+
+    def fake_get(self, op, **params):
+        if op == "GetCommittees":
+            return (FIXTURES / "west_yorkshire_committees.xml").read_text()
+        if op == "GetMeetings":
+            if params["lCommitteeId"] == 133:
+                return (FIXTURES / "west_yorkshire_meetings_133.xml").read_text()
+            return "<getmeetings></getmeetings>"
+        assert params["lMeetingId"] == 1501
+        return (FIXTURES / "west_yorkshire_meeting_1501.xml").read_text()
+
+    monkeypatch.setattr(modgov.Client, "_get", fake_get)
+    res = ingest.load(s, get("E47000003"), start=date(2026, 1, 1), end=date(2026, 1, 31))
+    assert res.error == "" and res.meetings == 1
+    assert sorted({k for _, k in res.committees.values()}) == ["board", "scrutiny"]
+    (m,) = store.parquet.read(s.parquet_dir, "meetings", "E47000003")
+    assert m["kind"] == "board" and m["committee_title"] == "Combined Authority Board"
+    att = store.parquet.read(s.parquet_dir, "attendance", "E47000003")
+    stored = repr(att) + repr(store.parquet.read(s.parquet_dir, "items", "E47000003"))
+    assert "Ridyard" not in stored and "Iqbal" not in stored
+    assert {a["member_role"] for a in att} >= {"mayor", "constituent", "non_constituent", "substitute", "appointed"}

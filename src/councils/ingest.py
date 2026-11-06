@@ -8,7 +8,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date
 
-from councils import committees, extract, store
+from councils import authority, committees, extract, store
 from councils.config import Settings
 from councils.parse import parties
 from councils.registry import Council, site_sharers
@@ -85,6 +85,7 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
 def _load_modgov(settings: Settings, client: Client, council: Council, start: date, end: date, update: bool,
                  res: Result, streak: TimeoutStreak) -> Result:
     meetings, items, attendance = [], [], []
+    not_named: set[str] = set()      # an authority's appointed members who aren't councillors (decision 20)
     try:
         res.committees = selected_committees(client, council, max_age_days=7 if update else None)
     except Refused:
@@ -133,15 +134,25 @@ def _load_modgov(settings: Settings, client: Client, council: Council, start: da
                 log.warning("%s meeting %s: %s", council.gss, ref.id, e)
                 res.failed.append(ref.id)
                 continue
-            # Members of the public and council staff in the attendance list aren't stored (docs/DECISIONS.md, 9).
-            att = [a for a in att if extract.is_councillor(a["role"])]
-            for a in att:
-                a["party"] = parties.normalise(a["party_label"], council.gss)
+            if council.is_authority:
+                # roles, and parties from home councils; appointed members who aren't councillors aren't named, in
+                # the attendance or the minutes (decision 20)
+                att, removed = authority.classify(att, council, settings.parquet_dir)
+                not_named.update(removed)
+            else:
+                # Members of the public and council staff in the attendance list aren't stored (decision 9).
+                att = [a for a in att if extract.is_councillor(a["role"])]
+                for a in att:
+                    a["party"] = parties.normalise(a["party_label"], council.gss)
             meetings.append(m)
             items += its
             attendance += att
     if settings.modgov.get("read_documents", True):
         items = _minutes_from_documents(client, meetings, items, res)
+    if not_named:      # from the minutes too, whether from the web service or a document, at any of its meetings
+        names = sorted(not_named, key=len, reverse=True)
+        for it in items:
+            it["minutes_text"] = authority.remove_names(it["minutes_text"], names)
     root = settings.parquet_dir
     if update and res.failed:
         res.error = f"{len(res.failed)} meetings could not be fetched"

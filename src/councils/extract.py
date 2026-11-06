@@ -29,7 +29,8 @@ def _pool(attendance: list[dict]) -> tuple[dict[str, list[Member]], list[tuple]]
     present: dict[str, list[Member]] = defaultdict(list)
     everyone = []
     for a in attendance:
-        if a["member_type"] not in ("", "U") or not is_councillor(a["role"]):
+        # no member id: an authority's appointed member who isn't a councillor, whose name isn't kept (decision 20)
+        if a["member_type"] not in ("", "U") or not is_councillor(a["role"]) or not a["member_id"]:
             continue
         m = Member(a["member_id"], a["name"], a["role"])
         everyone.append((a["date"], m))

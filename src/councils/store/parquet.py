@@ -21,7 +21,7 @@ MEETING_SCHEMA = pa.schema([
     ("council", pa.string()),
     ("committee_id", pa.int64()),
     ("committee_title", pa.string()),
-    ("kind", pa.string()),              # "council", "cabinet", "policy" (committees.py)
+    ("kind", pa.string()),              # "council", "cabinet", "policy"; an authority's "board", "mayor", "scrutiny"
     ("date", pa.date32()),
     ("year", pa.int32()),
     ("status", pa.string()),
@@ -70,6 +70,12 @@ ATTENDANCE_SCHEMA = pa.schema([
     ("party_label", pa.string()),       # the council's own label on the date: "LAB", "Labour", "REFUK"
     ("party", pa.string()),             # standard code (parse/parties.py); "" if not recognised
     ("ward", pa.string()),
+    # strategic authorities only (authority.py); empty, or missing in files written before, for councils
+    ("representing", pa.string()),      # as recorded: "Bradford Council", "West Yorkshire Business Board"
+    ("home_gss", pa.string()),          # the council that body is, where it is one
+    ("member_role", pa.string()),       # "mayor", "constituent", "non_constituent", "substitute", "co_opted",
+                                        # "appointed" (not a councillor: name removed)
+    ("party_source", pa.string()),      # "home council", "authority", "as elected" (the mayor)
 ])
 
 VOTE_SCHEMA = pa.schema([
