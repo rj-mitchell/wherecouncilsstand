@@ -65,10 +65,10 @@ button {
   --paper-raised: light-dark(oklch(100% 0 0), oklch(22.5% 0.009 230));
   --paper-sunk: light-dark(oklch(95.8% 0.009 85), oklch(16% 0.007 230));
   --ink: light-dark(oklch(21% 0.012 255), oklch(93% 0.01 85));
-  --ink-soft: color-mix(in oklch, var(--ink) 74%, var(--paper));
-  --ink-faint: color-mix(in oklch, var(--ink) 58%, var(--paper));
-  --rule: color-mix(in oklch, var(--ink) 14%, var(--paper));
-  --rule-strong: color-mix(in oklch, var(--ink) 78%, var(--paper));
+  --ink-soft: color-mix(in oklab, var(--ink) 74%, var(--paper));
+  --ink-faint: color-mix(in oklab, var(--ink) 58%, var(--paper));
+  --rule: color-mix(in oklab, var(--ink) 14%, var(--paper));
+  --rule-strong: color-mix(in oklab, var(--ink) 78%, var(--paper));
 
   /* the binding: Buckram brown, the site's cloth in the Where They Stand family (#6E4A2A; in dark mode the family's
      lifted cloth #865A33 as a fill, and its tan #D8AE84 for text). It is the identity colour: the mark, the phase
@@ -81,11 +81,11 @@ button {
   --cabinet: light-dark(oklch(46% 0.035 240), oklch(80% 0.035 240));
 
   --accent: var(--council);
-  --accent-subtle: color-mix(in oklch, var(--accent) 10%, var(--paper));
+  --accent-subtle: color-mix(in oklab, var(--accent) 10%, var(--paper));
   --on-accent: light-dark(oklch(98% 0.005 85), oklch(19% 0.008 230));
   /* notices and unsupported text: amber, yellower than the brown so a warning never reads as the site's own colour */
   --warn: light-dark(oklch(55% 0.125 82), oklch(84% 0.12 88));
-  --warn-subtle: color-mix(in oklch, var(--warn) 13%, var(--paper));
+  --warn-subtle: color-mix(in oklab, var(--warn) 13%, var(--paper));
 
   /* the colours readers associate with each party, for charts only (docs/DESIGN.md) */
   --party-LAB: light-dark(#c8102e, #ff7a85);
