@@ -36,7 +36,9 @@ Where Councils Stand is a Where They Stand project, and carries the family's bin
 - **the endorsement** under the site's name in the masthead: the site's spine in Buckram brown and "A Where They
   Stand project" in gilt capitals, linking to wheretheystand.uk;
 - **the family shelf** at the foot of every page: the charity, every project's spine and a link to each sister site;
-- **the favicon, theme colour and link card** in the site's cloth;
+- **the favicon and link card**: the site's own town-hall mark, as on the page, with its simplified drawing at 16
+  and 32 px (decision 4 of the family plan, amended at the owner's request on 6 November 2026; kit 1.1.0), and the
+  **theme colour** in the site's cloth;
 - **Source Serif 4 for headings** (decision 1 of the family plan), through `class="wts-headings"` on `<body>`. The
   site's name in the masthead is set in it too, so the name, the endorsement and the headings below read as one.
 
