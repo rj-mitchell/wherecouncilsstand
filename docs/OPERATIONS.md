@@ -17,15 +17,23 @@ For every council already loaded, 20 at a time and one request at a time to each
 4. **Minutes published only as a document** are read for meetings older than three weeks, where the council serves
    documents.
 5. **Named votes and declarations** are read again for each council whose stored meetings changed.
-6. **The search index** is rebuilt for each council that changed. Passages whose text is unchanged keep their vectors
-   and only have their tags updated (party in control, parties named). New and changed passages are then embedded
-   for meaning search, for up to `--embed-minutes`. Anything left is embedded on the next run.
+6. **The search index** is rewritten for each council that changed. Passages whose text is unchanged keep their
+   vectors and only have their tags updated (party in control, parties named). New and changed passages are then
+   embedded for meaning search, for up to `--embed-minutes`. Anything left is embedded on the next run. The new
+   rows are merged into the keyword and meaning-search indices, and superseded versions of the index files older
+   than an hour are deleted (`SearchIndex.refresh`). The indices are built from scratch only the first time, and
+   meaning search's again once it has a fifth more vectors than it was trained on. If no council changed and
+   nothing was embedded, the index isn't touched. Building from scratch every night, as the site first did, left a
+   copy of the old indices on disk each time.
 7. **A summary** is printed and appended to `data/updates.jsonl`:
 
    ```json
    {"finished": "2026-10-25T21:05:01", "minutes": 51.7, "councils": 214, "changed": 17, "new_meetings": 23,
     "failed": ["E07000072", "E07000076"], "passages_embedded": 9927, "still_to_embed": 0, "needs_attention": false}
    ```
+
+   Runs since 6 November 2026 also say what happened to the index: `"index": "merged"`, `"built"` or
+   `"unchanged"`.
 
    That is the first run, on 25 October 2026. It fetched every meeting from the last 120 days again, so later runs
    take about as long. The two failures were new meetings that timed out on slow servers. Both councils kept what was
@@ -87,7 +95,7 @@ It is also clear of the other sites' updates on the shared server.
 | `councils load --resume` | Load councils not yet in the store (a first load; hours) |
 | `councils parse` | Read votes and declarations again from stored minutes (after parser changes) |
 | `councils parties` | Map stored party labels again (after `parse/parties.py` or `data_static/parties.csv` change) |
-| `councils index` | Rebuild the search index for all councils (keeps vectors of unchanged passages) |
+| `councils index` | Rebuild the search index for all councils (keeps vectors of unchanged passages), then delete the superseded files |
 | `councils embed` | Embed passages not yet embedded |
 
 # Running the website

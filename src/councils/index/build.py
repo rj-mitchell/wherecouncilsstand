@@ -221,7 +221,28 @@ class Indexer:
             log.info("indexed %s: %d passages", gss, n)
             total += n
         self.index.build_indices()
+        self.index.optimize()     # building leaves the previous indices behind
         return total
+
+
+def update_index(settings: Settings, changed: list[str], embedder: Embedder,
+                 max_seconds: float | None = None) -> dict[str, Any]:
+    """The search index after the daily update: the councils whose stored meetings changed are indexed again, new
+    passages are embedded for up to ``max_seconds``, and the new rows are merged into the indices (built from scratch
+    only the first time, or once meaning search has grown by a fifth: SearchIndex.refresh). Nothing is written when
+    nothing changed."""
+    indexer = Indexer(settings)
+    idx = indexer.index
+    for gss in changed:              # one writer at a time; unchanged passages keep their vectors
+        indexer.index_council(gss)
+    done = []
+    if changed or idx.unmerged():    # unmerged: rows an earlier, stopped update added
+        done.append(idx.refresh())
+    embedded = embed_pending(settings, idx, indexer.state, embedder, max_seconds=max_seconds)
+    if embedded:
+        done.append(idx.refresh())
+    return {"passages_embedded": embedded, "still_to_embed": len(indexer.state.unembedded()),
+            "index": "built" if "built" in done else "merged" if done else "unchanged"}
 
 
 def embed_pending(settings: Settings, index: SearchIndex, state: State, embedder: Embedder, *,

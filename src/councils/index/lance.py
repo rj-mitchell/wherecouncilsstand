@@ -16,6 +16,7 @@ removed (parse/redact.py).
 
 from __future__ import annotations
 
+import json
 import logging
 import re
 from datetime import date, timedelta
@@ -84,7 +85,15 @@ def sql_list(values) -> str:
 
 
 # Every read opens the latest table version, so older versions only take disk space.
+# Lance would keep them for a week: about 10 GB after one large re-enrichment or clean-up (Where MPs Stand, which
+# learnt this the hard way). Every update therefore ends with optimize(), and merges new rows into the indices rather
+# than building them again, which would leave a whole copy of each index behind.
 KEEP_OLD_VERSIONS = timedelta(hours=1)
+# Meaning search (IVF-PQ) is trained on the vectors there are when it is built. Later vectors join its partitions
+# without retraining, so it is trained again once there are this many times as many (refresh()).
+RETRAIN_GROWTH = 1.2
+MIN_VECTORS_FOR_INDEX = 10_000
+TRAINED = "vector_index.json"    # in the index folder: how many vectors the meaning-search index was trained on
 
 
 class SearchIndex:
@@ -158,11 +167,58 @@ class SearchIndex:
         if VECTORS in self._names():
             vt = self.vectors()
             n = vt.count_rows()
-            if n >= 10_000:
+            if n >= MIN_VECTORS_FOR_INDEX:
                 from lancedb.index import IvfPq
 
                 vt.create_index("vector", config=IvfPq(distance_type="cosine",
                                                        num_sub_vectors=max(1, self.dim // 8)), replace=True)
+                self._note_trained(n)
+
+    def has_keyword_index(self) -> bool:
+        return PASSAGES in self._names() and any("search_text" in (ix.columns or [])
+                                                 for ix in self.passages().list_indices())
+
+    def _trained_on(self) -> int | None:
+        try:
+            return int(json.loads((self.path / TRAINED).read_text())["vectors"])
+        except (OSError, ValueError, KeyError, TypeError):
+            return None
+
+    def _note_trained(self, n: int) -> None:
+        (self.path / TRAINED).write_text(json.dumps({"vectors": n}))
+
+    def needs_build(self) -> bool:
+        """True when the indices must be built from scratch: the first time, or when there are enough vectors for
+        meaning search to need an index (again). Otherwise new rows are merged into the indices as they are."""
+        if not self.has_data():
+            return False
+        if not self.has_keyword_index():
+            return True
+        if VECTORS not in self._names():
+            return False
+        vt = self.vectors()
+        n = vt.count_rows()
+        if n < MIN_VECTORS_FOR_INDEX:
+            return False
+        if not any("vector" in (ix.columns or []) for ix in vt.list_indices()):
+            return True
+        trained = self._trained_on()
+        if trained is None:           # built before the count was kept: count growth from now
+            self._note_trained(n)
+            return False
+        return n >= trained * RETRAIN_GROWTH
+
+    def refresh(self) -> str:
+        """After writing passages or vectors: build the indices if needs_build(), otherwise merge the new rows into
+        them; then compact and drop superseded versions. Returns "built" or "merged"."""
+        if self.needs_build():
+            self.build_indices()
+            done = "built"
+        else:
+            self.ensure_vector_ids()
+            done = "merged"
+        self.optimize()
+        return done
 
     def ensure_vector_ids(self) -> bool:
         """An index on the vectors table's passage_id, so updating a few passages does not read every vector into
@@ -246,6 +302,7 @@ class SearchIndex:
         vt = self.vectors()
         vt.create_index("vector", config=IvfPq(distance_type="cosine", num_sub_vectors=max(1, self.dim // 8),
                                                target_partition_size=int(rows_per_partition)), replace=True)
+        self._note_trained(vt.count_rows())
 
     def passages_for(self, passage_ids: list[str]) -> dict[str, dict[str, Any]]:
         if not passage_ids:

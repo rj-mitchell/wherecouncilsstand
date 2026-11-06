@@ -127,7 +127,7 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
 
     from councils import load as load_
     from councils.embed.base import get_embedder
-    from councils.index.build import Indexer, embed_pending
+    from councils.index.build import update_index
     from councils.registry import councils, get
 
     s = load_settings()
@@ -138,19 +138,11 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
         lines.append(line)
         typer.echo(json.dumps(line))
     changed = [ln["gss"] for ln in lines if ln.get("changed")]
-    indexer = Indexer(s)
-    for gss in changed:              # one writer at a time; unchanged passages keep their vectors
-        indexer.index_council(gss)
-    if changed:
-        indexer.index.build_indices()
-    embedded = embed_pending(s, indexer.index, indexer.state, get_embedder(s), max_seconds=embed_minutes * 60)
-    if embedded:
-        indexer.index.build_indices()
+    indexed = update_index(s, changed, get_embedder(s), max_seconds=embed_minutes * 60)
     summary = {"finished": time.strftime("%Y-%m-%dT%H:%M:%S"), "minutes": round((time.time() - started) / 60, 1),
                "councils": len(lines), "changed": len(changed),
                "new_meetings": sum(ln.get("new_meetings", 0) for ln in lines),
-               "failed": sorted(ln["gss"] for ln in lines if ln.get("error")),
-               "passages_embedded": embedded, "still_to_embed": len(indexer.state.unembedded())}
+               "failed": sorted(ln["gss"] for ln in lines if ln.get("error")), **indexed}
     # needs attention: many councils failing at once means something on our side, not one council's server
     summary["needs_attention"] = not lines or len(summary["failed"]) > max(5, len(lines) // 10)
     with open(s.data_dir / log_file, "a", encoding="utf-8") as fh:
@@ -265,7 +257,8 @@ def embed(max_minutes: float = typer.Option(None, help="stop after this long; ru
     idx = SearchIndex(s.index_dir, int(s.embedding.get("dim", 384)))
     n = embed_pending(s, idx, State(s.index_dir / "state.json"), get_embedder(s),
                       max_seconds=max_minutes * 60 if max_minutes else None)
-    idx.build_indices()
+    if n:
+        idx.refresh()
     typer.echo(f"{n} passages embedded")
 
 
