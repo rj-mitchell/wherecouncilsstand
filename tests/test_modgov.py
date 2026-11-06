@@ -41,12 +41,9 @@ def test_robots_rules_as_councils_write_them():
     """The rules found on Modern.gov sites, 6 November 2026: everything forbidden but Google's calendar feed; two
     groups for everyone, the second forbidding all (Bedford, Cornwall); only the web service forbidden (King's Lynn and
     West Norfolk); a rule for this crawler by name; and paths compared ignoring case."""
-    from urllib.robotparser import RobotFileParser
-
     from councils.sources import robots
 
     ua = load_settings().modgov["user_agent"]
-    ws = "https://example.gov.uk/mgWebService.asmx/GetCommittees"
     cases = [
         ("User-agent: *\nDisAllow: /\n\nUser-agent: Googlebot\nDisAllow: /\nAllow: /mgRss.aspx\n", "forbidden"),
         ("User-agent: *\nDisallow: /x.html\nCrawl-delay: 1\nUser-agent: *\r\nDisAllow: /\r\n", "forbidden"),
@@ -56,17 +53,12 @@ def test_robots_rules_as_councils_write_them():
         ("User-agent: *\nDisallow: /mgCalendarMonthView.aspx\n", "allowed"),
         ("", "allowed"),
     ]
+    name, path = robots.robot_name(ua), "/mgWebService.asmx/GetCommittees"
     for text, want in cases:
-        rp = RobotFileParser()
-        rp.parse(text.splitlines())
-        robots._parser.cache_clear()
-        old = robots._parser
-        robots._parser = lambda origin, agent, rp=rp: rp   # noqa: B023
-        try:
-            assert robots.check(ws, ua) == want, text
-        finally:
-            robots._parser = old
-    robots._parser.cache_clear()
+        assert robots.Robots.parse(text).allows(name, path) == (want == "allowed"), text
+    # wildcards and an end anchor (Hertfordshire's "Disallow: /*.asmx$")
+    rp = robots.Robots.parse("User-agent: *\nDisallow: /*.asmx$\n")
+    assert not rp.allows("WhereCouncilsStand", "/mgWebService.asmx") and rp.allows("x", "/mgWebService.asmx/GetX")
 
 
 def test_the_reader_stops_at_a_forbidding_robots_txt_and_keeps_what_is_stored(tmp_path, monkeypatch):
