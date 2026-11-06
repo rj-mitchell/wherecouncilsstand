@@ -71,3 +71,21 @@ def test_the_letters_written_carry_the_placeholder_not_an_address(outreach):
     asking = [text for text in letters if "let our server's requests through" in text]
     assert asking and all(f"It is at {outreach.SERVER_ADDRESS}, and" in text for text in asking)
     assert outreach.SERVER_ADDRESS == "[the server's IP address, as given in the letter sent]"
+
+
+def test_the_robots_letters_are_honest_and_carry_placeholders(outreach):
+    """Decision 21: one letter for each Modern.gov site whose robots.txt forbids reading, not to councils already
+    asked, saying plainly where the site had already been read."""
+    rows = outreach.council_rows()
+    written = outreach.robots_rows(rows)
+    names = {r["gss"] for r in written}
+    assert "E10000011" in names and "E12000007" in names          # East Sussex, and the GLA
+    assert "SA-SUSSEX-BRIGHTON" not in names                       # on East Sussex's site: asked in its letter
+    assert not names & outreach.ALREADY_ASKED and len({r["modgov_url"] for r in written}) == len(written)
+    east_sussex = outreach.robots_letter(rows["E10000011"], read_before=137)
+    assert "I'm sorry" in east_sussex and "The 137 meetings already read are kept" in east_sussex
+    assert "the Sussex and Brighton Combined County Authority" in east_sussex
+    assert east_sussex.startswith(f"To: {outreach.ADDRESS_TO_FIND}\n")
+    assert f"at {outreach.SERVER_ADDRESS}," in east_sussex and not addresses(east_sussex)
+    for path in (ROOT / "outreach" / outreach.ROBOTS_BATCH).glob("*.txt"):
+        assert outreach.SERVER_ADDRESS in path.read_text()
