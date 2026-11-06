@@ -179,6 +179,28 @@ def backup(to: str = typer.Option(..., help="folder for the backups"),
                                     if sent.get("ok") else sent["offsite"]))
 
 
+@app.command()
+def evaluate(with_model: bool = typer.Option(False, help="have the model read each question (needs an API key; a "
+                                                         "fraction of a penny each)"),
+             only: list[str] = typer.Option(None, help="question ids"),
+             save: bool = typer.Option(True, help="save the results under eval/runs/")) -> None:
+    """Score the site against the briefing test set (eval/questions.toml): how each question is read, and the
+    evidence found. No briefing is written (docs/EVALUATION.md)."""
+    from councils import evaluate as ev
+
+    results = ev.run(load_settings(), with_model, set(only) if only else None)
+    for r in results:
+        mark = "ok " if r.plan_ok and r.evidence_ok is not False else "-- "
+        typer.echo(f"{mark}{r.id:28} {r.records:3} sources  " + "; ".join(r.problems))
+    s = ev.summary(results)
+    typer.echo(f"\nquestions read right: {s['plans_right']}/{s['questions']} (filters {s['fields_right']}/"
+               f"{s['fields']}); evidence right: {s['evidence_right']}/{s['evidence_checked']}")
+    for cat, c in s["by_category"].items():
+        typer.echo(f"  {cat:10} {c['plans_right']}/{c['questions']}")
+    if save:
+        typer.echo(f"saved {ev.save(results, with_model)}")
+
+
 @app.command("backup-check")
 def backup_check(folder: str = typer.Option("/backups", "--in", help="the folder the backups are written to")) -> None:
     """Whether the nightly backup and its off-site copy are up to date. Prints any problem, and exits 1 if the last

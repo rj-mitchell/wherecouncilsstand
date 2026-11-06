@@ -9,3 +9,4 @@ web/node_modules/
 web/tsconfig.tsbuildinfo
 deploy/.env
 deploy/backups/
+eval/runs/

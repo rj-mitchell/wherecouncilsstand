@@ -1,0 +1,226 @@
+# The briefing test set (roadmap X8; needed before the beta): realistic questions with the filters a careful reader
+# would choose, and what the evidence must contain. A starter set, to grow as real questions come in.
+#
+# Used by `councils evaluate`, which scores, without writing any briefing:
+# (1) how each question is read: each filter compared with `expect`;
+# (2) the evidence found: whether it is empty when it should be ("No records found" is the right answer to
+#     `no_records` questions), and whether it includes the councils in `include` (GSS codes; at least one source from
+#     each). Evidence checks only mean something on the full record (the server's data), not on a test record.
+#
+# Filters not listed under `expect` are expected to be empty. Dates are compared by year: "default" means the site's
+# default range (the last 4 years) because the question gives no dates; `date_from` alone leaves the end open.
+# `<field>_any` lists acceptable alternatives. Codes: `control` and `parties` use the party codes (LAB, CON, LD, GRN,
+# REF, PC, SNP, DUP, SF, SDLP, UUP, APNI, IND, NOC); `nations` england, wales, scotland, northern_ireland;
+# `council_types` county, district, unitary, metropolitan, london_borough; `kinds` council (full council), cabinet,
+# policy. The questions are read as if today were 6 November 2026.
+
+today = "2026-11-06"
+
+# ---- topics, no filters --------------------------------------------------------------------------------------------
+
+[[q]]
+id = "bins-weekly"
+question = "What have councils decided about weekly bin collections?"
+category = "topic"
+expect = { date_from = "default" }
+
+[[q]]
+id = "toilets"
+question = "What have councils said about closing public toilets?"
+category = "topic"
+expect = { date_from = "default" }
+
+[[q]]
+id = "libraries"
+question = "What have councils decided about closing or handing over libraries?"
+category = "topic"
+expect = { date_from = "default" }
+
+[[q]]
+id = "send-transport"
+question = "How have councils dealt with rising costs of school transport for children with special educational needs?"
+category = "topic"
+expect = { date_from = "default" }
+
+[[q]]
+id = "section-114"
+question = "What have councils said about the risk of issuing a section 114 notice?"
+category = "topic"
+expect = { date_from = "default" }
+
+[[q]]
+id = "potholes"
+question = "What have councils decided about spending on potholes and road repairs?"
+category = "topic"
+expect = { date_from = "default" }
+
+# ---- dates ---------------------------------------------------------------------------------------------------------
+
+[[q]]
+id = "climate-emergency"
+question = "How did councillors vote on declaring a climate emergency in 2019?"
+category = "dates"
+expect = { date_from = "2019", date_to = "2019", wants_votes = true }
+
+[[q]]
+id = "bins-since-2023"
+question = "What have councils decided about weekly bin collections since 2023?"
+category = "dates"
+expect = { date_from = "2023" }
+
+[[q]]
+id = "covid-meetings"
+question = "What did councils decide about holding meetings remotely between 2020 and 2021?"
+category = "dates"
+expect = { date_from = "2020", date_to = "2021" }
+
+[[q]]
+id = "last-two-years"
+question = "What have councils said about asylum hotels in the last two years?"
+category = "dates"
+expect = { date_from = "2024" }
+
+[[q]]
+id = "before-records"
+question = "What did councils decide about bin collections in 2012?"
+category = "dates"
+expect = { date_from = "2012", date_to = "2012" }
+no_records = true
+
+# ---- nations -------------------------------------------------------------------------------------------------------
+
+[[q]]
+id = "wales-second-homes"
+question = "What have councils in Wales decided about second homes and council tax?"
+category = "nation"
+expect = { date_from = "default", nations = ["wales"] }
+
+[[q]]
+id = "scotland-visitor-levy"
+question = "What have Scottish councils said about a visitor levy?"
+category = "nation"
+expect = { date_from = "default", nations = ["scotland"] }
+
+[[q]]
+id = "ni-irish-language"
+question = "What have councils in Northern Ireland decided about Irish language street signs?"
+category = "nation"
+expect = { date_from = "default", nations = ["northern_ireland"] }
+
+[[q]]
+id = "england-devolution"
+question = "What have English councils said about local government reorganisation and devolution?"
+category = "nation"
+expect = { date_from = "default", nations = ["england"] }
+
+# ---- parties: who runs the council, and what councillors did -----------------------------------------------------
+
+[[q]]
+id = "reform-budgets"
+question = "How have Reform UK councillors voted on council budgets?"
+category = "party"
+expect = { date_from = "default", parties = ["REF"], wants_votes = true }
+
+[[q]]
+id = "labour-run-housing"
+question = "What have Labour-run councils decided about council housing?"
+category = "party"
+expect = { date_from = "default", control = ["LAB"] }
+
+[[q]]
+id = "reform-run-dei"
+question = "What have Reform-run councils decided about diversity and inclusion jobs?"
+category = "party"
+expect = { date_from = "default", control = ["REF"] }
+
+[[q]]
+id = "noc-budgets"
+question = "How have councils under no overall control set their budgets?"
+category = "party"
+expect = { date_from = "default", control = ["NOC"] }
+
+[[q]]
+id = "tory-councils"
+question = "What have Tory councils done about council tax rises?"
+category = "party"
+expect = { date_from = "default", control = ["CON"] }
+
+[[q]]
+id = "green-councillors-cycling"
+question = "What have Green councillors said about cycle lanes?"
+category = "party"
+expect = { date_from = "default", parties = ["GRN"] }
+
+[[q]]
+id = "ld-vs-con"
+question = "How do Liberal Democrat and Conservative councils differ on the local plan and housebuilding?"
+category = "party"
+# comparing councils run by different parties is a grouping, not a filter; either reading is acceptable
+expect = { date_from = "default", control_any = [[], ["CON", "LD"]] }
+
+# ---- named councils ------------------------------------------------------------------------------------------------
+
+[[q]]
+id = "barnsley-libraries"
+question = "What has Barnsley's full council decided about libraries?"
+category = "council"
+expect = { date_from = "default", councils = ["E08000038"], kinds = ["council"] }
+include = ["E08000038"]
+
+[[q]]
+id = "cardiff-cabinet-buses"
+question = "What has Cardiff's cabinet decided about bus services?"
+category = "council"
+expect = { date_from = "default", councils = ["W06000015"], kinds = ["cabinet"] }
+include = ["W06000015"]
+
+[[q]]
+id = "leeds-sheffield-clean-air"
+question = "How have Leeds and Sheffield dealt with clean air zones since 2019?"
+category = "council"
+expect = { date_from = "2019", councils = ["E08000035", "E08000039"] }
+include = ["E08000035", "E08000039"]
+
+[[q]]
+id = "kent-asylum"
+question = "What has Kent County Council said about unaccompanied asylum-seeking children?"
+category = "council"
+expect = { date_from = "default", councils = ["E10000016"] }
+include = ["E10000016"]
+
+[[q]]
+id = "gwynedd-holiday-lets"
+question = "What has Gwynedd decided about holiday lets and Article 4 directions?"
+category = "council"
+expect = { date_from = "default", councils = ["W06000002"] }
+include = ["W06000002"]
+
+# ---- kinds of council ----------------------------------------------------------------------------------------------
+
+[[q]]
+id = "county-adult-care"
+question = "What have county councils said about the cost of adult social care?"
+category = "type"
+expect = { date_from = "default", council_types = ["county"] }
+
+[[q]]
+id = "district-car-parking"
+question = "What have district councils decided about car parking charges?"
+category = "type"
+expect = { date_from = "default", council_types = ["district"] }
+
+[[q]]
+id = "unitary-authorities"
+question = "What have unitary authorities decided about children's homes?"
+category = "type"
+expect = { date_from = "default", council_types = ["unitary"] }
+
+# ---- outside the record --------------------------------------------------------------------------------------------
+
+[[q]]
+id = "planning-application"
+question = "What did the planning committee decide about the application for 40 homes on Mill Lane?"
+category = "outside"
+expect = { date_from = "default" }
+# planning committees aren't read (only full council and cabinet): a briefing should find nothing to say, but the
+# search may still find passages that mention planning, so the evidence isn't checked
