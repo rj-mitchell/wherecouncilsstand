@@ -6,6 +6,11 @@ once and parsed as often as needed. Copies cached before November 2026 are plain
 replaced by a gzipped copy when next fetched (docs/OPERATIONS.md has the command that compresses them all at once). Requests to one council are spaced at least ``min_interval_seconds`` apart.
 
 Dates in requests and responses are day/month/year.
+
+Every request is checked against the site's robots.txt first (sources/robots.py; decision 21), and any Crawl-delay is
+honoured. A site whose robots.txt forbids the web service is not read: ``Refused`` stops the council's load, nothing
+is written, and the cache is not used in its place. A robots.txt that can't be fetched is treated as a server that is
+down: the cached copy is used where there is one, and the council is tried again the next day.
 """
 
 from __future__ import annotations
@@ -25,7 +30,7 @@ import httpx
 from lxml import etree
 
 from councils.config import Settings
-from councils.sources import tls
+from councils.sources import robots, tls
 
 log = logging.getLogger(__name__)
 
@@ -50,6 +55,13 @@ class MeetingRef:
 
 class ModgovError(RuntimeError):
     pass
+
+
+ROBOTS_ERROR = "robots.txt forbids crawling"
+
+
+class Refused(ModgovError):
+    """The site's robots.txt forbids this crawler (decision 21): the council isn't read, and its cache isn't used."""
 
 
 def ddmmyyyy(d: date) -> str:
@@ -95,6 +107,7 @@ class Client:
         self.refetch_days = int(cfg.get("refetch_days", 120))
         self._http_options = {"headers": {"User-Agent": cfg.get("user_agent", "WhereCouncilsStand")},
                               "timeout": float(cfg.get("timeout_seconds", 40)), "follow_redirects": True}
+        self.user_agent = self._http_options["headers"]["User-Agent"]
         self.http = httpx.Client(**self._http_options)
         self._chain_completed = False
         self._last = 0.0
@@ -110,15 +123,26 @@ class Client:
         self.close()
 
     # Transport -----------------------------------------------------------------
+    def robots(self, url: str) -> None:
+        """Raise ``Refused`` if robots.txt forbids the address, or ``ModgovError`` if it couldn't be fetched."""
+        verdict = robots.check(url, self.user_agent)
+        if verdict == "forbidden":
+            raise Refused(f"{ROBOTS_ERROR}: {url}")
+        if verdict == "unknown":
+            raise ModgovError(f"{self.council}: its robots.txt couldn't be read")
+
     def _get(self, op: str, **params: str | int) -> str:
+        url = f"{self.base}/{op}"
+        self.robots(url)
+        interval = max(self.interval, robots.crawl_delay(url, self.user_agent))
         with self._lock:
             last_error: Exception | None = None
             for attempt in range(self.retries):
-                wait = self.interval - (time.monotonic() - self._last)
+                wait = interval - (time.monotonic() - self._last)
                 if wait > 0:
                     time.sleep(wait)
                 try:
-                    r = self.http.get(f"{self.base}/{op}", params=params)
+                    r = self.http.get(url, params=params)
                     self._last = time.monotonic()
                     if r.status_code == 200:
                         return r.text
@@ -159,6 +183,8 @@ class Client:
             return read_cached(path)
         try:
             text = self._get(op, **params)
+        except Refused:
+            raise                            # forbidden now: what was cached isn't read in its place
         except ModgovError as e:
             if not path:
                 raise
@@ -210,6 +236,8 @@ class Client:
         path = self.cache / "documents" / f"{name}.pdf"
         if path.exists():
             return path.read_bytes()
+        if robots.check(url, self.user_agent) != "allowed":
+            return None                      # robots.txt forbids the site's documents (or couldn't be read)
         with self._lock:
             wait = self.interval - (time.monotonic() - self._last)
             if wait > 0:
@@ -240,12 +268,16 @@ _REFUSAL = re.compile(r"has been blocked|request rejected|connection denied|inca
 
 
 def probe(settings: Settings, council: str, base_url: str) -> tuple[str, int]:
-    """("ok", number of committees), ("blocked", HTTP status), ("unreachable", 0) when the connection fails, or
-    ("none", HTTP status) when the site answers without a Modern.gov web service. Not cached."""
+    """("ok", number of committees), ("robots", 0) when the site's robots.txt forbids the web service (it isn't
+    asked), ("blocked", HTTP status), ("unreachable", 0) when the connection fails, or ("none", HTTP status) when the
+    site answers without a Modern.gov web service. Not cached."""
     cfg = settings.modgov
+    url = base_url.rstrip("/") + "/mgWebService.asmx/GetCommittees"
+    ua = cfg.get("user_agent", "WhereCouncilsStand")
+    if robots.check(url, ua) == "forbidden":
+        return "robots", 0
     try:
-        r = httpx.get(base_url.rstrip("/") + "/mgWebService.asmx/GetCommittees",
-                      headers={"User-Agent": cfg.get("user_agent", "WhereCouncilsStand")},
+        r = httpx.get(url, headers={"User-Agent": ua},
                       timeout=float(cfg.get("timeout_seconds", 40)), follow_redirects=True)
     except httpx.ConnectError:
         return "unreachable", 0

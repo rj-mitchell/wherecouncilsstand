@@ -72,6 +72,7 @@ def update(settings: Settings, councils: Iterable[Council], workers: int = 20) -
         return line
 
     with ThreadPoolExecutor(workers) as ex:
-        futures = [ex.submit(one, c) for c in councils if loaded(settings, c)]
+        # a council whose site forbids reading isn't asked at all, and isn't a failure (decision 21)
+        futures = [ex.submit(one, c) for c in councils if loaded(settings, c) and not c.withheld]
         for f in as_completed(futures):
             yield f.result()

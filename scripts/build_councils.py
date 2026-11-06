@@ -8,8 +8,9 @@ Sources (fetched fresh each run):
   * Modern.gov sites: Local Democracy UK's council list (CC BY 4.0), then a probe of the usual host names
     (democracy., moderngov., modgov., committees., ...) on each remaining council's own domain.
 
-Each site is checked with one GetCommittees request. "blocked" means the site refused automated requests from where
-this ran, and "unreachable" that the connection failed; either may work from elsewhere or later.
+Each site's robots.txt is read first: a site that forbids the web service is "robots" and isn't asked (decision 21).
+Each other site is checked with one GetCommittees request. "blocked" means the site refused automated requests from
+where this ran, and "unreachable" that the connection failed; either may work from elsewhere or later.
 
     uv run python scripts/build_councils.py
 """
@@ -163,7 +164,7 @@ def main() -> None:
         if c.get("modgov_url"):
             status, _ = probe(s, c["gss"], c["modgov_url"])
             c["modgov_status"] = status
-            if status == "ok":
+            if status in ("ok", "robots"):    # a site that forbids reading is asked, not worked around
                 return c
             # the listed site doesn't answer: the council may have moved it (North East Derbyshire and Torfaen moved
             # to <name>.moderngov.co.uk, November 2026)
@@ -175,7 +176,7 @@ def main() -> None:
             return c
         for url in candidate_hosts(c.get("website", ""), c["name"]):
             status, _ = probe(s, c["gss"], url)
-            if status in ("ok", "blocked"):  # an unreachable guess is just a host that doesn't exist
+            if status in ("ok", "blocked", "robots"):  # an unreachable guess is just a host that doesn't exist
                 c.update(modgov_url=url, modgov_status=status, modgov_source="probed")
                 return c
         c.update(modgov_url="", modgov_status="none", modgov_source="")

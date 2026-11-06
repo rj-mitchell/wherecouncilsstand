@@ -26,7 +26,7 @@ from councils.index.lance import SearchIndex
 from councils.parse import redact
 from councils.parse.votes import Matcher, Member, split_names
 from councils.reference import people
-from councils.registry import councils
+from councils.registry import councils, withheld_codes
 
 log = logging.getLogger(__name__)
 
@@ -88,8 +88,12 @@ def named_members(text: str, matcher: Matcher) -> list[str]:
 
 
 def passage_rows(gss: str, settings: Settings, max_words: int = 250) -> list[dict[str, Any]]:
+    """A council's passages; none for a council whose record is withheld (its site's robots.txt forbids reading it,
+    decision 21), so indexing it removes what the index held."""
     root = settings.parquet_dir
     council = councils()[gss]
+    if council.withheld:
+        return []
     items = store.parquet.read(root, "items", gss)
     meetings = {m["meeting_id"]: m for m in store.parquet.read(root, "meetings", gss)}
     attendance = store.parquet.read(root, "attendance", gss)
@@ -233,6 +237,9 @@ def update_index(settings: Settings, changed: list[str], embedder: Embedder,
     nothing changed."""
     indexer = Indexer(settings)
     idx = indexer.index
+    # councils whose record is withheld (decision 21) but still in the index: their passages are removed
+    held = set(withheld_codes())
+    changed = list(changed) + sorted({k.split(":")[0] for k in indexer.state.data} & held - set(changed))
     for gss in changed:              # one writer at a time; unchanged passages keep their vectors
         indexer.index_council(gss)
     done = []

@@ -33,6 +33,12 @@ class Council:
     system: str = "modgov"  # which reader: "modgov" (sources/modgov.py), "cmis" or "coins"
 
     @property
+    def withheld(self) -> bool:
+        """Its site's robots.txt forbids reading it (decision 21): not read, and anything stored before the check is
+        kept but withheld from the site, briefings and the update until permission is given."""
+        return self.modgov_status == "robots"
+
+    @property
     def short_name(self) -> str:
         """The name without "Council" and its kind: "Babergh", "Mid Suffolk"."""
         n = re.sub(r"\b(London Borough of|Royal Borough of|Borough Council of|City of|Metropolitan Borough Council|"
@@ -66,3 +72,8 @@ def site_sharers(council: Council) -> list[Council]:
     """Other councils on the same Modern.gov site (councils that share services publish together)."""
     return [c for c in councils().values()
             if c.modgov_url and c.modgov_url == council.modgov_url and c.gss != council.gss]
+
+
+def withheld_codes() -> list[str]:
+    """Councils whose stored record, if any, is withheld (Council.withheld)."""
+    return sorted(c.gss for c in councils().values() if c.withheld)

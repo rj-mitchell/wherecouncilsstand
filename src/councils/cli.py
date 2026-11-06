@@ -132,6 +132,7 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
     from councils.embed.base import get_embedder
     from councils.index.build import update_index
     from councils.registry import councils, get
+    from councils.sources.modgov import ROBOTS_ERROR
 
     s = load_settings()
     started = time.time()
@@ -145,7 +146,10 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
     summary = {"finished": time.strftime("%Y-%m-%dT%H:%M:%S"), "minutes": round((time.time() - started) / 60, 1),
                "councils": len(lines), "changed": len(changed),
                "new_meetings": sum(ln.get("new_meetings", 0) for ln in lines),
-               "failed": sorted(ln["gss"] for ln in lines if ln.get("error")), **indexed}
+               "failed": sorted(ln["gss"] for ln in lines if ln.get("error")),
+               # sites whose robots.txt has started to forbid reading: mark them "robots" in the registry and ask
+               # (docs/OPERATIONS.md, "When it reports a problem")
+               "robots": sorted(ln["gss"] for ln in lines if ln.get("error") == ROBOTS_ERROR), **indexed}
     # needs attention: many councils failing at once means something on our side, not one council's server
     summary["needs_attention"] = not lines or len(summary["failed"]) > max(5, len(lines) // 10)
     with open(s.data_dir / log_file, "a", encoding="utf-8") as fh:

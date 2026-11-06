@@ -595,34 +595,13 @@ class Client:
         self.close()
 
     def allowed(self, url: str) -> bool:
-        """robots.txt allows the page. Paths are also compared ignoring case, as these (IIS) sites treat them: a rule
-        for ``/DMS/Document.ashx`` covers ``/dms/document.ashx`` too."""
-        if not robots.allowed(url, self.user_agent):
-            return False
-        u = urlparse(url)
-        rp = robots._parser(f"{u.scheme}://{u.netloc}", self.user_agent)
-        if rp is None:
-            return False
-        entry = (next((e for e in rp.entries if "*" not in e.useragents and e.applies_to(self.user_agent)), None)
-                 or next((e for e in rp.entries if "*" in e.useragents), None) or rp.default_entry)
-        if entry is None:
-            return True
-        path = (u.path or "/").lower()
-        for line in entry.rulelines:      # the first rule that applies decides, as in urllib.robotparser
-            rule = line.path.lower()
-            if rule == "*" or path.startswith(rule):
-                return line.allowance
-        return True
+        """robots.txt allows the page (sources/robots.py: compared as written and ignoring case). One that can't be
+        fetched is treated as forbidding, to be safe."""
+        return robots.check(url, self.user_agent) == "allowed"
 
     def _delay(self, url: str) -> float:
         """The interval between requests: the configured one, or longer if robots.txt asks (Crawl-delay)."""
-        u = urlparse(url)
-        rp = robots._parser(f"{u.scheme}://{u.netloc}", self.user_agent)
-        try:
-            asked = float(rp.crawl_delay(self.user_agent) or 0) if rp else 0.0
-        except (TypeError, ValueError):
-            asked = 0.0
-        return max(self.interval, asked)
+        return max(self.interval, robots.crawl_delay(url, self.user_agent))
 
     def _request(self, method: str, url: str, data: dict | None = None) -> httpx.Response:
         if not self.allowed(url):

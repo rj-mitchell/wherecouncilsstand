@@ -95,6 +95,10 @@ therefore start late: while it waits, `systemctl status councils-update` shows i
   `data_static/councils.csv` updated (`scripts/build_councils.py`).
 - **`needs_attention`.** Check the network from the server, then the disk (`df -h`), then the log.
 - **`still_to_embed` keeps growing.** Raise `--embed-minutes`, or run `councils embed` on its own.
+- **A council under `robots` in the summary.** Its site's robots.txt has started to forbid reading it (decision 21).
+  Nothing was read or changed. Set its `modgov_status` to `robots` in `data_static/councils.csv` (or
+  `strategic_authorities.csv`), which withholds what is stored until it agrees, add it to `scripts/outreach.py` and
+  send the letter. Until the registry is changed it stays under `failed` each night.
 - **A council's meetings suddenly drop to zero.** Its committees have probably been renamed. Look at its committee
   list (`zcat data/raw/modgov/<GSS>/committees.xml.gz`) and add the new titles to `data_static/committees.csv`.
 

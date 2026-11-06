@@ -90,6 +90,40 @@ What was found:
 - **Minutes can change** until approved at the next meeting, so meetings newer than 120 days are fetched again
   (`refetch_days`).
 
+## Robots.txt (decision 21)
+
+Every reader checks the site's robots.txt before each request (`sources/robots.py`), and honours any `Crawl-delay`.
+A rule for this crawler by name ("User-agent: WhereCouncilsStand") is honoured over the rule for everyone. Paths are
+compared as written and also ignoring case (these are IIS sites), and a page either comparison forbids is forbidden.
+
+- **Modern.gov** (`sources/modgov.py`, from 6 November 2026): a site that forbids the web service
+  (`/mgWebService.asmx`) isn't asked at all; the load stops with "robots.txt forbids crawling", nothing is written
+  and the cache isn't read in its place. A site whose documents are forbidden (Hertfordshire's forbids
+  `/documents/`) has its meetings read without the documents. A robots.txt that can't be fetched is treated as a
+  server that is down: the cached copy is used and the council is tried again the next day.
+- **CMIS and CoINS:** as before (below), a robots.txt that can't be fetched is treated as forbidding.
+
+Every Modern.gov site in the registry was checked on 6 November 2026 (one request each, from a cloud network: 170
+allow reading, 47 have no robots.txt, 43 couldn't be reached from there and are checked by the reader on the
+server). **44 sites, serving 45 councils and the Greater London Authority's, forbid reading**, nearly all with Civica's
+usual file ("Disallow all webbot searching BUT allow Google access to mgRss for calendar sync": `User-agent: *` /
+`DisAllow: /`); King's Lynn and West Norfolk's forbids `/mgWebService.asmx` only, and Swale's forbids `/meetings`,
+where its Modern.gov site is. They are marked `robots` in `councils.csv` (`modgov_status`):
+
+Bedford, Blackpool, King's Lynn and West Norfolk, City of Lincoln, City of London Corporation, Conwy, Cornwall, the
+Isles of Scilly, Derbyshire Dales, East Sussex, Eastleigh, Halton, Herefordshire, Hertfordshire, Hinckley and
+Bosworth, Hyndburn, Kirklees, Lancaster, Liverpool, Bexley, Bromley, Hillingdon, Hounslow, Redbridge, Richmond upon
+Thames, Waltham Forest, Wandsworth, Malvern Hills, Merthyr Tydfil, Middlesbrough, North West Leicestershire, Oxford,
+Pembrokeshire, Rushcliffe, South Hams, South Kesteven, Stoke-on-Trent, Stratford-on-Avon, Swale, Swindon, West Devon,
+Wiltshire, Winchester and Wychavon; and the Greater London Authority (`strategic_authorities.csv`).
+
+41 of these councils had been loaded before the check (about 6,700 meetings and 2,000 named votes on the live site,
+6 November 2026). **Their stored records are kept, not deleted, but withheld** (`Council.withheld`): the councils
+page and each council's page say "Permission asked", with the number of meetings kept; their pages, named votes and
+sitemap entries aren't shown; their passages are left out of searches at once and removed from the search index by
+the next update; and the update doesn't ask their sites. Each is asked for permission (`outreach/2026-11-robots/`).
+When one agrees, set its `modgov_status` back to `ok`: the next update reads it again, and its record returns.
+
 ## Meetings: CMIS sites
 
 Civica's CMIS (and Nottinghamshire's variant of it, "DMS") is an ASP.NET (DotNetNuke) site with no web service, so

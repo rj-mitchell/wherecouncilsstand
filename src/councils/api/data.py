@@ -15,14 +15,15 @@ import duckdb
 from councils import sisters, store
 from councils.config import Settings
 from councils.reference import people
-from councils.registry import REGION_NAMES, TYPE_NAMES, councils
+from councils.registry import REGION_NAMES, TYPE_NAMES, councils, withheld_codes
 
 KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy committee"}
 
 # How fully each council is covered, for the councils page: "not_yet" (not loaded), "partial" (loaded with a gap)
 # or "full". It describes the site's reading of the council's record, never the council.
 NOT_LOADED = {
-    "robots": "Its meetings site asks automated readers not to visit (robots.txt).",
+    "robots": "Permission asked: its meetings site asks automated readers not to visit (robots.txt), so it isn't read "
+              "until it agrees.",
     "blocked": "Its meetings site refuses automated requests.",
     "unreachable": "Its meetings site couldn't be reached.",
     "none": "It doesn't publish its minutes through a system we can read yet.",
@@ -42,7 +43,12 @@ def coverage(row: dict[str, Any], attendance: int = 0, with_party: int = 0, toda
     """("full" | "partial" | "not_yet", the reasons in plain words)."""
     today = today or date.today()
     if not row.get("loaded"):
-        return "not_yet", [NOT_LOADED.get(row.get("status", ""), "Not loaded yet.")]
+        why = [NOT_LOADED.get(row.get("status", ""), "Not loaded yet.")]
+        held = row.get("withheld")
+        if held:
+            why.append(f"The {held['meetings']:,} meetings read before robots.txt was checked are kept, but not shown "
+                       "or used in briefings, until it agrees.")
+        return "not_yet", why
     gaps = []
     if row.get("council_meetings") == 0:
         # most named votes are at full council (Sunderland, loaded once with its Cabinet alone)
@@ -137,8 +143,11 @@ class Data:
             row = {"gss": c.gss, "name": c.name, "nation": c.nation, "type": c.type,
                    "type_name": TYPE_NAMES.get(c.type, c.type), "region": c.region,
                    "region_name": REGION_NAMES.get(c.region, c.region),
-                   "site": c.modgov_url or None, "status": c.modgov_status, "loaded": bool(m)}
-            if m:
+                   "site": c.modgov_url or None, "status": c.modgov_status, "loaded": bool(m) and not c.withheld}
+            if m and c.withheld:
+                # read before robots.txt was checked (decision 21): kept on the server, withheld from the site
+                row["withheld"] = {"meetings": m[0]}
+            elif m:
                 row |= {"meetings": m[0], "council_meetings": m[1], "cabinet_meetings": m[2],
                         "policy_meetings": m[3], "from": _iso(m[4]), "to": _iso(m[5]),
                         "with_minutes": round(float(m[6] or 0), 3), "named_votes": votes.get(c.gss, 0)}
@@ -177,7 +186,8 @@ class Data:
             names = store.parquet.attach(con, self.root)
             rows = con.execute("SELECT vote_id, max(date) AS d FROM votes GROUP BY vote_id ORDER BY d DESC, vote_id"
                                ).fetchall() if "votes" in names else []
-            self._vote_ids = [r[0] for r in rows]
+            held = set(withheld_codes())
+            self._vote_ids = [r[0] for r in rows if r[0].split(":")[0] not in held]
         return self._vote_ids
 
     def directory(self) -> dict[str, Any]:
@@ -279,7 +289,7 @@ class Data:
     def vote(self, vote_id: str) -> dict[str, Any] | None:
         self._fresh()
         gss = vote_id.split(":")[0]
-        if gss not in councils():
+        if gss not in councils() or councils()[gss].withheld:
             return None
         rows = [r for r in store.parquet.read(self.root, "votes", gss) if r["vote_id"] == vote_id]
         if not rows:

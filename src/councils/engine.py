@@ -19,6 +19,7 @@ from councils.embed.base import Embedder, get_embedder
 from councils.index.lance import SearchIndex, date_lit, sql_list, sql_str
 from councils.rank.composite import Candidate, RankParams, Scored, rank
 from councils.rank.evidence import GROUP_BY, evidence_summary, select_evidence
+from councils.registry import withheld_codes
 
 log = logging.getLogger(__name__)
 
@@ -101,6 +102,9 @@ class Engine:
         f = filters or Filters()
         r = self.settings.ranking
         where = build_where(f)
+        held = withheld_codes()
+        if held:   # passages of a council withheld since it was indexed (decision 21), until the update removes them
+            where = " AND ".join(w for w in (where, f"gss NOT IN ({', '.join(sql_str(g) for g in held)})") if w)
 
         def keyword() -> list[dict[str, Any]]:
             return self.index.bm25(query, where, int(r.get("candidates_bm25", 300)))
