@@ -1,10 +1,15 @@
-# Keeping the data current
+# Operations
 
-`councils update` brings everything up to date in one run. It is meant to run once a day, on a schedule. This page
+Two things run on the server: the nightly update, which keeps the data current, and the website. This page covers
+both. Putting the site on the server is in [`DEPLOY.md`](DEPLOY.md).
+
+## Keeping the data current
+
+`councils update` brings everything up to date in one run. It is meant to run once a day, on a schedule. This section
 explains what it does, how it keeps working when councils' servers misbehave, how to schedule it, and what to do when
 it reports a problem.
 
-## What a run does
+### What a run does
 
 For every council already loaded, 20 at a time and one request at a time to each council's server:
 
@@ -41,7 +46,7 @@ For every council already loaded, 20 at a time and one request at a time to each
 
    It exits with status 1 if `needs_attention` is true.
 
-## Built to keep working
+### Built to keep working
 
 | Risk | What happens |
 |---|---|
@@ -57,7 +62,7 @@ For every council already loaded, 20 at a time and one request at a time to each
 
 Nothing is ever deleted because a server didn't answer.
 
-## Scheduling
+### Scheduling
 
 On the server (`docs/DEPLOY.md`), `councils-update.timer` runs it once a day, in a one-off container;
 `deploy/update.sh` installs it. Commands are run in `/opt/wherecouncilsstand/deploy`:
@@ -71,14 +76,14 @@ docker compose run --rm -T app tail -n 5 /data/updates.jsonl
 
 If a run, or the nightly backup, fails (exits 1 when something needs attention, or stops with an error), the server
 emails wheretheystanduk@gmail.com with the result and the run's last log lines, at most once every six hours. That is
-set up once for every site on the server (Where They Stand's `docs/HOSTING.md`, "Email from the server").
+set up once for every site on the server (Where MPs Stand's `docs/HOSTING.md`, "Email from the server").
 
 It runs at about 03:17 UTC. Councils publish minutes during the working day, and their servers are quietest at night.
 It is also clear of the other sites' updates on the shared server. In case a job runs long, every site's update takes
 the same lock (`/var/lock/wheretheystand-update.lock`) and waits for it, so only one runs at a time. A run can
 therefore start late: while it waits, `systemctl status councils-update` shows it as "activating".
 
-## When it reports a problem
+### When it reports a problem
 
 - **One or a few councils under `failed`, day after day.** Their server is down or refusing requests. Check by hand:
   `councils list --status ok` shows the site's address. A council that has moved to a new Modern.gov address needs
@@ -88,7 +93,7 @@ therefore start late: while it waits, `systemctl status councils-update` shows i
 - **A council's meetings suddenly drop to zero.** Its committees have probably been renamed. Look at its committee
   list (`zcat data/raw/modgov/<GSS>/committees.xml.gz`) and add the new titles to `data_static/committees.csv`.
 
-## Disk space
+### Disk space
 
 The data folder holds the stored meetings (Parquet), the search index and a cache of every response from councils'
 servers, so that each meeting is fetched once. Two things keep it from growing for no reason:
@@ -115,7 +120,7 @@ docker compose run --rm -T app du -sh /data/raw/modgov          # after
 
 It can be stopped and run again: files already compressed are skipped.
 
-## Commands
+### Commands
 
 | Command | What it does |
 |---|---|
@@ -129,7 +134,7 @@ It can be stopped and run again: files already compressed are skipped.
 | `councils list-reports`, `close-report`, `withdraw` | Reports and takedown requests, and withdrawn briefings ("Running the website", below) |
 | `councils optimize` | Compact the search index and delete superseded versions (the update does this itself) |
 
-# Running the website
+## Running the website
 
 The website and its API are one service, `councils serve` (FastAPI, in `src/councils/api/`). It serves the built pages
 from `web/dist`, reads the same data folder as the update, and keeps its own small database in `data/state.db`:
