@@ -218,6 +218,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         last = data.last_update()
         return {
             "councils": totals.get("councils", 0), "loaded": totals.get("loaded", 0),
+            "authorities": totals.get("authorities", 0), "authorities_loaded": totals.get("authorities_loaded", 0),
             "meetings": totals.get("meetings", 0), "named_votes": totals.get("named_votes", 0),
             "start": settings.start_date.isoformat(), "latest_meeting": totals.get("to"),
             "last_update": {"finished": last.get("finished"), "councils": last.get("councils"),
@@ -426,8 +427,10 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             directory = data.directory()
             t = directory["totals"]
             return (200, "Councils — Where Councils Stand",
-                    f"The {t['councils']:,} principal councils in the UK: which {t['loaded']:,} are covered, from when, "
-                    "and which party is in overall control.", base + "/councils", None,
+                    f"The {t['councils']:,} principal councils in the UK and England's {t.get('authorities', 0):,} "
+                    f"strategic authorities: which {t['loaded']:,} councils and {t.get('authorities_loaded', 0):,} "
+                    "authorities are covered, from when, and which party is in overall control (or, for an "
+                    "authority, its mayor's party).", base + "/councils", None,
                     plaintext.councils_text(directory))
 
         return readable("councils", build)

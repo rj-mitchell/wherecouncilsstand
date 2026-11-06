@@ -12,12 +12,27 @@ from typing import Any
 
 import duckdb
 
-from councils import sisters, store
+from councils import authority, sisters, store
 from councils.config import Settings
 from councils.reference import people
-from councils.registry import REGION_NAMES, TYPE_NAMES, councils, withheld_codes
+from councils.registry import (
+    CATEGORY_NAMES,
+    KIND_NAMES,
+    MEMBER_ROLES,
+    REGION_NAMES,
+    TYPE_NAMES,
+    Council,
+    authorities_of,
+    councils,
+    mayor_on,
+    mayors_of,
+    members_of,
+    withheld_codes,
+)
 
-KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy committee"}
+KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy committee", "board": "Board",
+              "mayor": "Mayor's decisions", "scrutiny": "Overview and scrutiny"}
+AUTHORITY_KINDS = ("board", "mayor", "scrutiny")
 
 # How fully each council is covered, for the councils page: "not_yet" (not loaded), "partial" (loaded with a gap)
 # or "full". It describes the site's reading of the council's record, never the council.
@@ -42,15 +57,19 @@ def coverage(row: dict[str, Any], attendance: int = 0, with_party: int = 0, toda
              ) -> tuple[str, list[str]]:
     """("full" | "partial" | "not_yet", the reasons in plain words)."""
     today = today or date.today()
+    authority = row.get("type") == "strategic_authority"
     if not row.get("loaded"):
-        why = [NOT_LOADED.get(row.get("status", ""), "Not loaded yet.")]
+        why = [row.get("reason") or NOT_LOADED.get(row.get("status", ""), "Not loaded yet.")]
         held = row.get("withheld")
         if held:
             why.append(f"The {held['meetings']:,} meetings read before robots.txt was checked are kept, but not shown "
                        "or used in briefings, until it agrees.")
         return "not_yet", why
     gaps = []
-    if row.get("council_meetings") == 0:
+    if authority:
+        if row.get("board_meetings") == 0:
+            gaps.append("No board meetings read, only its committees, so its main decisions are missing.")
+    elif row.get("council_meetings") == 0:
         # most named votes are at full council (Sunderland, loaded once with its Cabinet alone)
         gaps.append("No full council meetings read, only its cabinet or committees, so most named votes are "
                     "missing.")
@@ -62,7 +81,9 @@ def coverage(row: dict[str, Any], attendance: int = 0, with_party: int = 0, toda
     if last and (today - last).days > STALE_DAYS:
         gaps.append(f"No meeting since {last.strftime('%B %Y')}.")
     first = date.fromisoformat(row["from"]) if row.get("from") else None
-    if first and first > LATE_START and row.get("gss") not in NEW_COUNCILS:
+    created = re.search(r"\b(\d{4})\b", row.get("created") or "")
+    new = row.get("gss") in NEW_COUNCILS or (authority and created is not None and int(created.group(1)) >= 2018)
+    if first and first > LATE_START and not new:
         gaps.append(f"Records start in {first.strftime('%B %Y')}, not May 2018.")
     if not attendance:
         gaps.append("No attendance records, so votes can't be matched to councillors.")
@@ -75,6 +96,55 @@ def coverage(row: dict[str, Any], attendance: int = 0, with_party: int = 0, toda
     return "full", [f"Meetings {since}, minutes text for {round(share * 100)}% of them, attendance and parties "
                      "recorded."]
 SIDE_ORDER = ("for", "against", "abstain")
+
+
+# strategic authorities (decisions 17 to 20) ----------------------------------------------------------------------
+
+def authority_facts(c: Council) -> dict[str, Any]:
+    """What only a strategic authority has, for its row and page: its statutory kind and category, when it was
+    created, and every region it spans."""
+    return {"kind_name": KIND_NAMES.get(c.kind, c.kind), "category_name": CATEGORY_NAMES.get(c.category, ""),
+            "created": c.created, "regions": [{"code": r, "name": REGION_NAMES.get(r, r)} for r in c.regions],
+            "reason": c.reason or None}
+
+
+def authority_control(gss: str, today: date | None = None) -> dict[str, Any]:
+    """An authority's "control" now: its mayor's party, labelled as the mayor's, or no single party (decision 19)."""
+    d = today or date.today()
+    m = mayor_on(gss, d)
+    code = authority.control_key(gss, d)
+    return {"code": code, "name": people.party_name(code), "mayor": m.name if m else None,
+            "since": _iso(m.start) if m else None}
+
+
+def authority_members(meetings: list[dict[str, Any]], att: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """The members listed at the authority's latest board meeting (the longest list within three months of it), each
+    with their role and party on the date, and where that party comes from (decision 20). Appointed members who
+    aren't councillors are counted, not named."""
+    boards = sorted((m for m in meetings if m["kind"] == "board"), key=lambda m: m["date"])
+    if not boards:
+        return None
+    by_meeting: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for a in att:
+        if (a.get("attendance") or "").lower() != "not required":
+            by_meeting[a["meeting_id"]].append(a)
+    last = boards[-1]["date"]
+    best = max((m for m in boards if (last - m["date"]).days <= 92),
+               key=lambda m: (len(by_meeting[m["meeting_id"]]), m["date"]))
+    order = {"mayor": 0, "constituent": 1, "non_constituent": 2, "co_opted": 3, "appointed": 4, "substitute": 5}
+    rows = []
+    for a in sorted(by_meeting[best["meeting_id"]], key=lambda a: (order.get(a.get("member_role") or "", 9),
+                                                                    a.get("representing") or "", a["name"])):
+        role = a.get("member_role") or ""
+        named = role not in ("appointed",) and bool(a.get("member_id"))
+        home = a.get("home_gss") or ""
+        rows.append({"name": _plain_name(authority.bare_name(a["name"])) if named else None,
+                     "role": role, "role_name": authority.ROLE_LABELS.get(role, a.get("role") or ""),
+                     "party": people.party_name(a["party"]) if a.get("party") else None,
+                     "party_code": a.get("party") or "", "party_source": a.get("party_source") or None,
+                     "home": {"gss": home, "name": councils()[home].name} if home in councils() else None,
+                     "representing": a.get("representing") or None, "attendance": a.get("attendance") or ""})
+    return {"date": _iso(best["date"]), "committee": best["committee_title"], "members": rows}
 
 
 def _plain_name(name: str) -> str:
@@ -130,12 +200,15 @@ class Data:
         names = store.parquet.attach(con, self.root)
         meetings = {r[0]: r[1:] for r in con.execute(
             "SELECT gss, count(*), sum((kind = 'council')::int), sum((kind = 'cabinet')::int), "
-            "sum((kind = 'policy')::int), min(date), max(date), avg((items_with_minutes > 0)::int) "
+            "sum((kind = 'policy')::int), min(date), max(date), avg((items_with_minutes > 0)::int), "
+            "sum((kind = 'board')::int), sum((kind = 'scrutiny')::int), sum((kind = 'mayor')::int) "
             "FROM meetings GROUP BY gss").fetchall()} if "meetings" in names else {}
         votes = {r[0]: r[1] for r in con.execute(
             "SELECT gss, count(DISTINCT vote_id) FROM votes GROUP BY gss").fetchall()} if "votes" in names else {}
+        # members with no id are an authority's appointed members who aren't councillors: no party to record
         attendance = {r[0]: (r[1], r[2]) for r in con.execute(
-            "SELECT gss, count(*), sum((coalesce(party, '') NOT IN ('', 'NONE'))::int) FROM attendance GROUP BY gss"
+            "SELECT gss, count(*), sum((coalesce(party, '') NOT IN ('', 'NONE'))::int) FROM attendance "
+            "WHERE coalesce(member_id, '') <> '' GROUP BY gss"
         ).fetchall()} if "attendance" in names else {}
         out = []
         for c in councils().values():
@@ -144,6 +217,8 @@ class Data:
                    "type_name": TYPE_NAMES.get(c.type, c.type), "region": c.region,
                    "region_name": REGION_NAMES.get(c.region, c.region),
                    "site": c.modgov_url or None, "status": c.modgov_status, "loaded": bool(m) and not c.withheld}
+            if c.is_authority:
+                row |= authority_facts(c)
             if m and c.withheld:
                 # read before robots.txt was checked (decision 21): kept on the server, withheld from the site
                 row["withheld"] = {"meetings": m[0]}
@@ -151,20 +226,27 @@ class Data:
                 row |= {"meetings": m[0], "council_meetings": m[1], "cabinet_meetings": m[2],
                         "policy_meetings": m[3], "from": _iso(m[4]), "to": _iso(m[5]),
                         "with_minutes": round(float(m[6] or 0), 3), "named_votes": votes.get(c.gss, 0)}
+                if c.is_authority:
+                    row |= {"board_meetings": m[7], "scrutiny_meetings": m[8], "mayor_meetings": m[9]}
             row["coverage"], row["reasons"] = coverage(row, *attendance.get(c.gss, (0, 0)))
             out.append(row)
         out.sort(key=lambda r: r["name"])
         self._directory = out
         loaded = [r for r in out if r["loaded"]]
-        self._totals = {"councils": len(out), "loaded": len(loaded),
-                        "coverage": dict(Counter(r["coverage"] for r in out)),
+        bodies = [r for r in out if r["type"] != "strategic_authority"]
+        sa = [r for r in out if r["type"] == "strategic_authority"]
+        self._totals = {"councils": len(bodies), "loaded": sum(1 for r in bodies if r["loaded"]),
+                        "authorities": len(sa), "authorities_loaded": sum(1 for r in sa if r["loaded"]),
+                        "coverage": dict(Counter(r["coverage"] for r in bodies)),
                         "meetings": sum(r["meetings"] for r in loaded),
                         "named_votes": sum(r["named_votes"] for r in loaded),
                         "from": min((r["from"] for r in loaded), default=None),
                         "to": max((r["to"] for r in loaded), default=None)}
-        # the party in control now, for the directory: from each council's own timeline
+        # the party in control now, for the directory: from each council's own timeline; an authority's mayor
         for r in loaded:
             r["control"] = self._control_now(r["gss"])
+        for r in sa:
+            r["control"] = authority_control(r["gss"])
 
     def _control_now(self, gss: str) -> dict[str, str] | None:
         c = self._people(gss)
@@ -209,8 +291,11 @@ class Data:
         entry = next((r for r in self._directory if r["gss"] == gss), None)
         if entry is None:
             return None
+        # the strategic authorities a council belongs to, and an authority's councils and mayors (decision 17)
+        links = self._links(gss)
         if not entry["loaded"]:
-            return {**entry, "control_timeline": [], "seats": None, "by_year": [], "votes": [], "recent": []}
+            return {**entry, **links, "control_timeline": [], "seats": None, "members": None, "by_year": [],
+                    "votes": [], "recent": []}
         meetings = store.parquet.read(self.root, "meetings", gss)
         att = store.parquet.read(self.root, "attendance", gss)
         c = people.build(att, meetings).get(gss)
@@ -245,14 +330,30 @@ class Data:
         recent = sorted(meetings, key=lambda m: m["date"], reverse=True)[:12]
         return {
             **entry,
+            **links,
             "control_timeline": timeline,
             "seats": seats,
+            "members": authority_members(meetings, att) if entry["type"] == "strategic_authority" else None,
             "by_year": [{"year": y, **{k: by_year[(y, k)] for k in KIND_LABEL}, "with_minutes": with_minutes[y]}
                         for y in years],
             "votes": self.votes(gss, c),
             "recent": [{"date": _iso(m["date"]), "committee": m["committee_title"], "kind": m["kind"],
                         "url": m["url"], "items_with_minutes": m["items_with_minutes"]} for m in recent],
         }
+
+    def _links(self, gss: str) -> dict[str, Any]:
+        loaded = {r["gss"]: r["loaded"] for r in self._directory}
+        c = councils()[gss]
+        if c.is_authority:
+            return {"constituents": [{"gss": m.council, "name": councils()[m.council].name,
+                                      "role": m.role, "role_name": MEMBER_ROLES.get(m.role, m.role),
+                                      "from": _iso(m.start), "to": _iso(m.end), "loaded": loaded.get(m.council, False)}
+                                     for m in members_of(gss) if m.council in councils()],
+                    "mayors": [{"name": m.name, "party": m.party, "party_name": people.party_name(m.party),
+                                "from": _iso(m.start), "to": _iso(m.end)} for m in mayors_of(gss)]}
+        return {"authorities": [{"gss": m.authority, "name": councils()[m.authority].name, "role": m.role,
+                                 "role_name": MEMBER_ROLES.get(m.role, m.role), "from": _iso(m.start),
+                                 "to": _iso(m.end)} for m in authorities_of(gss) if m.authority in councils()]}
 
     # named votes ----------------------------------------------------------------------------------------
     def votes(self, gss: str, c: people.Council | None = None) -> list[dict[str, Any]]:
@@ -308,7 +409,10 @@ class Data:
         members.sort(key=lambda x: (SIDE_ORDER.index(x["side"]), x["party"] is None, -size[(x["side"], x["party"])],
                                     x["party"] or "", x["name"]))
         excerpt = rows[0]["excerpt"]
+        control = (people.party_name(authority.control_key(gss, rows[0]["date"])) if councils()[gss].is_authority
+                   else people.party_name(c.control_on(rows[0]["date"]), gss) if c else None)
         return {**(summary or {}), "gss": gss, "council": councils()[gss].name,
+                "is_authority": councils()[gss].is_authority,
                 "from_table": " | " in excerpt and excerpt.rstrip().endswith("members)"),
-                "control": people.party_name(c.control_on(rows[0]["date"]), gss) if c else None,
+                "control": control,
                 "excerpt": excerpt, "members": members}
