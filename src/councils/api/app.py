@@ -386,7 +386,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
 
     @app.get("/{name}", include_in_schema=False)
     def static_page(name: str):
-        """about, methodology, privacy, corrections ..., and files such as icon.svg and robots.txt."""
+        """about, methodology, privacy, corrections ..., and files such as robots.txt."""
         safe = Path(name).name
         if (dist / safe).is_file():
             return FileResponse(dist / safe)

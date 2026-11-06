@@ -2,9 +2,11 @@
  * Where Councils Stand — styles (docs/DESIGN.md).
  *
  * The look of a council's minute book: typed minutes on a faintly warm white page, numbered in the margin,
- * headings in capitals between rules, decisions introduced by RESOLVED. Blue for full council, ochre for cabinet.
- * Shared with Where They Stand: OKLCH tokens holding light and dark values, one fluid type scale, logical
- * properties, square corners, hover only where hover exists, and motion only when it is welcome.
+ * headings in capitals between rules, decisions introduced by RESOLVED. Bound in Buckram brown, the site's cloth in
+ * the Where They Stand family, which also brown marks full council; slate grey marks cabinet. Headings are in Source
+ * Serif 4 from the family kit (public/family). Shared with Where MPs Stand: OKLCH tokens holding light and dark
+ * values, one fluid type scale, logical properties, square corners, hover only where hover exists, and motion only
+ * when it is welcome.
  */
 
 @import "@fontsource-variable/literata/opsz.css";
@@ -58,27 +60,32 @@ button {
 :root {
   color-scheme: light dark;
 
-  --paper: light-dark(oklch(98.6% 0.006 85), oklch(18.5% 0.025 255));
-  --paper-raised: light-dark(oklch(100% 0 0), oklch(22% 0.028 255));
-  --paper-sunk: light-dark(oklch(95.8% 0.009 85), oklch(15.5% 0.022 255));
+  /* dark mode is a near-neutral slate black, close to the family shelf's (public/family/family.css) */
+  --paper: light-dark(oklch(98.6% 0.006 85), oklch(19% 0.008 230));
+  --paper-raised: light-dark(oklch(100% 0 0), oklch(22.5% 0.009 230));
+  --paper-sunk: light-dark(oklch(95.8% 0.009 85), oklch(16% 0.007 230));
   --ink: light-dark(oklch(21% 0.012 255), oklch(93% 0.01 85));
   --ink-soft: color-mix(in oklch, var(--ink) 74%, var(--paper));
   --ink-faint: color-mix(in oklch, var(--ink) 58%, var(--paper));
   --rule: color-mix(in oklch, var(--ink) 14%, var(--paper));
   --rule-strong: color-mix(in oklch, var(--ink) 78%, var(--paper));
 
-  /* the meetings: the minute book's binding for full council, ochre for cabinet */
-  --council: light-dark(oklch(40% 0.07 255), oklch(78% 0.08 250));
-  --cabinet: light-dark(oklch(48% 0.09 65), oklch(80% 0.1 75));
-  --binding: oklch(30% 0.05 255);
+  /* the binding: Buckram brown, the site's cloth in the Where They Stand family (#6E4A2A; in dark mode the family's
+     lifted cloth #865A33 as a fill, and its tan #D8AE84 for text). It is the identity colour: the mark, the phase
+     tag, links, focus rings, buttons, and full council. */
+  --binding: light-dark(oklch(44.2% 0.0675 61.3), oklch(50.7% 0.079 61));
   --on-binding: oklch(96% 0.01 85);
+  --council: light-dark(oklch(44.2% 0.0675 61.3), oklch(77.9% 0.0745 66.4));
+  /* the second kind of meeting: cabinet and policy committees, in slate grey, well away from the brown in hue and
+     from every party's colour */
+  --cabinet: light-dark(oklch(46% 0.035 240), oklch(80% 0.035 240));
 
   --accent: var(--council);
   --accent-subtle: color-mix(in oklch, var(--accent) 10%, var(--paper));
-  --on-accent: light-dark(oklch(98% 0.005 85), oklch(17% 0.02 255));
-  --warn: light-dark(oklch(50% 0.12 62), oklch(82% 0.12 78));
+  --on-accent: light-dark(oklch(98% 0.005 85), oklch(19% 0.008 230));
+  /* notices and unsupported text: amber, yellower than the brown so a warning never reads as the site's own colour */
+  --warn: light-dark(oklch(55% 0.125 82), oklch(84% 0.12 88));
   --warn-subtle: color-mix(in oklch, var(--warn) 13%, var(--paper));
-  --danger: light-dark(oklch(50% 0.17 27), oklch(76% 0.14 25));
 
   /* the colours readers associate with each party, for charts only (docs/DESIGN.md) */
   --party-LAB: light-dark(#c8102e, #ff7a85);
@@ -231,6 +238,20 @@ h2 {
   align-items: center;
   color: inherit;
   text-decoration: none;
+}
+
+/* the site's mark, an open minute book (partials/mark.html), bound in the cloth. In dark mode the cloth is the
+   family's lifted brown, at 3:1 against the page, and a gilt edge keeps the square's outline */
+.site-mark {
+  flex: none;
+}
+.site-mark__cloth {
+  fill: var(--binding);
+  stroke: light-dark(transparent, oklch(80% 0.1 89));
+  stroke-width: 3;
+}
+.site-mark__lines {
+  stroke: var(--binding);
 }
 
 .wordmark {
