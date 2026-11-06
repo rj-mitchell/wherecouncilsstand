@@ -33,3 +33,16 @@ export function SisterLinks({ site, children }: { site: Sister; children: ReactN
     </aside>
   );
 }
+
+/** "Ask Where MPs Stand the same question": one quiet line under a briefing. Where MPs Stand reads ?q= into its
+ * question box (its App.tsx), and keeps the first 500 characters. */
+export function AskSister({ site, question }: { site: Sister; question: string }) {
+  const href = `${SISTERS[site].url}/?q=${encodeURIComponent(question.slice(0, 500))}`;
+  return (
+    <p className="sister-ask">
+      <Spine site={site} height={20} />
+      <a href={href}>Ask {SISTERS[site].name} the same question</a>
+      <span className="muted">, on the record of the UK Parliament</span>
+    </p>
+  );
+}

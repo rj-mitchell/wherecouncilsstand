@@ -704,6 +704,18 @@ h2 {
   gap: var(--space-xs);
 }
 
+.sister-ask {
+  font-family: var(--sans);
+  font-size: var(--step--1);
+  margin-block: var(--space-s) 0;
+}
+
+.sister-ask .wts-spine {
+  display: inline-block;
+  vertical-align: -0.3em;
+  margin-inline-end: var(--space-xs);
+}
+
 /* ---- votes: neutral marks ---------------------------------------------------------------------- */
 
 .mark {
