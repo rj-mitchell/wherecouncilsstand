@@ -36,3 +36,11 @@ describe("statusRows", () => {
     expect(statusRows({ ...base, last_update: null }).at(-1)).toEqual(["Last update", "None recorded yet"]);
   });
 });
+
+describe("statusRows with strategic authorities", () => {
+  it("counts them apart from councils", () => {
+    const rows = Object.fromEntries(statusRows({ ...base, authorities: 20, authorities_loaded: 13 }).map(([t, v]) => [t, v]));
+    expect(rows["Councils covered"]).toBe("295 of 383");
+    expect(rows["Strategic authorities covered"]).toBe("13 of 20");
+  });
+});

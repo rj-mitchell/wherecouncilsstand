@@ -1,4 +1,5 @@
-/** Every principal council in the UK: which are covered, from when, and which party is in control. */
+/** Every principal council in the UK, and England's strategic authorities: which are covered, from when, and which
+ * party is in control (for an authority, its mayor's party). */
 import { StrictMode, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
@@ -19,8 +20,59 @@ function CoverageCell({ r }: { r: CouncilRow }) {
   );
 }
 
+const AUTHORITY = "strategic_authority";
+
+function Authorities({ rows }: { rows: CouncilRow[] }) {
+  const covered = rows.filter((r) => r.loaded).length;
+  return (
+    <>
+      <h2 className="minute-heading" id="strategic-authorities">
+        Strategic authorities ({number(covered)} of {number(rows.length)} covered)
+      </h2>
+      <p>
+        England's combined authorities, combined county authorities and the Greater London Authority: their boards, and
+        their overview and scrutiny committees. Each is shown with its mayor's party, which isn't control of the authority
+        or of its councils; one without a mayor has no single party.
+      </p>
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Strategic authority</th>
+              <th>Mayor</th>
+              <th className="num wide-only">Meetings</th>
+              <th className="num">Named votes</th>
+              <th>Coverage</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.gss}>
+                <td>
+                  <a href={`/councils/${encodeURIComponent(r.gss)}`}>{r.name}</a>
+                  <div className="muted">
+                    {r.kind_name} · {(r.regions || []).map((x) => x.name).join(" and ") || r.region_name}
+                  </div>
+                </td>
+                <td>
+                  {r.control?.mayor ? `${r.control.mayor} (${r.control.name.replace(/^Mayor: /, "")})` : "No mayor"}
+                </td>
+                <td className="num wide-only">{r.loaded ? number(r.meetings) : "–"}</td>
+                <td className="num">{r.loaded ? number(r.named_votes) : "–"}</td>
+                <td>
+                  <CoverageCell r={r} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
 function App() {
-  const [rows, setRows] = useState<CouncilRow[] | null>(null);
+  const [all, setRows] = useState<CouncilRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [nation, setNation] = useState("");
@@ -30,6 +82,8 @@ function App() {
     setTitle("Councils");
     getCouncils().then((d) => setRows(d.councils)).catch((e: Error) => setError(e.message));
   }, []);
+  const rows = useMemo(() => (all ? all.filter((r) => r.type !== AUTHORITY) : null), [all]);
+  const authorities = useMemo(() => (all ? all.filter((r) => r.type === AUTHORITY) : []), [all]);
   const controls = useMemo(
     () => [...new Set((rows || []).filter((r) => r.control).map((r) => r.control!.name))].sort(),
     [rows],
@@ -66,6 +120,12 @@ function App() {
         ))}
         . Coverage says how much of each council's record the site can read, not how well the council works. It is
         worked out from what is loaded, and kept up to date by the nightly update.
+        {authorities.length > 0 && (
+          <>
+            {" "}
+            England's <a href="#strategic-authorities">strategic authorities</a> are listed after the councils.
+          </>
+        )}
       </p>
       <div className="filters" role="search">
         <div className="field">
@@ -151,7 +211,9 @@ function App() {
               <tbody>
                 {missing.map((r) => (
                   <tr key={r.gss}>
-                    <td>{r.name}</td>
+                    <td>
+                      <a href={`/councils/${encodeURIComponent(r.gss)}`}>{r.name}</a>
+                    </td>
                     <td>
                       <CoverageCell r={r} />
                     </td>
@@ -162,6 +224,7 @@ function App() {
           </div>
         </>
       )}
+      {authorities.length > 0 && <Authorities rows={authorities} />}
     </>
   );
 }

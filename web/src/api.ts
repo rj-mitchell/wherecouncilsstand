@@ -67,6 +67,8 @@ export type Meta = {
   totals: {
     councils: number;
     loaded: number;
+    authorities?: number;
+    authorities_loaded?: number;
     meetings: number;
     named_votes: number;
     from: string;
@@ -82,7 +84,9 @@ export type Meta = {
   types: Record<string, string>;
 };
 
-export type Control = { code: string; name: string; as_of?: string } | null;
+/** A council's party in overall control; for a strategic authority, its mayor's party ("Mayor: Labour") or no single
+ * party, with the mayor's name (decision 19). */
+export type Control = { code: string; name: string; as_of?: string; mayor?: string | null; since?: string | null } | null;
 
 export type CouncilRow = {
   gss: string;
@@ -104,9 +108,32 @@ export type CouncilRow = {
   with_minutes?: number;
   named_votes?: number;
   control?: Control;
-  /** How well the council works here: green (fully), amber (with a gap), red (not loaded). */
+  /** How much of the council's record the site reads: full, partial (a gap) or not yet. */
   coverage: Coverage;
   reasons: string[];
+  // strategic authorities only (decision 17)
+  kind_name?: string;
+  category_name?: string;
+  created?: string;
+  regions?: { code: string; name: string }[];
+  board_meetings?: number;
+  scrutiny_meetings?: number;
+  mayor_meetings?: number;
+  withheld?: { meetings: number };
+};
+
+export type Membership = { gss: string; name: string; role: string; role_name: string; from: string | null; to: string | null };
+
+export type AuthorityMember = {
+  name: string | null; // null: an appointed member who isn't a councillor, not named (decision 20)
+  role: string;
+  role_name: string;
+  party: string | null;
+  party_code: string;
+  party_source: "home council" | "authority" | "as elected" | null;
+  home: { gss: string; name: string } | null;
+  representing: string | null;
+  attendance: string;
 };
 
 export type VoteSummary = {
@@ -127,7 +154,22 @@ export type VoteSummary = {
 export type CouncilPage = CouncilRow & {
   control_timeline: { from: string; code: string; name: string }[];
   seats: { date: string; total: number; parties: { code: string; name: string; members: number }[] } | null;
-  by_year: { year: number; council: number; cabinet: number; policy: number; with_minutes: number }[];
+  by_year: {
+    year: number;
+    council: number;
+    cabinet: number;
+    policy: number;
+    board: number;
+    mayor: number;
+    scrutiny: number;
+    with_minutes: number;
+  }[];
+  /** the strategic authorities a council is part of */
+  authorities?: Membership[];
+  /** a strategic authority's councils, mayors and members */
+  constituents?: (Membership & { loaded: boolean })[];
+  mayors?: { name: string; party: string; party_name: string; from: string; to: string | null }[];
+  members?: { date: string; committee: string; members: AuthorityMember[] } | null;
   votes: VoteSummary[];
   recent: { date: string; committee: string; kind: string; url: string; items_with_minutes: number }[];
   /** the council's pages on Where Landlords Stand (data_static/landlords_links.csv), where it has any */
@@ -140,6 +182,7 @@ export type CouncilPage = CouncilRow & {
 export type VotePage = VoteSummary & {
   gss: string;
   council: string;
+  is_authority?: boolean;
   control: string | null;
   excerpt: string;
   from_table: boolean;
