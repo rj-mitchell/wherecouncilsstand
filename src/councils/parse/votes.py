@@ -52,7 +52,7 @@ _STOP = re.compile(
     re.I,
 )
 _OUTCOME = re.compile(r"\b(carried|lost|defeated|fell|was not carried|not carried|agreed|approved|rejected)\b", re.I)
-_HONOURS = re.compile(r"\b(?:BEM|OBE|MBE|CBE|JP|J\.P|DL|KC|QC|MP|MSc|BSc|BA|MA|PhD|FRSA|Dr|Mr|Mrs|Ms|Miss|Cllr|Cllrs|"
+_HONOURS = re.compile(r"\b(?:(?-i:AM)|BEM|OBE|MBE|CBE|JP|J\.P|DL|KC|QC|MP|MSc|BSc|BA|MA|PhD|FRSA|Dr|Mr|Mrs|Ms|Miss|Cllr|Cllrs|"
                       r"Councill?ors?|Cynghorydd|Cynghorwyr|Alderm[ae]n|Ald|Sir|Dame|Rev|Revd|Prof)\b\.?", re.I)
 _ROLE = re.compile(r"\b(?:the\s+|elected\s+)(?:(?:civic|lord|deputy|worshipful(?:\s+the)?)\s+)*(mayor|chair(?:man|woman|person)?|presiding member|vice[- ]chair)\b", re.I)
 # "the Deputy Mayor, Councillor Ed Foley"; "His Worshipful the Mayor Councillor Salim Chowdhury" -> one name

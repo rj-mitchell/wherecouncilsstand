@@ -122,6 +122,12 @@ hand each quarter against legislation.gov.uk.
   councillor (named nowhere: name and member id dropped, and removed from the minutes). A councillor's party on the date
   is their home council's record where the site has it (first initial and surname, one match within a year), otherwise
   the authority's; `party_source` says which.
+- **The GLA's members** (decision 20): every member listed at its meetings, other than the Mayor, is an elected London
+  Assembly member (`assembly_member`), named, with the GLA's record of their party. Names drop the letters after them
+  and a peer's designation ("Hina Bokhari OBE AM" -> "Hina Bokhari", "Baron Duvall of Woolwich, in the Royal Borough
+  of Greenwich AM" -> "Lord Duvall", as the minutes write him), and the vote reader ignores "AM", so recorded votes
+  ("For the amendment: Hina Bokhari OBE AM, ...") are read by name: a trial of November 2025 to February 2026 read
+  20 meetings and 11 named votes, every name matched. Constituency codes aren't kept ("E&H" is two constituencies).
 - **Control** (decision 19): the mayor's party on the date, as `MAYOR:LAB`, or `SA:NONE` (no single party) with no
   mayor, never a council's party in overall control.
 - **What was seen** (two meetings, 6 November 2026): West Yorkshire's board minutes are in the web service, with votes

@@ -36,11 +36,12 @@ def test_the_registry_lists_the_twenty_authorities_and_the_pilot_by_rule():
     assert len(sa) == 20 and all(a.nation == "england" and a.type == "strategic_authority" for a in sa)
     pilot = {a.gss for a in sa if a.modgov_status == "ok"}
     # Sussex and Brighton too: one committee, on East Sussex's site (no fixture of its own)
-    assert pilot == set(PILOT.values()) | {"SA-SUSSEX-BRIGHTON"}
+    # and the GLA, with its London Assembly members named (decision 20)
+    # Cheshire and Warrington on Cheshire West and Chester's site, which answers the server
+    assert pilot == set(PILOT.values()) | {"SA-SUSSEX-BRIGHTON", "E12000007", "SA-CHESHIRE-WARRINGTON"}
     assert not any(c.withheld for c in councils().values() if c.modgov_status != "robots")
     gla = get("E12000007")
-    assert gla.name == "Greater London Authority" and gla.modgov_status == "none" and not gla.withheld
-    assert "London Assembly members" in gla.reason
+    assert gla.name == "Greater London Authority" and gla.modgov_status == "ok" and not gla.withheld
     assert shares_site_with_council(get("SA-SUSSEX-BRIGHTON")) and site_sharers(get("E10000011")) == []
     assert get("E47000017").regions == ("E12000004", "E12000003")  # Greater Lincolnshire spans two regions
     assert not any(c.is_authority for c in councils().values() if c.gss.startswith(("E06", "E07", "E08")))
@@ -268,3 +269,59 @@ def test_the_nightly_update_indexes_an_authority_loaded_by_the_backfill(tmp_path
     assert out["index"] == "built" and out["passages_embedded"] == 1
     rows = Indexer(s).index.passages().to_arrow().to_pylist()
     assert [(r["gss"], r["control"], r["council_type"]) for r in rows] == [(gss, "MAYOR:LAB", "strategic_authority")]
+
+
+def test_london_assembly_members_are_named_with_the_glas_party():
+    """The GLA's meetings list its 25 elected Assembly Members (Modern.gov, London Assembly (Plenary), 5 February
+    2026): each is named, with the GLA's record of their party, and the Mayor is told by name (decision 20)."""
+    from councils import authority, committees
+
+    d = date(2026, 2, 5)
+    base = {"meeting_id": "E12000007:7844", "gss": "E12000007", "date": d, "year": 2026, "member_type": "U",
+            "attendance": "Present, as expected", "representing": "", "_keyposts": ""}
+    att = [
+        {**base, "member_id": "122", "name": "Baron Duvall of Woolwich, in the Royal Borough of Greenwich AM",
+         "role": "Chair", "party_label": "LAB", "ward": "G&L"},
+        {**base, "member_id": "2465", "name": "Hina Bokhari OBE AM", "role": "Committee Member",
+         "party_label": "LIBDEM", "ward": "LW"},
+        {**base, "member_id": "2672", "name": "Alex Wilson", "role": "Committee Member", "party_label": "RUK",
+         "ward": "LW", "representing": "Reform UK", "_keyposts": "Assembly Member"},
+        {**base, "member_id": "1", "name": "Sadiq Khan", "role": "Mayor", "party_label": "LAB", "ward": ""},
+        {**base, "member_id": "", "name": "Judith Smyth", "role": "Officer", "party_label": "", "ward": ""},
+    ]
+    rows, removed = authority.classify(att, get("E12000007"), Path("/nonexistent"))
+    by = {r["member_id"]: r for r in rows}
+    assert removed == [] and "" not in by                                   # the officer isn't stored
+    assert by["122"]["name"] == "Lord Duvall" and by["2465"]["name"] == "Hina Bokhari"
+    assert [by[k]["member_role"] for k in ("122", "2465", "2672", "1")] == ["assembly_member"] * 3 + ["mayor"]
+    assert [by[k]["party"] for k in ("122", "2465", "2672")] == ["LAB", "LD", "REF"]
+    assert all(by[k]["ward"] == "" and by[k]["party_source"] == "authority" for k in ("122", "2465", "2672"))
+    assert committees.kind("London Assembly (Plenary)", "E12000007") == "board"
+    assert committees.kind("London Assembly (Mayor's Question Time)", "E12000007") == "scrutiny"
+    assert committees.kind("Transport Operations Scrutiny Committee", "E12000007") is None
+    assert committees.kind("London Youth Assembly", "E12000007") is None
+
+
+def test_a_recorded_vote_names_assembly_members_as_the_minutes_write_them():
+    """The budget meeting of 2026: "For the amendment: Hina Bokhari OBE AM, ... Lord Duvall OBE AM (Chair)"."""
+    from councils.parse import votes
+
+    members = [votes.Member("122", "Lord Duvall", "Chair"), votes.Member("2465", "Hina Bokhari", ""),
+               votes.Member("1853", "Lord Bailey", ""), votes.Member("117", "Andrew Boff", "Deputy Chair")]
+    m = votes.Matcher(members)
+    assert m.match("Hina Bokhari OBE AM") == "2465" and m.match("Lord Duvall OBE AM (Chair)") == "122"
+    assert m.match("Lord Bailey AM") == "1853" and m.match("Andrew Boff AM (Deputy Chair)") == "117"
+
+
+def test_an_authority_on_a_councils_site_is_read_by_its_own_name():
+    """Cheshire and Warrington's meetings are on Cheshire West and Chester's site (committee 1166): its committees are
+    the ones named for it, not its shadow board; the council's own reading leaves them out."""
+    from councils import committees
+
+    cw, chw = "SA-CHESHIRE-WARRINGTON", "E06000050"
+    assert committees.kind("Cheshire and Warrington Combined Authority", cw) == "board"
+    assert committees.kind("Cheshire & Warrington Combined Authority Overview and Scrutiny Committee", cw) == "scrutiny"
+    assert committees.kind("Cheshire and Warrington Combined Authority Shadow Board", cw) is None
+    assert committees.kind("Cabinet", cw) is None and committees.kind("Council", cw) is None
+    assert committees.kind("Cheshire and Warrington Combined Authority", chw) is None
+    assert committees.kind("Cabinet", chw) == "cabinet"

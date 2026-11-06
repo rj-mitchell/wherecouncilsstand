@@ -10,6 +10,8 @@ Each member is classed as:
   non-constituent councils on the date (authority_councils.csv), or any other council (non-constituent);
 * **substitute**: a councillor attending, or listed, in a member's place;
 * **co-opted member**: a councillor co-opted to the committee;
+* **London Assembly member** (the Greater London Authority only): every member listed at its meetings other than the
+  Mayor. Assembly Members are elected, so they are named, as councillors are, with the party the GLA records;
 * **appointed member who isn't a councillor**: anyone else listed as a member (a business board's chair, an independent
   person). Decision 9 names only councillors, so their name is replaced with "[name removed]", their member id is left
   out, and their name is removed from the meeting's minutes too.
@@ -47,7 +49,9 @@ _BODY_WORDS = re.compile(r"\b(?:the|council|councils|city|county|borough|distric
 
 ROLE_LABELS = {"mayor": "Mayor", "constituent": "Constituent member", "non_constituent": "Non-constituent member",
                "substitute": "Substitute", "co_opted": "Co-opted member",
-               "appointed": "Appointed member (not a councillor)"}
+               "assembly_member": "London Assembly member", "appointed": "Appointed member (not a councillor)"}
+
+GLA = "E12000007"
 
 
 def bare_name(name: str) -> str:
@@ -58,6 +62,14 @@ def bare_name(name: str) -> str:
 def _body_key(text: str) -> str:
     t = re.sub(r"[^a-z ]", " ", text.lower().replace("&", " and ").replace("-", " "))
     return " ".join(_BODY_WORDS.sub(" ", t).split())
+
+
+def assembly_name(name: str) -> str:
+    """A London Assembly member's name without the letters after it or a peer's territorial designation: "Hina Bokhari
+    OBE AM" -> "Hina Bokhari"; "Baron Duvall of Woolwich, in the Royal Borough of Greenwich AM" -> "Lord Duvall"."""
+    name = re.sub(r"(?:,\s+in the\b.*?)?(?:\s+(?:AM|OBE|MBE|CBE|KBE|DBE|JP))+\s*$", "", name.strip())
+    # a peer by the name the minutes use: "Baron Duvall of Woolwich" -> "Lord Duvall"
+    return re.sub(r"^(?:Baron|Lord)\s+([\w'-]+)\s+of\b.*$", r"Lord \1", name)
 
 
 def home_council(representing: str, authority: str, d: date | None = None) -> str:
@@ -122,6 +134,11 @@ def classify(attendance: list[dict[str, Any]], authority: Council, root: Path) -
         label = a.get("party_label") or ""
         if is_mayor:
             a.update(member_role="mayor", party=mayor.party, party_source="as elected", home_gss="")
+        elif authority.gss == GLA:
+            # elected London Assembly members: named, with the GLA's own record of their party. Their constituency
+            # codes ("E&H" is both Ealing and Hillingdon, and Enfield and Haringey) aren't kept.
+            a.update(member_role="assembly_member", home_gss="", ward="", name=assembly_name(name),
+                     party=parties.normalise(label, authority.gss), party_source="authority" if label else "")
         elif councillor:
             constituents = {m.council: m.role for m in members_of(authority.gss)}
             member_role = ("substitute" if re.search(r"substitute", role, re.I) else

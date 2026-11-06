@@ -129,7 +129,8 @@ def authority_members(meetings: list[dict[str, Any]], att: list[dict[str, Any]])
     last = boards[-1]["date"]
     best = max((m for m in boards if (last - m["date"]).days <= 92),
                key=lambda m: (len(by_meeting[m["meeting_id"]]), m["date"]))
-    order = {"mayor": 0, "constituent": 1, "non_constituent": 2, "co_opted": 3, "appointed": 4, "substitute": 5}
+    order = {"mayor": 0, "assembly_member": 1, "constituent": 1, "non_constituent": 2, "co_opted": 3, "appointed": 4,
+             "substitute": 5}
     rows = []
     for a in sorted(by_meeting[best["meeting_id"]], key=lambda a: (order.get(a.get("member_role") or "", 9),
                                                                     a.get("representing") or "", a["name"])):
