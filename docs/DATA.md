@@ -330,6 +330,10 @@ What was found:
 - **Coverage** (loaded on 6 November 2026, from a cloud network): Tees Valley 81 meetings from April 2019 (68 with
   minutes), Hull and East Yorkshire 23 from March 2025 (13), Cumbria 7 from March 2026 (all), Hampshire and the Solent
   3 from July 2026 (all). Mayor's decisions aren't published as meetings on any of the four sites.
+- **Named votes.** None are read yet. Most decisions are by consensus. The minutes record two named votes, in
+  layouts `parse/votes.py` doesn't read: Tees Valley's scrutiny committee on 14 October 2022 lists a roll call one
+  member to a line ("Cllr Branson (Middlesbrough) - For"), and Hampshire and the Solent's board's budget vote on 13
+  July 2026 is a table whose columns come apart in the PDF. Declarations of interest are read (71 at Tees Valley).
 
 ## Party in control
 
