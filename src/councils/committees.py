@@ -102,6 +102,28 @@ def _own_name(title: str, gss: str) -> bool:
     return _bare(title) == _bare(c.name)
 
 
+def _key(text: str) -> str:
+    return " ".join(re.sub(r"[^a-z ]", " ", text.lower().replace("&", " and ")).split())
+
+
+def _named_for(title: str, authority) -> bool:
+    """The committee carries the authority's own name, and isn't its shadow (before it was created)."""
+    t = _key(title)
+    return _key(authority.name) in t and "shadow" not in t
+
+
+def _guest_authority(title: str, gss: str) -> bool:
+    """A committee on a council's site named for a strategic authority published there (Cheshire and Warrington's on
+    Cheshire West and Chester's)."""
+    from councils.registry import councils
+
+    c = councils().get(gss)
+    if not c or not c.modgov_url:
+        return False
+    return any(a.is_authority and a.modgov_url == c.modgov_url and _key(a.name) in _key(title)
+               for a in councils().values())
+
+
 def _bare(name: str) -> str:
     """A council's name without "the" and its kind of council: "Flintshire County Council" and "Flintshire Council"
     are the same council."""
@@ -118,6 +140,8 @@ def kind(title: str, gss: str = "") -> str | None:
         return o or None
     if _authority(gss):
         return authority_kind(t, gss)
+    if _guest_authority(t, gss):
+        return None              # a strategic authority's committee on this council's site: read as the authority's
     if COUNCIL.match(t) or _own_name(t, gss):
         return "council"
     if CABINET.match(t):
@@ -142,8 +166,13 @@ def authority_kind(title: str, gss: str) -> str | None:
     from councils.registry import shares_site_with_council
 
     a = _authority(gss)
-    if a is None or shares_site_with_council(a):
+    if a is None:
         return None
+    if shares_site_with_council(a):
+        # on a council's site: only committees named for the authority itself ("Cheshire and Warrington Combined
+        # Authority", "... Overview and Scrutiny Committee"), never its shadow board, by the rules below
+        if not _named_for(title, a):
+            return None
     t = re.sub(r"^archived\s*[-–]\s*", "", title, flags=re.I)
     if AUTHORITY_MAYOR.match(t):
         return "mayor"

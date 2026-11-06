@@ -102,24 +102,24 @@ therefore start late: while it waits, `systemctl status councils-update` shows i
 
 ### Loading the strategic authorities (once)
 
-The 15 strategic authorities of the pilot (decision 17) are in the registry with status `ok`, but nothing of theirs is
+The 16 strategic authorities of the pilot (decision 17) are in the registry with status `ok`, but nothing of theirs is
 stored until they are loaded once. Run on the server, after this change is deployed, in
 `/opt/wherecouncilsstand/deploy`. Each command takes the same lock as the nightly update, so they never overlap; if
 the nightly run is under way, they wait for it.
 
 ```bash
 cd /opt/wherecouncilsstand/deploy
-# 1. what will be loaded: the 15, each with its meetings site (Lancashire's and Sussex and Brighton's are
-#    their county councils')
+# 1. what will be loaded: the 16, each with its meetings site (Lancashire's, Sussex and Brighton's and Cheshire
+#    and Warrington's are their councils')
 docker compose run --rm -T app councils list --type strategic_authority --status ok
 # 2. the backfill: board, scrutiny and any mayor's decisions since May 2018, members' roles and parties, named votes
 flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app \
-  councils load --type strategic_authority --workers 15 | tee /tmp/authorities-load.jsonl
+  councils load --type strategic_authority --workers 16 | tee /tmp/authorities-load.jsonl
 # 3. index them now, rather than waiting for 03:17
 systemctl start councils-update.service && journalctl -u councils-update.service -n 30
 ```
 
-- **Time:** about an hour. Each authority is read one request at a time, at least a second apart, all 15 side by
+- **Time:** about an hour. Each authority is read one request at a time, at least a second apart, all 16 side by
   side, so the longest record sets the pace: Greater Manchester's (nine committees in scope, three of them expired
   scrutiny committees, about 300 meetings, and minutes mostly as documents) at 2 to 25 seconds a meeting on a slow
   server. The four created in 2024–25 take a few minutes each. Step 3 is an ordinary nightly run (about 50 minutes).
@@ -128,7 +128,7 @@ systemctl start councils-update.service && journalctl -u councils-update.service
   documents**, and a few MB of Parquet and index. Check with `docker compose run --rm -T app du -sh /data/raw/modgov`
   before and after.
 - **What to check:** each line of `/tmp/authorities-load.jsonl` has `"error": ""` and the committees expected
-  (`data_static/committees.csv`). One that failed is simply run again: `councils ingest E47000001`. Then
+  (`data_static/committees.csv`). One that failed is simply run again: `councils ingest E47000001`. Cheshire and Warrington's line should list committees named for it ("Cheshire and Warrington Combined Authority ..."); if it lists none, send its line on: its committees' titles differ from the rule. Then
   the councils page lists them under "Strategic authorities", and `/councils/E47000003` shows West Yorkshire's.
 - **After that,** the nightly update reads them like any council. Members' parties come from their home councils'
   stored records, so they are read again each night as the councils' are.

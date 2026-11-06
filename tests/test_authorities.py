@@ -37,7 +37,8 @@ def test_the_registry_lists_the_twenty_authorities_and_the_pilot_by_rule():
     pilot = {a.gss for a in sa if a.modgov_status == "ok"}
     # Sussex and Brighton too: one committee, on East Sussex's site (no fixture of its own)
     # and the GLA, with its London Assembly members named (decision 20)
-    assert pilot == set(PILOT.values()) | {"SA-SUSSEX-BRIGHTON", "E12000007"}
+    # Cheshire and Warrington on Cheshire West and Chester's site, which answers the server
+    assert pilot == set(PILOT.values()) | {"SA-SUSSEX-BRIGHTON", "E12000007", "SA-CHESHIRE-WARRINGTON"}
     assert not any(c.withheld for c in councils().values() if c.modgov_status != "robots")
     gla = get("E12000007")
     assert gla.name == "Greater London Authority" and gla.modgov_status == "ok" and not gla.withheld
@@ -310,3 +311,17 @@ def test_a_recorded_vote_names_assembly_members_as_the_minutes_write_them():
     m = votes.Matcher(members)
     assert m.match("Hina Bokhari OBE AM") == "2465" and m.match("Lord Duvall OBE AM (Chair)") == "122"
     assert m.match("Lord Bailey AM") == "1853" and m.match("Andrew Boff AM (Deputy Chair)") == "117"
+
+
+def test_an_authority_on_a_councils_site_is_read_by_its_own_name():
+    """Cheshire and Warrington's meetings are on Cheshire West and Chester's site (committee 1166): its committees are
+    the ones named for it, not its shadow board; the council's own reading leaves them out."""
+    from councils import committees
+
+    cw, chw = "SA-CHESHIRE-WARRINGTON", "E06000050"
+    assert committees.kind("Cheshire and Warrington Combined Authority", cw) == "board"
+    assert committees.kind("Cheshire & Warrington Combined Authority Overview and Scrutiny Committee", cw) == "scrutiny"
+    assert committees.kind("Cheshire and Warrington Combined Authority Shadow Board", cw) is None
+    assert committees.kind("Cabinet", cw) is None and committees.kind("Council", cw) is None
+    assert committees.kind("Cheshire and Warrington Combined Authority", chw) is None
+    assert committees.kind("Cabinet", chw) == "cabinet"
