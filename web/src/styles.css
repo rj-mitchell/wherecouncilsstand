@@ -863,8 +863,8 @@ th.num {
 
 /* Coverage (councils page): how much of a council's record the site reads, never a judgement of the council. Neutral
    square marks, like the votes': filled for full, half filled for partial, outlined for not yet. A word as well as
-   the mark, and no colour. */
-.coverage {
+   the mark, and no colour. (Not .coverage: that is the home page's line of totals, which must wrap.) */
+.coverage-status {
   font-family: var(--sans);
   font-size: var(--step--1);
   font-weight: 600;

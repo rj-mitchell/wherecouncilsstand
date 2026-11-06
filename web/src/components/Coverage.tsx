@@ -6,7 +6,7 @@ export const COVERAGE: Record<Coverage, string> = { full: "Full", partial: "Part
 
 export function CoverageLabel({ c }: { c: Coverage }) {
   return (
-    <span className="coverage">
+    <span className="coverage-status">
       <span className={`mark coverage-${c}`} aria-hidden="true" />
       {COVERAGE[c]}
     </span>
