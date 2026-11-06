@@ -131,3 +131,21 @@ def test_in_flight_reservations():
     f.finish("a")
     f.finish("b")
     assert f.pending_usd() == 0 and f.start("c") is None
+
+
+def test_a_saved_briefing_is_checked_again_when_shown(client):
+    """Marks made by older checks are judged again by the current ones; nothing is newly marked."""
+    c, _, state, _ = client
+    answer = {"markdown": "", "unsupported_segments": 2, "loaded_words": 2, "grounded_ratio": 0.5, "segments": [
+        {"text": "March 2025", "sources": [], "status": "unsupported", "loaded": []},
+        {"text": "The minutes record that the motion was lost.", "sources": [1], "status": "cited",
+         "loaded": [{"start": 4, "end": 11, "word": "minutes"}]},
+        {"text": " It was a fiasco that residents across the borough opposed for many months.", "sources": [],
+         "status": "unsupported",
+         "loaded": [{"start": 10, "end": 16, "word": "fiasco"}]},
+    ]}
+    state.save_briefing("abc123", "Bins?", {}, [{"type": "final", "answer": answer}])
+    shown = c.get("/api/briefings/abc123").json()["events"][-1]["answer"]
+    assert [s["status"] for s in shown["segments"]] == ["connective", "cited", "unsupported"]
+    assert shown["unsupported_segments"] == 1 and shown["loaded_words"] == 1
+    assert shown["segments"][2]["loaded"] == [{"start": 10, "end": 16, "word": "fiasco"}]
