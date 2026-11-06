@@ -107,6 +107,26 @@ def sse(events: Iterator[dict[str, Any]], keep_alive: float = KEEP_ALIVE_SECONDS
         gone.set()
 
 
+class HeadAsGet:
+    """HEAD is answered as GET, without the body. FastAPI's GET routes answer GET alone, and uptime checkers and link
+    checkers that send HEAD read the 405 they got as the site being down."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http" or scope["method"] != "HEAD":
+            await self.app(scope, receive, send)
+            return
+
+        async def without_body(message):
+            if message["type"] == "http.response.body":
+                message = {**message, "body": b""}
+            await send(message)
+
+        await self.app({**scope, "method": "GET"}, receive, without_body)
+
+
 def rechecked(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """A saved or cached briefing's marks, judged again by the current checks (as Where MPs Stand): text since
     recognised as a date, a join or a note about the evidence is no longer marked unsupported, and a word since taken
@@ -155,6 +175,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         if not limiter.allow(v):
             raise HTTPException(429, "Too many requests. Please wait a minute and try again.")
         return v
+
+    app.add_middleware(HeadAsGet)
 
     @app.middleware("http")
     async def headers(request: Request, call_next):

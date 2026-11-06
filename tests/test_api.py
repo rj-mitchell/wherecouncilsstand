@@ -158,3 +158,21 @@ def test_old_answers_are_deleted_from_the_cache(tmp_path):
     state.store_cached("new", [{"type": "final"}], max_hours=168)
     with state.connect() as con:
         assert [r[0] for r in con.execute("SELECT key FROM answer_cache")] == ["new"]
+
+
+def test_head_requests_are_answered_like_get(client, tmp_path):
+    """Uptime checkers send HEAD, and read 405 as the site being down."""
+    _, _, state, cfg = client
+    dist = tmp_path / "dist"
+    (dist / "assets").mkdir(parents=True)
+    (dist / "index.html").write_text("<!doctype html><title>Where Councils Stand</title>")
+    (dist / "about.html").write_text("<!doctype html><title>About</title>")
+    (dist / "assets" / "app.js").write_text("console.log(1)")
+    cfg.raw.setdefault("paths", {})["web_dist"] = str(dist)
+    t = TestClient(create_app(cfg, state=state))
+    for path in ("/", "/about", "/assets/app.js", "/api/health", "/api/councils"):
+        get, head = t.get(path), t.head(path)
+        assert head.status_code == get.status_code == 200, path
+        assert head.content == b"" and head.headers["content-type"] == get.headers["content-type"], path
+    assert t.head("/no-such-page").status_code == 404
+    assert t.head("/api/ask").status_code == 405           # a POST route stays POST only
