@@ -86,15 +86,48 @@ def questions_today(state: StateDB, visitor: str) -> int:
     return int(row["n"]) if row else 0
 
 
-def blocked(state: StateDB, visitor: str, cfg: dict[str, Any]) -> str | None:
-    """Why a new briefing can't be written now, or None."""
+def blocked(state: StateDB, visitor: str, cfg: dict[str, Any], pending_usd: float = 0.0) -> str | None:
+    """Why a new briefing can't be written now, or None. ``pending_usd`` is the estimated cost of briefings being
+    written at this moment, whose cost isn't recorded yet (InFlight)."""
     if questions_today(state, visitor) >= int(cfg.get("per_visitor_daily_questions", 30)):
         return "You have asked a lot of questions today, so new briefings are paused until tomorrow."
-    if spent(state, today()) >= float(cfg.get("daily_spend_cap_usd", 3.0)):
+    if spent(state, today()) + pending_usd >= float(cfg.get("daily_spend_cap_usd", 3.0)):
         return "The site has reached today's limit on new briefings, which keeps its costs down."
-    if spent(state, today()[:8] + "01") >= float(cfg.get("monthly_spend_cap_usd", 50.0)):
+    if spent(state, today()[:8] + "01") + pending_usd >= float(cfg.get("monthly_spend_cap_usd", 50.0)):
         return "The site has reached this month's limit on new briefings, which keeps its costs down."
     return None
+
+
+class InFlight:
+    """Briefings being written right now (as Where MPs Stand). Their cost is only known when they finish, so without
+    this, many questions at once would all pass the spending caps before any was counted: each is reserved at an
+    estimated cost while it runs, and each visitor (and the site as a whole) may have only a few at once."""
+
+    def __init__(self, per_key: int = 2, total: int = 8, estimate_usd: float = 0.15):
+        self.per_key, self.total, self.estimate_usd = per_key, total, estimate_usd
+        self.running: dict[str, int] = defaultdict(int)
+        self.lock = threading.Lock()
+
+    def start(self, key: str) -> str | None:
+        """Reserve a place, or say why not."""
+        with self.lock:
+            if self.running[key] >= self.per_key:
+                return "A briefing is already being written for you; please wait for it to finish."
+            if sum(self.running.values()) >= self.total:
+                return "Many briefings are being written at the moment; please try again in a minute."
+            self.running[key] += 1
+            return None
+
+    def finish(self, key: str) -> None:
+        with self.lock:
+            self.running[key] -= 1
+            if self.running[key] <= 0:
+                del self.running[key]
+
+    def pending_usd(self, besides: int = 0) -> float:
+        """Estimated cost of the briefings in progress, not counting ``besides`` of them (the caller's own)."""
+        with self.lock:
+            return max(sum(self.running.values()) - besides, 0) * self.estimate_usd
 
 
 class RateLimiter:

@@ -109,7 +109,7 @@ a daily visitor code at once and never stored, and requests are not logged (priv
 
 **Costs and limits** are in `config/settings.toml`, `[usage]`. Each new briefing is counted against a visitor's daily
 allowance (`per_visitor_daily_questions`) and the site's daily and monthly caps (`daily_spend_cap_usd`,
-`monthly_spend_cap_usd`). Over a limit, readers still get the sources, which cost nothing. An identical question is
+`monthly_spend_cap_usd`). A briefing's cost is known only when it finishes, so while one is being written it counts against the caps at an estimate (`briefing_estimate_usd`), and only a few are written at once (`briefings_at_once`, `briefings_at_once_per_visitor`). Many questions at once therefore can't all pass the daily cap before any is counted. Over a limit, readers still get the sources, which cost nothing. An identical question is
 answered from the cache until the data changes. Spending so far:
 
 ```bash

@@ -24,7 +24,14 @@ from pydantic import BaseModel, Field
 
 from councils.api.data import Data
 from councils.api.state import StateDB
-from councils.api.usage import RateLimiter, blocked, count_question, record_usage, visitor_key
+from councils.api.usage import (
+    InFlight,
+    RateLimiter,
+    blocked,
+    count_question,
+    record_usage,
+    visitor_key,
+)
 from councils.config import Settings, load_settings
 from councils.rag.pipeline import AskRequest, Pipeline
 from councils.rag.query_parse import QueryPlan, parse_offline
@@ -109,6 +116,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     data = Data(settings)
     usage_cfg = settings.usage
     limiter = RateLimiter(int(usage_cfg.get("requests_per_minute", 20)))
+    inflight = InFlight(int(usage_cfg.get("briefings_at_once_per_visitor", 2)),
+                        int(usage_cfg.get("briefings_at_once", 8)), float(usage_cfg.get("briefing_estimate_usd", 0.15)))
     cache_hours = float(usage_cfg.get("answer_cache_hours", 168))
     site = settings.section("site")
     dist = Path(settings.section("paths").get("web_dist", REPO_ROOT / "web" / "dist"))
@@ -173,8 +182,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         hit = state.cached(key, cache_hours) if p.has_model() and not body.sources_only else None
         why_not = None if hit is not None or body.sources_only or not p.has_model() else blocked(state, v, usage_cfg)
 
-        def sources_only(note: str) -> Iterator[dict[str, Any]]:
-            if why_not:   # over a limit: the question is read by the free rules
+        def sources_only(note: str, free: bool) -> Iterator[dict[str, Any]]:
+            if free:      # over a limit: the question is read by the free rules
                 plan = offline_plan(body)
             else:         # the model reads the question better, for a fraction of a penny
                 plan, used = p.make_plan(req)
@@ -191,10 +200,10 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                 return
             if body.sources_only:
                 yield from sources_only("Sources only: no briefing was written. Ask again without 'Sources only' "
-                                        "for a written briefing.")
+                                        "for a written briefing.", free=False)
                 return
             if why_not:
-                yield from sources_only(f"{why_not} The sources found are shown below.")
+                yield from sources_only(f"{why_not} The sources found are shown below.", free=True)
                 return
             kept: list[dict[str, Any]] = []
             text: list[str] = []
@@ -230,7 +239,27 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                 replay += [{"type": "text", "text": "".join(text)}, {**final, "cached": True}]
                 state.store_cached(key, replay)
 
-        return StreamingResponse(sse(events()), media_type="text/event-stream",
+        def guarded() -> Iterator[dict[str, Any]]:
+            """A briefing about to be written is reserved at its estimated cost while it runs, and the limits are
+            checked again counting the others in progress, so many questions at once can't all slip past the caps
+            (as Where MPs Stand)."""
+            if hit is not None or body.sources_only or why_not or not p.has_model():
+                yield from events()
+                return
+            refused = inflight.start(v)
+            if refused:
+                yield from sources_only(f"{refused} The sources found are shown below.", free=True)
+                return
+            try:
+                late = blocked(state, v, usage_cfg, inflight.pending_usd(besides=1))
+                if late:
+                    yield from sources_only(f"{late} The sources found are shown below.", free=True)
+                    return
+                yield from events()
+            finally:
+                inflight.finish(v)
+
+        return StreamingResponse(sse(guarded()), media_type="text/event-stream",
                                  headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
     @app.post("/api/search")

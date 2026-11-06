@@ -91,3 +91,43 @@ def test_rate_limit(client):
     t = TestClient(app)
     codes = [t.post("/api/report", json={"message": "hello there"}).status_code for _ in range(3)]
     assert codes == [200, 200, 429]
+
+
+def test_briefings_in_progress_count_against_the_daily_cap(client):
+    """Many questions at once mustn't all pass the cap before any is counted: a briefing being written is reserved
+    at its estimated cost, so the next one sees the cap reached and gets the sources only."""
+    import threading
+
+    c, fake, _, cfg = client
+    cfg.raw["usage"].update(daily_spend_cap_usd=0.15, briefing_estimate_usd=0.15)
+    writing, release = threading.Event(), threading.Event()
+    stream = fake._stream
+
+    def slow(**kw):
+        writing.set()
+        release.wait(10)
+        return stream(**kw)
+
+    fake.beta.messages.stream = fake.messages.stream = slow
+    first: list = []
+    worker = threading.Thread(target=lambda: first.extend(events(c.post(
+        "/api/ask", json={"question": "What have councils decided about bin collections?"}))))
+    worker.start()
+    assert writing.wait(10)
+    second = events(c.post("/api/ask", json={"question": "What have councils decided about public toilets?"}))
+    release.set()
+    worker.join(10)
+    assert first[-1]["type"] == "final" and first[-1]["answer"]
+    assert second[-1]["answer"] is None and "today's limit" in second[-1]["note"]
+    assert len(fake.calls) == 1
+
+def test_in_flight_reservations():
+    from councils.api.usage import InFlight
+
+    f = InFlight(per_key=1, total=2, estimate_usd=0.1)
+    assert f.start("a") is None and f.start("a").startswith("A briefing is already")
+    assert f.start("b") is None and f.start("c").startswith("Many briefings")
+    assert f.pending_usd(besides=1) == 0.1
+    f.finish("a")
+    f.finish("b")
+    assert f.pending_usd() == 0 and f.start("c") is None
