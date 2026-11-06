@@ -21,7 +21,13 @@ function App() {
       })
       .catch((e: Error) => setError(e.message));
   }, [gss]);
-  if (error) return <p className="notice">{error}</p>;
+  if (error)
+    return (
+      <>
+        <h1>Council</h1>
+        <p className="notice">{error}</p>
+      </>
+    );
   if (!c) return <p className="progress">Loading the council</p>;
   const short = c.name.replace(/ (Metropolitan Borough|Borough|District|County|City|County Borough) Council$| Council$/, "");
   return (

@@ -34,7 +34,13 @@ function App() {
     () => [...new Set((rows || []).filter((r) => r.control).map((r) => r.control!.name))].sort(),
     [rows],
   );
-  if (error) return <p className="notice">The list of councils couldn't be loaded: {error}</p>;
+  if (error)
+    return (
+      <>
+        <h1>Councils</h1>
+        <p className="notice">The list of councils couldn't be loaded: {error}</p>
+      </>
+    );
   if (!rows) return <p className="progress">Loading the councils</p>;
   const match = (r: CouncilRow) =>
     (!q || r.name.toLowerCase().includes(q.toLowerCase())) &&

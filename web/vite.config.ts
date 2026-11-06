@@ -25,7 +25,9 @@ function partials(): Plugin {
   };
 }
 
-const pages = ["index", "councils", "council", "vote", "about", "methodology", "privacy", "corrections", "404"];
+const pages = [
+  "index", "councils", "council", "vote", "about", "methodology", "privacy", "corrections", "accessibility", "terms", "404",
+];
 
 export default defineConfig({
   plugins: [partials(), react()],

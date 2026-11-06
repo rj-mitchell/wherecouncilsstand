@@ -10,9 +10,9 @@ margin ("CO92", "45."), its heading in capitals, its decision introduced by **RE
 - **No council's crest, coat of arms or logo**, and nothing that resembles them: no shields, mantling or mural
   crowns. No council's colours.
 - **No council's name in the site's name or address.** Councils' names appear only as what the record is about.
-- **Independence is stated on every page**: in the masthead ("Independent. Not affiliated with any council.") and in
-  the footer, which also names the Local Government Association, Civica (who make Modern.gov and CMIS) and
-  Northgate (who make CoINS).
+- **Independence is stated on every page**, in the footer: "Where Councils Stand is independent. It is not affiliated
+  with or endorsed by any council, the Local Government Association, Civica or Northgate." (Civica make Modern.gov
+  and CMIS, Northgate make CoINS: the About page says so.) Printed pages keep it.
 - **A screenshot must never pass for a council document.** The minute book's conventions are borrowed. The masthead,
   name and mark are our own, and every quotation sits inside a source panel that names the council and links to its
   minutes.

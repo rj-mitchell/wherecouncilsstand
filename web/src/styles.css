@@ -276,8 +276,7 @@ h2 {
   margin-inline-start: calc(44px + var(--space-s));
 }
 
-.tagline,
-.independence-line {
+.tagline {
   display: block;
   font-style: italic;
   color: var(--ink-soft);

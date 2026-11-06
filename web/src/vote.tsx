@@ -18,7 +18,13 @@ function App() {
       })
       .catch((e: Error) => setError(e.message));
   }, [id]);
-  if (error) return <p className="notice">{error}</p>;
+  if (error)
+    return (
+      <>
+        <h1>Named vote</h1>
+        <p className="notice">{error}</p>
+      </>
+    );
   if (!v) return <p className="progress">Loading the vote</p>;
   return (
     <>
