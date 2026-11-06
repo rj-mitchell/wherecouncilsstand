@@ -1,4 +1,4 @@
-"""Spending, limits and visitors (as Where They Stand). Every model-written briefing costs money and the site is
+"""Spending, limits and visitors (as Where MPs Stand). Every model-written briefing costs money and the site is
 public, so there are limits per visitor and overall. Over the overall cap, briefings stop for the day and the sources
 are still shown, which costs nothing."""
 

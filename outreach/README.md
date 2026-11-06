@@ -4,7 +4,7 @@ Requests for permission to read councils' meetings sites, where robots.txt forbi
 crawler (docs/DECISIONS.md, 2: asked, not worked around). `scripts/outreach.py` writes them from the registry and the
 addresses each council publishes; they are kept here as the record of who was asked, and when.
 
-Each starts with its To: and Subject: lines, and is sent from the charity's Gmail account by Where They Stand's
+Each starts with its To: and Subject: lines, and is sent from the charity's Gmail account by Where MPs Stand's
 `deploy/mail.sh` (its `docs/HOSTING.md`, "Email from the server"), so the links arrive as written:
 
     bash /opt/hansardgpt/deploy/mail.sh send /opt/wherecouncilsstand/outreach/2026-11/*.txt

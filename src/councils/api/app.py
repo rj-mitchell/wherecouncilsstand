@@ -1,7 +1,7 @@
 """The web service: questions answered as streamed briefings, search, council and vote pages, saved briefings and
 problem reports. Serves the built web pages (web/dist) too. Run with ``councils serve``.
 
-Adapted from Where They Stand's service, without accounts: the site is public, so new briefings are limited per
+Adapted from Where MPs Stand's service, without accounts: the site is public, so new briefings are limited per
 visitor and overall (api/usage.py). Over a limit, the sources are still shown, which costs nothing.
 """
 

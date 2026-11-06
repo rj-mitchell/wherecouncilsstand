@@ -42,7 +42,7 @@ max_per_meeting = 1
 min_relevance_ratio = 0.25
 
 [answer]
-# As Where They Stand and Where Countries Stand: Sonnet writes briefings, Haiku reads the question.
+# As Where MPs Stand and Where Countries Stand: Sonnet writes briefings, Haiku reads the question.
 model = "claude-sonnet-5-5"
 query_parse_model = "claude-haiku-5-5"
 summary_sources = 24
@@ -63,7 +63,7 @@ passage_words = 250
 batch_size = 8
 
 [usage]
-# The site is public; each new model-written briefing costs money. As Where They Stand.
+# The site is public; each new model-written briefing costs money. As Where MPs Stand.
 per_visitor_daily_questions = 30   # a backstop against automated use (visitors keyed by a salted hash of their IP)
 requests_per_minute = 20           # questions and searches per visitor
 answer_cache_hours = 168           # an identical question is answered from the cache until the data changes, or a week
