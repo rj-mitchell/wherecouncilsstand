@@ -824,12 +824,40 @@ th.num {
   white-space: nowrap;
 }
 
+/* Printed: the site's name and address, and its independence statement, stay on the page, so a printout can't pass
+   for a council document (docs/DESIGN.md). Only what can't be used on paper goes. */
 @media print {
-  .masthead,
-  .footer,
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body {
+    background: #fff;
+  }
+
+  .skip-link,
+  .phase-banner,
+  .site-nav,
+  .footer-nav,
   .ask-form,
   .agenda {
     display: none;
+  }
+
+  .masthead-inner {
+    padding-inline: 0;
+  }
+
+  .wordmark::after {
+    content: " · wherecouncilsstand.com";
+    font-weight: 400;
+    font-size: var(--step-0);
+  }
+
+  .footer {
+    padding-inline: 0;
+    border-block-start: 1px solid #999;
   }
 }
 
