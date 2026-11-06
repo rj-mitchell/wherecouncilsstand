@@ -10,7 +10,7 @@ record holds nothing relevant, it will say "No records found."
 It is a project of Where They Stand, which is applying to register as a charity in England and Wales. The code is adapted from Where Countries Stand and Where They Stand (same licence, same author).
 
 > Where Councils Stand is independent. It is not affiliated with or endorsed by any council, the Local Government
-> Association or Civica.
+> Association, Civica or Northgate.
 
 ## Status
 

@@ -11,7 +11,8 @@ margin ("CO92", "45."), its heading in capitals, its decision introduced by **RE
   crowns. No council's colours.
 - **No council's name in the site's name or address.** Councils' names appear only as what the record is about.
 - **Independence is stated on every page**: in the masthead ("Independent. Not affiliated with any council.") and in
-  the footer, which also names the Local Government Association and Civica (who make Modern.gov).
+  the footer, which also names the Local Government Association, Civica (who make Modern.gov and CMIS) and
+  Northgate (who make CoINS).
 - **A screenshot must never pass for a council document.** The minute book's conventions are borrowed. The masthead,
   name and mark are our own, and every quotation sits inside a source panel that names the council and links to its
   minutes.

@@ -421,8 +421,9 @@ dates, so it can be done; whether to do it is the owner's decision.
 3. ~~Load the remaining councils~~ (213 of 215 loaded), and record each council's licence statement.
 4. ~~Check a fresh sample of 50 votes by hand against a set target.~~ Done across all councils, then twice with
    100 votes three times: 9, then 2, then 2 votes with members on the wrong side, each fixed or now left out. The
-   target of none isn't met on an untouched sample; the owner should decide whether about 1 in 100 is acceptable
-   for launch, with the corrections route, or whether another round is needed.
+   target of none isn't met on an untouched sample. The owner decided (6 November 2026, decision 15) that about 1
+   in 100 is acceptable for the alpha, said plainly on the methodology page, and that a test set of checked votes
+   is built before the beta.
 5. ~~Adapt Where Countries Stand's index and briefing engine to council minutes, with "the minutes record that…"
    wording (docs/DECISIONS.md, 7).~~ Done, from the command line.
 6. Retry the 25 councils that blocked automated requests and the 45 that were unreachable, from another network.
