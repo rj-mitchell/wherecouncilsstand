@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<committees>
+  <committeescount> 15</committeescount>
+  <committee>
+    <committeeid>206</committeeid>
+    <committeetitle>Constitution</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>200</committeeid>
+    <committeetitle>Employment and Appointments Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>192</committeeid>
+    <committeetitle>Joint meeting - West of England Combined Authority Committee and West of England Joint Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>185</committeeid>
+    <committeetitle>LEP Joint Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>186</committeeid>
+    <committeetitle>LEP Joint Scrutiny Committee Special Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>187</committeeid>
+    <committeetitle>LEP Joint Scrutiny Committee Workshop</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>188</committeeid>
+    <committeetitle>LEP Joint Transport Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>189</committeeid>
+    <committeetitle>LEP Joint Transport Executive Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>190</committeeid>
+    <committeetitle>LEP Planning, Housing &amp; Communities Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>191</committeeid>
+    <committeetitle>LEP Strategic Leaders Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>144</committeeid>
+    <committeetitle>West of England Combined Authority Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>141</committeeid>
+    <committeetitle>West of England Combined Authority Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>143</committeeid>
+    <committeetitle>West of England Combined Authority Overview &amp; Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>142</committeeid>
+    <committeetitle>West of England Joint Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>135</committeeid>
+    <committeetitle>West of England LEP Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+</committees>

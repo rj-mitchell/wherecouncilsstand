@@ -102,6 +102,9 @@ def rows(root: etree._Element, ctx: Context, listed: date | None = None) -> tupl
             "attendance": a.get("attendance", ""),
             "party_label": a.get("politicalparty", ""),
             "ward": a.get("ward", ""),
+            # the body the member represents: on a strategic authority, their home council ("Bradford Council")
+            "representing": a.get("representing", ""),
+            "_keyposts": a.get("keyposts", ""),     # used only to tell the mayor; not stored
         })
 
     meeting = {

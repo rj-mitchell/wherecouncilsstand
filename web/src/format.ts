@@ -17,7 +17,26 @@ export function monthYear(iso: string | null | undefined): string {
 
 export const number = (n: number | undefined | null) => (n ?? 0).toLocaleString("en-GB");
 
-export const KIND_LABEL: Record<string, string> = { council: "Full council", cabinet: "Cabinet", policy: "Policy committee" };
+export const KIND_LABEL: Record<string, string> = {
+  council: "Full council",
+  cabinet: "Cabinet",
+  policy: "Policy committee",
+  // a strategic authority's meetings (decision 18)
+  board: "Board",
+  mayor: "Mayor's decisions",
+  scrutiny: "Overview and scrutiny",
+};
+
+/** A strategic authority's "control" is its mayor's party (decision 19): never a council's party in control. */
+export function controlChip(code: string, party: Record<string, string>): string {
+  if (code === "NOC") return "Councils under no overall control";
+  if (code === "SA:NONE") return "Strategic authorities without a mayor";
+  if (code.startsWith("MAYOR:")) {
+    const p = code.slice(6);
+    return `Strategic authorities with ${p === "IND" ? "an independent" : `a ${party[p] || p}`} mayor`;
+  }
+  return `Councils under ${party[code] || code.replace(/^LOCAL:/, "")} control`;
+}
 
 export const SIDE_LABEL = { for: "For", against: "Against", abstain: "Abstained" } as const;
 /** A Scottish division is between a motion and an amendment: each side is for something. */

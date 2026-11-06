@@ -95,8 +95,43 @@ therefore start late: while it waits, `systemctl status councils-update` shows i
   `data_static/councils.csv` updated (`scripts/build_councils.py`).
 - **`needs_attention`.** Check the network from the server, then the disk (`df -h`), then the log.
 - **`still_to_embed` keeps growing.** Raise `--embed-minutes`, or run `councils embed` on its own.
+- **A council under `robots` in the summary.** Only with `[robots] obey` switched on (it is off, decision 21): its
+  site's robots.txt has started to forbid reading it. Nothing was read or changed.
 - **A council's meetings suddenly drop to zero.** Its committees have probably been renamed. Look at its committee
   list (`zcat data/raw/modgov/<GSS>/committees.xml.gz`) and add the new titles to `data_static/committees.csv`.
+
+### Loading the strategic authorities (once)
+
+The 14 strategic authorities of the pilot (decision 17) are in the registry with status `ok`, but nothing of theirs is
+stored until they are loaded once. Run on the server, after this change is deployed, in
+`/opt/wherecouncilsstand/deploy`. Each command takes the same lock as the nightly update, so they never overlap; if
+the nightly run is under way, they wait for it.
+
+```bash
+cd /opt/wherecouncilsstand/deploy
+# 1. what will be loaded: the 14, each with its meetings site (Lancashire's and Sussex and Brighton's are
+#    their county councils')
+docker compose run --rm -T app councils list --type strategic_authority --status ok
+# 2. the backfill: board, scrutiny and any mayor's decisions since May 2018, members' roles and parties, named votes
+flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app \
+  councils load --type strategic_authority --workers 14 | tee /tmp/authorities-load.jsonl
+# 3. index them now, rather than waiting for 03:17
+systemctl start councils-update.service && journalctl -u councils-update.service -n 30
+```
+
+- **Time:** about an hour. Each authority is read one request at a time, at least a second apart, all 14 side by
+  side, so the longest record sets the pace: Greater Manchester's (nine committees in scope, three of them expired
+  scrutiny committees, about 300 meetings, and minutes mostly as documents) at 2 to 25 seconds a meeting on a slow
+  server. The four created in 2024–25 take a few minutes each. Step 3 is an ordinary nightly run (about 50 minutes).
+- **Requests and disk:** about 1,610 meetings and 2,010 requests in all, with up to a few hundred minutes documents.
+  Each meeting's response is 250–350 KB of XML, about 80 KB gzipped: about **150 MB for the cache, 100 MB for
+  documents**, and a few MB of Parquet and index. Check with `docker compose run --rm -T app du -sh /data/raw/modgov`
+  before and after.
+- **What to check:** each line of `/tmp/authorities-load.jsonl` has `"error": ""` and the committees expected
+  (`data_static/committees.csv`). One that failed is simply run again: `councils ingest E47000001`. Then
+  the councils page lists them under "Strategic authorities", and `/councils/E47000003` shows West Yorkshire's.
+- **After that,** the nightly update reads them like any council. Members' parties come from their home councils'
+  stored records, so they are read again each night as the councils' are.
 
 ### Disk space
 

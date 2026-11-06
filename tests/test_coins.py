@@ -220,7 +220,9 @@ def test_fetch_rows_have_the_modgov_keys(settings):
     assert [m["meeting_id"] for m in meetings] == [f"{GLASGOW}:19226"]
     assert set(meetings[0]) == set(SCHEMAS["meetings"].names)
     assert {k for it in items for k in it} == set(SCHEMAS["items"].names)
-    assert set(attendance[0]) == set(SCHEMAS["attendance"].names) - {"party"}
+    # the columns only strategic authorities fill (authority.py) are left empty
+    assert set(attendance[0]) == set(SCHEMAS["attendance"].names) - {"party", "representing", "home_gss",
+                                                                     "member_role", "party_source"}
     m = meetings[0]
     assert m["kind"] == "policy" and m["committee_id"] == 1875 and m["minutes_published"]
     assert m["minutes_document"].endswith("viewPack.asp?c=P62AFQDX81Z3ZLDNB253YXYXQAJ5I77DJ52AFQDNUT2U2UZ3")

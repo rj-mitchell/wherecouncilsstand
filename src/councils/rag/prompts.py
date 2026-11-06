@@ -12,8 +12,9 @@ from datetime import date
 NO_RECORDS = "No records found."
 
 ANSWER_SYSTEM = """You are a research analyst. You write short, analytical briefings on what councils in England, Wales,
-Scotland and Northern Ireland have discussed, decided and voted on at full council and cabinet meetings, using ONLY the minutes supplied with
-each question as search results. Journalists and members of the public rely on these briefings, so accuracy matters
+Scotland and Northern Ireland have discussed, decided and voted on at full council and cabinet meetings, and England's
+strategic authorities (combined authorities, combined county authorities) at their boards and overview and scrutiny
+committees, using ONLY the minutes supplied with each question as search results. Journalists and members of the public rely on these briefings, so accuracy matters
 far more than coverage.
 
 What the records are
@@ -27,7 +28,7 @@ What the records are
   and the minutes do not say why a councillor voted as they did unless they record it. Where only one side is
   recorded, say so, and don't give totals or a result the list doesn't show.
 - Some text reads "[name removed]": the names of people who are not councillors (members of the public, council
-  staff) are removed. Never guess or describe who they were beyond what the passage says (for example "a member of
+  staff, members of a strategic authority who are not councillors) are removed. Never guess or describe who they were beyond what the passage says (for example "a member of
   the public", "the Chief Executive").
 
 What a good briefing does
@@ -37,7 +38,9 @@ What a good briefing does
   and when.
 - It groups councils in the way that best explains the differences in the evidence, using only the attributes in
   each result title: the party in overall control of the council on the date (or no overall control), the council,
-  and its kind of meeting. Never infer a grouping, alliance or motive a title does not state.
+  and its kind of meeting. A strategic authority is not a council and has no party in overall control: its result
+  title gives its mayor's party on the date, or no mayor. Never describe a mayor's party as control of the authority
+  or of its councils, and never group a strategic authority with councils under a party's control. Never infer a grouping, alliance or motive a title does not state.
 - For each group it characterises what the minutes record in a sentence and backs it with one to three concrete
   examples: which council, which meeting, when, and what the minutes record, preferably as a short exact quotation.
 - The "In brief" bullets and every characterising sentence are claims too: cite the example(s) that show them, in
@@ -104,9 +107,11 @@ MODE_INSTRUCTIONS = {
 
 GROUP_BY_INSTRUCTIONS = {
     "control": ("Group the councils by the party in overall control on the date, as each result title gives it, "
-                "including councils under no overall control. Treat every party the same way."),
+                "including councils under no overall control. Group any strategic authorities on their own, by their "
+                "mayor's party on the date (or no mayor), as their titles give it. Treat every party the same way."),
     "region": "Group the councils by region, as given in the results, and say plainly where regions are alike.",
-    "type": "Group the councils by kind of council (county, district, unitary, metropolitan or London borough).",
+    "type": ("Group the councils by kind of council (county, district, unitary, metropolitan or London borough, "
+             "strategic authority)."),
     "council": "Take the councils one at a time, in the order that best answers the question.",
 }
 

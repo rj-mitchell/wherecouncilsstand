@@ -41,8 +41,10 @@ function App() {
         <Tally counts={v.counts} question={v.question} />
       </p>
       <p className="small">
-        Party in overall control of the council on the date: {v.control || "not recorded"}. Each councillor's party is the one
-        the council recorded for them at the time.
+        {v.is_authority
+          ? `The authority's mayor on the date: ${(v.control || "not recorded").replace(/^Mayor: /, "")} (a strategic authority isn't run by a party). Each member's party is the one their home council recorded for them at the time, where the site has it; otherwise the authority's.`
+          : `Party in overall control of the council on the date: ${v.control || "not recorded"}.`}{" "}
+        {v.is_authority ? null : "Each councillor's party is the one the council recorded for them at the time."}
       </p>
       {v.partial && (
         <p className="notice">

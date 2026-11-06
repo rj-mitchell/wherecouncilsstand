@@ -14,7 +14,9 @@ from urllib.parse import quote
 
 SITE = "Where Councils Stand"
 MAX_ITEMS = 60
-KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy committee"}
+KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy committee", "board": "Board",
+              "mayor": "Mayor's decisions", "scrutiny": "Overview and scrutiny"}
+AUTHORITY = "strategic_authority"
 SIDES = ("for", "against", "abstain")
 # a Scottish division is between a motion and an amendment: each side is for something
 MOTION_OR_AMENDMENT = "motion or amendment"
@@ -104,7 +106,35 @@ def _tally(counts: dict[str, int], question: str | None) -> str:
 
 # ---- a council -----------------------------------------------------------------------------------------------------
 
+def _is_authority(c: dict[str, Any]) -> bool:
+    return c.get("type") == AUTHORITY
+
+
+def _region(c: dict[str, Any]) -> str:
+    regions = [r["name"] for r in c.get("regions") or []]
+    return " and ".join(regions) if len(regions) > 1 else (c.get("region_name") or "")
+
+
+def _mayor_now(c: dict[str, Any]) -> str:
+    control = c.get("control") or {}
+    if control.get("mayor"):
+        return f"Mayor: {control['mayor']} ({control['name'].removeprefix('Mayor: ')})"
+    return "No mayor: no single party"
+
+
+def authority_description(c: dict[str, Any]) -> str:
+    what = f"{c['name']} ({c.get('kind_name') or 'strategic authority'}, {_region(c) or 'England'})"
+    if not c.get("loaded"):
+        return f"{what}: not covered yet. " + " ".join(c.get("reasons") or [])
+    return (f"{what}: board, and overview and scrutiny meetings from {month_year(c.get('from'))} to "
+            f"{month_year(c.get('to'))}, from the authority's own minutes. {_mayor_now(c)}. "
+            f"{_plural(c.get('meetings') or 0, 'meeting')} and {_plural(c.get('named_votes') or 0, 'named vote')}, "
+            "with each member's role and party on the date.")
+
+
 def council_description(c: dict[str, Any]) -> str:
+    if _is_authority(c):
+        return authority_description(c)
     if not c.get("loaded"):
         return (f"{c['name']} ({c.get('type_name') or 'council'}, {c.get('region_name') or c.get('nation') or 'UK'}): "
                 "not covered yet. " + " ".join(c.get("reasons") or []))
@@ -118,22 +148,103 @@ def council_description(c: dict[str, Any]) -> str:
 
 def council_data(c: dict[str, Any], url: str, base: str) -> dict[str, Any]:
     """schema.org: the page, about the council."""
+    key = "GSS code" if not c["gss"].startswith("SA-") else "Provisional key (no ONS code yet)"
     org: dict[str, Any] = {"@type": "GovernmentOrganization", "name": c["name"],
-                           "identifier": {"@type": "PropertyValue", "propertyID": "GSS code", "value": c["gss"]},
-                           "areaServed": c.get("region_name") or c.get("nation")}
+                           "identifier": {"@type": "PropertyValue", "propertyID": key, "value": c["gss"]},
+                           "areaServed": _region(c) or c.get("nation")}
+    if _is_authority(c):
+        org["additionalType"] = c.get("kind_name") or "Strategic authority"
+        org["member"] = [{"@type": "GovernmentOrganization", "name": m["name"], "url": base + council_path(m["gss"])}
+                         for m in c.get("constituents") or []]
+    elif c.get("authorities"):
+        org["memberOf"] = [{"@type": "GovernmentOrganization", "name": a["name"], "url": base + council_path(a["gss"])}
+                           for a in c["authorities"]]
     return {"@context": "https://schema.org", "@type": "WebPage", "name": c["name"], "url": url,
             "description": council_description(c), "inLanguage": "en-GB",
             "isPartOf": {"@type": "WebSite", "name": SITE, "url": base + "/"}, "about": org}
 
 
+def _part_of(c: dict[str, Any]) -> str:
+    """A council's strategic authorities: "Part of: West Yorkshire Combined Authority"."""
+    links = [_link(council_path(a["gss"]), a["name"]) + ("" if a.get("role") == "constituent"
+                                                         else f" ({e(a['role_name'].lower())})")
+             for a in c.get("authorities") or []]
+    return f"<p>Part of: {', '.join(links)}.</p>" if links else ""
+
+
+def _constituents(c: dict[str, Any]) -> str:
+    rows = c.get("constituents") or []
+    if not rows:
+        return ""
+    by_role: dict[str, list[str]] = {}
+    for m in rows:
+        dates = (f" (from {long_date(m['from'])})" if m.get("from") else "") + \
+                (f" (until {long_date(m['to'])})" if m.get("to") else "")
+        by_role.setdefault(m["role_name"], []).append(_link(council_path(m["gss"]), m["name"]) + e(dates))
+    return "".join(f"<p>{e(role)}s: {', '.join(names)}.</p>" for role, names in by_role.items())
+
+
+def _mayors(c: dict[str, Any]) -> str:
+    rows = c.get("mayors") or []
+    if not rows:
+        return "<h2>Mayor</h2><p>It has no mayor, so no single party controls it: its members are appointed by its " \
+               "councils.</p>"
+    items = "".join(f"<li>{e(m['name'])} ({e(m['party_name'])}): from {e(long_date(m['from']))}"
+                    f"{' to ' + e(long_date(m['to'])) if m.get('to') else ''}</li>" for m in rows)
+    return ("<h2>Mayors</h2><ul>" + items + "</ul><p>Each with the party they were elected for. A mayor's party is "
+            "shown in place of a party in control: a strategic authority isn't run by a party.</p>")
+
+
+def authority_text(c: dict[str, Any]) -> str:
+    parts = [f'<p class="meta"><a href="/councils">Councils</a> · Strategic authority · {e(_region(c))}</p>',
+             f"<h1>{e(c['name'])}</h1>",
+             f"<p>{e(c.get('kind_name') or '')}"
+             + (f"; {e(c['category_name'][0].lower() + c['category_name'][1:])}" if c.get("category_name") else "")
+             + (f". Created {e(c['created'])}" if c.get("created") else "") + ".</p>",
+             _constituents(c)]
+    if not c.get("loaded"):
+        parts.append(f"<p>This strategic authority isn't covered yet. {e(' '.join(c.get('reasons') or []))}</p>")
+        return "".join(parts) + _mayors(c)
+    parts.append(f"<p>Board, and overview and scrutiny committee meetings from {e(month_year(c.get('from')))} to "
+                 f"{e(month_year(c.get('to')))}, read from the authority's {_link(c.get('site'), 'own record')}.</p>")
+    facts = [_mayor_now(c),
+             f"{_plural(c.get('meetings') or 0, 'meeting')}: {c.get('board_meetings') or 0:,} board, "
+             f"{c.get('scrutiny_meetings') or 0:,} overview and scrutiny"
+             + (f", {c['mayor_meetings']:,} of the mayor's decisions" if c.get("mayor_meetings") else ""),
+             f"{_plural(c.get('named_votes') or 0, 'named vote')} recorded in the minutes"]
+    parts.append("<ul>" + "".join(f"<li>{e(f)}</li>" for f in facts) + "</ul>")
+    parts.append(_mayors(c))
+    members = c.get("members")
+    if members:
+        parts.append(f"<h2>Members</h2><p>Listed at the {e(members['committee'])} meeting of "
+                     f"{e(long_date(members['date']))}, with each member's role, and their party on the date from "
+                     "their home council's record where the site has it. Appointed members who aren't councillors "
+                     "aren't named.</p><ul>")
+        for m in members["members"]:
+            who = m["name"] or "Name not shown (not a councillor)"
+            bits = [m["role_name"]] + ([m["home"]["name"]] if m.get("home") else []) + \
+                   ([f"{m['party']} ({_source(m['party_source'])})"] if m.get("party") else [])
+            parts.append(f"<li>{e(who)}: {e(', '.join(bits))}</li>")
+        parts.append("</ul>")
+    parts.append(_votes_and_meetings(c, "this authority's minutes"))
+    return "".join(parts)
+
+
+def _source(source: str | None) -> str:
+    return {"home council": "home council's record", "authority": "the authority's record",
+            "as elected": "as elected"}.get(source or "", "recorded")
+
+
 def council_text(c: dict[str, Any]) -> str:
+    if _is_authority(c):
+        return authority_text(c)
     parts = [f'<p class="meta"><a href="/councils">Councils</a> · {e(c.get("type_name") or "")} · '
-             f'{e(c.get("region_name") or "")}</p>', f"<h1>{e(c['name'])}</h1>"]
+             f'{e(c.get("region_name") or "")}</p>', f"<h1>{e(c['name'])}</h1>", _part_of(c)]
     if not c.get("loaded"):
         parts.append(f"<p>This council isn't covered yet. {e(' '.join(c.get('reasons') or []))} Councils are covered "
                      "when their minutes are published through a system the site can read (Modern.gov, CMIS or CoINS) "
                      "and their site can be read.</p>")
-        return parts[0] + parts[1] + parts[2] + _landlords(c)
+        return "".join(parts) + _landlords(c)
     parts.append(f"<p>Full council and cabinet meetings from {e(month_year(c.get('from')))} to "
                  f"{e(month_year(c.get('to')))}, read from the council's {_link(c.get('site'), 'own record')}.</p>")
     control = c.get("control") or {}
@@ -154,10 +265,16 @@ def council_text(c: dict[str, Any]) -> str:
     if c.get("control_timeline"):
         parts.append("<h2>Party in overall control</h2><ul>" + "".join(
             f"<li>From {e(month_year(t['from']))}: {e(t['name'])}</li>" for t in c["control_timeline"]) + "</ul>")
+    parts.append(_votes_and_meetings(c, "this council's minutes"))
+    return "".join(parts)
+
+
+def _votes_and_meetings(c: dict[str, Any], whose: str) -> str:
+    parts = []
     votes = c.get("votes") or []
     parts.append(f"<h2>Named votes ({len(votes):,})</h2>")
     if not votes:
-        parts.append("<p>No named votes were found in this council's minutes.</p>")
+        parts.append(f"<p>No named votes were found in {whose}.</p>")
     else:
         parts.append("<ol>")
         for v in votes[:MAX_ITEMS]:
@@ -223,8 +340,11 @@ def vote_text(v: dict[str, Any]) -> str:
              f"<p>{e(what)}, {e(long_date(v.get('date')))}: a named vote{e(vote_on(v.get('question')))}"
              f"{', ' + e(v['outcome']) if v.get('outcome') else ''}.</p>",
              f"<p>{e(_tally(v.get('counts') or {}, v.get('question')))}.</p>",
-             f"<p>Party in overall control of the council on the date: {e(v.get('control') or 'not recorded')}. Each "
-             "councillor's party is the one the council recorded for them at the time.</p>"]
+             (f"<p>The authority's mayor on the date: {e((v.get('control') or 'not recorded').removeprefix('Mayor: '))}"
+              " (a strategic authority isn't run by a party). Each member's party is the one their home council "
+              "recorded for them at the time, where the site has it.</p>" if v.get("is_authority") else
+              f"<p>Party in overall control of the council on the date: {e(v.get('control') or 'not recorded')}. "
+              "Each councillor's party is the one the council recorded for them at the time.</p>")]
     if v.get("partial"):
         parts.append("<p>Only one side of this vote could be read from the minutes. The others may be recorded in a "
                      "form that couldn't be read, or not at all.</p>")
@@ -251,7 +371,9 @@ COVERAGE = {"full": "Full", "partial": "Partial", "not_yet": "Not yet"}
 
 
 def councils_text(directory: dict[str, Any]) -> str:
-    rows = directory.get("councils") or []
+    everything = directory.get("councils") or []
+    rows = [r for r in everything if r.get("type") != AUTHORITY]
+    authorities = [r for r in everything if r.get("type") == AUTHORITY]
     loaded = [r for r in rows if r.get("loaded")]
     parts = ["<h1>Councils</h1>",
              f"<p>{len(loaded):,} of the {len(rows):,} principal councils in the UK are covered: those whose minutes "
@@ -269,6 +391,21 @@ def councils_text(directory: dict[str, Any]) -> str:
             parts.append(f"<li>{_link(council_path(r['gss']), r['name'])}: {e(' '.join(r.get('reasons') or []))}"
                          "</li>")
     parts.append("</ul>")
+    if authorities:
+        covered = [r for r in authorities if r.get("loaded")]
+        parts.append(f"<h2>Strategic authorities</h2><p>{len(covered):,} of England's {len(authorities):,} strategic "
+                     "authorities (combined authorities, combined county authorities and the Greater London "
+                     "Authority) are covered: their boards and overview and scrutiny committees. Each is shown with "
+                     "its mayor's party, which isn't control of the authority or its councils.</p><ul>")
+        for r in authorities:
+            if r.get("loaded"):
+                parts.append(f"<li>{_link(council_path(r['gss']), r['name'])}: {e(r.get('kind_name') or '')}, "
+                             f"{e(_region(r))}. {e(_mayor_now(r))}. {e(month_year(r.get('from')))} to "
+                             f"{e(month_year(r.get('to')))}.</li>")
+            else:
+                parts.append(f"<li>{_link(council_path(r['gss']), r['name'])}: not covered yet. "
+                             f"{e(' '.join(r.get('reasons') or []))}</li>")
+        parts.append("</ul>")
     return "".join(parts)
 
 
@@ -277,8 +414,10 @@ def home_text(totals: dict[str, Any], examples: list[str]) -> str:
             "<p>Ask about anything councils across the UK have discussed, decided or voted on at full council and "
             "cabinet. Every point in the briefing cites the council's own minutes.</p>"
             f"<p>The record holds {totals.get('meetings', 0):,} meetings and {totals.get('named_votes', 0):,} named "
-            f"votes from {totals.get('loaded', 0):,} of the {totals.get('councils', 0):,} councils in the UK, "
-            "since May 2018. Asking a question needs JavaScript; every council's page, with its named votes, can "
+            f"votes from {totals.get('loaded', 0):,} of the {totals.get('councils', 0):,} councils in the UK"
+            + (f" and {totals['authorities_loaded']:,} of England's {totals['authorities']:,} strategic authorities"
+               if totals.get("authorities_loaded") else "")
+            + ", since May 2018. Asking a question needs JavaScript; every council's page, with its named votes, can "
             "be read without it, from the <a href=\"/councils\">list of councils</a>.</p>"
             "<h2>For example</h2><ul>" + "".join(f"<li>{e(q)}</li>" for q in examples) + "</ul>"
             '<p><a href="/methodology">How it works</a></p>')

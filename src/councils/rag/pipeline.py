@@ -40,8 +40,14 @@ def plan_note(plan: QueryPlan) -> str:
     bits = []
     if f.councils:
         bits.append("councils: " + ", ".join(councils()[g].name for g in f.councils if g in councils()))
-    if f.control:
-        bits.append("councils in overall control of: " + ", ".join(f.control))
+    council_control = [c for c in f.control if not c.startswith(("MAYOR:", "SA:"))]
+    if council_control:
+        bits.append("councils in overall control of: " + ", ".join(council_control))
+    mayors = [c.removeprefix("MAYOR:") for c in f.control if c.startswith("MAYOR:")]
+    if mayors:
+        bits.append("strategic authorities whose mayor's party is: " + ", ".join(mayors))
+    if "SA:NONE" in f.control:
+        bits.append("strategic authorities without a mayor")
     if f.parties:
         bits.append("passages naming councillors of: " + ", ".join(f.parties))
     for label, values in (("nations", f.nations), ("kinds of council", f.council_types), ("meetings", f.kinds)):

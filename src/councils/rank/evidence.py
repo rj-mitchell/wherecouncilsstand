@@ -10,7 +10,8 @@ each, not the twelve best-scoring items (often six from one council). Selection 
 
 How items are grouped (``group_by``), always by facts recorded on the date and the same way for every party:
 
-* ``control`` (default): the party in overall control of the council on the date, or no overall control;
+* ``control`` (default): the party in overall control of the council on the date, or no overall control; a strategic
+  authority by its mayor's party on the date, or without a mayor, never in a council's group (decision 19);
 * ``region``: the council's region (and Wales);
 * ``type``: the kind of council (county, district, unitary, metropolitan borough, London borough);
 * ``council``: each council on its own.
@@ -28,6 +29,8 @@ TYPE_LABELS = {"county": "County councils", "district": "District councils", "un
                "metropolitan": "Metropolitan borough councils", "london_borough": "London borough councils",
                "city_of_london": "City of London", "strategic_authority": "Strategic authorities"}
 GROUP_BY = ("control", "region", "type", "council")
+MAYOR_OF = {"LAB": "a Labour", "CON": "a Conservative", "LD": "a Liberal Democrat", "GRN": "a Green",
+            "REF": "a Reform UK", "IND": "an independent"}
 CONTROLLED_BY = {"LAB": "Labour", "CON": "the Conservatives", "LD": "the Liberal Democrats", "GRN": "the Greens",
                  "REF": "Reform UK", "PC": "Plaid Cymru", "UKIP": "UKIP", "LIB": "the Liberal Party",
                  "YP": "Your Party", "IND": "independents"}
@@ -57,6 +60,11 @@ def group_label(key: str, group_by: str, rec: dict[str, Any] | None = None) -> s
         return "Control not recorded"
     if key == "NOC":
         return "Councils under no overall control"
+    if key.startswith("MAYOR:"):
+        party = key[6:]
+        return f"Strategic authorities with {MAYOR_OF.get(party) or 'a ' + party_name(party)} mayor"
+    if key == "SA:NONE":
+        return "Strategic authorities without a mayor"
     return f"Councils controlled by {CONTROLLED_BY.get(key, party_name(key, (rec or {}).get('gss', '')))}"
 
 

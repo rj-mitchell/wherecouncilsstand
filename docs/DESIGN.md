@@ -56,7 +56,8 @@ The kit's files are included as they are (`<!--#include family/shelf-->` in the 
 - **Brown is the identity colour**, and the only one the site uses for itself. It replaced a minute-book navy in
   November 2026 (family decision 2): navy sat close to Where Countries Stand's blue and to a party's colour.
 - **The meeting determines the colour,** as Where MPs Stand uses green for the Commons and red for the Lords:
-  sources are edged in brown for full council and slate for cabinet.
+  sources are edged in brown for full council and slate for cabinet. A strategic authority's board, scrutiny
+  committees and mayor's decisions are slate too: none is a full council.
 - **Party colours** are used only where a chart needs to tell parties apart (members by party on a council's page),
   with the colours readers associate with each party, as on Where MPs Stand. Local parties and independents share
   one grey. Party colours never mark a passage or a briefing, and none of them is the site's own.

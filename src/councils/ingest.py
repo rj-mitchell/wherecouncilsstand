@@ -8,13 +8,13 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date
 
-from councils import committees, extract, store
+from councils import authority, committees, extract, store
 from councils.config import Settings
 from councils.parse import parties
 from councils.registry import Council, site_sharers
 from councils.sources import documents
 from councils.sources import meeting as meeting_rows
-from councils.sources.modgov import Client, ModgovError
+from councils.sources.modgov import ROBOTS_ERROR, Client, ModgovError, Refused
 from councils.sources.streak import TimeoutStreak
 
 log = logging.getLogger(__name__)
@@ -44,8 +44,10 @@ def selected_committees(client: Client, council: Council, max_age_days: float | 
             if own is None:
                 continue
             title = own
-        # full council named as the council itself: "Cornwall Council"
-        k = "council" if title.strip().lower() == council.name.lower() else committees.kind(title, council.gss)
+        # full council named as the council itself: "Cornwall Council" (an authority's board so named is its board,
+        # by committees.py)
+        own_name = not council.is_authority and title.strip().lower() == council.name.lower()
+        k = "council" if own_name else committees.kind(title, council.gss)
         if k:
             out[c.id] = (c.title, k)
     return out
@@ -59,66 +61,98 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
     committee's meetings could be listed: a server that is down mustn't remove meetings already stored."""
     start = start or settings.start_date
     end = end or date.today()
+    if council.modgov_status == "robots":
+        # marked "robots" in the registry by hand (decision 21): not asked at all; what is stored is kept, withheld
+        # from the site (api/data.py)
+        return Result(council.gss, error=ROBOTS_ERROR)
     if council.system != "modgov":
         return _load_other(settings, council, start, end, update)
     res = Result(council.gss)
     if not council.modgov_url:
         res.error = "no Modern.gov site"
         return res
-    meetings, items, attendance = [], [], []
     streak = TimeoutStreak(settings, council.gss)
     with Client(settings, council.gss, council.modgov_url) as client:
         try:
-            res.committees = selected_committees(client, council, max_age_days=7 if update else None)
-        except ModgovError as e:
-            res.error = str(e)
+            return _load_modgov(settings, client, council, start, end, update, res, streak)
+        except Refused:
+            # only with [robots] obey on (decision 21): robots.txt forbids the site now, so nothing is written, what
+            # is stored is kept, and the update reports it (docs/OPERATIONS.md)
+            res.error = ROBOTS_ERROR
             return res
-        for cid, (title, kind) in sorted(res.committees.items()):
-            refs = None
-            for attempt in (1, 2):
-                try:
-                    refs = client.meetings(cid, start, end)
-                    break
-                except ModgovError as e:
-                    log.warning("%s committee %s (attempt %d): %s", council.gss, cid, attempt, e)
-                    error = e
-                    if attempt == 1:
-                        time.sleep(10)
-            if refs is None:
-                # Not a council with a committee missing (East Hampshire's council meetings were lost so,
-                # November 2026): nothing is stored, so the next load or update tries again.
-                res.error = f"committee {title}: {error}"
-                return res
-            for ref in refs:
-                if ref.date > end or ref.date < start:
-                    continue
-                try:
-                    root = client.meeting(ref.id, ref.date)
-                except ModgovError as e:
-                    log.warning("%s meeting %s: %s", council.gss, ref.id, e)
-                    res.failed.append(ref.id)
-                    if stop := streak.failed(ref.id, e):
-                        log.warning("%s %s", council.gss, stop)
-                        res.error = stop
-                        return res
-                    continue
-                streak.ok()
-                ctx = meeting_rows.Context(council.gss, council.name, council.modgov_url, cid, title, kind)
-                try:
-                    m, its, att = meeting_rows.rows(root, ctx, ref.date)
-                except ValueError as e:              # a record that can't be read: this meeting, not the council
-                    log.warning("%s meeting %s: %s", council.gss, ref.id, e)
-                    res.failed.append(ref.id)
-                    continue
-                # Members of the public and council staff in the attendance list aren't stored (docs/DECISIONS.md, 9).
+
+
+def _load_modgov(settings: Settings, client: Client, council: Council, start: date, end: date, update: bool,
+                 res: Result, streak: TimeoutStreak) -> Result:
+    meetings, items, attendance = [], [], []
+    not_named: set[str] = set()      # an authority's appointed members who aren't councillors (decision 20)
+    try:
+        res.committees = selected_committees(client, council, max_age_days=7 if update else None)
+    except Refused:
+        raise
+    except ModgovError as e:
+        res.error = str(e)
+        return res
+    for cid, (title, kind) in sorted(res.committees.items()):
+        refs = None
+        for attempt in (1, 2):
+            try:
+                refs = client.meetings(cid, start, end)
+                break
+            except Refused:
+                raise
+            except ModgovError as e:
+                log.warning("%s committee %s (attempt %d): %s", council.gss, cid, attempt, e)
+                error = e
+                if attempt == 1:
+                    time.sleep(10)
+        if refs is None:
+            # Not a council with a committee missing (East Hampshire's council meetings were lost so,
+            # November 2026): nothing is stored, so the next load or update tries again.
+            res.error = f"committee {title}: {error}"
+            return res
+        for ref in refs:
+            if ref.date > end or ref.date < start:
+                continue
+            try:
+                root = client.meeting(ref.id, ref.date)
+            except Refused:
+                raise
+            except ModgovError as e:
+                log.warning("%s meeting %s: %s", council.gss, ref.id, e)
+                res.failed.append(ref.id)
+                if stop := streak.failed(ref.id, e):
+                    log.warning("%s %s", council.gss, stop)
+                    res.error = stop
+                    return res
+                continue
+            streak.ok()
+            ctx = meeting_rows.Context(council.gss, council.name, council.modgov_url, cid, title, kind)
+            try:
+                m, its, att = meeting_rows.rows(root, ctx, ref.date)
+            except ValueError as e:              # a record that can't be read: this meeting, not the council
+                log.warning("%s meeting %s: %s", council.gss, ref.id, e)
+                res.failed.append(ref.id)
+                continue
+            if council.is_authority:
+                # roles, and parties from home councils; appointed members who aren't councillors aren't named, in
+                # the attendance or the minutes (decision 20)
+                att, removed = authority.classify(att, council, settings.parquet_dir)
+                not_named.update(removed)
+            else:
+                # Members of the public and council staff in the attendance list aren't stored (decision 9).
                 att = [a for a in att if extract.is_councillor(a["role"])]
                 for a in att:
                     a["party"] = parties.normalise(a["party_label"], council.gss)
-                meetings.append(m)
-                items += its
-                attendance += att
-        if settings.modgov.get("read_documents", True):
-            items = _minutes_from_documents(client, meetings, items, res)
+            meetings.append(m)
+            items += its
+            attendance += att
+    if settings.modgov.get("read_documents", True):
+        items = _minutes_from_documents(client, meetings, items, res)
+    if not_named:      # from the minutes too, whether from the web service or a document, at any of its meetings
+        names = sorted(not_named, key=len, reverse=True)
+        for it in items:
+            it["minutes_text"] = authority.remove_names(it["minutes_text"], names)
     root = settings.parquet_dir
     if update and res.failed:
         res.error = f"{len(res.failed)} meetings could not be fetched"

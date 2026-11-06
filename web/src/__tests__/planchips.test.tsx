@@ -18,3 +18,22 @@ describe("PlanChips", () => {
     ]);
   });
 });
+
+describe("PlanChips for strategic authorities", () => {
+  it("labels a mayor's party as the mayor's, never as a council's control", () => {
+    const p: Plan = {
+      question: "q",
+      search_text: "q",
+      filters: { control: ["LAB", "MAYOR:LAB", "MAYOR:LD", "SA:NONE"], council_types: ["strategic_authority"], kinds: ["scrutiny"] },
+    };
+    const { container } = render(<PlanChips plan={p} meta={null} councilNames={{}} />);
+    expect([...container.querySelectorAll(".chips li")].map((li) => li.textContent)).toEqual([
+      "Councils under Labour control",
+      "Strategic authorities with a Labour mayor",
+      "Strategic authorities with a Liberal Democrat mayor",
+      "Strategic authorities without a mayor",
+      "strategic_authority",
+      "Overview and scrutiny",
+    ]);
+  });
+});

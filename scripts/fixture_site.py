@@ -1,5 +1,6 @@
 """A small made-up record for running the site without the real data: three councils' meetings, members and named
-votes, indexed with the offline test embedder. Used by CI's accessibility check (scripts/a11y.mjs), and handy for
+votes, and one strategic authority's board and scrutiny meetings (South Yorkshire, of which Barnsley is a constituent
+council), indexed with the offline test embedder. Used by CI's accessibility check (scripts/a11y.mjs), and handy for
 working on the pages.
 
     uv run python scripts/fixture_site.py /tmp/councils-fixture
@@ -17,12 +18,15 @@ from datetime import date
 from pathlib import Path
 
 BARNSLEY, GUILDFORD, CARDIFF = "E08000038", "E07000209", "W06000015"
+SOUTH_YORKSHIRE = "E47000002"
 FIXTURE_MARK = "FIXTURE.txt"
 
 
 def meeting(gss: str, mid: int, d: date, kind: str = "council") -> dict:
-    title = {"council": "Full Council", "cabinet": "Cabinet", "policy": "Policy and Resources Committee"}[kind]
-    return {"meeting_id": f"{gss}:{mid}", "gss": gss, "council": gss, "committee_id": 1 if kind == "council" else 2,
+    title = {"council": "Full Council", "cabinet": "Cabinet", "policy": "Policy and Resources Committee",
+             "board": "Mayoral Combined Authority Board", "scrutiny": "Overview and Scrutiny Committee"}[kind]
+    return {"meeting_id": f"{gss}:{mid}", "gss": gss, "council": gss,
+            "committee_id": 1 if kind in ("council", "board") else 2,
             "committee_title": title, "kind": kind, "date": d, "year": d.year, "status": "", "location": "",
             "webcast": False, "minutes_published": True, "items": 1, "items_with_minutes": 1, "earlier_minutes": "",
             "minutes_document": "", "attendees": 3, "url": f"https://example.org/{gss}/meetings/{mid}"}
@@ -40,6 +44,34 @@ def member(gss: str, mid: int, d: date, member_id: str, name: str, party: str) -
     return {"meeting_id": f"{gss}:{mid}", "gss": gss, "date": d, "year": d.year, "member_id": member_id,
             "member_type": "U", "name": name, "role": "Committee Member", "attendance": "Present, as expected",
             "party_label": party, "party": party, "ward": ""}
+
+
+def authority_members(mid: int, d: date) -> list[dict]:
+    """South Yorkshire's board: its mayor, Barnsley's leader (as in Barnsley's own fixture, so his party comes from
+    there), and an appointed member who isn't a councillor, whose name isn't kept (decision 20)."""
+    base = {"meeting_id": f"{SOUTH_YORKSHIRE}:{mid}", "gss": SOUTH_YORKSHIRE, "date": d, "year": d.year,
+            "member_type": "U", "attendance": "Present, as expected", "ward": ""}
+    return [
+        {**base, "member_id": "101", "name": "Mayor Oliver Coppard", "role": "Chair", "party_label": "LAB",
+         "party": "LAB", "member_role": "mayor", "party_source": "as elected", "representing": "SYMCA",
+         "home_gss": ""},
+        {**base, "member_id": "102", "name": "Councillor Steve Houghton", "role": "Committee Member",
+         "party_label": "LAB", "party": "LAB", "member_role": "constituent", "party_source": "home council",
+         "representing": "Barnsley Council", "home_gss": BARNSLEY},
+        {**base, "member_id": "", "name": "[name removed]", "role": "Committee Member", "party_label": "",
+         "party": "", "member_role": "appointed", "party_source": "", "representing": "Business Advisory Board",
+         "home_gss": ""},
+    ]
+
+
+AUTHORITY_ITEMS = [
+    ("board", "Bus Franchising", "The Mayor introduced the report on bus franchising across South Yorkshire. RESOLVED "
+                                 "that the Board approve the move to a franchised bus network."),
+    ("board", "Mayoral Budget and Precept 2025/26", "The Board considered the Mayor's budget and the mayoral precept. "
+                                                    "RESOLVED that the budget be approved."),
+    ("scrutiny", "Bus Services Performance", "Councillor Houghton asked about bus punctuality. The Committee noted the "
+                                             "report on bus services."),
+]
 
 
 def vote(gss: str, mid: int, iid: int, d: date, sides: list[tuple[str, str, str]], outcome: str) -> list[dict]:
@@ -118,6 +150,15 @@ def build(folder: Path) -> None:
         store.parquet.write(root, "items", gss, rows)
         store.parquet.write(root, "attendance", gss, attendance)
         store.parquet.write(root, "votes", gss, votes)
+    meetings, rows, attendance = [], [], []
+    for n, (d, (kind, title, text)) in enumerate(zip(dates, AUTHORITY_ITEMS, strict=True), start=1):
+        meetings.append(meeting(SOUTH_YORKSHIRE, n, d, kind))
+        rows.append(item(SOUTH_YORKSHIRE, n, n * 10, d, title, text))
+        attendance += authority_members(n, d) if kind == "board" else authority_members(n, d)[1:2]
+    store.parquet.write(root, "meetings", SOUTH_YORKSHIRE, meetings)
+    store.parquet.write(root, "items", SOUTH_YORKSHIRE, rows)
+    store.parquet.write(root, "attendance", SOUTH_YORKSHIRE, attendance)
+    store.parquet.write(root, "votes", SOUTH_YORKSHIRE, [])
     idx = Indexer(settings)
     idx.index_all()
     embed_pending(settings, idx.index, idx.state, HashingEmbedder(64))
@@ -134,5 +175,5 @@ if __name__ == "__main__":
 
     os.environ["COUNCILS_DATA_DIR"] = str(target)
     build(target)
-    print(f"A made-up record for three councils is in {target}. Run the site on it with:\n"
+    print(f"A made-up record for three councils and a strategic authority is in {target}. Run the site on it with:\n"
           f"  COUNCILS_DATA_DIR={target} uv run councils serve")

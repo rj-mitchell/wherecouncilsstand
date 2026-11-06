@@ -152,6 +152,8 @@ def test_the_modern_gov_client_connects_again_with_the_completed_chain(tmp_path,
             pass
 
     monkeypatch.setattr(modgov.httpx, "Client", FakeHttp)
+    monkeypatch.setattr(modgov.robots, "check", lambda url, ua: "allowed")
+    monkeypatch.setattr(modgov.robots, "crawl_delay", lambda url, ua: 0.0)
     asked = []
     monkeypatch.setattr(modgov.tls, "completed_context", lambda host: asked.append(host) or "a context")
     s = replace(load_settings(**{"modgov.min_interval_seconds": 0}), data_dir=tmp_path)

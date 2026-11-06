@@ -19,14 +19,14 @@ from typing import Any
 
 import numpy as np
 
-from councils import store
+from councils import authority, store
 from councils.config import Settings
 from councils.embed.base import Embedder
 from councils.index.lance import SearchIndex
 from councils.parse import redact
 from councils.parse.votes import Matcher, Member, split_names
 from councils.reference import people
-from councils.registry import councils
+from councils.registry import councils, withheld_codes
 
 log = logging.getLogger(__name__)
 
@@ -88,13 +88,17 @@ def named_members(text: str, matcher: Matcher) -> list[str]:
 
 
 def passage_rows(gss: str, settings: Settings, max_words: int = 250) -> list[dict[str, Any]]:
+    """A council's passages; none for a council whose record is withheld (its site's robots.txt forbids reading it,
+    decision 21), so indexing it removes what the index held."""
     root = settings.parquet_dir
     council = councils()[gss]
+    if council.withheld:
+        return []
     items = store.parquet.read(root, "items", gss)
     meetings = {m["meeting_id"]: m for m in store.parquet.read(root, "meetings", gss)}
     attendance = store.parquet.read(root, "attendance", gss)
     who = people.build(attendance, list(meetings.values())).get(gss) or people.Council(gss)
-    surnames = redact.councillor_surnames({a["name"] for a in attendance})
+    surnames = redact.councillor_surnames({a["name"] for a in attendance if a["member_id"]})
     voted = {v["item_id"] for v in store.parquet.read(root, "votes", gss)}
     matchers: dict[int, Matcher] = {}
     out = []
@@ -110,7 +114,8 @@ def passage_rows(gss: str, settings: Settings, max_words: int = 250) -> list[dic
         matcher = matchers[it["year"]]
         heading = (f"{council.name}, {m['committee_title']}, {fmt_date(it['date'])}"
                    + (f" — {it['number']} {it['title']}" if it.get("number") else f" — {it['title']}"))
-        control = who.control_on(it["date"])
+        # a strategic authority's "control" is its mayor's party on the date, or no single party (decision 19)
+        control = authority.control_key(gss, it["date"]) if council.is_authority else who.control_on(it["date"])
         for i, chunk in enumerate(chunk_text(text, max_words)):
             members = named_members(chunk, matcher)
             parties = sorted({p for p in (who.party_on(mid, it["date"]) for mid in members) if p})
@@ -233,6 +238,14 @@ def update_index(settings: Settings, changed: list[str], embedder: Embedder,
     nothing changed."""
     indexer = Indexer(settings)
     idx = indexer.index
+    # councils whose record is withheld (decision 21) but still in the index: their passages are removed
+    held = set(withheld_codes())
+    indexed = {k.split(":")[0] for k in indexer.state.data}
+    changed = list(changed) + sorted(indexed & held - set(changed))
+    # councils loaded but never indexed (a first load, such as the strategic authorities' backfill, writes the store
+    # without indexing): indexed now. One with no minutes text yet is looked at again each night, which costs little.
+    stored = {p.stem for p in (settings.parquet_dir / "items").glob("*.parquet")}
+    changed += sorted(g for g in stored - indexed - held - set(changed) if g in councils())
     for gss in changed:              # one writer at a time; unchanged passages keep their vectors
         indexer.index_council(gss)
     done = []

@@ -89,10 +89,19 @@ def build(attendance: list[dict[str, Any]], meetings: list[dict[str, Any]]) -> d
     return out
 
 
+MAYOR = "MAYOR:"            # a strategic authority's "control": its mayor's party (decision 19)
+NO_SINGLE_PARTY = "SA:NONE"  # a strategic authority without a mayor on the date
+
+
 def party_name(code: str, gss: str = "") -> str:
-    """A party code as words. A local party is named as Open Council Data names it at that council (``gss``)."""
+    """A party code as words. A local party is named as Open Council Data names it at that council (``gss``). A
+    strategic authority's "control" is always labelled as its mayor's party, never as a council's control."""
     if code == NOC:
         return "No overall control"
+    if code.startswith(MAYOR):
+        return f"Mayor: {party_name(code[len(MAYOR):], gss)}"
+    if code == NO_SINGLE_PARTY:
+        return "No mayor: no single party"
     if code.startswith("LOCAL:"):
         return local_name(code[6:], gss)
     return NAMES.get(code, code or "Party not recorded")

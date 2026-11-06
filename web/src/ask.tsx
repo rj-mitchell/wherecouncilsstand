@@ -106,7 +106,8 @@ function App() {
     <>
       <h1>What has your council decided?</h1>
       <p className="lede">
-        Ask about anything councils across the UK have discussed, decided or voted on at full council and cabinet.
+        Ask about anything councils across the UK have discussed, decided or voted on at full council and cabinet, and
+        England's strategic authorities at their boards and scrutiny committees.
         Every point in the briefing cites the council's own minutes.
       </p>
       <form className="ask-form" onSubmit={submit}>

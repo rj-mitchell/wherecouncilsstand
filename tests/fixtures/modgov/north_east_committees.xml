@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<committees>
+  <committeescount> 3</committeescount>
+  <committee>
+    <committeeid>152</committeeid>
+    <committeetitle>Audit and Standards Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>137</committeeid>
+    <committeetitle>Cabinet</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Cabinet</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>143</committeeid>
+    <committeetitle>Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Committees</committeecategory>
+  </committee>
+</committees>

@@ -19,6 +19,7 @@ from councils.embed.base import Embedder, get_embedder
 from councils.index.lance import SearchIndex, date_lit, sql_list, sql_str
 from councils.rank.composite import Candidate, RankParams, Scored, rank
 from councils.rank.evidence import GROUP_BY, evidence_summary, select_evidence
+from councils.registry import withheld_codes
 
 log = logging.getLogger(__name__)
 
@@ -32,9 +33,10 @@ class Filters:
     councils: list[str] = field(default_factory=list)      # GSS codes
     nations: list[str] = field(default_factory=list)       # england, wales
     regions: list[str] = field(default_factory=list)
-    council_types: list[str] = field(default_factory=list)
-    kinds: list[str] = field(default_factory=list)         # council, cabinet, policy
-    control: list[str] = field(default_factory=list)       # party codes in overall control, or "NOC"
+    council_types: list[str] = field(default_factory=list)  # ... or "strategic_authority"
+    kinds: list[str] = field(default_factory=list)         # council, cabinet, policy; board, mayor, scrutiny
+    control: list[str] = field(default_factory=list)       # party codes in overall control, or "NOC"; for strategic
+                                                           # authorities "MAYOR:<party>" or "SA:NONE" (decision 19)
     parties: list[str] = field(default_factory=list)       # parties of councillors named in the passage
     named_votes_only: bool = False
 
@@ -101,6 +103,9 @@ class Engine:
         f = filters or Filters()
         r = self.settings.ranking
         where = build_where(f)
+        held = withheld_codes()
+        if held:   # passages of a council withheld since it was indexed (decision 21), until the update removes them
+            where = " AND ".join(w for w in (where, f"gss NOT IN ({', '.join(sql_str(g) for g in held)})") if w)
 
         def keyword() -> list[dict[str, Any]]:
             return self.index.bm25(query, where, int(r.get("candidates_bm25", 300)))

@@ -5,6 +5,8 @@ import { longDate, number } from "./format";
 export interface Status {
   councils: number;
   loaded: number;
+  authorities?: number;
+  authorities_loaded?: number;
   meetings: number;
   named_votes: number;
   start: string;
@@ -33,6 +35,9 @@ export function statusRows(s: Status): [string, string, string?][] {
     ["Briefings", BRIEFINGS[s.briefings] + (s.briefings_note ? `. ${s.briefings_note}` : ""), s.briefings],
     ["Search, council and vote pages", "Available", "available"],
     ["Councils covered", `${number(s.loaded)} of ${number(s.councils)}`],
+    ...(s.authorities
+      ? ([["Strategic authorities covered", `${number(s.authorities_loaded)} of ${number(s.authorities)}`]] as [string, string][])
+      : []),
     ["Meetings", `${number(s.meetings)} since ${longDate(s.start)}`],
     ["Named votes", number(s.named_votes)],
     ["Most recent meeting", s.latest_meeting ? longDate(s.latest_meeting) : "None loaded yet"],

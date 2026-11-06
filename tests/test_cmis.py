@@ -166,6 +166,8 @@ def robots_txt(monkeypatch):
         R.text = text
         monkeypatch.setattr(robots.httpx, "get", lambda *a, **k: R())
         robots._parser.cache_clear()
+    # these tests are of reading robots.txt with its rules obeyed ([robots] obey, off in config/settings.toml)
+    monkeypatch.setattr(robots, "obeyed", lambda: True)
     yield serve
     robots._parser.cache_clear()
 
@@ -312,3 +314,22 @@ def test_a_committee_page_listing_one_year_has_its_date_filter_set_from_the_star
     # a page already listing from the start, or with no filter, is left as it is
     assert cmis.date_filter(_filter_page("2018-01-01"), date(2018, 5, 1)) is None
     assert cmis.date_filter("<html><body><form></form></body></html>", date(2018, 5, 1)) is None
+
+
+def test_robots_txt_is_not_obeyed_when_the_setting_is_off(monkeypatch):
+    """The owner's decision of 6 November 2026 (decision 21): with [robots] obey off, as it is in
+    config/settings.toml, every page is allowed and robots.txt isn't even fetched for its rules."""
+    def no_fetch(*a, **k):
+        raise AssertionError("robots.txt fetched")
+
+    monkeypatch.setattr(robots, "obeyed", lambda: False)
+    monkeypatch.setattr(robots, "_parser", no_fetch)
+    ua = "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://example.org)"
+    assert robots.check("https://democracy.kirklees.gov.uk/mgWebService.asmx/GetCommittees", ua) == "allowed"
+    assert robots.allowed("https://essex.cmis.uk.com/essexcmis5/Meetings.aspx", ua)
+
+
+def test_the_setting_is_off_by_default():
+    from councils.config import load_settings as fresh
+
+    assert fresh().section("robots").get("obey") is False

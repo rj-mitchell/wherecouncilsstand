@@ -705,7 +705,10 @@ h2 {
 }
 
 .source.cabinet .source-n,
-.source.policy .source-n {
+.source.policy .source-n,
+.source.board .source-n,
+.source.mayor .source-n,
+.source.scrutiny .source-n {
   border-color: var(--cabinet);
 }
 

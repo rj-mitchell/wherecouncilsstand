@@ -2,14 +2,17 @@
 
 Sources (fetched fresh each run):
   * England: MHCLG's local-authority register on planning.data.gov.uk (OGL), current entries only, with type, GSS code
-    and region. Combined authorities are left out.
+    and region. Combined authorities and the Greater London Authority are left out: strategic authorities are listed
+    by hand in data_static/strategic_authorities.csv (docs/DATA.md).
   * Wales and Scotland: mySociety MapIt's unitary authorities; Northern Ireland: its local government districts
     (GSS codes, ONS names). MapIt has no websites: a council's website is kept from the current councils.csv.
   * Modern.gov sites: Local Democracy UK's council list (CC BY 4.0), then a probe of the usual host names
     (democracy., moderngov., modgov., committees., ...) on each remaining council's own domain.
 
-Each site is checked with one GetCommittees request. "blocked" means the site refused automated requests from where
-this ran, and "unreachable" that the connection failed; either may work from elsewhere or later.
+Each site's robots.txt is read first when ``[robots] obey`` is on (config/settings.toml; off by the owner's decision of
+6 November 2026, decision 21): then a site that forbids the web service is "robots" and isn't asked.
+Each other site is checked with one GetCommittees request. "blocked" means the site refused automated requests from
+where this ran, and "unreachable" that the connection failed; either may work from elsewhere or later.
 
     uv run python scripts/build_councils.py
 """
@@ -42,7 +45,7 @@ SUPERSEDED = {"E08000016": "E08000038",  # Barnsley
               "E08000019": "E08000039"}  # Sheffield
 
 TYPES = {"CTY": "county", "NMD": "district", "UA": "unitary", "MD": "metropolitan", "LBO": "london_borough",
-         "CC": "city_of_london", "SRA": "strategic_authority"}
+         "CC": "city_of_london"}   # not "COMB" or "SRA": strategic authorities are in strategic_authorities.csv
 HOST_PREFIXES = ["democracy", "moderngov", "modgov", "committees", "democratic", "meetings", "councillors",
                  "decisionmaking", "democracy.cityof", "cmttpublic", "mgov", "moderngovwebpublic", "modgov.lb",
                  "committeemeetings", "councilmeetings", "democraticservices", "minutes", "cabinet", "mygov",
@@ -163,7 +166,7 @@ def main() -> None:
         if c.get("modgov_url"):
             status, _ = probe(s, c["gss"], c["modgov_url"])
             c["modgov_status"] = status
-            if status == "ok":
+            if status in ("ok", "robots"):    # a site that forbids reading is asked, not worked around
                 return c
             # the listed site doesn't answer: the council may have moved it (North East Derbyshire and Torfaen moved
             # to <name>.moderngov.co.uk, November 2026)
@@ -175,7 +178,7 @@ def main() -> None:
             return c
         for url in candidate_hosts(c.get("website", ""), c["name"]):
             status, _ = probe(s, c["gss"], url)
-            if status in ("ok", "blocked"):  # an unreachable guess is just a host that doesn't exist
+            if status in ("ok", "blocked", "robots"):  # an unreachable guess is just a host that doesn't exist
                 c.update(modgov_url=url, modgov_status=status, modgov_source="probed")
                 return c
         c.update(modgov_url="", modgov_status="none", modgov_source="")

@@ -26,6 +26,13 @@ refetch_days = 120
 # Read minutes published only as a document (sources/documents.py).
 read_documents = true
 
+[robots]
+# Whether every reader (Modern.gov, CMIS, CoINS) obeys sites' robots.txt rules. Off: the owner's decision of
+# 6 November 2026 (docs/DECISIONS.md, 21), that robots.txt shouldn't be a blanket barrier to councils' public
+# records. Crawl-delay is still honoured where the file can be read; the crawler still names itself and keeps
+# min_interval_seconds; a site that refuses requests (403, a bot check) is still asked, never worked around.
+obey = false
+
 [ranking]
 candidates_bm25 = 300
 candidates_vector = 300

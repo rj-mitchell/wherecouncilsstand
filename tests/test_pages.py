@@ -125,3 +125,52 @@ def test_shell_helpers_escape_and_replace():
     assert "<title>A &quot;quoted&quot; &lt;title&gt;</title>" in page and "Old" not in page
     assert 'content="D &amp; E"' in page and "</script><b>" not in page and "<\\/script>" in page
     assert with_text(page, None) == page and "needs JavaScript" not in with_text(page, "<p>x</p>")
+
+
+SOUTH_YORKSHIRE = "E47000002"
+
+
+def test_an_authority_page_and_its_councils_pages_link_both_ways(site, settings):  # noqa: F811
+    """South Yorkshire's board with Barnsley's leader on it (made-up rows): the authority's page names its kind,
+    mayor, constituent councils and members by role; Barnsley's page says it is part of the authority."""
+    from test_pipeline import item, meeting
+
+    d = date(2025, 3, 19)
+    m = {**meeting(SOUTH_YORKSHIRE, 5, d), "kind": "board", "committee_title": "Mayoral Combined Authority Board"}
+    store.parquet.write(settings.parquet_dir, "meetings", SOUTH_YORKSHIRE, [m])
+    store.parquet.write(settings.parquet_dir, "items", SOUTH_YORKSHIRE, [item(
+        SOUTH_YORKSHIRE, 5, 50, d, "Budget", "RESOLVED that the mayor's budget be approved.")])
+    base = {"meeting_id": f"{SOUTH_YORKSHIRE}:5", "gss": SOUTH_YORKSHIRE, "date": d, "year": 2025, "member_type": "U",
+            "attendance": "Present, as expected", "ward": ""}
+    store.parquet.write(settings.parquet_dir, "attendance", SOUTH_YORKSHIRE, [
+        {**base, "member_id": "1", "name": "Mayor Oliver Coppard", "role": "Chair", "party_label": "LAB",
+         "party": "LAB", "member_role": "mayor", "party_source": "as elected", "representing": "SYMCA"},
+        {**base, "member_id": "2", "name": "Councillor Sir Steve Houghton", "role": "Committee Member",
+         "party_label": "LAB", "party": "LAB", "member_role": "constituent", "party_source": "home council",
+         "home_gss": BARNSLEY, "representing": "Barnsley Council"},
+        {**base, "member_id": "", "name": "[name removed]", "role": "Committee Member", "party_label": "",
+         "party": "", "member_role": "appointed", "representing": "Business Advisory Board"}])
+    store.parquet.write(settings.parquet_dir, "votes", SOUTH_YORKSHIRE, [])
+
+    page = site.get(f"/api/councils/{SOUTH_YORKSHIRE}").json()
+    assert page["loaded"] and page["kind_name"] == "Mayoral combined authority"
+    assert page["control"]["name"] == "Mayor: Labour" and page["control"]["mayor"] == "Oliver Coppard"
+    assert [c["name"] for c in page["constituents"]][0] == "Barnsley Metropolitan Borough Council"
+    members = page["members"]["members"]
+    assert [x["role"] for x in members] == ["mayor", "constituent", "appointed"]
+    assert members[1]["name"] == "Sir Steve Houghton" and members[1]["home"]["gss"] == BARNSLEY
+    assert members[2]["name"] is None
+    html = site.get(f"/councils/{SOUTH_YORKSHIRE}").text
+    app = html[html.index('<div id="app">'):html.index("</main>")]
+    assert "Mayoral combined authority" in app and "Mayor: Oliver Coppard (Labour)" in app
+    assert f'<a href="/councils/{BARNSLEY}">Barnsley Metropolitan Borough Council</a>' in app
+    assert "Name not shown (not a councillor)" in app and "Business Advisory" not in app
+    assert ld(html)["about"]["additionalType"] == "Mayoral combined authority"
+    barnsley = site.get(f"/councils/{BARNSLEY}").text
+    assert f'Part of: <a href="/councils/{SOUTH_YORKSHIRE}">South Yorkshire Mayoral Combined Authority</a>' in barnsley
+    assert ld(barnsley)["about"]["memberOf"][0]["name"] == "South Yorkshire Mayoral Combined Authority"
+    listing = site.get("/councils").text
+    assert "<h2>Strategic authorities</h2>" in listing and "Greater London Authority" in listing
+    totals = site.get("/api/status").json()
+    assert totals["authorities"] == 20 and totals["authorities_loaded"] == 1
+    assert f"/councils/{SOUTH_YORKSHIRE}" in site.get("/sitemap.xml").text

@@ -23,8 +23,12 @@ log = logging.getLogger(__name__)
 
 PartyCode = Literal["LAB", "CON", "LD", "GRN", "REF", "PC", "UKIP", "LIB", "YP", "SNP", "DUP", "SF", "SDLP", "UUP",
                     "APNI", "TUV", "PBP", "IND", "NOC"]
-CouncilType = Literal["county", "district", "unitary", "metropolitan", "london_borough"]
-Kind = Literal["council", "cabinet", "policy"]
+# a strategic authority's "control" is its mayor's party, or none (decision 19)
+ControlCode = Literal["LAB", "CON", "LD", "GRN", "REF", "PC", "UKIP", "LIB", "YP", "SNP", "DUP", "SF", "SDLP", "UUP",
+                      "APNI", "TUV", "PBP", "IND", "NOC", "MAYOR:LAB", "MAYOR:CON", "MAYOR:LD", "MAYOR:GRN",
+                      "MAYOR:REF", "MAYOR:IND", "SA:NONE"]
+CouncilType = Literal["county", "district", "unitary", "metropolitan", "london_borough", "strategic_authority"]
+Kind = Literal["council", "cabinet", "policy", "board", "mayor", "scrutiny"]
 GroupBy = Literal["control", "region", "type", "council"]
 
 PARTY_WORDS = [
@@ -38,7 +42,9 @@ PARTY_WORDS = [
 _RUN = r"(?:-?\s*(?:run|led|controlled|held)|\s+(?:majority|controlled|administrations?))"
 TYPE_WORDS = {"county councils": "county", "district councils": "district", "unitary councils": "unitary",
               "unitaries": "unitary", "metropolitan": "metropolitan", "london boroughs": "london_borough",
-              "london borough councils": "london_borough"}
+              "london borough councils": "london_borough", "strategic authorities": "strategic_authority",
+              "combined authorities": "strategic_authority", "combined county authorities": "strategic_authority",
+              "mayoral authorities": "strategic_authority", "metro mayors": "strategic_authority"}
 _YEAR = r"((?:19|20)\d\d)"
 
 
@@ -109,9 +115,18 @@ def councils_in(question: str) -> list[tuple[str, str]]:
     ("Bury", not "bury"), longest first, so "North Yorkshire" wins over "York"."""
     found: list[tuple[str, str]] = []
     taken: list[tuple[int, int]] = []
-    names = sorted(((c.short_name, c.gss) for c in councils().values() if len(c.short_name) >= 3),
+    # a strategic authority by its name, its initials ("GMCA") or its short name with "combined authority" or
+    # "mayor" ("West Yorkshire mayor"): its short name alone is often a region's ("the West Midlands")
+    names = sorted([(c.short_name, c.gss) for c in councils().values() if len(c.short_name) >= 3
+                    and not c.is_authority]
+                   + [(n, c.gss) for c in councils().values() if c.is_authority
+                      for n in (c.name, c.reference, *(f"{c.short_name} {w}" for w in
+                                                       ("Combined Authority", "Combined County Authority", "mayor",
+                                                        "Mayor", "CA", "CCA")))],
                    key=lambda x: -len(x[0]))
     for name, gss in names:
+        if any(g == gss for g, _ in found):     # an authority already found by another of its names
+            continue
         for m in re.finditer(rf"(?<![\w-]){re.escape(name)}(?![\w-])", question):
             if any(a < m.end() and m.start() < b for a, b in taken):
                 continue
@@ -144,13 +159,19 @@ def parse_offline(question: str, today: date | None = None, default_years: int =
     if re.search(r"\bno overall control\b|\bhung councils?\b", ql):
         control.append("NOC")
         strip.append("no overall control")
+    for pattern, code in PARTY_WORDS:     # strategic authorities with a mayor of a party (decision 19)
+        m = re.search(rf"\b(?:{pattern})\s+(?:metro\s+)?mayors?\b", ql)
+        if m and code in ("LAB", "CON", "LD", "GRN", "REF", "IND"):
+            control.append(f"MAYOR:{code}")
+            strip.append(m.group(0))
     types = sorted({t for w, t in TYPE_WORDS.items() if w in ql})
     nations = [n for n, rx in (("wales", r"\bwelsh councils?\b|\bin wales\b"),
                                ("england", r"\benglish councils?\b|\bin england\b"),
                                ("scotland", r"\bscottish councils?\b|\bin scotland\b"),
                                ("northern_ireland", r"\bnorthern ir(?:eland|ish) councils?\b|\bin northern ireland\b"))
                if re.search(rx, ql)]
-    kinds = [k for k, rx in (("cabinet", r"\bcabinets?\b|\bexecutives?\b"), ("council", r"\bfull councils?\b"))
+    kinds = [k for k, rx in (("cabinet", r"\bcabinets?\b|\bexecutives?\b"), ("council", r"\bfull councils?\b"),
+                             ("scrutiny", r"\bscrutiny\b"))
              if re.search(rx, ql)]
     named = councils_in(question)
     wants_votes = bool(re.search(r"\bvot(?:e|ed|es|ing)\b", ql))
@@ -184,7 +205,7 @@ class ParsedQuery(BaseModel):
     date_from: str | None = Field(description="YYYY-MM-DD or null")
     date_to: str | None = Field(description="YYYY-MM-DD or null")
     councils: list[str] = Field(description="Councils named in the question, as written")
-    control: list[PartyCode]
+    control: list[ControlCode]
     parties: list[PartyCode]
     nations: list[Literal["england", "wales", "scotland", "northern_ireland"]]
     council_types: list[CouncilType]
@@ -208,11 +229,16 @@ Rules:
 - councils: councils the question names ("Barnsley", "Manchester City Council").
 - control: only when the question asks about councils run by a party ("Labour-run councils", "councils controlled
   by Reform UK"): LAB, CON, LD, GRN, REF, PC, UKIP, LIB, YP, SNP, DUP, SF, SDLP, UUP, APNI (Alliance), TUV, PBP, IND, or NOC for no
-  overall control. When the question
-  compares councils run by different parties, leave control empty and set group_by to "control".
+  overall control. For England's strategic authorities (combined authorities and combined county authorities, with
+  their metro mayors) a mayor's party is not control of a council: "authorities with a Labour mayor" is MAYOR:LAB
+  (likewise MAYOR:CON, MAYOR:LD, MAYOR:GRN, MAYOR:REF, MAYOR:IND), and authorities without a mayor are SA:NONE. When
+  the question compares councils run by different parties, leave control empty and set group_by to "control".
 - parties: only when the question asks about what councillors of a party said or did (not who runs the council).
-- nations, council_types, kinds (council = full council, cabinet, policy = committee-system councils' main
-  committees): only when asked.
+- nations, council_types (strategic_authority for combined and combined county authorities), kinds (council = full
+  council, cabinet, policy = committee-system councils' main committees, board = a strategic authority's board,
+  scrutiny = its overview and scrutiny committees, mayor = its mayor's decisions): only when asked.
+- councils also takes strategic authorities the question names ("Greater Manchester Combined Authority", "WMCA",
+  "the West Yorkshire mayor").
 - group_by: "control" (by party in overall control, the default), "region", "type" (kind of council) or "council".
 - wants_votes: true if the question is about how councillors voted.
 - interpretation: one plain sentence describing the filters you chose, in British English."""

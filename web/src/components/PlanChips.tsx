@@ -1,11 +1,12 @@
 /** What the question was read as: the filters the evidence was limited to. */
 import type { Meta, Plan } from "../api";
-import { longDate } from "../format";
+import { controlChip, KIND_LABEL, longDate } from "../format";
 
 const PARTY: Record<string, string> = {
   LAB: "Labour", CON: "Conservative", LD: "Liberal Democrats", GRN: "Green", REF: "Reform UK", PC: "Plaid Cymru",
   UKIP: "UKIP", LIB: "Liberal Party", IND: "Independent", NOC: "no overall control",
 };
+const MAYOR_PARTY: Record<string, string> = { ...PARTY, LD: "Liberal Democrat" };
 
 const NATION: Record<string, string> = {
   england: "England", wales: "Wales", scotland: "Scotland", northern_ireland: "Northern Ireland",
@@ -17,13 +18,12 @@ export function PlanChips({ plan, meta, councilNames }: { plan: Plan; meta: Meta
   if (f.date_from || f.date_to)
     chips.push(`${f.date_from ? longDate(f.date_from) : "May 2018"} to ${f.date_to ? longDate(f.date_to) : "today"}`);
   for (const g of f.councils || []) chips.push(councilNames[g] || g);
-  for (const c of f.control || [])
-    chips.push(c === "NOC" ? "Councils under no overall control" : `Councils under ${PARTY[c] || c.replace(/^LOCAL:/, "")} control`);
+  for (const c of f.control || []) chips.push(controlChip(c, c.startsWith("MAYOR:") ? MAYOR_PARTY : PARTY));
   for (const p of f.parties || []) chips.push(`Naming ${PARTY[p] || p} councillors`);
   for (const n of f.nations || []) chips.push(NATION[n] || n);
   for (const r of f.regions || []) chips.push(meta?.regions[r] || r);
   for (const t of f.council_types || []) chips.push(meta?.types[t] || t);
-  for (const k of f.kinds || []) chips.push(k === "council" ? "Full council" : k === "cabinet" ? "Cabinet" : k);
+  for (const k of f.kinds || []) chips.push(KIND_LABEL[k] || k);
   if (f.named_votes_only) chips.push("Named votes only");
   return (
     <div className="plan">
