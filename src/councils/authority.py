@@ -108,8 +108,13 @@ def home_party(root: Path, home: str, name: str, d: date) -> str:
     if who is None:
         return ""
     key = _surname_keys(bare_name(name))[1]
-    hits = [mid for mid, nm in people.recent(who, d, 366) if _surname_keys(nm)[1] == key]
+    hits = [mid for mid, nm in people.recent(who, d, 366) if _surname_keys(_person(nm))[1] == key]
     return who.party_on(hits[0], d) if len(hits) == 1 else ""
+
+
+def _person(name: str) -> str:
+    """A name without an office written after it: "Chris Cooke - Elected Mayor" -> "Chris Cooke" (Middlesbrough)."""
+    return re.split(r"\s+[-–]\s+", name.strip(), maxsplit=1)[0]
 
 
 def find_member(root: Path, authority: str, name: str, d: date) -> tuple[str, str, str] | None:
@@ -117,7 +122,7 @@ def find_member(root: Path, authority: str, name: str, d: date) -> tuple[str, st
     Fryer"): (council GSS, member id, full name) of the one councillor at the authority's member councils, recorded
     at their meetings within a year of the date, with that surname and, where the minutes give one, that first name or
     initial. None if the site holds none of those councils, or no councillor fits, or more than one does."""
-    words = [w for w in re.sub(r"[^\w' -]", " ", _HONOURS_AND_TITLES.sub(" ", bare_name(name))).split() if w]
+    words = [w for w in re.sub(r"[^\w' -]", " ", _HONOURS_AND_TITLES.sub(" ", bare_name(_person(name)))).split() if w]
     if not words:
         return None
     surname, given = words[-1].lower(), [w.lower() for w in words[:-1]]
@@ -133,7 +138,8 @@ def find_member(root: Path, authority: str, name: str, d: date) -> tuple[str, st
         if who is None:
             continue
         for mid, nm in people.recent(who, d, 366):
-            theirs = [w for w in re.sub(r"[^\w' -]", " ", _HONOURS_AND_TITLES.sub(" ", bare_name(nm))).split() if w]
+            theirs = [w for w in re.sub(r"[^\w' -]", " ", _HONOURS_AND_TITLES.sub(" ", bare_name(_person(nm)))).split()
+                      if w]
             if not theirs or theirs[-1].lower() != surname:
                 continue
             if given and len(theirs) > 1:

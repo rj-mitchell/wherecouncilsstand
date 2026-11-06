@@ -243,3 +243,48 @@ def test_councillors_without_their_council_are_found_at_home(tmp_path):
             "representing": "Cumberland Council"}]
     out, _ = authority.classify(att, councils()[CUMBRIA], tmp_path)
     assert (out[0]["member_role"], out[0]["party"], out[0]["party_source"]) == ("constituent", "LAB", "home council")
+
+
+def test_roles_wrapped_onto_two_lines():
+    """Tees Valley's cabinet of 25 September 2026: roles in the column wrap onto a second line ("Mayor of
+    Middlesbrough, Middlesbrough" / "Council")."""
+    text = """ATTENDEES
+
+Members
+
+Mayor Ben Houchen (Chair)
+Councillor Stephen Harker
+Councillor Dave Bruce
+Mayor Chris Cooke
+
+Councillor Alec Brown
+Councillor Paul Rowling
+
+Matthew Ord
+
+Officers
+
+Tom Bryant
+
+Tees Valley Mayor
+Leader, Darlington Borough Council
+Leader, Hartlepool Borough Council
+Mayor of Middlesbrough, Middlesbrough
+Council
+Leader, Redcar and Cleveland Borough Council
+Deputy Leader, Stockton-on-Tees Borough
+Council
+Chair of the Business Board
+
+Chief Executive, Tees Valley Combined
+Authority
+
+Anything is possible
+"""
+    found = {a.name: a.representing for a in docsite.attendees(text)}
+    assert found["Mayor Chris Cooke"] == "Mayor of Middlesbrough, Middlesbrough Council"
+    assert found["Councillor Paul Rowling"] == "Deputy Leader, Stockton-on-Tees Borough Council"
+    assert found["Matthew Ord"] == "Chair of the Business Board" and "Tom Bryant" not in found
+    assert docsite.representing_council(found["Mayor Chris Cooke"]) == "Middlesbrough Council"
+    assert docsite.representing_council(found["Councillor Paul Rowling"]) == "Stockton-on-Tees Borough Council"
+    assert docsite.representing_council("Mayor of Middlesbrough") == "Middlesbrough"

@@ -345,6 +345,9 @@ _ROLE_LINE = re.compile(r"\b(?:leader|council\b|mayor of|deputy mayor|mayor\s*$|
                         r"|director|officer|executive|manager|head of|governance|authority|lep\b|board|committee"
                         r"|commissioner|secretary|solicitor|clerk|advis[eo]r|lead\b|partnership|university|college)",
                         re.I)
+# the end of a role wrapped onto the next line: "Council", "Borough Council", "Tees Valley Combined Authority"
+_WRAPPED = re.compile(r"(?!.*\b(?:leader|mayor|chair|member|director|officer|chief|head|manager)\b)\s*"
+                      r"(?:[A-Z][\w&'-]*\s+){0,3}(?:council|authority)\s*", re.I)
 _OFFICER_ROLE = re.compile(r"\bofficer\b|chief executive|director|manager|head of|clerk|solicitor|secretary"
                            r"|returning|governance|section 73|\bhr\b", re.I)
 _TITLE = re.compile(r"^(?:the\s+)?(?:(?:deputy|elected|city)\s+)?(?:councill?ors?|cllrs?\.?|mayor(?!\s+of\b))\s+", re.I)
@@ -464,8 +467,8 @@ def _is_role_line(line: str, block: list[str]) -> bool:
         return False                          # the rest of a sentence the lines before began
     if re.match(r"^(?:and|&)\s", line):
         return False
-    if "," in line and not re.match(r"^(?:deputy\s+)?(?:leader|chair|vice[- ]chair|member|chief|director|head)\b", line,
-                                    re.I):
+    if "," in line and not re.match(r"^(?:deputy\s+)?(?:leader|chair|vice[- ]chair|member|chief|director|head|mayor of)\b",
+                                    line, re.I):
         return False
     return bool(_ROLE_LINE.search(line))
 
@@ -551,6 +554,9 @@ def attendees(text: str) -> list[Attendee]:
             break
         if re.search(r"\d", line):
             continue                           # page numbers, times, addresses
+        if roles and not block and _WRAPPED.fullmatch(line):
+            roles[-1] = f"{roles[-1]} {_clean(line)}"     # a role wrapped onto a second line: "... Borough" / "Council"
+            continue
         if _is_role_line(line, block):
             flush()
             roles.append(_clean(line))
@@ -563,7 +569,9 @@ def attendees(text: str) -> list[Attendee]:
                 if roles and line and not re.search(r"\d", line):
                     break
                 continue
-            if _is_role_line(line, []):
+            if roles and _WRAPPED.fullmatch(line):
+                roles[-1] = f"{roles[-1]} {_clean(line)}"
+            elif _is_role_line(line, []):
                 roles.append(_clean(line))
             elif roles:
                 break
@@ -599,10 +607,13 @@ def _titled(a: Attendee) -> Attendee:
 
 def representing_council(text: str) -> str:
     """The council in a role written beside a name: "Leader, Hartlepool Borough Council" -> "Hartlepool Borough
-    Council"; "Mayor of Middlesbrough" -> "Middlesbrough"."""
+    Council"; "Mayor of Middlesbrough" -> "Middlesbrough"; "Mayor of Middlesbrough, Middlesbrough Council" ->
+    "Middlesbrough Council"."""
     t = re.sub(r"^(?:deputy\s+)?(?:leader|mayor|elected mayor|cabinet member|portfolio holder)\b,?\s*(?:of\s+)?", "",
                text.strip(), flags=re.I)
-    return t.strip(" ,")
+    parts = [p.strip() for p in t.split(",") if p.strip()]
+    # "Middlesbrough, Middlesbrough Council" (from "Mayor of Middlesbrough, Middlesbrough Council"): the council
+    return next((p for p in parts if re.search(r"\bcouncil\b", p, re.I)), t.strip(" ,"))
 
 
 # Transport ------------------------------------------------------------------------------------------------------
@@ -828,17 +839,17 @@ def _meeting(client: Client, council: Council, committee: Committee, kind: str, 
     for a in _attending(texts):
         name, representing, member_id = a.name, a.representing, ""
         is_mayor = mayor is not None and _surname(name) == _surname(mayor.name)
+        if representing and not is_mayor:
+            representing = representing_council(representing)
         if not is_mayor and name.startswith(("Councillor ", "Mayor ")):
             found = authority.find_member(client.store, gss, name, m.date)
-            if found:
+            written = authority.home_council(representing, gss, m.date) if representing else ""
+            # the council written beside the name wins over a namesake found at another
+            if found and (not written or written == found[0]):
                 home, mid, full = found
-                representing = representing or councils()[home].name
+                representing = councils()[home].name
                 name = f"{'Mayor' if name.startswith('Mayor ') else 'Councillor'} {full}"
                 member_id = f"{home}:{mid}"
-            elif representing:
-                representing = representing_council(representing)
-        elif representing and not is_mayor:
-            representing = representing_council(representing)
         attendance.append({
             "meeting_id": key, "gss": gss, "date": m.date, "year": m.date.year,
             "member_id": member_id or cmis.slug(re.sub(r"^(?:Mayor|Councillor)\s+", "", name)), "member_type": "",
