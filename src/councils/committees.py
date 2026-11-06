@@ -168,11 +168,10 @@ def authority_kind(title: str, gss: str) -> str | None:
     a = _authority(gss)
     if a is None:
         return None
-    if shares_site_with_council(a):
-        # on a council's site: only committees named for the authority itself ("Cheshire and Warrington Combined
-        # Authority", "... Overview and Scrutiny Committee"), never its shadow board, by the rules below
-        if not _named_for(title, a):
-            return None
+    # on a council's site: only committees named for the authority itself ("Cheshire and Warrington Combined
+    # Authority", "... Overview and Scrutiny Committee"), never its shadow board, by the rules below
+    if shares_site_with_council(a) and not _named_for(title, a):
+        return None
     t = re.sub(r"^archived\s*[-–]\s*", "", title, flags=re.I)
     if AUTHORITY_MAYOR.match(t):
         return "mayor"
