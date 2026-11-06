@@ -240,16 +240,17 @@ h2 {
   text-decoration: none;
 }
 
-/* the site's mark (partials/mark.html, and public/mark.svg for others to use): an open minute book on a tile of the
-   cloth inside a gilt edge, minutes numbered in the margin, the last resolution ticked, a ribbon marker in the
-   gutter. In dark mode the tile is the family's lifted brown, at 3:1 against the page; the pages, ink and gilt keep
-   their colours. In forced colours it is drawn in the system's two colours. */
+/* the site's mark (partials/mark.html, and public/mark.svg for others to use): a town hall, with a clock tower, a
+   pediment, four columns and a gilt step, on a tile of the cloth inside a gilt edge (the owner's choice: DECISIONS.md).
+   In dark mode the tile is the family's lifted brown, at 3:1 against the page; the stone and gilt keep their colours.
+   In forced colours it is drawn in the system's two colours. */
 .site-mark {
   flex: none;
   inline-size: var(--mark-size, 52px);
   block-size: var(--mark-size, 52px);
 }
-.site-mark__cloth {
+.site-mark__cloth,
+.site-mark__ink {
   fill: var(--binding);
 }
 
@@ -257,23 +258,17 @@ h2 {
   .site-mark {
     forced-color-adjust: none;
   }
-  .site-mark__cloth {
+  .site-mark__cloth,
+  .site-mark__ink {
     fill: CanvasText;
   }
-  .site-mark__gilt {
+  .site-mark__gilt,
+  .site-mark__hands {
     stroke: Canvas;
   }
-  .site-mark__edge,
-  .site-mark__ribbon {
+  .site-mark__stone,
+  .site-mark__step {
     fill: Canvas;
-  }
-  .site-mark__page {
-    fill: Canvas;
-    stroke: CanvasText;
-    stroke-width: 1;
-  }
-  .site-mark__ink {
-    stroke: CanvasText;
   }
 }
 
