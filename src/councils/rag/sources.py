@@ -21,7 +21,9 @@ from councils.reference import people
 
 _SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-Z\"“(])")
 BLOCK_WORDS = 70
-KIND_LABEL = {"council": "full council", "cabinet": "cabinet", "policy": "policy committee"}
+KIND_LABEL = {"council": "full council", "cabinet": "cabinet", "policy": "policy committee",
+              "board": "strategic authority's board", "mayor": "mayor's decisions",
+              "scrutiny": "overview and scrutiny committee"}
 SIDE_LABEL = {"for": "For", "against": "Against", "abstain": "Abstained"}
 # a Scottish division is between a motion and an amendment: its sides are each for something (parse/votes.py)
 SCOTTISH_SIDE_LABEL = {"for": "For the motion", "against": "For the amendment", "abstain": "Abstained"}
@@ -128,11 +130,18 @@ class Lookup:
 def record_source(n: int, r: dict[str, Any], lookup: Lookup, group_by: str = "control") -> Source:
     d = date.fromisoformat(r["date"])
     control = people.party_name(r["control"], r["gss"]) if r.get("control") else "not recorded"
+    if r.get("council_type") == "strategic_authority":
+        # a strategic authority has no party in control; its mayor's party is shown as that (decision 19)
+        control_bit = ("strategic authority; its mayor on the date: " + control.removeprefix("Mayor: ")
+                       if (r.get("control") or "").startswith(people.MAYOR) else
+                       "strategic authority with no mayor on the date: no single party in control")
+    else:
+        control_bit = f"party in overall control of the council on the date: {control}"
     named = [lookup.member(m, d) for m in r.get("members") or []]
     title_bits = [
         f"Minutes of {r['council_name']}, {r['committee']} ({KIND_LABEL.get(r['kind'], r['kind'])}), {fmt_date(d)}",
         f"item {r['item_number']} {r['item_title']}".strip() if r.get("item_number") else r["item_title"],
-        f"party in overall control of the council on the date: {control}",
+        control_bit,
     ]
     if named:
         title_bits.append("councillors named in this passage: " + "; ".join(x for x in named if x))

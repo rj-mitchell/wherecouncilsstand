@@ -19,7 +19,7 @@ from typing import Any
 
 import numpy as np
 
-from councils import store
+from councils import authority, store
 from councils.config import Settings
 from councils.embed.base import Embedder
 from councils.index.lance import SearchIndex
@@ -114,7 +114,8 @@ def passage_rows(gss: str, settings: Settings, max_words: int = 250) -> list[dic
         matcher = matchers[it["year"]]
         heading = (f"{council.name}, {m['committee_title']}, {fmt_date(it['date'])}"
                    + (f" — {it['number']} {it['title']}" if it.get("number") else f" — {it['title']}"))
-        control = who.control_on(it["date"])
+        # a strategic authority's "control" is its mayor's party on the date, or no single party (decision 19)
+        control = authority.control_key(gss, it["date"]) if council.is_authority else who.control_on(it["date"])
         for i, chunk in enumerate(chunk_text(text, max_words)):
             members = named_members(chunk, matcher)
             parties = sorted({p for p in (who.party_on(mid, it["date"]) for mid in members) if p})

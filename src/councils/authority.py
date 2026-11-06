@@ -160,7 +160,4 @@ def control_key(gss: str, d: date) -> str:
     """What stands for "control" at a strategic authority on a date (decision 19): "MAYOR:LAB" for a mayor of that
     party, or "SA:NONE" (no single party) where there is no mayor."""
     m = mayor_on(gss, d)
-    return f"MAYOR:{m.party}" if m else NO_SINGLE_PARTY
-
-
-NO_SINGLE_PARTY = "SA:NONE"
+    return f"{people.MAYOR}{m.party}" if m else people.NO_SINGLE_PARTY

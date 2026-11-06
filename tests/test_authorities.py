@@ -202,3 +202,43 @@ def test_an_authority_is_loaded_like_a_council(tmp_path, monkeypatch):
     stored = repr(att) + repr(store.parquet.read(s.parquet_dir, "items", "E47000003"))
     assert "Ridyard" not in stored and "Iqbal" not in stored
     assert {a["member_role"] for a in att} >= {"mayor", "constituent", "non_constituent", "substitute", "appointed"}
+
+
+def test_an_authoritys_control_is_its_mayors_party_labelled_as_such():
+    """Decision 19: never mixed with councils' party in overall control."""
+    from councils.authority import control_key
+    from councils.rank.evidence import evidence_group, group_label
+    from councils.reference.people import party_name
+
+    assert control_key("E47000007", date(2023, 1, 1)) == "MAYOR:CON"
+    assert control_key("E47000018", date(2025, 6, 1)) == "SA:NONE"          # Lancashire: no mayor
+    assert party_name("MAYOR:LAB") == "Mayor: Labour" and party_name("SA:NONE") == "No mayor: no single party"
+    rec = {"control": "MAYOR:REF", "gss": "E47000017", "council_type": "strategic_authority"}
+    assert evidence_group(rec) != evidence_group({"control": "REF"})
+    assert group_label("MAYOR:REF", "control", rec) == "Strategic authorities with a Reform UK mayor"
+    assert group_label("SA:NONE", "control") == "Strategic authorities without a mayor"
+
+
+def test_a_source_from_an_authority_says_its_mayors_party_not_control():
+    from councils.rag.sources import Lookup, record_source
+
+    r = {"record_id": "E47000003:1501:1", "gss": "E47000003", "council_type": "strategic_authority",
+         "council_name": "West Yorkshire Combined Authority", "committee": "Combined Authority Board",
+         "kind": "board", "date": "2026-01-22", "item_title": "Budget", "item_number": "12.", "control": "MAYOR:LAB",
+         "text": "RESOLVED that the budget be approved.", "url": "u", "members": []}
+    lookup = Lookup.__new__(Lookup)
+    lookup.votes, lookup.people = {}, {}
+    title = record_source(1, r, lookup).title
+    assert "its mayor on the date: Labour" in title and "overall control" not in title
+    assert "strategic authority's board" in title
+
+
+def test_questions_about_authorities_are_read():
+    from councils.rag.query_parse import parse_offline
+
+    p = parse_offline("What have strategic authorities with a Labour mayor decided about buses?")
+    assert p.filters.control == ["MAYOR:LAB"] and p.filters.council_types == ["strategic_authority"]
+    assert parse_offline("What has the WMCA decided about housing?").filters.councils == ["E47000007"]
+    assert parse_offline("What has the West Yorkshire mayor said about trams?").filters.councils == ["E47000003"]
+    # a region's name alone is not the authority
+    assert parse_offline("What have councils in the West Midlands decided about libraries?").filters.councils == []
