@@ -1,0 +1,84 @@
+authority,council,role,from,to,note
+E47000001,E08000001,constituent,,,Bolton
+E47000001,E08000002,constituent,,,Bury
+E47000001,E08000003,constituent,,,Manchester
+E47000001,E08000004,constituent,,,Oldham
+E47000001,E08000005,constituent,,,Rochdale
+E47000001,E08000006,constituent,,,Salford
+E47000001,E08000007,constituent,,,Stockport
+E47000001,E08000008,constituent,,,Tameside
+E47000001,E08000009,constituent,,,Trafford
+E47000001,E08000010,constituent,,,Wigan
+E47000004,E06000006,constituent,,,Halton
+E47000004,E08000011,constituent,,,Knowsley
+E47000004,E08000012,constituent,,,Liverpool
+E47000004,E08000013,constituent,,,St Helens
+E47000004,E08000014,constituent,,,Sefton
+E47000004,E08000015,constituent,,,Wirral
+E47000003,E08000032,constituent,,,Bradford
+E47000003,E08000033,constituent,,,Calderdale
+E47000003,E08000034,constituent,,,Kirklees
+E47000003,E08000035,constituent,,,Leeds
+E47000003,E08000036,constituent,,,Wakefield
+E47000003,E06000014,non_constituent,,,"York: seen in the board's attendance, 22 January 2026"
+E47000002,E08000038,constituent,,,Barnsley
+E47000002,E08000017,constituent,,,Doncaster
+E47000002,E08000018,constituent,,,Rotherham
+E47000002,E08000039,constituent,,,Sheffield
+E47000007,E08000025,constituent,,,Birmingham
+E47000007,E08000026,constituent,,,Coventry
+E47000007,E08000027,constituent,,,Dudley
+E47000007,E08000028,constituent,,,Sandwell
+E47000007,E08000029,constituent,,,Solihull
+E47000007,E08000030,constituent,,,Walsall
+E47000007,E08000031,constituent,,,Wolverhampton
+E47000014,E06000047,constituent,2024-05-07,,Durham
+E47000014,E08000037,constituent,2024-05-07,,Gateshead
+E47000014,E08000021,constituent,2024-05-07,,Newcastle upon Tyne
+E47000014,E08000022,constituent,2024-05-07,,North Tyneside
+E47000014,E06000057,constituent,2024-05-07,,Northumberland
+E47000014,E08000023,constituent,2024-05-07,,South Tyneside
+E47000014,E08000024,constituent,2024-05-07,,Sunderland
+E47000006,E06000005,constituent,,,Darlington
+E47000006,E06000001,constituent,,,Hartlepool
+E47000006,E06000002,constituent,,,Middlesbrough
+E47000006,E06000003,constituent,,,Redcar and Cleveland
+E47000006,E06000004,constituent,,,Stockton-on-Tees
+E47000009,E06000022,constituent,,,Bath and North East Somerset
+E47000009,E06000023,constituent,,,Bristol
+E47000009,E06000025,constituent,,,South Gloucestershire
+E47000008,E10000003,constituent,,,Cambridgeshire County
+E47000008,E07000008,constituent,,,Cambridge
+E47000008,E07000009,constituent,,,East Cambridgeshire
+E47000008,E07000010,constituent,,,Fenland
+E47000008,E07000011,constituent,,,Huntingdonshire
+E47000008,E06000031,constituent,,,Peterborough
+E47000008,E07000012,constituent,,,South Cambridgeshire
+E47000012,E06000065,constituent,,,North Yorkshire
+E47000012,E06000014,constituent,,,York
+E47000013,E06000015,constituent,,,Derby
+E47000013,E10000007,constituent,,,Derbyshire County
+E47000013,E06000018,constituent,,,Nottingham
+E47000013,E10000024,constituent,,,Nottinghamshire County
+E47000017,E10000019,constituent,,,Lincolnshire County
+E47000017,E06000012,constituent,,,North East Lincolnshire
+E47000017,E06000013,constituent,,,North Lincolnshire
+E47000016,E06000010,constituent,,,Hull
+E47000016,E06000011,constituent,,,East Riding of Yorkshire
+E47000015,E10000008,constituent,,,Devon County
+E47000015,E06000027,constituent,,,Torbay
+E47000018,E10000017,constituent,,,Lancashire County
+E47000018,E06000008,constituent,,,Blackburn with Darwen
+E47000018,E06000009,constituent,,,Blackpool
+SA-CUMBRIA,E06000063,constituent,,,Cumberland
+SA-CUMBRIA,E06000064,constituent,,,Westmorland and Furness
+SA-CHESHIRE-WARRINGTON,E06000049,constituent,,,Cheshire East
+SA-CHESHIRE-WARRINGTON,E06000050,constituent,,,Cheshire West and Chester
+SA-CHESHIRE-WARRINGTON,E06000007,constituent,,,Warrington
+SA-SUSSEX-BRIGHTON,E06000043,constituent,,,Brighton and Hove
+SA-SUSSEX-BRIGHTON,E10000011,constituent,,,East Sussex County
+SA-SUSSEX-BRIGHTON,E10000032,constituent,,,West Sussex County
+SA-HAMPSHIRE-SOLENT,E10000014,constituent,,,Hampshire County
+SA-HAMPSHIRE-SOLENT,E06000046,constituent,,,Isle of Wight
+SA-HAMPSHIRE-SOLENT,E06000044,constituent,,,Portsmouth
+SA-HAMPSHIRE-SOLENT,E06000045,constituent,,,Southampton

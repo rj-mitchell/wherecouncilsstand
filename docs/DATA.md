@@ -105,7 +105,7 @@ compared as written and also ignoring case (these are IIS sites), and a page eit
 
 Every Modern.gov site in the registry was checked on 6 November 2026 (one request each, from a cloud network: 170
 allow reading, 47 have no robots.txt, 43 couldn't be reached from there and are checked by the reader on the
-server). **44 sites, serving 45 councils and the Greater London Authority's, forbid reading**, nearly all with Civica's
+server). **44 sites, serving 44 councils and the Greater London Authority, forbid reading**, nearly all with Civica's
 usual file ("Disallow all webbot searching BUT allow Google access to mgRss for calendar sync": `User-agent: *` /
 `DisAllow: /`); King's Lynn and West Norfolk's forbids `/mgWebService.asmx` only, and Swale's forbids `/meetings`,
 where its Modern.gov site is. They are marked `robots` in `councils.csv` (`modgov_status`):

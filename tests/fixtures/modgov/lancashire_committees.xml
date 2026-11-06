@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='utf-8'?>
+<committees>
+  <committeescount> 655</committeescount>
+  <committee>
+    <committeeid>122</committeeid>
+    <committeetitle>Cabinet</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Executive (Cabinet)</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>138</committeeid>
+    <committeetitle>Full Council</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Full Council</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>1988</committeeid>
+    <committeetitle>Lancashire Combined County Authority</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Lancashire Combined County Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>1997</committeeid>
+    <committeetitle>Lancashire Combined County Authority (TEST)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Lancashire Combined County Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>1989</committeeid>
+    <committeetitle>Lancashire Combined County Authority - Audit and Governance Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Lancashire Combined County Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>2118</committeeid>
+    <committeetitle>Lancashire Combined County Authority - Constitution</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>1991</committeeid>
+    <committeetitle>Lancashire Combined County Authority - Economy Advisory Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Lancashire Combined County Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>2011</committeeid>
+    <committeetitle>Lancashire Combined County Authority - Independent Remuneration Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Lancashire Combined County Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>1990</committeeid>
+    <committeetitle>Lancashire Combined County Authority - Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Lancashire Combined County Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>1992</committeeid>
+    <committeetitle>Lancashire Combined County Authority - Skills Advisory Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Lancashire Combined County Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>1993</committeeid>
+    <committeetitle>Lancashire Combined County Authority - Transport Advisory Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Lancashire Combined County Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>2122</committeeid>
+    <committeetitle>Lancashire Combined County Authority – Independent Remuneration Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Lancashire Combined County Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>1984</committeeid>
+    <committeetitle>Shadow Lancashire Combined County Authority</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Lancashire Combined County Authority</committeecategory>
+  </committee>
+  </committees>

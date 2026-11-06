@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<committees>
+  <committeescount> 16</committeescount>
+  <committee>
+    <committeeid>140</committeeid>
+    <committeetitle>Audit and Governance Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Statutory Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>142</committeeid>
+    <committeetitle>Business Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>138</committeeid>
+    <committeetitle>Cabinet</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Combined Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>143</committeeid>
+    <committeetitle>Devolution Joint Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Archived</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>180</committeeid>
+    <committeetitle>Employment Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Regulatory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>151</committeeid>
+    <committeetitle>Independent Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Police, Fire and Crime</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>137</committeeid>
+    <committeetitle>Joint Devolution Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>154</committeeid>
+    <committeetitle>Joint Independent Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Police, Fire and Crime</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>144</committeeid>
+    <committeetitle>Local Enterprise Partnership</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>153</committeeid>
+    <committeetitle>North Yorkshire Police, Fire and Crime Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Police, Fire and Crime</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>139</committeeid>
+    <committeetitle>Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Statutory Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>152</committeeid>
+    <committeetitle>Review of the Constitution Working Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Working Groups</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>141</committeeid>
+    <committeetitle>Skills and Employability Working Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Working Groups</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>168</committeeid>
+    <committeetitle>Transport Advisory Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>136</committeeid>
+    <committeetitle>zzTestCommittee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>177</committeeid>
+    <committeetitle>zzzzUpgrade1522.2Feb26</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+</committees>

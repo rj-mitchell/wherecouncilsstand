@@ -9,6 +9,18 @@
 
 A council that changed its arrangements keeps whichever committees it had at the time, so a council that moved from a
 cabinet to committees has cabinet meetings before the change and policy committee meetings after it.
+
+Strategic authorities (decision 18) have kinds of their own:
+
+* **board**: the authority's main decision-making meeting, whatever it is called ("Greater Manchester Combined
+  Authority", "Combined Authority Board", "WMCA Board", "Cabinet"), including its budget meetings.
+* **mayor**: the mayor's decisions, where the meetings system publishes them as a committee of decisions.
+* **scrutiny**: its overview and scrutiny committees. Not joint committees with other bodies, joint health scrutiny,
+  police and crime panels (or the boards that hold a mayor to account for policing), informal meetings or briefings.
+
+Each authority's choices are written in data_static/committees.csv, with the reason; the rules below pick up a new or
+renamed committee in the meantime. An authority on a council's site (Lancashire's) takes only the committees named
+there, so none of the council's own is mistaken for the authority's.
 """
 
 from __future__ import annotations
@@ -42,6 +54,19 @@ POLICY = re.compile(
     r"|^(?:the )?(?:corporate )?policy committee$|^(?:the )?strategy committee$",
     re.I,
 )
+
+
+AUTHORITY_BOARD = re.compile(
+    r"^(?:the )?(?:[\w&'’ ]+ )?(?:mayoral )?combined (?:county )?authority(?: board| committee)?$"
+    r"|^(?:the )?(?:mayoral )?combined (?:county )?authority board$",
+    re.I,
+)
+AUTHORITY_SCRUTINY = re.compile(r"\bscrutiny (?:committee|board|sub-committee)\b", re.I)
+NOT_SCRUTINY = re.compile(r"\b(?:joint|health|police|crime|informal|briefings?|lep|pool|review of|public scrutiny|"
+                          r"agenda|knowledge)\b", re.I)
+AUTHORITY_MAYOR = re.compile(r"^(?:the )?(?:mayoral|mayor's) decisions?(?: notices?)?$"
+                             r"|^decisions? (?:of|by|taken by) the mayor$", re.I)
+AUTHORITY_KINDS = ("board", "mayor", "scrutiny")
 
 
 @lru_cache(maxsize=1)
@@ -85,15 +110,45 @@ def _bare(name: str) -> str:
 
 
 def kind(title: str, gss: str = "") -> str | None:
-    """"council", "cabinet", "policy", or None for every other committee."""
+    """"council", "cabinet", "policy", or None for every other committee; for a strategic authority, "board",
+    "mayor", "scrutiny" or None."""
     t = re.sub(r"\s+", " ", title.replace("&amp;", "&")).strip()
     o = overrides().get((gss, t.lower()))
     if o is not None:
         return o or None
+    if _authority(gss):
+        return authority_kind(t, gss)
     if COUNCIL.match(t) or _own_name(t, gss):
         return "council"
     if CABINET.match(t):
         return "cabinet"
     if POLICY.match(t):
         return "policy"
+    return None
+
+
+def _authority(gss: str):
+    if not gss:
+        return None
+    from councils.registry import councils
+
+    c = councils().get(gss)
+    return c if c is not None and c.is_authority else None
+
+
+def authority_kind(title: str, gss: str) -> str | None:
+    """A strategic authority's committee by the rules, where committees.csv doesn't name it. An authority on a
+    council's site takes only the committees named in committees.csv."""
+    from councils.registry import shares_site_with_council
+
+    a = _authority(gss)
+    if a is None or shares_site_with_council(a):
+        return None
+    t = re.sub(r"^archived\s*[-–]\s*", "", title, flags=re.I)
+    if AUTHORITY_MAYOR.match(t):
+        return "mayor"
+    if AUTHORITY_SCRUTINY.search(t) and not NOT_SCRUTINY.search(t):
+        return "scrutiny"
+    if AUTHORITY_BOARD.match(t) or CABINET.match(t) or re.fullmatch(rf"{re.escape(a.reference)} board", t, re.I):
+        return "board"
     return None

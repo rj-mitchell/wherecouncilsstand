@@ -2,7 +2,8 @@
 
 Sources (fetched fresh each run):
   * England: MHCLG's local-authority register on planning.data.gov.uk (OGL), current entries only, with type, GSS code
-    and region. Combined authorities are left out.
+    and region. Combined authorities and the Greater London Authority are left out: strategic authorities are listed
+    by hand in data_static/strategic_authorities.csv (docs/DATA.md).
   * Wales and Scotland: mySociety MapIt's unitary authorities; Northern Ireland: its local government districts
     (GSS codes, ONS names). MapIt has no websites: a council's website is kept from the current councils.csv.
   * Modern.gov sites: Local Democracy UK's council list (CC BY 4.0), then a probe of the usual host names
@@ -43,7 +44,7 @@ SUPERSEDED = {"E08000016": "E08000038",  # Barnsley
               "E08000019": "E08000039"}  # Sheffield
 
 TYPES = {"CTY": "county", "NMD": "district", "UA": "unitary", "MD": "metropolitan", "LBO": "london_borough",
-         "CC": "city_of_london", "SRA": "strategic_authority"}
+         "CC": "city_of_london"}   # not "COMB" or "SRA": strategic authorities are in strategic_authorities.csv
 HOST_PREFIXES = ["democracy", "moderngov", "modgov", "committees", "democratic", "meetings", "councillors",
                  "decisionmaking", "democracy.cityof", "cmttpublic", "mgov", "moderngovwebpublic", "modgov.lb",
                  "committeemeetings", "councilmeetings", "democraticservices", "minutes", "cabinet", "mygov",

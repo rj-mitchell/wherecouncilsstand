@@ -44,8 +44,10 @@ def selected_committees(client: Client, council: Council, max_age_days: float | 
             if own is None:
                 continue
             title = own
-        # full council named as the council itself: "Cornwall Council"
-        k = "council" if title.strip().lower() == council.name.lower() else committees.kind(title, council.gss)
+        # full council named as the council itself: "Cornwall Council" (an authority's board so named is its board,
+        # by committees.py)
+        own_name = not council.is_authority and title.strip().lower() == council.name.lower()
+        k = "council" if own_name else committees.kind(title, council.gss)
         if k:
             out[c.id] = (c.title, k)
     return out

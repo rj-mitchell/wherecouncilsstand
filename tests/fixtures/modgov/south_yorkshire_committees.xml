@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<committees>
+  <committeescount> 70</committeescount>
+  <committee>
+    <committeeid>142</committeeid>
+    <committeetitle>Audit, Standards and Risk Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Statutory Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>135</committeeid>
+    <committeetitle>Boards/Committees</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>231</committeeid>
+    <committeetitle>Business Advisory Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>155</committeeid>
+    <committeetitle>Chief Executives</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>262</committeeid>
+    <committeetitle>Community Confidence Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>268</committeeid>
+    <committeetitle>Community Safety and Violence Prevention Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>163</committeeid>
+    <committeetitle>Constitution</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>180</committeeid>
+    <committeetitle>Constitution</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>181</committeeid>
+    <committeetitle>Constitution</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Constitution</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>266</committeeid>
+    <committeetitle>Constitution</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Constitution</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>238</committeeid>
+    <committeetitle>County Wide Community Safety Forum</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>246</committeeid>
+    <committeetitle>Countywide Community Safety Forum</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>248</committeeid>
+    <committeetitle>Countywide Community Safety Forum</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>251</committeeid>
+    <committeetitle>Countywide Community Safety Forum</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>239</committeeid>
+    <committeetitle>Countywide Community Safety Forum</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>225</committeeid>
+    <committeetitle>Enhanced Partnership Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>249</committeeid>
+    <committeetitle>f</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>240</committeeid>
+    <committeetitle>Independent Ethics Panel</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>252</committeeid>
+    <committeetitle>Independent Ethics Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>253</committeeid>
+    <committeetitle>Joint Independent Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>241</committeeid>
+    <committeetitle>Joint Independent Audit Committee</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>254</committeeid>
+    <committeetitle>Local Criminal Justice Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>242</committeeid>
+    <committeetitle>Local Criminal Justice Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>143</committeeid>
+    <committeetitle>Local Enterprise Partnership</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>232</committeeid>
+    <committeetitle>Mayor's Economic Advisory Council</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>137</committeeid>
+    <committeetitle>Mayoral Combined Authority Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Mayoral Combined Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>199</committeeid>
+    <committeetitle>MCA - Business Recovery and Growth Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Boards/Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>202</committeeid>
+    <committeetitle>MCA - Education, Skills and Employability Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Boards/Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>203</committeeid>
+    <committeetitle>MCA - Housing and Infrastructure Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Boards/Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>156</committeeid>
+    <committeetitle>MCA - Mayoral Combined Authority - Pre-Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>224</committeeid>
+    <committeetitle>MCA - South Yorkshire Leaders</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>200</committeeid>
+    <committeetitle>MCA - Transport and the Environment Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Boards/Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>157</committeeid>
+    <committeetitle>Meeting Paper Archive</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>223</committeeid>
+    <committeetitle>Officer Delegated Decisions</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>South Yorkshire Mayoral Combined Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>244</committeeid>
+    <committeetitle>OPCC TEST</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>245</committeeid>
+    <committeetitle>OPCC TEST</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>138</committeeid>
+    <committeetitle>Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Statutory Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>256</committeeid>
+    <committeetitle>Planning and Efficiency Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>259</committeeid>
+    <committeetitle>Policing &amp; Public Safety Executive Team</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>230</committeeid>
+    <committeetitle>Policy and Strategic Planning Session</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>209</committeeid>
+    <committeetitle>Private - Governance Team Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>258</committeeid>
+    <committeetitle>Public Scrutiny Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>148</committeeid>
+    <committeetitle>SCR - Appraisal Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>150</committeeid>
+    <committeetitle>SCR - Business Growth Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>152</committeeid>
+    <committeetitle>SCR - Housing Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>154</committeeid>
+    <committeetitle>SCR - Infrastructure Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>191</committeeid>
+    <committeetitle>SCR - Overview and Scrutiny Informal Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>164</committeeid>
+    <committeetitle>SCR - SANDBOX COMMITTEE</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>153</committeeid>
+    <committeetitle>SCR - Skills &amp; Employment Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>162</committeeid>
+    <committeetitle>SCR - SLT</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>144</committeeid>
+    <committeetitle>SCR - Statutory Officer Group Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>151</committeeid>
+    <committeetitle>SCR - Transport Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>257</committeeid>
+    <committeetitle>Scrutiny Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>192</committeeid>
+    <committeetitle>Sheffield City Region Information and Guides</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>South Yorkshire Mayoral Combined Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>188</committeeid>
+    <committeetitle>Sheffield City Region Information and Guides</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>193</committeeid>
+    <committeetitle>Sheffield City Region Information Pack</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>255</committeeid>
+    <committeetitle>Strategic Review Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>243</committeeid>
+    <committeetitle>Strategic Review Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>136</committeeid>
+    <committeetitle>SYPTE Audit &amp; Risk Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Statutory Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>139</committeeid>
+    <committeetitle>SYPTE Executive Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>140</committeeid>
+    <committeetitle>SYPTE Management Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>247</committeeid>
+    <committeetitle>TEST - OPCC</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>250</committeeid>
+    <committeetitle>TEST - PAndR - do not delete</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>South Yorkshire Police and Crime Commissioner</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>134</committeeid>
+    <committeetitle>test committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>197</committeeid>
+    <committeetitle>Urgent Provisions</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>South Yorkshire Mayoral Combined Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>260</committeeid>
+    <committeetitle>Work and Health Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>141</committeeid>
+    <committeetitle>ZZ DO NOT USE Housing Investment Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>235</committeeid>
+    <committeetitle>zz go live</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>220</committeeid>
+    <committeetitle>zz MCA - Audit, Standards and Risk -  Advisory Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>267</committeeid>
+    <committeetitle>zztest</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+</committees>

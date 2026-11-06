@@ -103,7 +103,6 @@ E10000013,GLS,Gloucestershire County Council,england,county,E12000009,https://ww
 E07000088,GOS,Gosport Borough Council,england,district,E12000008,https://www.gosport.gov.uk,https://democracy.gosport.gov.uk,ok,local-democracy-uk,modgov
 E07000109,GRA,Gravesham Borough Council,england,district,E12000008,https://www.gravesham.gov.uk,https://democracy.gravesham.gov.uk,ok,local-democracy-uk,modgov
 E07000145,GRY,Great Yarmouth Borough Council,england,district,E12000006,https://www.great-yarmouth.gov.uk,https://great-yarmouth.cmis.uk.com/great-yarmouth,robots,researched,cmis
-E12000007,GLA,Greater London Authority,england,strategic_authority,E12000007,https://www.london.gov.uk,https://meetings.london.gov.uk,robots,probed,modgov
 E07000209,GRT,Guildford Borough Council,england,district,E12000008,https://www.guildford.gov.uk,https://democracy.guildford.gov.uk,ok,local-democracy-uk,modgov
 E06000006,HAL,Halton Borough Council,england,unitary,E12000002,https://www.halton.gov.uk,https://moderngov.halton.gov.uk,robots,local-democracy-uk,modgov
 E10000014,HAM,Hampshire County Council,england,county,E12000008,https://www.hants.gov.uk,https://democracy.hants.gov.uk,ok,probed,modgov

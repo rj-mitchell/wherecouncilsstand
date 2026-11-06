@@ -35,13 +35,14 @@ def main(verbose: bool = typer.Option(False, "--verbose", "-v")) -> None:
 
 
 @app.command("list")
-def list_(status: str = typer.Option(None, help="ok, blocked, unreachable or none"),
-          nation: str = typer.Option(None)) -> None:
-    """Councils in scope, with their Modern.gov site and whether it answered."""
+def list_(status: str = typer.Option(None, help="ok, blocked, unreachable, robots or none"),
+          nation: str = typer.Option(None),
+          type_: str = typer.Option(None, "--type", help="a kind of council, or strategic_authority")) -> None:
+    """Councils (and strategic authorities) in scope, with their meetings site and whether it answered."""
     from councils.registry import councils
 
     for c in councils().values():
-        if (status and c.modgov_status != status) or (nation and c.nation != nation):
+        if (status and c.modgov_status != status) or (nation and c.nation != nation) or (type_ and c.type != type_):
             continue
         typer.echo(f"{c.gss}\t{c.reference}\t{c.type}\t{c.modgov_status}\t{c.name}\t{c.modgov_url}")
 
@@ -108,12 +109,14 @@ def parties(council: list[str] = typer.Argument(None, help="GSS codes or names; 
 @app.command()
 def load(status: str = typer.Option("ok", help="councils whose web service had this status"),
          nation: str = typer.Option(None), workers: int = typer.Option(20, help="councils loaded at once"),
+         type_: str = typer.Option(None, "--type", help="only this kind: strategic_authority for the authorities"),
          resume: bool = typer.Option(False, help="only parse councils already loaded")) -> None:
     """Load and parse every council in scope, printing one line per council as it finishes."""
     from councils import load as load_
     from councils.registry import councils
 
-    chosen = [c for c in councils().values() if c.modgov_status == status and (not nation or c.nation == nation)]
+    chosen = [c for c in councils().values() if c.modgov_status == status and (not nation or c.nation == nation)
+              and (not type_ or c.type == type_)]
     for line in load_.many(load_settings(), chosen, workers=workers, resume=resume):
         typer.echo(json.dumps(line), nl=True)
 
