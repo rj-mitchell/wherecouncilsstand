@@ -91,3 +91,95 @@ def test_rate_limit(client):
     t = TestClient(app)
     codes = [t.post("/api/report", json={"message": "hello there"}).status_code for _ in range(3)]
     assert codes == [200, 200, 429]
+
+
+def test_briefings_in_progress_count_against_the_daily_cap(client):
+    """Many questions at once mustn't all pass the cap before any is counted: a briefing being written is reserved
+    at its estimated cost, so the next one sees the cap reached and gets the sources only."""
+    import threading
+
+    c, fake, _, cfg = client
+    cfg.raw["usage"].update(daily_spend_cap_usd=0.15, briefing_estimate_usd=0.15)
+    writing, release = threading.Event(), threading.Event()
+    stream = fake._stream
+
+    def slow(**kw):
+        writing.set()
+        release.wait(10)
+        return stream(**kw)
+
+    fake.beta.messages.stream = fake.messages.stream = slow
+    first: list = []
+    worker = threading.Thread(target=lambda: first.extend(events(c.post(
+        "/api/ask", json={"question": "What have councils decided about bin collections?"}))))
+    worker.start()
+    assert writing.wait(10)
+    second = events(c.post("/api/ask", json={"question": "What have councils decided about public toilets?"}))
+    release.set()
+    worker.join(10)
+    assert first[-1]["type"] == "final" and first[-1]["answer"]
+    assert second[-1]["answer"] is None and "today's limit" in second[-1]["note"]
+    assert len(fake.calls) == 1
+
+def test_in_flight_reservations():
+    from councils.api.usage import InFlight
+
+    f = InFlight(per_key=1, total=2, estimate_usd=0.1)
+    assert f.start("a") is None and f.start("a").startswith("A briefing is already")
+    assert f.start("b") is None and f.start("c").startswith("Many briefings")
+    assert f.pending_usd(besides=1) == 0.1
+    f.finish("a")
+    f.finish("b")
+    assert f.pending_usd() == 0 and f.start("c") is None
+
+
+def test_a_saved_briefing_is_checked_again_when_shown(client):
+    """Marks made by older checks are judged again by the current ones; nothing is newly marked."""
+    c, _, state, _ = client
+    answer = {"markdown": "", "unsupported_segments": 2, "loaded_words": 2, "grounded_ratio": 0.5, "segments": [
+        {"text": "March 2025", "sources": [], "status": "unsupported", "loaded": []},
+        {"text": "The minutes record that the motion was lost.", "sources": [1], "status": "cited",
+         "loaded": [{"start": 4, "end": 11, "word": "minutes"}]},
+        {"text": " It was a fiasco that residents across the borough opposed for many months.", "sources": [],
+         "status": "unsupported",
+         "loaded": [{"start": 10, "end": 16, "word": "fiasco"}]},
+    ]}
+    state.save_briefing("abc123", "Bins?", {}, [{"type": "final", "answer": answer}])
+    shown = c.get("/api/briefings/abc123").json()["events"][-1]["answer"]
+    assert [s["status"] for s in shown["segments"]] == ["connective", "cited", "unsupported"]
+    assert shown["unsupported_segments"] == 1 and shown["loaded_words"] == 1
+    assert shown["segments"][2]["loaded"] == [{"start": 10, "end": 16, "word": "fiasco"}]
+
+
+def test_old_answers_are_deleted_from_the_cache(tmp_path):
+    state = StateDB(tmp_path / "state.db")
+    with state.connect() as con:
+        con.execute("INSERT INTO answer_cache (key, at, events) VALUES ('old', '2026-01-01T00:00:00+00:00', '[]')")
+    state.store_cached("new", [{"type": "final"}], max_hours=168)
+    with state.connect() as con:
+        assert [r[0] for r in con.execute("SELECT key FROM answer_cache")] == ["new"]
+
+
+def test_head_requests_are_answered_like_get(client, tmp_path):
+    """Uptime checkers send HEAD, and read 405 as the site being down."""
+    _, _, state, cfg = client
+    dist = tmp_path / "dist"
+    (dist / "assets").mkdir(parents=True)
+    (dist / "index.html").write_text("<!doctype html><title>Where Councils Stand</title>")
+    (dist / "about.html").write_text("<!doctype html><title>About</title>")
+    (dist / "assets" / "app.js").write_text("console.log(1)")
+    cfg.raw.setdefault("paths", {})["web_dist"] = str(dist)
+    t = TestClient(create_app(cfg, state=state))
+    for path in ("/", "/about", "/assets/app.js", "/api/health", "/api/councils"):
+        get, head = t.get(path), t.head(path)
+        assert head.status_code == get.status_code == 200, path
+        assert head.content == b"" and head.headers["content-type"] == get.headers["content-type"], path
+    assert t.head("/no-such-page").status_code == 404
+    assert t.head("/api/ask").status_code == 405           # a POST route stays POST only
+
+
+def test_no_interactive_api_pages(client):
+    """Swagger and ReDoc load scripts from a CDN that the content security policy blocks: they are switched off."""
+    c, _, _, _ = client
+    assert c.get("/api/docs").status_code == 404 and c.get("/redoc").status_code == 404
+    assert c.get("/api/openapi.json").json()["info"]["title"] == "Where Councils Stand"

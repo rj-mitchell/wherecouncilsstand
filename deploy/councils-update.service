@@ -12,6 +12,10 @@ OnFailure=alert@%n.service
 Type=oneshot
 WorkingDirectory=/opt/wherecouncilsstand/deploy
 # Exits 1 when something needs attention; each run's summary is appended to /data/updates.jsonl.
-ExecStart=/usr/bin/docker compose run --rm -T app councils update --embed-minutes 60
+# One data job at a time on the shared server: every site's update takes the same lock, and waits for it rather than
+# failing, so two sites' heavy jobs never run into each other. The time limit allows for waiting on another site's
+# job (Where MPs Stand's can take six hours) as well as this one's four.
+ExecStart=/usr/bin/flock /var/lock/wheretheystand-update.lock \
+  /usr/bin/docker compose run --rm -T app councils update --embed-minutes 60
 Nice=10
-TimeoutStartSec=4h
+TimeoutStartSec=10h

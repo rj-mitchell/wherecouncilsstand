@@ -69,6 +69,11 @@ requests_per_minute = 20           # questions and searches per visitor
 answer_cache_hours = 168           # an identical question is answered from the cache until the data changes, or a week
 daily_spend_cap_usd = 3.0          # over this, briefings stop for the day and the sources are shown instead
 monthly_spend_cap_usd = 50.0
+# A briefing's cost is known only when it finishes, so each one being written is counted against the caps at this
+# estimate meanwhile; and only so many are written at once, per visitor and in all (as Where MPs Stand).
+briefing_estimate_usd = 0.15
+briefings_at_once_per_visitor = 2
+briefings_at_once = 8
 # USD per million tokens, for spend tracking only.
 price_input_per_mtok = 2.0
 price_output_per_mtok = 10.0

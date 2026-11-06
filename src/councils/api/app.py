@@ -24,10 +24,19 @@ from pydantic import BaseModel, Field
 
 from councils.api.data import Data
 from councils.api.state import StateDB
-from councils.api.usage import RateLimiter, blocked, count_question, record_usage, visitor_key
+from councils.api.usage import (
+    InFlight,
+    RateLimiter,
+    blocked,
+    count_question,
+    record_usage,
+    visitor_key,
+)
 from councils.config import Settings, load_settings
+from councils.rag.neutral import still_loaded
 from councils.rag.pipeline import AskRequest, Pipeline
 from councils.rag.query_parse import QueryPlan, parse_offline
+from councils.rag.verify import recheck_flags
 from councils.registry import REGION_NAMES, TYPE_NAMES
 
 log = logging.getLogger(__name__)
@@ -98,6 +107,34 @@ def sse(events: Iterator[dict[str, Any]], keep_alive: float = KEEP_ALIVE_SECONDS
         gone.set()
 
 
+class HeadAsGet:
+    """HEAD is answered as GET, without the body. FastAPI's GET routes answer GET alone, and uptime checkers and link
+    checkers that send HEAD read the 405 they got as the site being down."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http" or scope["method"] != "HEAD":
+            await self.app(scope, receive, send)
+            return
+
+        async def without_body(message):
+            if message["type"] == "http.response.body":
+                message = {**message, "body": b""}
+            await send(message)
+
+        await self.app({**scope, "method": "GET"}, receive, without_body)
+
+
+def rechecked(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """A saved or cached briefing's marks, judged again by the current checks (as Where MPs Stand): text since
+    recognised as a date, a join or a note about the evidence is no longer marked unsupported, and a word since taken
+    off the loaded-words list is no longer flagged. Nothing is ever newly marked."""
+    return [{**e, "answer": still_loaded(recheck_flags(e["answer"]))}
+            if e.get("type") == "final" and e.get("answer") else e for e in events]
+
+
 def cache_key(parts: dict[str, Any]) -> str:
     return hashlib.sha256(json.dumps(parts, sort_keys=True, default=str).encode()).hexdigest()[:32]
 
@@ -109,12 +146,16 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     data = Data(settings)
     usage_cfg = settings.usage
     limiter = RateLimiter(int(usage_cfg.get("requests_per_minute", 20)))
+    inflight = InFlight(int(usage_cfg.get("briefings_at_once_per_visitor", 2)),
+                        int(usage_cfg.get("briefings_at_once", 8)), float(usage_cfg.get("briefing_estimate_usd", 0.15)))
     cache_hours = float(usage_cfg.get("answer_cache_hours", 168))
     site = settings.section("site")
     dist = Path(settings.section("paths").get("web_dist", REPO_ROOT / "web" / "dist"))
     holder: dict[str, Pipeline] = {"p": pipeline} if pipeline is not None else {}
     lock = threading.Lock()
-    app = FastAPI(title="Where Councils Stand", docs_url="/api/docs", openapi_url="/api/openapi.json")
+    # No interactive API pages: FastAPI's Swagger and ReDoc pages load their scripts from a CDN, which the site's
+    # content security policy blocks, so they showed a blank page. The machine-readable description stays.
+    app = FastAPI(title="Where Councils Stand", docs_url=None, redoc_url=None, openapi_url="/api/openapi.json")
 
     def get_pipeline() -> Pipeline:
         with lock:
@@ -136,6 +177,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         if not limiter.allow(v):
             raise HTTPException(429, "Too many requests. Please wait a minute and try again.")
         return v
+
+    app.add_middleware(HeadAsGet)
 
     @app.middleware("http")
     async def headers(request: Request, call_next):
@@ -173,8 +216,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         hit = state.cached(key, cache_hours) if p.has_model() and not body.sources_only else None
         why_not = None if hit is not None or body.sources_only or not p.has_model() else blocked(state, v, usage_cfg)
 
-        def sources_only(note: str) -> Iterator[dict[str, Any]]:
-            if why_not:   # over a limit: the question is read by the free rules
+        def sources_only(note: str, free: bool) -> Iterator[dict[str, Any]]:
+            if free:      # over a limit: the question is read by the free rules
                 plan = offline_plan(body)
             else:         # the model reads the question better, for a fraction of a penny
                 plan, used = p.make_plan(req)
@@ -187,14 +230,14 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
 
         def events() -> Iterator[dict[str, Any]]:
             if hit is not None:
-                yield from hit
+                yield from rechecked(hit)
                 return
             if body.sources_only:
                 yield from sources_only("Sources only: no briefing was written. Ask again without 'Sources only' "
-                                        "for a written briefing.")
+                                        "for a written briefing.", free=False)
                 return
             if why_not:
-                yield from sources_only(f"{why_not} The sources found are shown below.")
+                yield from sources_only(f"{why_not} The sources found are shown below.", free=True)
                 return
             kept: list[dict[str, Any]] = []
             text: list[str] = []
@@ -228,9 +271,29 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             if final.get("type") == "final" and final.get("answer"):
                 replay = [e for e in kept if e["type"] in ("plan", "sources")]
                 replay += [{"type": "text", "text": "".join(text)}, {**final, "cached": True}]
-                state.store_cached(key, replay)
+                state.store_cached(key, replay, cache_hours)
 
-        return StreamingResponse(sse(events()), media_type="text/event-stream",
+        def guarded() -> Iterator[dict[str, Any]]:
+            """A briefing about to be written is reserved at its estimated cost while it runs, and the limits are
+            checked again counting the others in progress, so many questions at once can't all slip past the caps
+            (as Where MPs Stand)."""
+            if hit is not None or body.sources_only or why_not or not p.has_model():
+                yield from events()
+                return
+            refused = inflight.start(v)
+            if refused:
+                yield from sources_only(f"{refused} The sources found are shown below.", free=True)
+                return
+            try:
+                late = blocked(state, v, usage_cfg, inflight.pending_usd(besides=1))
+                if late:
+                    yield from sources_only(f"{late} The sources found are shown below.", free=True)
+                    return
+                yield from events()
+            finally:
+                inflight.finish(v)
+
+        return StreamingResponse(sse(guarded()), media_type="text/event-stream",
                                  headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
     @app.post("/api/search")
@@ -249,9 +312,10 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         if b is None:
             raise HTTPException(404, "There is no briefing at this address.")
         if b["withdrawn_at"]:
-            raise HTTPException(410, "This briefing has been withdrawn.")
+            why = (b["withdrawn_reason"] or "").strip()
+            raise HTTPException(410, "This briefing has been withdrawn" + (f": {why}" if why else "."))
         return {"id": b["id"], "at": b["at"], "question": b["question"], "options": b["options"],
-                "events": b["events"]}
+                "events": rechecked(b["events"])}
 
     # ---- councils and votes --------------------------------------------------------------------------
     @app.get("/api/councils")

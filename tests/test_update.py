@@ -80,6 +80,27 @@ def test_cached_copy_is_used_when_the_server_fails(env):
             c.meetings(1, date(2018, 5, 1), date(2019, 1, 1))  # nothing cached to fall back on
 
 
+def test_responses_are_cached_gzipped_and_plain_copies_still_read(env):
+    """The cache was plain XML until November 2026: an old plain copy is read, and judged by its age, as before; a
+    fresh fetch replaces it with a gzipped copy."""
+    import gzip
+
+    s, fake = env
+    folder = s.raw_dir / "modgov" / GUILDFORD
+    with modgov.Client(s, GUILDFORD, "https://example.org") as c:
+        c.committees()
+        assert (folder / "committees.xml.gz").exists() and not (folder / "committees.xml").exists()
+        assert "<committees>" in gzip.decompress((folder / "committees.xml.gz").read_bytes()).decode()
+
+        (folder / "committees.xml.gz").unlink()            # as cached before November 2026
+        (folder / "committees.xml").write_text(committees_xml().replace("Council", "Full Council"))
+        assert c.committees(max_age_days=7)[0].title == "Full Council" and fake.calls.count("GetCommittees") == 1
+        old = time.time() - 8 * 86_400
+        os.utime(folder / "committees.xml", (old, old))
+        assert c.committees(max_age_days=7)[0].title == "Council" and fake.calls.count("GetCommittees") == 2
+        assert (folder / "committees.xml.gz").exists() and not (folder / "committees.xml").exists()
+
+
 def test_meeting_list_to_today_is_fetched_again_after_a_day(env):
     s, fake = env
     with modgov.Client(s, GUILDFORD, "https://example.org") as c:

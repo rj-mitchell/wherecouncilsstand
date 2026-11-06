@@ -19,7 +19,8 @@ from councils.registry import REGION_NAMES, TYPE_NAMES, councils
 
 KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy committee"}
 
-# How well each council works, for the councils page: red (not loaded), amber (loaded with a gap) or green.
+# How fully each council is covered, for the councils page: "not_yet" (not loaded), "partial" (loaded with a gap)
+# or "full". It describes the site's reading of the council's record, never the council.
 NOT_LOADED = {
     "robots": "Its meetings site asks automated readers not to visit (robots.txt).",
     "blocked": "Its meetings site refuses automated requests.",
@@ -36,12 +37,12 @@ MIN_PARTY = 0.8                 # share of attendance with a party
 NEW_COUNCILS = {f"E060000{n}" for n in range(58, 67)}
 
 
-def rating(row: dict[str, Any], attendance: int = 0, with_party: int = 0, today: date | None = None
-           ) -> tuple[str, list[str]]:
-    """("green" | "amber" | "red", the reasons in plain words)."""
+def coverage(row: dict[str, Any], attendance: int = 0, with_party: int = 0, today: date | None = None
+             ) -> tuple[str, list[str]]:
+    """("full" | "partial" | "not_yet", the reasons in plain words)."""
     today = today or date.today()
     if not row.get("loaded"):
-        return "red", [NOT_LOADED.get(row.get("status", ""), "Not loaded yet.")]
+        return "not_yet", [NOT_LOADED.get(row.get("status", ""), "Not loaded yet.")]
     gaps = []
     if row.get("council_meetings") == 0:
         # most named votes are at full council (Sunderland, loaded once with its Cabinet alone)
@@ -63,9 +64,9 @@ def rating(row: dict[str, Any], attendance: int = 0, with_party: int = 0, today:
         gaps.append(f"Party recorded for only {round(100 * with_party / attendance)}% of attendance, so votes can't "
                     "all be read by party.")
     if gaps:
-        return "amber", gaps
+        return "partial", gaps
     since = "since " + first.strftime("%B %Y") if first else ""
-    return "green", [f"Meetings {since}, minutes text for {round(share * 100)}% of them, attendance and parties "
+    return "full", [f"Meetings {since}, minutes text for {round(share * 100)}% of them, attendance and parties "
                      "recorded."]
 SIDE_ORDER = ("for", "against", "abstain")
 
@@ -139,13 +140,13 @@ class Data:
                 row |= {"meetings": m[0], "council_meetings": m[1], "cabinet_meetings": m[2],
                         "policy_meetings": m[3], "from": _iso(m[4]), "to": _iso(m[5]),
                         "with_minutes": round(float(m[6] or 0), 3), "named_votes": votes.get(c.gss, 0)}
-            row["rating"], row["reasons"] = rating(row, *attendance.get(c.gss, (0, 0)))
+            row["coverage"], row["reasons"] = coverage(row, *attendance.get(c.gss, (0, 0)))
             out.append(row)
         out.sort(key=lambda r: r["name"])
         self._directory = out
         loaded = [r for r in out if r["loaded"]]
         self._totals = {"councils": len(out), "loaded": len(loaded),
-                        "ratings": dict(Counter(r["rating"] for r in out)),
+                        "coverage": dict(Counter(r["coverage"] for r in out)),
                         "meetings": sum(r["meetings"] for r in loaded),
                         "named_votes": sum(r["named_votes"] for r in loaded),
                         "from": min((r["from"] for r in loaded), default=None),

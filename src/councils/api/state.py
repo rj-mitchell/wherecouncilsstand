@@ -11,7 +11,7 @@ import secrets
 import sqlite3
 import threading
 from contextlib import contextmanager
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -81,8 +81,12 @@ class StateDB:
         age = (datetime.now(UTC) - datetime.fromisoformat(row["at"])).total_seconds() / 3600
         return json.loads(row["events"]) if age < max_hours else None
 
-    def store_cached(self, key: str, events: list[dict[str, Any]]) -> None:
+    def store_cached(self, key: str, events: list[dict[str, Any]], max_hours: float) -> None:
+        """Keep an answer for ``max_hours``. Answers older than that are deleted as each new one is stored: they
+        are never read again, and would otherwise fill the database (as Where Countries Stand)."""
+        since = (datetime.now(UTC) - timedelta(hours=max_hours)).isoformat(timespec="seconds")
         with self.connect() as con:
+            con.execute("DELETE FROM answer_cache WHERE at < ?", (since,))
             con.execute("INSERT OR REPLACE INTO answer_cache (key, at, events) VALUES (?, ?, ?)",
                         (key, utcnow(), json.dumps(events, default=str)))
 

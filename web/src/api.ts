@@ -59,6 +59,9 @@ export type AskEvent =
   | { type: "final"; answer: Answer | null; note?: string; briefing_id?: string; cached?: boolean }
   | { type: "error"; message: string };
 
+/** How fully the site reads a council's record: a fact about the site, never a judgement of the council. */
+export type Coverage = "full" | "partial" | "not_yet";
+
 export type Meta = {
   site: { name: string; url: string; donate_url: string | null };
   totals: {
@@ -68,7 +71,7 @@ export type Meta = {
     named_votes: number;
     from: string;
     to: string;
-    ratings?: Record<string, number>;
+    coverage?: Record<string, number>;
   };
   last_update: { finished: string } | null;
   briefings: boolean;
@@ -102,7 +105,7 @@ export type CouncilRow = {
   named_votes?: number;
   control?: Control;
   /** How well the council works here: green (fully), amber (with a gap), red (not loaded). */
-  rating: "green" | "amber" | "red";
+  coverage: Coverage;
   reasons: string[];
 };
 

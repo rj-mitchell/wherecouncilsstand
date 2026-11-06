@@ -205,3 +205,60 @@ def test_councils_stored_under_replaced_codes_can_be_moved(tmp_path):
     mod.recode(raw, pq, "E08000016", "E08000038", dry_run=False)
     assert (raw / "modgov" / "E08000038" / "meeting" / "1.xml").exists()
     assert not (raw / "modgov" / "E08000016").exists() and not (pq / "items" / "E08000016.parquet").exists()
+
+
+def test_the_claude_client_gives_up_after_five_minutes(monkeypatch):
+    from councils.rag.answer import make_client
+
+    monkeypatch.setenv("COUNCILS_ANTHROPIC_API_KEY", "test-key")
+    client = make_client()
+    assert client.timeout.read == 300.0 and client.timeout.connect == 10.0 and client.max_retries == 2
+
+
+def test_an_update_with_no_changes_writes_nothing_to_the_index(settings):
+    """Every write to a LanceDB table makes a new version, and each rebuild of the indices leaves the old one on
+    disk, so an update with nothing new must write nothing; one with changes merges them and cleans up."""
+    from councils.index.build import update_index
+    from councils.index.lance import SearchIndex
+
+    idx = SearchIndex(settings.index_dir, 64)
+
+    def versions():
+        return idx.passages().version, idx.vectors().version
+
+    before = versions()
+    out = update_index(settings, [], HashingEmbedder(64))
+    assert out == {"passages_embedded": 0, "still_to_embed": 0, "index": "unchanged"} and versions() == before
+
+    # a council whose stored meetings changed: its rows are merged into the indices, not built again
+    out = update_index(settings, [GUILDFORD], HashingEmbedder(64))
+    assert out["index"] == "merged" and versions() != before
+    assert not idx.unmerged() and not idx.needs_build()
+    eng = Engine(settings, HashingEmbedder(64), TODAY)
+    assert {r["gss"] for r in eng.search("bin collections", Filters(), limit=5).records} == {BARNSLEY, GUILDFORD}
+
+
+def test_meaning_search_is_trained_again_once_it_has_grown_by_a_fifth(tmp_path, monkeypatch):
+    from councils.index import lance
+
+    monkeypatch.setattr(lance, "MIN_VECTORS_FOR_INDEX", 1)
+    idx = lance.SearchIndex(tmp_path, 4)
+    assert not idx.needs_build()                     # nothing indexed yet
+    (tmp_path / lance.TRAINED).write_text('{"vectors": 100}')
+    monkeypatch.setattr(idx, "has_data", lambda: True)
+    monkeypatch.setattr(idx, "has_keyword_index", lambda: True)
+    monkeypatch.setattr(idx, "_names", lambda: {lance.PASSAGES, lance.VECTORS})
+
+    class Table:
+        def __init__(self, n):
+            self.n = n
+
+        def count_rows(self):
+            return self.n
+
+        def list_indices(self):
+            return [NS(columns=["vector"])]
+
+    for n, rebuild in ((119, False), (120, True)):
+        monkeypatch.setattr(idx, "vectors", lambda n=n: Table(n))
+        assert idx.needs_build() is rebuild

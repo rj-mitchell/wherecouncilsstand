@@ -61,7 +61,7 @@ Commands are run in `/opt/wherecouncilsstand/deploy`. Any `councils` command run
 * **Updates** run once a day (`councils-update.timer`, 03:17 UTC; `docs/OPERATIONS.md`).
 * **New code:** merge it into `main` on GitHub, then `bash /opt/wherecouncilsstand/deploy/update.sh`.
 * **Backups:** everything but the state database can be rebuilt. That database (spending, saved briefings,
-  reports) is copied every night (`councils-backup.timer`) to `/opt/wherecouncilsstand/deploy/backups`, the last 14 kept,
+  reports) is copied every night (`councils-backup.timer`) to `/opt/wherecouncilsstand/deploy/backups`, the last 7 kept,
   and to the charity's Backblaze B2 bucket, the last 60 kept there, beside Where MPs Stand's backups (each site's
   have their own names, and each site deletes only its own old copies). To set up the off-site copy, once, copy the
   bucket and key from Where MPs Stand's settings and check them:

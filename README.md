@@ -3,28 +3,30 @@
 **Sourced briefings on what councils across the UK have discussed, decided and voted on.**
 
 Where Councils Stand applies the approach of [Where MPs Stand](https://wherempsstand.com) to local government. It
-reads the minutes councils already publish for full council and cabinet meetings, and will offer short, balanced
+reads the minutes councils already publish for full council and cabinet meetings, and offers short, balanced
 briefings in which every point cites the council's own record, with each councillor's party on the date. If the
-record holds nothing relevant, it will say "No records found."
+record holds nothing relevant, it says "No records found."
 
 It is a project of Where They Stand, which is applying to register as a charity in England and Wales. The code is adapted from Where Countries Stand and Where They Stand (same licence, same author).
 
 > Where Councils Stand is independent. It is not affiliated with or endorsed by any council, the Local Government
-> Association or Civica.
+> Association, Civica or Northgate.
 
 ## Status
 
-Pilot stage. The data layer works on the real record:
+A public alpha, live at [wherecouncilsstand.com](https://wherecouncilsstand.com) on the charity's shared server
+([`docs/DEPLOY.md`](docs/DEPLOY.md)). It is still being built and tested, and says so on every page. The data layer
+works on the real record:
 
-- the registry of every principal council in the UK (England, Wales, Scotland and Northern Ireland), and which publish through Modern.gov;
+- the registry of every principal council in the UK (England, Wales, Scotland and Northern Ireland), and which publish through Modern.gov, CMIS or CoINS;
 - loading full council and cabinet meetings from May 2018: minutes, attendance and party on the date;
 - minutes published only as a document, where the council serves documents;
 - reading named votes and declarations of interest from the minutes;
 - removing the names of people who aren't councillors before anything is indexed or shown.
 
-It was first run on 20 councils chosen by a fixed rule. It has since loaded 213 of the 215 councils whose
-web service answers. They hold about 30,800 meetings and 7,300 named votes, with each councillor's party on the
-date. The results, and a hand check of the votes, are in [`docs/PILOT.md`](docs/PILOT.md).
+It was first run on 20 councils chosen by a fixed rule. On 6 November 2026 the live site held 295 of the 383
+councils, with about 43,300 meetings and 8,900 named votes, each councillor with their party on the date. The pilot's
+results, and the hand checks of the votes, are in [`docs/PILOT.md`](docs/PILOT.md).
 
 The search index and briefing engine, adapted from Where Countries Stand, give keyword and meaning search over the
 minutes, evidence balanced across councils and party control, and Claude briefings with re-checked citations. The
@@ -36,8 +38,7 @@ The website (`web/`, served by `councils serve`) has:
 - a page for every named vote, with each councillor's party on the date;
 - pages on how it works, corrections and takedown requests, and privacy.
 
-It isn't deployed yet: [`docs/DEPLOY.md`](docs/DEPLOY.md) puts it on the charity's shared server. Its look is described
-in [`docs/DESIGN.md`](docs/DESIGN.md).
+Its look is described in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 | File | What it is |
 |---|---|
@@ -57,7 +58,7 @@ in [`docs/DESIGN.md`](docs/DESIGN.md).
                                                    ▼
  each council's Modern.gov web service ─► committees in scope (committees.py: council, cabinet, policy)
  (GetCommittees, GetMeetings, GetMeeting)          │
-          │ cached raw XML (data/raw/modgov/)      ▼
+          │ cached, gzipped (data/raw/modgov/)     ▼
           └──────────────────────────────► meetings, agenda items with minutes text, attendance with party
                                                    │  (sources/meeting.py, parse/minutes.py, parse/parties.py)
                                                    ▼

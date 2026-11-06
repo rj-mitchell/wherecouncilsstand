@@ -7,6 +7,10 @@ const PARTY: Record<string, string> = {
   UKIP: "UKIP", LIB: "Liberal Party", IND: "Independent", NOC: "no overall control",
 };
 
+const NATION: Record<string, string> = {
+  england: "England", wales: "Wales", scotland: "Scotland", northern_ireland: "Northern Ireland",
+};
+
 export function PlanChips({ plan, meta, councilNames }: { plan: Plan; meta: Meta | null; councilNames: Record<string, string> }) {
   const f = plan.filters || {};
   const chips: string[] = [];
@@ -16,7 +20,7 @@ export function PlanChips({ plan, meta, councilNames }: { plan: Plan; meta: Meta
   for (const c of f.control || [])
     chips.push(c === "NOC" ? "Councils under no overall control" : `Councils under ${PARTY[c] || c.replace(/^LOCAL:/, "")} control`);
   for (const p of f.parties || []) chips.push(`Naming ${PARTY[p] || p} councillors`);
-  for (const n of f.nations || []) chips.push(n === "wales" ? "Wales" : "England");
+  for (const n of f.nations || []) chips.push(NATION[n] || n);
   for (const r of f.regions || []) chips.push(meta?.regions[r] || r);
   for (const t of f.council_types || []) chips.push(meta?.types[t] || t);
   for (const k of f.kinds || []) chips.push(k === "council" ? "Full council" : k === "cabinet" ? "Cabinet" : k);

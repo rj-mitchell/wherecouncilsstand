@@ -17,15 +17,23 @@ For every council already loaded, 20 at a time and one request at a time to each
 4. **Minutes published only as a document** are read for meetings older than three weeks, where the council serves
    documents.
 5. **Named votes and declarations** are read again for each council whose stored meetings changed.
-6. **The search index** is rebuilt for each council that changed. Passages whose text is unchanged keep their vectors
-   and only have their tags updated (party in control, parties named). New and changed passages are then embedded
-   for meaning search, for up to `--embed-minutes`. Anything left is embedded on the next run.
+6. **The search index** is rewritten for each council that changed. Passages whose text is unchanged keep their
+   vectors and only have their tags updated (party in control, parties named). New and changed passages are then
+   embedded for meaning search, for up to `--embed-minutes`. Anything left is embedded on the next run. The new
+   rows are merged into the keyword and meaning-search indices, and superseded versions of the index files older
+   than an hour are deleted (`SearchIndex.refresh`). The indices are built from scratch only the first time, and
+   meaning search's again once it has a fifth more vectors than it was trained on. If no council changed and
+   nothing was embedded, the index isn't touched. Building from scratch every night, as the site first did, left a
+   copy of the old indices on disk each time.
 7. **A summary** is printed and appended to `data/updates.jsonl`:
 
    ```json
    {"finished": "2026-10-25T21:05:01", "minutes": 51.7, "councils": 214, "changed": 17, "new_meetings": 23,
     "failed": ["E07000072", "E07000076"], "passages_embedded": 9927, "still_to_embed": 0, "needs_attention": false}
    ```
+
+   Runs since 6 November 2026 also say what happened to the index: `"index": "merged"`, `"built"` or
+   `"unchanged"`.
 
    That is the first run, on 25 October 2026. It fetched every meeting from the last 120 days again, so later runs
    take about as long. The two failures were new meetings that timed out on slow servers. Both councils kept what was
@@ -66,7 +74,9 @@ emails wheretheystanduk@gmail.com with the result and the run's last log lines, 
 set up once for every site on the server (Where They Stand's `docs/HOSTING.md`, "Email from the server").
 
 It runs at about 03:17 UTC. Councils publish minutes during the working day, and their servers are quietest at night.
-It is also clear of the other sites' updates on the shared server.
+It is also clear of the other sites' updates on the shared server. In case a job runs long, every site's update takes
+the same lock (`/var/lock/wheretheystand-update.lock`) and waits for it, so only one runs at a time. A run can
+therefore start late: while it waits, `systemctl status councils-update` shows it as "activating".
 
 ## When it reports a problem
 
@@ -76,7 +86,34 @@ It is also clear of the other sites' updates on the shared server.
 - **`needs_attention`.** Check the network from the server, then the disk (`df -h`), then the log.
 - **`still_to_embed` keeps growing.** Raise `--embed-minutes`, or run `councils embed` on its own.
 - **A council's meetings suddenly drop to zero.** Its committees have probably been renamed. Look at its committee
-  list (`data/raw/modgov/<GSS>/committees.xml`) and add the new titles to `data_static/committees.csv`.
+  list (`zcat data/raw/modgov/<GSS>/committees.xml.gz`) and add the new titles to `data_static/committees.csv`.
+
+## Disk space
+
+The data folder holds the stored meetings (Parquet), the search index and a cache of every response from councils'
+servers, so that each meeting is fetched once. Two things keep it from growing for no reason:
+
+- **The search index cleans up after itself.** Each update merges its new rows into the indices and deletes
+  superseded versions of the index files over an hour old. `councils optimize` does the same clean-up by hand,
+  while the site keeps serving.
+- **The cache is gzipped.** Responses from CMIS and CoINS sites always were. Modern.gov responses have been since
+  November 2026, which saves about three quarters of their size. Older Modern.gov responses are plain XML and are
+  still read; each is replaced by a gzipped copy when next fetched. Meeting documents (PDFs) are stored as they
+  come, because they barely compress.
+
+To compress every older Modern.gov response at once, run this on the server once. It waits for any site's update
+to finish, through the same lock the updates take, and `gzip` keeps each file's modification time, which decides
+when a response is fetched again:
+
+```bash
+cd /opt/wherecouncilsstand/deploy
+docker compose run --rm -T app du -sh /data/raw/modgov          # before
+flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app sh -c \
+  'find /data/raw/modgov -name "*.xml" -print0 | xargs -0 -r -n 200 gzip -6'
+docker compose run --rm -T app du -sh /data/raw/modgov          # after
+```
+
+It can be stopped and run again: files already compressed are skipped.
 
 ## Commands
 
@@ -87,8 +124,10 @@ It is also clear of the other sites' updates on the shared server.
 | `councils load --resume` | Load councils not yet in the store (a first load; hours) |
 | `councils parse` | Read votes and declarations again from stored minutes (after parser changes) |
 | `councils parties` | Map stored party labels again (after `parse/parties.py` or `data_static/parties.csv` change) |
-| `councils index` | Rebuild the search index for all councils (keeps vectors of unchanged passages) |
+| `councils index` | Rebuild the search index for all councils (keeps vectors of unchanged passages), then delete the superseded files |
 | `councils embed` | Embed passages not yet embedded |
+| `councils list-reports`, `close-report`, `withdraw` | Reports and takedown requests, and withdrawn briefings ("Running the website", below) |
+| `councils optimize` | Compact the search index and delete superseded versions (the update does this itself) |
 
 # Running the website
 
@@ -109,7 +148,7 @@ a daily visitor code at once and never stored, and requests are not logged (priv
 
 **Costs and limits** are in `config/settings.toml`, `[usage]`. Each new briefing is counted against a visitor's daily
 allowance (`per_visitor_daily_questions`) and the site's daily and monthly caps (`daily_spend_cap_usd`,
-`monthly_spend_cap_usd`). Over a limit, readers still get the sources, which cost nothing. An identical question is
+`monthly_spend_cap_usd`). A briefing's cost is known only when it finishes, so while one is being written it counts against the caps at an estimate (`briefing_estimate_usd`), and only a few are written at once (`briefings_at_once`, `briefings_at_once_per_visitor`). Many questions at once therefore can't all pass the daily cap before any is counted. Over a limit, readers still get the sources, which cost nothing. An identical question is
 answered from the cache until the data changes. Spending so far:
 
 ```bash
@@ -117,15 +156,16 @@ docker compose run --rm -T app python -c "import sqlite3; [print(*r) for r in sq
   'select day, round(sum(cost_usd), 2) from usage group by day order by day desc limit 14')]"
 ```
 
-**Reports and takedown requests** are in the same database:
+**Reports and takedown requests** are in the same database. Commands are run in `/opt/wherecouncilsstand/deploy`:
 
 ```bash
-docker compose run --rm -T app python -c "import sqlite3; [print(*r) for r in sqlite3.connect('/data/state.db').execute(
-  'select id, at, kind, page, message from reports where closed_at is null')]"
+docker compose run --rm -T app councils list-reports           # open reports, newest first (--all for every one)
+docker compose run --rm -T app councils close-report 12        # mark report 12 dealt with
+docker compose run --rm -T app councils withdraw <id> --reason "It named the wrong council."
 ```
 
-Closing a report deletes the reporter's email address (privacy notice). A saved briefing can be withdrawn with
-`StateDB.withdraw_briefing`; its address then says it has been withdrawn.
+Closing a report deletes the reporter's email address (privacy notice). Withdrawing a saved briefing (the `<id>` in
+its address, `/b/<id>`) keeps it in the database, but its address then says it has been withdrawn, with the reason.
 
 When the update has changed the data, the service notices within a request or two: the councils' directory is rebuilt
 when the stored meetings change. The search index is opened afresh for each search.

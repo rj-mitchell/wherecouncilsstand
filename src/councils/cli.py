@@ -9,6 +9,9 @@
     councils report                           # the pilot's measurements (docs/PILOT.md)
     councils index && councils embed          # keyword index, then meaning search (slow; resumable)
     councils backup --to /backups             # copy the state database (scheduled)
+    councils list-reports                     # problems and takedown requests sent through the site
+    councils close-report 12                  # mark one dealt with (its contact address is deleted)
+    councils withdraw <id> --reason "..."     # withdraw a saved briefing (/b/<id>)
     councils search "bin collections" --control NOC
     councils ask "What have Labour-run councils decided about bin collections since 2023?"
 """
@@ -127,7 +130,7 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
 
     from councils import load as load_
     from councils.embed.base import get_embedder
-    from councils.index.build import Indexer, embed_pending
+    from councils.index.build import update_index
     from councils.registry import councils, get
 
     s = load_settings()
@@ -138,19 +141,11 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
         lines.append(line)
         typer.echo(json.dumps(line))
     changed = [ln["gss"] for ln in lines if ln.get("changed")]
-    indexer = Indexer(s)
-    for gss in changed:              # one writer at a time; unchanged passages keep their vectors
-        indexer.index_council(gss)
-    if changed:
-        indexer.index.build_indices()
-    embedded = embed_pending(s, indexer.index, indexer.state, get_embedder(s), max_seconds=embed_minutes * 60)
-    if embedded:
-        indexer.index.build_indices()
+    indexed = update_index(s, changed, get_embedder(s), max_seconds=embed_minutes * 60)
     summary = {"finished": time.strftime("%Y-%m-%dT%H:%M:%S"), "minutes": round((time.time() - started) / 60, 1),
                "councils": len(lines), "changed": len(changed),
                "new_meetings": sum(ln.get("new_meetings", 0) for ln in lines),
-               "failed": sorted(ln["gss"] for ln in lines if ln.get("error")),
-               "passages_embedded": embedded, "still_to_embed": len(indexer.state.unembedded())}
+               "failed": sorted(ln["gss"] for ln in lines if ln.get("error")), **indexed}
     # needs attention: many councils failing at once means something on our side, not one council's server
     summary["needs_attention"] = not lines or len(summary["failed"]) > max(5, len(lines) // 10)
     with open(s.data_dir / log_file, "a", encoding="utf-8") as fh:
@@ -182,6 +177,35 @@ def backup(to: str = typer.Option(..., help="folder for the backups"),
         raise typer.Exit(1) from exc
     typer.echo("Off-site copy: " + (f"stored in {sent['bucket']} ({sent['stored']} kept there)"
                                     if sent.get("ok") else sent["offsite"]))
+
+
+def _state():
+    from councils.api.state import StateDB
+
+    return StateDB(load_settings().data_dir / "state.db")
+
+
+@app.command("list-reports")
+def list_reports(all_: bool = typer.Option(False, "--all", help="include reports already dealt with")) -> None:
+    """Problems and takedown requests sent through the site's form, newest first."""
+    for r in _state().reports(open_only=not all_):
+        typer.echo(f"#{r['id']}  {r['at']}  {r['kind']}  {r['page'] or '-'}{'  (closed)' if r['closed_at'] else ''}")
+        typer.echo(f"    {r['message']}")
+        if r["contact"]:
+            typer.echo(f"    reply to: {r['contact']}")
+
+
+@app.command("close-report")
+def close_report(report_id: int) -> None:
+    """Mark a report dealt with. Its contact address is deleted, as the privacy notice says."""
+    typer.echo("closed" if _state().close_report(report_id) else "no open report with that number")
+
+
+@app.command()
+def withdraw(briefing_id: str, reason: str = typer.Option(..., help="shown at its address, e.g. 'It misattributed a "
+                                                                   "decision to the wrong council.'")) -> None:
+    """Withdraw a saved briefing (/b/<id>): its address then says it has been withdrawn, and why."""
+    typer.echo("withdrawn" if _state().withdraw_briefing(briefing_id, reason) else "no briefing with that id")
 
 
 @app.command()
@@ -265,8 +289,20 @@ def embed(max_minutes: float = typer.Option(None, help="stop after this long; ru
     idx = SearchIndex(s.index_dir, int(s.embedding.get("dim", 384)))
     n = embed_pending(s, idx, State(s.index_dir / "state.json"), get_embedder(s),
                       max_seconds=max_minutes * 60 if max_minutes else None)
-    idx.build_indices()
+    if n:
+        idx.refresh()
     typer.echo(f"{n} passages embedded")
+
+
+@app.command()
+def optimize() -> None:
+    """Merge rows waiting to join the search indices, compact the index files and delete versions over an hour old.
+    The daily update does this itself; this is for a one-off clean-up. The site keeps serving meanwhile."""
+    from councils.index.lance import SearchIndex
+
+    s = load_settings()
+    SearchIndex(s.index_dir, int(s.embedding.get("dim", 384))).optimize()
+    typer.echo("search index optimised")
 
 
 def _filters(start, end, council, control, party, kind):

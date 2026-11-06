@@ -1,5 +1,6 @@
 # Nightly copy of the one thing that cannot be rebuilt: the state database (spending, saved briefings, reports).
-# Installed by deploy/update.sh with councils-backup.timer. Copies land in /opt/wherecouncilsstand/deploy/backups.
+# Installed by deploy/update.sh with councils-backup.timer. Copies land in /opt/wherecouncilsstand/deploy/backups
+# (the last 7; the off-site bucket keeps 60).
 [Unit]
 Description=Where Councils Stand: back up the state database
 After=docker.service
@@ -10,6 +11,6 @@ OnFailure=alert@%n.service
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/wherecouncilsstand/deploy
-ExecStart=/usr/bin/docker compose run --rm -T app councils backup --to /backups --keep 14
+ExecStart=/usr/bin/docker compose run --rm -T app councils backup --to /backups --keep 7
 Nice=10
 TimeoutStartSec=30min

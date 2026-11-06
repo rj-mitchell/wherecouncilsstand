@@ -32,7 +32,8 @@ function App() {
       <h1>{c.name}</h1>
       {!c.loaded ? (
         <p className="notice">
-          This council isn't covered yet: its minutes aren't published through Modern.gov, or its site couldn't be read.
+          This council isn't covered yet. {c.reasons.join(" ")} Councils are covered when their minutes are published
+          through a system the site can read (Modern.gov, CMIS or CoINS) and their site can be read.
         </p>
       ) : (
         <>
