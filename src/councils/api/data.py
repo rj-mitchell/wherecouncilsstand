@@ -37,8 +37,7 @@ AUTHORITY_KINDS = ("board", "mayor", "scrutiny")
 # How fully each council is covered, for the councils page: "not_yet" (not loaded), "partial" (loaded with a gap)
 # or "full". It describes the site's reading of the council's record, never the council.
 NOT_LOADED = {
-    "robots": "Permission asked: its meetings site asks automated readers not to visit (robots.txt), so it isn't read "
-              "until it agrees.",
+    "robots": "Its meetings site asks automated readers not to visit (robots.txt).",
     "blocked": "Its meetings site refuses automated requests.",
     "unreachable": "Its meetings site couldn't be reached.",
     "none": "It doesn't publish its minutes through a system we can read yet.",
@@ -62,8 +61,7 @@ def coverage(row: dict[str, Any], attendance: int = 0, with_party: int = 0, toda
         why = [row.get("reason") or NOT_LOADED.get(row.get("status", ""), "Not loaded yet.")]
         held = row.get("withheld")
         if held:
-            why.append(f"The {held['meetings']:,} meetings read before robots.txt was checked are kept, but not shown "
-                       "or used in briefings, until it agrees.")
+            why.append(f"The {held['meetings']:,} meetings read earlier are kept, but not shown or used in briefings.")
         return "not_yet", why
     gaps = []
     if authority:

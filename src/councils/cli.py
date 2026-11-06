@@ -150,7 +150,7 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
                "councils": len(lines), "changed": len(changed),
                "new_meetings": sum(ln.get("new_meetings", 0) for ln in lines),
                "failed": sorted(ln["gss"] for ln in lines if ln.get("error")),
-               # sites whose robots.txt has started to forbid reading: mark them "robots" in the registry and ask
+               # only with [robots] obey on (decision 21): sites whose robots.txt has started to forbid reading
                # (docs/OPERATIONS.md, "When it reports a problem")
                "robots": sorted(ln["gss"] for ln in lines if ln.get("error") == ROBOTS_ERROR), **indexed}
     # needs attention: many councils failing at once means something on our side, not one council's server

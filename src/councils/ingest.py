@@ -62,8 +62,8 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
     start = start or settings.start_date
     end = end or date.today()
     if council.modgov_status == "robots":
-        # marked in the registry: its site's robots.txt forbids reading it (decision 21). Not asked at all; what is
-        # stored is kept, withheld from the site (api/data.py), until permission is given.
+        # marked "robots" in the registry by hand (decision 21): not asked at all; what is stored is kept, withheld
+        # from the site (api/data.py)
         return Result(council.gss, error=ROBOTS_ERROR)
     if council.system != "modgov":
         return _load_other(settings, council, start, end, update)
@@ -76,8 +76,8 @@ def load(settings: Settings, council: Council, start: date | None = None, end: d
         try:
             return _load_modgov(settings, client, council, start, end, update, res, streak)
         except Refused:
-            # robots.txt forbids the site now: nothing is written, what is stored is kept, and the update reports it
-            # so that the registry can be marked and permission asked (docs/OPERATIONS.md)
+            # only with [robots] obey on (decision 21): robots.txt forbids the site now, so nothing is written, what
+            # is stored is kept, and the update reports it (docs/OPERATIONS.md)
             res.error = ROBOTS_ERROR
             return res
 

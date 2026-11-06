@@ -8,8 +8,10 @@ replaced by a gzipped copy when next fetched (docs/OPERATIONS.md has the command
 Dates in requests and responses are day/month/year.
 
 Every request is checked against the site's robots.txt first (sources/robots.py; decision 21), and any Crawl-delay is
-honoured. A site whose robots.txt forbids the web service is not read: ``Refused`` stops the council's load, nothing
-is written, and the cache is not used in its place. A robots.txt that can't be fetched is treated as a server that is
+honoured. The check obeys robots.txt's rules only when ``[robots] obey`` is on (off by the owner's decision of
+6 November 2026, so every page is allowed). With it on, a site whose robots.txt forbids the web service is not read:
+``Refused`` stops the council's load, nothing is written, and the cache is not used in its place. With it on, a
+robots.txt that can't be fetched is treated as a server that is
 down: the cached copy is used where there is one, and the council is tried again the next day.
 """
 

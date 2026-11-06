@@ -39,9 +39,9 @@ def test_no_full_council_meetings_is_a_gap():
     assert coverage({**GOOD, "council_meetings": 70, "cabinet_meetings": 88}, 1000, 990, TODAY)[0] == "full"
 
 
-def test_a_council_whose_robots_txt_forbids_reading_is_withheld_not_deleted(tmp_path, monkeypatch):
-    """East Sussex was loaded before robots.txt was checked on Modern.gov sites (decision 21): its stored record is
-    kept, but not shown, not indexed, not updated and not offered in the sitemap, until permission is given."""
+def test_a_council_marked_robots_is_withheld_not_deleted(tmp_path, monkeypatch):
+    """A council marked "robots" in the registry (decision 21; none that is loaded is, while robots.txt isn't obeyed):
+    its stored record is kept, but not shown, not indexed, not updated and not offered in the sitemap."""
     from dataclasses import replace
     from datetime import date
 
@@ -51,10 +51,11 @@ def test_a_council_whose_robots_txt_forbids_reading_is_withheld_not_deleted(tmp_
     from councils.api.data import Data
     from councils.config import load_settings
     from councils.index.build import passage_rows
-    from councils.registry import get
+    from councils.registry import councils, get
 
-    east_sussex = get("E10000011")
-    assert east_sussex.withheld
+    east_sussex = replace(get("E10000011"), modgov_status="robots")
+    monkeypatch.setitem(councils(), east_sussex.gss, east_sussex)
+    assert east_sussex.withheld and get("E10000011").withheld
     s = replace(load_settings(), data_dir=tmp_path)
     d = date(2025, 2, 11)
     gss = east_sussex.gss
@@ -69,7 +70,7 @@ def test_a_council_whose_robots_txt_forbids_reading_is_withheld_not_deleted(tmp_
     data = Data(s)
     row = next(r for r in data.directory()["councils"] if r["gss"] == gss)
     assert not row["loaded"] and row["coverage"] == "not_yet" and row["withheld"] == {"meetings": 1}
-    assert row["reasons"][0].startswith("Permission asked") and "kept" in row["reasons"][1]
+    assert "robots.txt" in row["reasons"][0] and "kept" in row["reasons"][1]
     assert data.vote(f"{gss}:1:10:0") is None and data.vote_ids() == []
     assert data.council(gss)["votes"] == [] and passage_rows(gss, s) == []
     assert list(load.update(s, [east_sussex])) == []          # not asked at all

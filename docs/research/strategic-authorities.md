@@ -401,11 +401,13 @@ Where they differ from the draft wording first suggested here:
 - **Briefings (19):** authorities are in briefings from the start, not held back. "Control" for an authority with a
   mayor is the mayor's party on the date, labelled as the mayor's; one without a mayor is "no single party".
 - **Members (20):** appointed members who aren't councillors are not named.
-- **Robots.txt (21):** applies to every reader, Modern.gov's included. Checking every Modern.gov site in the registry
-  on 6 November 2026 found 44 sites (45 councils, with the GLA) whose robots.txt forbids reading, not only East
-  Sussex's; 41 of those councils had been loaded. Their data is kept but withheld until permission is given
-  ([`DATA.md`](../DATA.md), "Robots.txt").
-- **The GLA (3 above):** listed as a strategic authority, not covered: its meetings site's robots.txt forbids reading.
+- **Robots.txt (21):** the owner decided on 6 November 2026 not to treat it as a barrier to public records
+  (`[robots] obey` off), after a check found 44 Modern.gov sites (with the GLA's) whose robots.txt forbids reading,
+  41 of them already loaded. They are read as before ([`DATA.md`](../DATA.md), "Robots.txt"). Sussex and Brighton
+  joins the pilot (14), on East Sussex's site like Lancashire's.
+- **The GLA (3 above):** listed as a strategic authority, not covered yet: London Assembly members are elected but
+  aren't councillors, and the site needs a rule for naming them. Its committees were found: the London Assembly
+  plenary (and its expired predecessors), Mayor's Question Time, Budget and Performance, and GLA Oversight.
 
 ## Sources
 

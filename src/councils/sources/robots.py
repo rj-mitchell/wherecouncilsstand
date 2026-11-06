@@ -123,8 +123,21 @@ def robot_name(user_agent: str) -> str:
     return m.group(1) if m else user_agent
 
 
+@lru_cache(maxsize=1)
+def obeyed() -> bool:
+    """Whether robots.txt's rules are obeyed: ``[robots] obey`` in config/settings.toml. Off by the owner's decision of
+    6 November 2026 (decision 21): robots.txt isn't treated as a barrier to councils' public records. Crawl-delay is
+    still honoured where the file can be read."""
+    from councils.config import load_settings
+
+    return bool(load_settings().section("robots").get("obey", True))
+
+
 def check(url: str, user_agent: str) -> str:
-    """"allowed", "forbidden", or "unknown" when the site's robots.txt couldn't be fetched."""
+    """"allowed", "forbidden", or "unknown" when the site's robots.txt couldn't be fetched. Always "allowed" when
+    robots.txt isn't obeyed (``obeyed``)."""
+    if not obeyed():
+        return "allowed"
     u = urlparse(url)
     rp = _parser(f"{u.scheme}://{u.netloc}", user_agent)
     if rp is None:

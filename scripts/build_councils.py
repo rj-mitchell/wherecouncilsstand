@@ -9,7 +9,8 @@ Sources (fetched fresh each run):
   * Modern.gov sites: Local Democracy UK's council list (CC BY 4.0), then a probe of the usual host names
     (democracy., moderngov., modgov., committees., ...) on each remaining council's own domain.
 
-Each site's robots.txt is read first: a site that forbids the web service is "robots" and isn't asked (decision 21).
+Each site's robots.txt is read first when ``[robots] obey`` is on (config/settings.toml; off by the owner's decision of
+6 November 2026, decision 21): then a site that forbids the web service is "robots" and isn't asked.
 Each other site is checked with one GetCommittees request. "blocked" means the site refused automated requests from
 where this ran, and "unreachable" that the connection failed; either may work from elsewhere or later.
 

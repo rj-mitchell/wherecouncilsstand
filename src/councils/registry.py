@@ -66,8 +66,9 @@ class Council:
 
     @property
     def withheld(self) -> bool:
-        """Its site's robots.txt forbids reading it (decision 21): not read, and anything stored before the check is
-        kept but withheld from the site, briefings and the update until permission is given."""
+        """Marked "robots" in the registry: not read, and anything stored earlier is kept but withheld from the site,
+        briefings and the update. Only councils marked by hand, or by scripts/build_councils.py with ``[robots] obey``
+        on, are (decision 21); none that is loaded is marked now."""
         return self.modgov_status == "robots"
 
     @property

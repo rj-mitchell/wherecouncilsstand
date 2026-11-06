@@ -35,9 +35,13 @@ def test_the_registry_lists_the_twenty_authorities_and_the_pilot_by_rule():
     sa = authorities()
     assert len(sa) == 20 and all(a.nation == "england" and a.type == "strategic_authority" for a in sa)
     pilot = {a.gss for a in sa if a.modgov_status == "ok"}
-    assert pilot == set(PILOT.values())
-    assert get("E12000007").name == "Greater London Authority" and get("E12000007").withheld
-    assert get("SA-SUSSEX-BRIGHTON").withheld                       # on East Sussex's site, which forbids reading
+    # Sussex and Brighton too: one committee, on East Sussex's site (no fixture of its own)
+    assert pilot == set(PILOT.values()) | {"SA-SUSSEX-BRIGHTON"}
+    assert not any(c.withheld for c in councils().values() if c.modgov_status != "robots")
+    gla = get("E12000007")
+    assert gla.name == "Greater London Authority" and gla.modgov_status == "none" and not gla.withheld
+    assert "London Assembly members" in gla.reason
+    assert shares_site_with_council(get("SA-SUSSEX-BRIGHTON")) and site_sharers(get("E10000011")) == []
     assert get("E47000017").regions == ("E12000004", "E12000003")  # Greater Lincolnshire spans two regions
     assert not any(c.is_authority for c in councils().values() if c.gss.startswith(("E06", "E07", "E08")))
 

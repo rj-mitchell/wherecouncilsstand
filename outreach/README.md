@@ -31,27 +31,3 @@ needs its permission recorded in the registry before it is read.
 
 Councils that publish no email address get a letter for post instead, in the batch's `post/` folder (the send
 command above doesn't take it). Print it, sign it and post it; it asks for a reply by email.
-
-## The robots.txt batch (`2026-11-robots/`)
-
-Drafted on 6 November 2026, not sent. When the Modern.gov reader began to check robots.txt (decision 21), 44 sites
-were found to forbid reading, most of which the site had already read. Each letter says so plainly, apologises, and
-asks for permission; one letter goes to a site two bodies share (South Hams and West Devon; East Sussex, with the
-Sussex and Brighton Combined County Authority). Eastleigh, Richmond upon Thames and Wandsworth were already written
-to in the first batch, because their sites refused the server, so they aren't written to again.
-
-Before sending:
-
-1. **Find each address.** The To: line says `[the council's democratic services address, to be found before
-   sending]`: put in the address each council publishes for its democratic services team, as for the first batch.
-   (Their meetings sites can't be read for it: that is the point of the letter.)
-2. **Put in the server's address.** Every letter in this batch gives it, so the whole batch is filled in a copy outside
-   the repository, keeping the file names, then sent and deleted:
-
-       cp -r /opt/wherecouncilsstand/outreach/2026-11-robots /root/robots-letters
-       sed -i 's/\[the server'"'"'s IP address, as given in the letter sent\]/<the address>/' /root/robots-letters/*.txt
-       grep -L "^To: .*@" /root/robots-letters/*.txt        # any letter still without an address
-       bash /opt/hansardgpt/deploy/mail.sh send /root/robots-letters/*.txt && rm -r /root/robots-letters
-
-A council that agrees has its `modgov_status` set back to `ok` in `data_static/councils.csv`: its withheld record
-returns, and the next update reads it again (docs/DATA.md, "Robots.txt").

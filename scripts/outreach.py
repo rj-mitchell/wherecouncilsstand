@@ -93,12 +93,8 @@ SCOTLAND_NI = ("scotland", "northern_ireland")
 
 
 def council_rows() -> dict[str, dict]:
-    """Councils and strategic authorities (data_static/strategic_authorities.csv), by GSS code."""
     with open(ROOT / "data_static" / "councils.csv", newline="") as f:
-        rows = {r["gss"]: r for r in csv.DictReader(f)}
-    with open(ROOT / "data_static" / "strategic_authorities.csv", newline="") as f:
-        rows |= {r["gss"]: {**r, "nation": "england"} for r in csv.DictReader(f)}
-    return rows
+        return {r["gss"]: r for r in csv.DictReader(f)}
 
 
 def short_name(name: str) -> str:
@@ -195,104 +191,6 @@ def letter(row: dict, address: str, greeting: str, passed_on: bool, why_you: str
     return f"To: {address}\nSubject: {subject}\n\n" + "\n".join(parts)
 
 
-# The status each letter of the batches above was written for, where the registry now says otherwise: these sites
-# refused the server, and were found on 6 November 2026 to forbid reading in robots.txt too.
-AS_WRITTEN = {"E07000086": "blocked", "E09000027": "blocked", "E09000032": "blocked"}
-
-# Third batch (decision 21, 6 November 2026): Modern.gov sites whose robots.txt forbids reading, found when the
-# Modern.gov reader began to check it. Most had already been read. Addresses aren't found yet: each letter's To: line
-# is ADDRESS_TO_FIND until the council's democratic services address is put in (outreach/README.md).
-ROBOTS_BATCH = "2026-11-robots"
-ADDRESS_TO_FIND = "[the council's democratic services address, to be found before sending]"
-# Councils already written to in the batches above (their sites refused the server) aren't written to again here.
-ALREADY_ASKED = set(LETTERS) | set(NAMED) | set(POST)
-
-
-def robots_letter(row: dict, address: str = ADDRESS_TO_FIND, read_before: int = 0) -> str:
-    """A letter to a council (or authority) whose Modern.gov site's robots.txt forbids reading it. Where the site was
-    read before robots.txt was checked (``read_before`` meetings), it says so plainly."""
-    url = row["modgov_url"]
-    name = the(row["name"])
-    short = short_name(name) if not name.endswith("Authority") else name
-    authority = "Authority" in name
-    what = ("the meetings of the London Assembly" if row["gss"] == "E12000007" else
-            "the meetings of its board, and its overview and scrutiny committees" if authority else
-            "the meetings of full council and cabinet")
-    also = [the(r["name"]) for r in council_rows().values() if r["modgov_url"] == url and r["gss"] != row["gss"]]
-    parts = ["Dear Democratic Services team,\n",
-             f"I'm writing from Where Councils Stand ({SITE}), an independent public website that helps people find "
-             "out what councils and strategic authorities have discussed, decided and voted on. It reads the minutes "
-             f"they already publish of {what}, from May 2018 onwards, and every point it makes links back to the "
-             "published record. It is a project of Where They Stand, which is applying to register as a charity in "
-             "England and Wales.\n"]
-    if read_before:
-        parts.append(
-            f"Until now the site has read {name}'s published meetings through the web service Modern.gov provides "
-            f"(mgWebService.asmx on {url}). It should have checked your site's robots.txt first, as it does for "
-            "other systems, and didn't: I'm sorry. Your robots.txt asks automated tools not to read the site, so we "
-            f"have stopped. The {read_before:,} meetings already read are kept, but no longer shown or used, and "
-            "nothing more will be read unless you agree.\n")
-    else:
-        parts.append(f"Your committee site, {url}, has a robots.txt file asking automated tools not to read it. We "
-                     f"have respected that and left {name} out, rather than work around it.\n")
-    if also:
-        parts.append(f"The same site publishes the meetings of {' and '.join(also)}, so this letter asks for "
-                     "them too.\n")
-    parts.append(
-        f"We would like to include {short}, so I'm writing to ask whether you would be willing to do one of the "
-        "following:\n\n"
-        "1. let our crawler in, by adding these two lines at the top of the site's robots.txt (everyone else would "
-        "still be kept out):\n\n"
-        "   User-agent: WhereCouncilsStand\n   Allow: /mgWebService.asmx\n\n"
-        "2. or reply to confirm you are content for us to read the published meetings and minutes through the web "
-        "service.\n")
-    parts.append(
-        "How it would read your site:\n\n"
-        f"- Only what is public: Modern.gov's web service for the committees, meetings, attendance and minutes of "
-        f"{what.removeprefix('the meetings of ')}, and minutes published as documents.\n"
-        "- At most one request a second, following any Crawl-delay you set. Every response is kept once fetched, so "
-        "nothing is read twice.\n"
-        "- After the first load, a daily check for new meetings, re-reading only meetings from the last four months, "
-        "because minutes can be corrected when they are approved.\n"
-        f"- It runs on our server, at {SERVER_ADDRESS}, and identifies itself as: {USER_AGENT}\n"
-        "- Names of people who aren't councillors are removed before anything is shown.\n")
-    parts.append(f"If you would rather we didn't, we will keep {short} out, and the site will say why it isn't "
-                 "included. I'm happy to answer any questions, or to change how it reads the site to suit you.\n")
-    parts.append(f"Kind regards,\n\n{SIGNATURE}\n")
-    subject = f"Permission to read {name}'s published minutes (Where Councils Stand)"
-    return f"To: {address}\nSubject: {subject}\n\n" + "\n".join(parts)
-
-
-# meetings read from each site before robots.txt was checked: the live site's figures, 6 November 2026
-READ_BEFORE = {
-    "E06000055": 169, "E06000009": 151, "E07000146": 190, "E07000138": 204, "E09000001": 188, "W06000003": 229,
-    "E06000052": 139, "E06000053": 107, "E07000035": 44, "E10000011": 137, "E06000006": 146, "E06000019": 188,
-    "E10000015": 141, "E07000132": 113, "E07000120": 148, "E08000034": 209, "E07000121": 203, "E08000012": 117,
-    "E09000004": 62, "E09000006": 148, "E09000017": 143, "E09000018": 145, "E09000026": 159, "E09000031": 148,
-    "E07000235": 143, "W06000024": 234, "E06000002": 145, "E07000134": 160, "E07000178": 166, "W06000009": 172,
-    "E07000176": 141, "E07000044": 141, "E07000141": 172, "E06000021": 199, "E07000221": 163, "E07000113": 135,
-    "E06000030": 130, "E07000047": 64, "E06000054": 144, "E07000094": 169, "E07000238": 134,
-}
-
-
-def the(name: str) -> str:
-    """"the West Yorkshire Combined Authority": an authority's name takes "the", a council's doesn't."""
-    return f"the {name}" if name.endswith("Authority") else name
-
-
-def robots_rows(rows: dict[str, dict]) -> list[dict]:
-    """Modern.gov sites whose robots.txt forbids reading, not already written to; one letter for a site two councils
-    share (South Hams and West Devon), to the first."""
-    seen, out = set(), []
-    for gss, r in sorted(rows.items(), key=lambda kv: kv[1]["name"]):
-        if r["modgov_status"] != "robots" or r.get("system", "modgov") != "modgov" or gss in ALREADY_ASKED \
-                or r["modgov_url"] in seen:
-            continue
-        out.append(r)
-        seen.add(r["modgov_url"])
-    return out
-
-
 def slug(name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", short_name(name).lower()).strip("-")
 
@@ -302,7 +200,7 @@ def main() -> None:
     out = ROOT / "outreach" / BATCH
     out.mkdir(parents=True, exist_ok=True)
     for gss, (address, greeting, passed_on) in LETTERS.items():
-        row = {**rows[gss], "modgov_status": AS_WRITTEN.get(gss, rows[gss]["modgov_status"])}
+        row = rows[gss]
         (out / f"{slug(row['name'])}.txt").write_text(letter(row, address, greeting, passed_on))
     for gss, (address, greeting, why_you) in NAMED.items():
         row = rows[gss]
@@ -315,12 +213,6 @@ def main() -> None:
                                                               by_post=postal))
     print(f"{len(LETTERS) + len(NAMED)} letters to send in {out.relative_to(ROOT)}, {len(POST)} to post in "
           f"{post.relative_to(ROOT)}")
-    robots = ROOT / "outreach" / ROBOTS_BATCH
-    robots.mkdir(parents=True, exist_ok=True)
-    written = robots_rows(rows)
-    for row in written:
-        (robots / f"{slug(row['name'])}.txt").write_text(robots_letter(row, read_before=READ_BEFORE.get(row["gss"], 0)))
-    print(f"{len(written)} letters drafted in {robots.relative_to(ROOT)}: put in each address before sending")
 
 
 if __name__ == "__main__":
