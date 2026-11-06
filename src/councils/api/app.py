@@ -310,7 +310,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         if b is None:
             raise HTTPException(404, "There is no briefing at this address.")
         if b["withdrawn_at"]:
-            raise HTTPException(410, "This briefing has been withdrawn.")
+            why = (b["withdrawn_reason"] or "").strip()
+            raise HTTPException(410, "This briefing has been withdrawn" + (f": {why}" if why else "."))
         return {"id": b["id"], "at": b["at"], "question": b["question"], "options": b["options"],
                 "events": rechecked(b["events"])}
 

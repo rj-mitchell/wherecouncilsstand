@@ -126,6 +126,7 @@ It can be stopped and run again: files already compressed are skipped.
 | `councils parties` | Map stored party labels again (after `parse/parties.py` or `data_static/parties.csv` change) |
 | `councils index` | Rebuild the search index for all councils (keeps vectors of unchanged passages), then delete the superseded files |
 | `councils embed` | Embed passages not yet embedded |
+| `councils list-reports`, `close-report`, `withdraw` | Reports and takedown requests, and withdrawn briefings ("Running the website", below) |
 | `councils optimize` | Compact the search index and delete superseded versions (the update does this itself) |
 
 # Running the website
@@ -155,15 +156,16 @@ docker compose run --rm -T app python -c "import sqlite3; [print(*r) for r in sq
   'select day, round(sum(cost_usd), 2) from usage group by day order by day desc limit 14')]"
 ```
 
-**Reports and takedown requests** are in the same database:
+**Reports and takedown requests** are in the same database. Commands are run in `/opt/wherecouncilsstand/deploy`:
 
 ```bash
-docker compose run --rm -T app python -c "import sqlite3; [print(*r) for r in sqlite3.connect('/data/state.db').execute(
-  'select id, at, kind, page, message from reports where closed_at is null')]"
+docker compose run --rm -T app councils list-reports           # open reports, newest first (--all for every one)
+docker compose run --rm -T app councils close-report 12        # mark report 12 dealt with
+docker compose run --rm -T app councils withdraw <id> --reason "It named the wrong council."
 ```
 
-Closing a report deletes the reporter's email address (privacy notice). A saved briefing can be withdrawn with
-`StateDB.withdraw_briefing`; its address then says it has been withdrawn.
+Closing a report deletes the reporter's email address (privacy notice). Withdrawing a saved briefing (the `<id>` in
+its address, `/b/<id>`) keeps it in the database, but its address then says it has been withdrawn, with the reason.
 
 When the update has changed the data, the service notices within a request or two: the councils' directory is rebuilt
 when the stored meetings change. The search index is opened afresh for each search.
