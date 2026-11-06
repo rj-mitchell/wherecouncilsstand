@@ -179,6 +179,28 @@ def backup(to: str = typer.Option(..., help="folder for the backups"),
                                     if sent.get("ok") else sent["offsite"]))
 
 
+@app.command("backup-check")
+def backup_check(folder: str = typer.Option("/backups", "--in", help="the folder the backups are written to")) -> None:
+    """Whether the nightly backup and its off-site copy are up to date. Prints any problem, and exits 1 if the last
+    backup or off-site copy is over two days old or failed: run daily by councils-backup-check.timer, so a backup
+    timer that has stopped running is noticed (its own failure alert never fires)."""
+    from pathlib import Path
+
+    from councils.offsite import backup_alerts
+
+    path = Path(folder)
+    if not path.is_dir():
+        typer.echo(f"error: there is no backup folder at {path}", err=True)
+        raise typer.Exit(1)
+    alerts = backup_alerts(path)
+    for a in alerts:
+        typer.echo(f"{a['level']}: {a['text']}", err=a["level"] == "error")
+    if not alerts:
+        typer.echo("Backups are up to date.")
+    if any(a["level"] == "error" for a in alerts):
+        raise typer.Exit(1)
+
+
 def _state():
     from councils.api.state import StateDB
 

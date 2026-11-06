@@ -78,6 +78,8 @@ Commands are run in `/opt/wherecouncilsstand/deploy`. Any `councils` command run
   docker compose run --rm -T app councils offsite                  # "ok": true
   docker compose run --rm -T app councils backup --to /backups     # ends "Off-site copy: stored in ..."
   ```
+  Every day `councils-backup-check.timer` checks the backups are up to date, and fails (sending the usual alert)
+  if the last backup or off-site copy is over two days old ([`OPERATIONS.md`](OPERATIONS.md)).
   To get a backup back: download the newest `councils-state-….sqlite.gz` from the bucket, unzip it, and copy it into
   the data volume as `/data/state.db` with the site stopped.
 * **The privacy notice** (`web/privacy.html`) names Cloudflare, which carries the site's visits, and says requests
