@@ -107,16 +107,18 @@ def parties(council: list[str] = typer.Argument(None, help="GSS codes or names; 
 
 
 @app.command()
-def load(status: str = typer.Option("ok", help="councils whose web service had this status"),
+def load(council: list[str] = typer.Argument(None, help="GSS codes or names: only these (of those in scope)"),
+         status: str = typer.Option("ok", help="councils whose web service had this status"),
          nation: str = typer.Option(None), workers: int = typer.Option(20, help="councils loaded at once"),
          type_: str = typer.Option(None, "--type", help="only this kind: strategic_authority for the authorities"),
          resume: bool = typer.Option(False, help="only parse councils already loaded")) -> None:
     """Load and parse every council in scope, printing one line per council as it finishes."""
     from councils import load as load_
-    from councils.registry import councils
+    from councils.registry import councils, get
 
+    only = {get(k).gss for k in council or []}
     chosen = [c for c in councils().values() if c.modgov_status == status and (not nation or c.nation == nation)
-              and (not type_ or c.type == type_)]
+              and (not type_ or c.type == type_) and (not only or c.gss in only)]
     for line in load_.many(load_settings(), chosen, workers=workers, resume=resume):
         typer.echo(json.dumps(line), nl=True)
 

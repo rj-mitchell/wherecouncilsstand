@@ -133,6 +133,30 @@ systemctl start councils-update.service && journalctl -u councils-update.service
 - **After that,** the nightly update reads them like any council. Members' parties come from their home councils'
   stored records, so they are read again each night as the councils' are.
 
+### Loading the 26 CMIS councils (once)
+
+Left out under the earlier robots.txt rule and read again at the owner's request (decision 21, 6 November 2026):
+Birmingham, Braintree, Cambridgeshire, Castle Point, Colchester, Derby, Dudley, East Suffolk, Essex, Fylde, Great
+Yarmouth, Harborough, Hull, Norfolk, South Derbyshire, South Staffordshire, Walsall, Warrington, Mid Ulster,
+Midlothian, North Ayrshire, North Lanarkshire, Perth and Kinross, Renfrewshire, South Lanarkshire and West
+Dunbartonshire. Run on the server after this change is deployed:
+
+```bash
+cd /opt/wherecouncilsstand/deploy
+flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app councils load --workers 26 \
+  E08000025 E07000067 E10000003 E07000069 E07000071 E06000015 E08000027 E07000244 E10000012 E07000119 \
+  E07000145 E07000131 E06000010 E10000020 E07000039 E07000196 E08000030 E06000007 N09000009 S12000019 \
+  S12000021 S12000050 S12000048 S12000038 S12000029 S12000039 | tee /tmp/cmis-load.jsonl
+systemctl start councils-update.service && journalctl -u councils-update.service -n 30
+```
+
+- **Time:** two to three hours. A CMIS site is read page by page, as a browser would, at least a second apart; a
+  trial on 6 November 2026 (Birmingham, Essex and South Lanarkshire, four months each) took 25 to 40 seconds a
+  meeting with its minutes. Birmingham's full record, about 175 meetings, sets the pace; all 26 run side by side.
+- **What to check:** each line of `/tmp/cmis-load.jsonl` has `"error": ""`. A site that refuses (403, a bot check)
+  says so and is left for a letter, not worked around. One that failed is run again on its own:
+  `councils ingest E08000025`.
+
 ### Disk space
 
 The data folder holds the stored meetings (Parquet), the search index and a cache of every response from councils'
