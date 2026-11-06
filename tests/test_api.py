@@ -176,3 +176,10 @@ def test_head_requests_are_answered_like_get(client, tmp_path):
         assert head.content == b"" and head.headers["content-type"] == get.headers["content-type"], path
     assert t.head("/no-such-page").status_code == 404
     assert t.head("/api/ask").status_code == 405           # a POST route stays POST only
+
+
+def test_no_interactive_api_pages(client):
+    """Swagger and ReDoc load scripts from a CDN that the content security policy blocks: they are switched off."""
+    c, _, _, _ = client
+    assert c.get("/api/docs").status_code == 404 and c.get("/redoc").status_code == 404
+    assert c.get("/api/openapi.json").json()["info"]["title"] == "Where Councils Stand"

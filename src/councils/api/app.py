@@ -153,7 +153,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     dist = Path(settings.section("paths").get("web_dist", REPO_ROOT / "web" / "dist"))
     holder: dict[str, Pipeline] = {"p": pipeline} if pipeline is not None else {}
     lock = threading.Lock()
-    app = FastAPI(title="Where Councils Stand", docs_url="/api/docs", openapi_url="/api/openapi.json")
+    # No interactive API pages: FastAPI's Swagger and ReDoc pages load their scripts from a CDN, which the site's
+    # content security policy blocks, so they showed a blank page. The machine-readable description stays.
+    app = FastAPI(title="Where Councils Stand", docs_url=None, redoc_url=None, openapi_url="/api/openapi.json")
 
     def get_pipeline() -> Pipeline:
         with lock:
