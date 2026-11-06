@@ -110,9 +110,10 @@ hand each quarter against legislation.gov.uk.
   day they left office (from Wikipedia's list of metro mayors, as of June 2026, and the research note; the dates
   before 2024 should be checked against the authorities' own records). Between two mayors (Greater Manchester, 18 June
   to 30 July 2026) there is none.
-- **Committees** (decision 18): each pilot authority's board, overview and scrutiny committees and any committee of
+- **Committees** (decision 18): each authority's board, overview and scrutiny committees and any committee of
   the mayor's decisions are named in `committees.csv`, with the reason, and checked against their committee lists as
-  their web services gave them on 6 November 2026 (`tests/fixtures/modgov/`). None of the 13 lists the mayor's
+  their web services gave them on 6 November 2026 (`tests/fixtures/modgov/`), or, for the four read from their own
+  websites, as those sites list them ("Meetings: authorities' own websites", below). None of the 13 lists the mayor's
   decisions as a live committee: West Midlands' "Mayoral Decision" is marked deleted, so nothing is read from it unless
   it returns. Lancashire's are on Lancashire County Council's site, so only the committees named are taken, and the
   county's own are unaffected.
@@ -139,7 +140,7 @@ hand each quarter against legislation.gov.uk.
 
 **Not obeyed, by the owner's decision of 6 November 2026**: robots.txt isn't treated as a blanket barrier to
 councils' public records. `[robots] obey` in `config/settings.toml` is `false`, and every reader (Modern.gov, CMIS,
-CoINS) asks `sources/robots.py`, which then allows every page without reading the file's rules. Whatever the
+CoINS, the authorities' own websites) asks `sources/robots.py`, which then allows every page without reading the file's rules. Whatever the
 setting, any `Crawl-delay` the site's robots.txt asks for is honoured where the file can be read, the crawler names
 itself, requests to one council are one at a time at least `min_interval_seconds` apart, and a site that refuses
 requests (401, 403, 429, a bot check) is asked, never worked around.
@@ -279,6 +280,60 @@ retries and refetching of recent meetings as Modern.gov.
   West Lothian and Shetland print a roll call as columns headed "Motion", "Amendment", "Abstain": West Lothian's
   come out of the PDF's text row by row, mixing the columns, and Shetland's ("Amendment Ms Hawick Mrs Lyall
   Motion Mr Anderson …") have no heading `votes.py` reads, so neither is read yet.
+
+## Meetings: authorities' own websites
+
+Four strategic authorities publish their meetings as documents on their own websites, not through a meetings system:
+Tees Valley, Hull and East Yorkshire, Cumbria, and Hampshire and the Solent (`system=docsite` in
+`strategic_authorities.csv`; their meetings pages were found on 6 November 2026, Hampshire and the Solent's under its
+site's "Democracy" pages, which answered that day although they had refused the research's requests earlier).
+`sources/docsite.py` reads them, configured per authority in **`data_static/document_sites.csv`**: each committee in
+scope, the pages that list its meetings, and their layout. Every response is cached, gzipped, under
+`data/raw/docsite/<authority>/`, with the same user agent, spacing, Crawl-delay and refusals as the other readers.
+
+| Layout | Sites | Read as |
+|---|---|---|
+| `sections` | Tees Valley (WordPress: the current year's page and its archive), Hampshire and the Solent (WordPress, one page a committee) | Meetings under dated headings ("31st July 2026", "28 September 2026 @ 2.30pm"), each followed by links to its documents |
+| `listing` | Cumbria (LocalGov Drupal: a paged list), Hull and East Yorkshire (Jadu: a directory by council year) | A list of meetings, each linking to a page of its own with its documents; further pages ("?page=1") and council years ("2025/26") are followed |
+
+What was found:
+
+- **Minutes.** A meeting's minutes are the document titled as minutes that carries its date, in its link or its file
+  name ("Cabinet-minutes-25-July-2025.pdf", "Minutes-280619.pdf", "20250926-heyca-executive-board-minutes", and
+  Hampshire and the Solent's "260928_Board-Minutes-Final.pdf", year first). Approved or final minutes are preferred to
+  drafts; a meeting without its own takes the draft attached to the committee's next meeting. A link to a file with
+  another meeting's date isn't taken (Tees Valley's 15 October 2025 scrutiny meeting links the 19 November minutes).
+  An annual meeting held the same day as an ordinary one (Tees Valley's AGM) is read with it. The minutes are kept
+  whole as one "Minutes" item: there is no agenda to split them by, and their numbering ("TVCA 32/25") doesn't survive
+  the PDFs' columns.
+- **Not every meeting has minutes on the site.** Hull and East Yorkshire publishes most of its scrutiny committee's
+  minutes, and three of its board's, only inside the next meeting's agenda pack, and Tees Valley its scrutiny
+  committee's since 2026 and a few of its cabinet's; these meetings are kept without minutes or attendance. Tees
+  Valley's site has nothing before April 2019 (the archive starts with the 2019/20 council year).
+- **Attendance** is read from the list at the top of the minutes: "Present:" or "ATTENDEES", with sections for
+  members, associate members, apologies, and those in attendance or officers (only councillors and mayors are kept
+  from the last three: Tees Valley lists officers' apologies with the members', with nothing to tell them apart).
+  The layouts differ: a name a line with the council in brackets ("Councillor Ian Blades (Middlesbrough Council)
+  (Chair)"), a name a line with the roles in a column beside them, which comes out of the PDF after the names ("Leader,
+  Hartlepool Borough Council") and is matched in order (a member written without a title whose role is a council's
+  leader or "Mayor of Middlesbrough" is that councillor or mayor), the council after a comma, or a sentence ("Councillors
+  Handley, Ross, Tock (substituting for Councillor Dad), and Tucker", "Cllr M Fryer (Chair), Cllr J Brook (Vice Chair)
+  ..."). A councillor named without their council is matched to the authority's member councils' stored records by
+  surname and first name or initial, within a year (`authority.find_member`), and takes that council and its record's
+  full name; one not matched (a council the site doesn't hold, or two who fit) is a non-constituent member with no
+  party. A body or office is never read as a person.
+- **Members** are then classed as on Modern.gov (`authority.classify`, decision 20): the mayor, councillors (constituent
+  or non-constituent members, substitutes), and appointed members who aren't councillors (business board chairs,
+  members of the old local enterprise partnership, the police and crime commissioner), counted with their names
+  removed from the attendance and the minutes. Party is the home council's record on the date, where the site holds
+  it; these minutes give none of their own.
+- **Coverage** (loaded on 6 November 2026, from a cloud network): Tees Valley 81 meetings from April 2019 (68 with
+  minutes), Hull and East Yorkshire 23 from March 2025 (13), Cumbria 7 from March 2026 (all), Hampshire and the Solent
+  3 from July 2026 (all). Mayor's decisions aren't published as meetings on any of the four sites.
+- **Named votes.** None are read yet. Most decisions are by consensus. The minutes record two named votes, in
+  layouts `parse/votes.py` doesn't read: Tees Valley's scrutiny committee on 14 October 2022 lists a roll call one
+  member to a line ("Cllr Branson (Middlesbrough) - For"), and Hampshire and the Solent's board's budget vote on 13
+  July 2026 is a table whose columns come apart in the PDF. Declarations of interest are read (71 at Tees Valley).
 
 ## Party in control
 

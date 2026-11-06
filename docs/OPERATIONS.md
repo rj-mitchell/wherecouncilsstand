@@ -102,33 +102,43 @@ therefore start late: while it waits, `systemctl status councils-update` shows i
 
 ### Loading the strategic authorities (once)
 
-The 16 strategic authorities of the pilot (decision 17) are in the registry with status `ok`, but nothing of theirs is
-stored until they are loaded once. Run on the server, after this change is deployed, in
+All 20 strategic authorities (decision 17) are in the registry with status `ok`: the 16 on Modern.gov, and the four
+read from their own websites (Tees Valley, Hull and East Yorkshire, Cumbria, and Hampshire and the Solent,
+`system=docsite`). Nothing of theirs is stored until they are loaded once. If the 16 are already loaded, load just the four in
+step 2: `councils load E47000006 E47000016 SA-CUMBRIA SA-HAMPSHIRE-SOLENT --workers 4` in place of
+`--type strategic_authority`. Run on the server, after this change is deployed, in
 `/opt/wherecouncilsstand/deploy`. Each command takes the same lock as the nightly update, so they never overlap; if
 the nightly run is under way, they wait for it.
 
 ```bash
 cd /opt/wherecouncilsstand/deploy
-# 1. what will be loaded: the 16, each with its meetings site (Lancashire's, Sussex and Brighton's and Cheshire
-#    and Warrington's are their councils')
+# 1. what will be loaded: the 20, each with its meetings site (Lancashire's, Sussex and Brighton's and Cheshire
+#    and Warrington's are their councils'; the four on their own websites show their meetings pages)
 docker compose run --rm -T app councils list --type strategic_authority --status ok
 # 2. the backfill: board, scrutiny and any mayor's decisions since May 2018, members' roles and parties, named votes
 flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app \
-  councils load --type strategic_authority --workers 16 | tee /tmp/authorities-load.jsonl
+  councils load --type strategic_authority --workers 20 | tee /tmp/authorities-load.jsonl
 # 3. index them now, rather than waiting for 03:17
 systemctl start councils-update.service && journalctl -u councils-update.service -n 30
 ```
 
-- **Time:** about an hour. Each authority is read one request at a time, at least a second apart, all 16 side by
+- **Time:** about an hour. Each authority is read one request at a time, at least a second apart, all 20 side by
   side, so the longest record sets the pace: Greater Manchester's (nine committees in scope, three of them expired
   scrutiny committees, about 300 meetings, and minutes mostly as documents) at 2 to 25 seconds a meeting on a slow
-  server. The four created in 2024–25 take a few minutes each. Step 3 is an ordinary nightly run (about 50 minutes).
+  server. The four created in 2024–25 take a few minutes each. The four on their own websites take about 5 minutes
+  in all (about 150 requests: Tees Valley's 4 pages and about 75 minutes documents, Hull and East Yorkshire's about 30
+  pages and 13 documents, Cumbria's 10 and 7, Hampshire and the Solent's 2 and 3; about 20 MB of cache under
+  `/data/raw/docsite`). Step 3 is an ordinary nightly run (about 50 minutes).
 - **Requests and disk:** about 2,100 meetings and 2,500 requests (the GLA's about 500 of them) in all, with up to a few hundred minutes documents.
   Each meeting's response is 250–350 KB of XML, about 80 KB gzipped: about **150 MB for the cache, 100 MB for
   documents**, and a few MB of Parquet and index. Check with `docker compose run --rm -T app du -sh /data/raw/modgov`
   before and after.
 - **What to check:** each line of `/tmp/authorities-load.jsonl` has `"error": ""` and the committees expected
-  (`data_static/committees.csv`). One that failed is simply run again: `councils ingest E47000001`. Cheshire and Warrington's line should list committees named for it ("Cheshire and Warrington Combined Authority ..."); if it lists none, send its line on: its committees' titles differ from the rule. Then
+  (`data_static/committees.csv`). For the four on their own websites, expect about 81 meetings for Tees Valley (from
+  April 2019), 23 for Hull and East Yorkshire, 7 for Cumbria and 3 for Hampshire and the Solent (6 November 2026; more
+  as meetings are held). Their members' councils and parties come from the constituent councils' stored records, so
+  load them after the councils (as here, once the councils are loaded); a member matched to no council shows as a
+  non-constituent member with no party until the next update reads them again. One that failed is simply run again: `councils ingest E47000001`. Cheshire and Warrington's line should list committees named for it ("Cheshire and Warrington Combined Authority ..."); if it lists none, send its line on: its committees' titles differ from the rule. Then
   the councils page lists them under "Strategic authorities", and `/councils/E47000003` shows West Yorkshire's.
 - **After that,** the nightly update reads them like any council. Members' parties come from their home councils'
   stored records, so they are read again each night as the councils' are.

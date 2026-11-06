@@ -27,10 +27,12 @@ shared server. It is still being built and tested, and says so on every page.
   or shown. On 6 November 2026 the live site held 295 of the 383 councils, with about 43,300 meetings and 8,900 named
   votes. The data is brought up to date every night (`councils update`, [`docs/OPERATIONS.md`](docs/OPERATIONS.md)).
 - **Strategic authorities** (decisions 17 to 20, 6 November 2026). England's 20 strategic authorities are listed
-  beside the 382 councils, and a pilot of 16 (those on a Modern.gov web service that answers, the GLA included) is
-  ready to load on the server: their boards, mayor's decisions and overview and scrutiny committees, members with their
-  role and their party from their home council, and their mayor's party in place of a party in control. Each has a
-  page linked both ways with its councils, and is in briefings.
+  beside the 382 councils, and all 20 are ready to load on the server: 16 on a Modern.gov web service that answers (the
+  GLA included), and four that publish their meetings as documents on their own websites (Tees Valley, Hull and East
+  Yorkshire, Cumbria, and Hampshire and the Solent), read from those sites' pages and minutes. For each: their boards,
+  mayor's decisions and overview and scrutiny committees, members with their role and their party from their home
+  council, and their mayor's party in place of a party in control. Each has a page linked both ways with its councils,
+  and is in briefings.
 - **Robots.txt** (decision 21, the owner's decision of 6 November 2026). Not treated as a barrier to public records:
   `[robots] obey` is off for every reader, while Crawl-delay is honoured and sites that refuse requests are asked.
 - **The website** (`web/`, served by `councils serve`): questions answered as streamed, sourced briefings, each saved
@@ -152,7 +154,7 @@ uv run councils ingest barnsley           # load one council since May 2018 (abo
 uv run councils parse barnsley            # named votes and declarations from its minutes
 uv run councils pilot                     # load and parse the 20 pilot councils
 uv run councils load --workers 20         # every council whose web service answers (hours; --resume continues)
-uv run councils load --type strategic_authority --workers 13   # the strategic authorities' pilot (about an hour)
+uv run councils load --type strategic_authority --workers 20   # the 20 strategic authorities (about an hour)
 uv run councils parties                   # map stored party labels again after data_static/parties.csv changes
 uv run councils update                    # the daily update: new and changed meetings, votes, index (docs/OPERATIONS.md)
 uv run councils report                    # the pilot's measurements
@@ -183,10 +185,11 @@ Data is written to `data/` (raw responses and Parquet). `scripts/build_councils.
 - **Vote accuracy.** About 1 named vote in 100 has a councillor on the wrong side (three hand-checked samples of 100,
   [`docs/PILOT.md`](docs/PILOT.md)). This is accepted for the alpha (decision 15) and said on the How it works page.
 - **Coverage.** Councils whose minutes aren't published through Modern.gov, CMIS or CoINS, and those whose sites
-  refuse the crawler, are left out, with the reason shown. So, for now, are 4 of the 20 strategic authorities, which
-  publish on their own websites rather than a meetings system: Tees Valley, Hull and East Yorkshire, Cumbria, and
-  Hampshire and the Solent. Councils whose sites refused were asked for permission
-  ([`outreach/`](outreach/)).
+  refuse the crawler, are left out, with the reason shown. The four strategic authorities that publish on their own
+  websites (Tees Valley, Hull and East Yorkshire, Cumbria, and Hampshire and the Solent) are read from those sites, but
+  some of their meetings have no minutes there (Hull and East Yorkshire's scrutiny committee publishes most only inside
+  the next agenda pack, which isn't read), and Tees Valley's site has nothing before April 2019. Councils whose sites
+  refused were asked for permission ([`outreach/`](outreach/)).
 - **Minutes are summaries** written by council officers, not word-for-word records, and briefings are written by AI:
   they are checked automatically against the minutes, and can still be wrong.
 - **JavaScript.** Asking a question needs it. The home page, the list of councils, council pages and vote pages

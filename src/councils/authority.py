@@ -108,8 +108,50 @@ def home_party(root: Path, home: str, name: str, d: date) -> str:
     if who is None:
         return ""
     key = _surname_keys(bare_name(name))[1]
-    hits = [mid for mid, nm in people.recent(who, d, 366) if _surname_keys(nm)[1] == key]
+    hits = [mid for mid, nm in people.recent(who, d, 366) if _surname_keys(_person(nm))[1] == key]
     return who.party_on(hits[0], d) if len(hits) == 1 else ""
+
+
+def _person(name: str) -> str:
+    """A name without an office written after it: "Chris Cooke - Elected Mayor" -> "Chris Cooke" (Middlesbrough)."""
+    return re.split(r"\s+[-–]\s+", name.strip(), maxsplit=1)[0]
+
+
+def find_member(root: Path, authority: str, name: str, d: date) -> tuple[str, str, str] | None:
+    """For minutes that name a member without the council they represent ("Councillors Handley, Ross", "Cllr M
+    Fryer"): (council GSS, member id, full name) of the one councillor at the authority's member councils, recorded
+    at their meetings within a year of the date, with that surname and, where the minutes give one, that first name or
+    initial. None if the site holds none of those councils, or no councillor fits, or more than one does."""
+    words = [w for w in re.sub(r"[^\w' -]", " ", _HONOURS_AND_TITLES.sub(" ", bare_name(_person(name)))).split() if w]
+    if not words:
+        return None
+    surname, given = words[-1].lower(), [w.lower() for w in words[:-1]]
+    hits = []
+    for m in members_of(authority):
+        if (m.start and d < m.start) or (m.end and d >= m.end):
+            continue
+        c = councils().get(m.council)
+        p = store.parquet.path(root, "attendance", m.council)
+        if c is None or c.withheld or not p.exists():
+            continue
+        who = _home_people(str(root), m.council, p.stat().st_mtime)
+        if who is None:
+            continue
+        for mid, nm in people.recent(who, d, 366):
+            theirs = [w for w in re.sub(r"[^\w' -]", " ", _HONOURS_AND_TITLES.sub(" ", bare_name(_person(nm)))).split()
+                      if w]
+            if not theirs or theirs[-1].lower() != surname:
+                continue
+            if given and len(theirs) > 1:
+                first = theirs[0].lower()
+                if not (first == given[0] or (len(given[0]) == 1 and first[0] == given[0])):
+                    continue
+            hits.append((m.council, mid, " ".join(theirs)))
+    return hits[0] if len({(g, mid) for g, mid, _ in hits}) == 1 else None
+
+
+_HONOURS_AND_TITLES = re.compile(r"\b(?:(?-i:AM)|BEM|OBE|MBE|CBE|JP|DL|KC|QC|MP|Dr|Mr|Mrs|Ms|Miss|Cllrs?|Councill?ors?|"
+                                 r"Mayor|Sir|Dame|Rev|Revd|Prof)\b\.?", re.I)
 
 
 def classify(attendance: list[dict[str, Any]], authority: Council, root: Path) -> tuple[list[dict[str, Any]], list[str]]:

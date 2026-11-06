@@ -38,7 +38,10 @@ def test_the_registry_lists_the_twenty_authorities_and_the_pilot_by_rule():
     # Sussex and Brighton too: one committee, on East Sussex's site (no fixture of its own)
     # and the GLA, with its London Assembly members named (decision 20)
     # Cheshire and Warrington on Cheshire West and Chester's site, which answers the server
-    assert pilot == set(PILOT.values()) | {"SA-SUSSEX-BRIGHTON", "E12000007", "SA-CHESHIRE-WARRINGTON"}
+    # and the four read from their own websites (sources/docsite.py): every one of the 20
+    own_sites = {"E47000006", "E47000016", "SA-CUMBRIA", "SA-HAMPSHIRE-SOLENT"}
+    assert pilot == set(PILOT.values()) | {"SA-SUSSEX-BRIGHTON", "E12000007", "SA-CHESHIRE-WARRINGTON"} | own_sites
+    assert {a.gss for a in sa if a.system == "docsite"} == own_sites
     assert not any(c.withheld for c in councils().values() if c.modgov_status != "robots")
     gla = get("E12000007")
     assert gla.name == "Greater London Authority" and gla.modgov_status == "ok" and not gla.withheld

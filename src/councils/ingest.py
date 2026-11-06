@@ -174,8 +174,21 @@ def _load_other(settings: Settings, council: Council, start: date, end: date, up
     except ModuleNotFoundError:
         return Result(council.gss, error=f"no reader for {council.system}")
     res, meetings, items, attendance = reader.fetch(settings, council, start, end, update)
-    for a in attendance:
-        a["party"] = parties.normalise(a.get("party_label", ""), council.gss)
+    if council.is_authority:
+        # roles and parties, and appointed members who aren't councillors left unnamed, in the attendance and the
+        # minutes (decision 20), as for an authority on Modern.gov
+        attendance, names = authority.classify(attendance, council, settings.parquet_dir)
+        counts: dict[str, int] = defaultdict(int)
+        for a in attendance:
+            counts[a["meeting_id"]] += 1
+        for m in meetings:
+            m["attendees"] = counts[m["meeting_id"]]
+        if names:
+            for it in items:
+                it["minutes_text"] = authority.remove_names(it["minutes_text"], names)
+    else:
+        for a in attendance:
+            a["party"] = parties.normalise(a.get("party_label", ""), council.gss)
     if res.error or (update and res.failed):
         res.error = res.error or f"{len(res.failed)} meetings could not be fetched"
         return res
