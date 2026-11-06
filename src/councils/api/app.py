@@ -30,6 +30,7 @@ from councils.api.usage import (
     blocked,
     count_question,
     record_usage,
+    site_paused,
     visitor_key,
 )
 from councils.config import Settings, load_settings
@@ -203,6 +204,27 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                 "default_years": int(settings.archive.get("default_years", 4)),
                 "start": settings.start_date.isoformat(), "examples": EXAMPLES,
                 "regions": REGION_NAMES, "types": TYPE_NAMES}
+
+    @app.get("/api/status")
+    def status():
+        """For the status page (as Where MPs Stand): how up to date the record is and whether briefings are being
+        written. The last update is summarised; its list of councils that failed is not shown."""
+        p = get_pipeline()
+        totals = data.totals()
+        model_on = p.has_model()
+        paused = site_paused(state, usage_cfg) if model_on else None
+        last = data.last_update()
+        return {
+            "councils": totals.get("councils", 0), "loaded": totals.get("loaded", 0),
+            "meetings": totals.get("meetings", 0), "named_votes": totals.get("named_votes", 0),
+            "start": settings.start_date.isoformat(), "latest_meeting": totals.get("to"),
+            "last_update": {"finished": last.get("finished"), "councils": last.get("councils"),
+                            "changed": last.get("changed"), "new_meetings": last.get("new_meetings"),
+                            "failed": len(last.get("failed") or []),
+                            "ok": not last.get("needs_attention")} if last else None,
+            "briefings": "unavailable" if not model_on else ("paused" if paused else "available"),
+            "briefings_note": paused,
+        }
 
     # ---- questions -----------------------------------------------------------------------------------
     @app.post("/api/ask")

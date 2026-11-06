@@ -108,6 +108,11 @@ def blocked(state: StateDB, visitor: str, cfg: dict[str, Any], pending_usd: floa
     written at this moment, whose cost isn't recorded yet (InFlight)."""
     if questions_today(state, visitor) >= int(cfg.get("per_visitor_daily_questions", 30)):
         return "You have asked a lot of questions today, so new briefings are paused until tomorrow."
+    return site_paused(state, cfg, pending_usd)
+
+
+def site_paused(state: StateDB, cfg: dict[str, Any], pending_usd: float = 0.0) -> str | None:
+    """Why new briefings are paused for everyone (a spending cap reached), or None: for the status page."""
     if spent(state, today()) + pending_usd >= float(cfg.get("daily_spend_cap_usd", 3.0)):
         return "The site has reached today's limit on new briefings, which keeps its costs down."
     if spent(state, today()[:8] + "01") + pending_usd >= float(cfg.get("monthly_spend_cap_usd", 50.0)):

@@ -196,3 +196,20 @@ def test_an_ipv6_visitor_is_counted_by_their_slash_64(client):
     assert network_of("::1") == "::1" and network_of(None) == "-" and network_of("testclient") == "testclient"
     assert visitor_key(state, "2001:db8:1:2::1") == visitor_key(state, "2001:db8:1:2:9::9")
     assert visitor_key(state, "203.0.113.7") != visitor_key(state, "203.0.113.8")
+
+
+def test_status(client):
+    c, _, _, cfg = client
+    s = c.get("/api/status").json()
+    assert s["loaded"] == 2 and s["councils"] > 300 and s["meetings"] == 2
+    assert s["latest_meeting"] == "2025-03-05" and s["start"] == "2018-05-01"
+    assert s["briefings"] == "available" and s["briefings_note"] is None and s["last_update"] is None
+    (cfg.data_dir / "updates.jsonl").write_text(json.dumps(
+        {"finished": "2026-10-24T03:40:00", "councils": 2, "changed": 1, "new_meetings": 3, "failed": ["E07000209"],
+         "needs_attention": False}) + "\n")
+    last = c.get("/api/status").json()["last_update"]
+    assert last == {"finished": "2026-10-24T03:40:00", "councils": 2, "changed": 1, "new_meetings": 3, "failed": 1,
+                    "ok": True}
+    cfg.raw["usage"]["daily_spend_cap_usd"] = 0.0
+    s = c.get("/api/status").json()
+    assert s["briefings"] == "paused" and "today's limit" in s["briefings_note"]
