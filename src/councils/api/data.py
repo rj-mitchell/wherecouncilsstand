@@ -12,7 +12,7 @@ from typing import Any
 
 import duckdb
 
-from councils import store
+from councils import sisters, store
 from councils.config import Settings
 from councils.reference import people
 from councils.registry import REGION_NAMES, TYPE_NAMES, councils
@@ -178,7 +178,8 @@ class Data:
     # a council ------------------------------------------------------------------------------------------
     def council(self, gss: str) -> dict[str, Any] | None:
         self._fresh()
-        return self._council(gss)
+        c = self._council(gss)
+        return None if c is None else {**c, "landlords": sisters.landlords(gss)}
 
     @lru_cache(maxsize=64)  # noqa: B019 - one Data per process; cleared when the store changes
     def _council(self, gss: str) -> dict[str, Any] | None:

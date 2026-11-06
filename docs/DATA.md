@@ -222,6 +222,21 @@ there is no overall control. Because some older lists are incomplete, the longes
 Control is reported as recorded, as a filter and a grouping, never as a judgement. Each local party counts on its own
 ("R4GV"), so two local groups are never added together.
 
+## Links to Where Landlords Stand: `data_static/landlords_links.csv`
+
+Each council's page links to its pages on Where Landlords Stand, the charity's site on social landlords in England:
+the council as a landlord, where it owns homes and has a profile there, and the area page listing the landlords with
+homes in its area. Both sites key councils by ONS GSS code (and both use the post-2019 codes for Barnsley and
+Sheffield). The file lists, for each council, the area page's name, slug and number of landlords, and the council's
+own landlord page, if any (296 areas and 160 councils as landlords on 6 November 2026).
+
+It is built by `scripts/landlords_links.py` from the Landlords repository's register (`data_static/landlords.csv`)
+and that site's published figures (`data/homes-by-area.csv` and `data/landlords.csv`, from a local build or the live
+site), naming area pages as that site does. Every page is checked against the build before it is written. Run it
+after Where Landlords Stand's weekly update has published new figures, and commit the file: the link is a fixed
+address, so this site never depends on the other being up. Where Landlords Stand links back to each council's page
+here (`/councils/{gss}`).
+
 ## Licence
 
 Council documents are the council's copyright. See decision 10 in [`DECISIONS.md`](DECISIONS.md) for how they are

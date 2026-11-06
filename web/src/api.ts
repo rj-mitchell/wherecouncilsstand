@@ -130,6 +130,11 @@ export type CouncilPage = CouncilRow & {
   by_year: { year: number; council: number; cabinet: number; policy: number; with_minutes: number }[];
   votes: VoteSummary[];
   recent: { date: string; committee: string; kind: string; url: string; items_with_minutes: number }[];
+  /** the council's pages on Where Landlords Stand (data_static/landlords_links.csv), where it has any */
+  landlords: {
+    council: { name: string; url: string } | null;
+    area: { name: string; landlords: number; url: string } | null;
+  } | null;
 };
 
 export type VotePage = VoteSummary & {

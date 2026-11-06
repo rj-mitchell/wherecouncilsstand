@@ -56,3 +56,26 @@ def test_the_kit_and_favicon_are_served(client, tmp_path):  # noqa: F811
     assert t.get("/family/family.css").headers["content-type"].startswith("text/css")
     assert t.get("/family/fonts/OFL.txt").status_code == 200
     assert t.get("/family/nothing.css").status_code == 404
+
+
+def test_council_pages_link_to_where_landlords_stand(client):  # noqa: F811
+    """data_static/landlords_links.csv (scripts/landlords_links.py): the council as a landlord, and its area."""
+    c, _, _, _ = client
+    page = c.get("/api/councils/E08000038").json()  # Barnsley owns homes, and has an area page
+    assert page["landlords"]["council"]["url"] == \
+        "https://wherelandlordsstand.com/landlords/barnsley-metropolitan-borough-council/"
+    assert page["landlords"]["area"]["url"] == "https://wherelandlordsstand.com/areas/barnsley/"
+    assert page["landlords"]["area"]["landlords"] > 0
+    assert c.get("/api/councils/W06000015").json()["landlords"] is None  # Where Landlords Stand covers England
+
+
+def test_the_landlords_lookup_covers_only_councils_in_scope():
+    import csv
+
+    root = FAMILY.parents[2] / "data_static"
+    with open(root / "councils.csv", encoding="utf-8") as fh:
+        ours = {r["gss"] for r in csv.DictReader(fh)}
+    with open(root / "landlords_links.csv", encoding="utf-8") as fh:
+        rows = list(csv.DictReader(fh))
+    assert rows and all(r["gss"] in ours for r in rows)
+    assert all(re.fullmatch(r"[a-z0-9-]+", r["area_slug"] + r["council_landlord_slug"] or "x") for r in rows)
