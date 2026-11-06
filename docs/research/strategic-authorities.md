@@ -2,7 +2,8 @@
 
 Research note, 6 November 2026. Asked for by a user organisation that wants coverage of England's strategic
 authorities "as they scramble to understand them in the run-up to greater devolution". Nothing here changes the site:
-it sets out the facts, the options and the decisions the owner would need to make. Today the site leaves combined
+it sets out the facts, the options and the decisions the owner would need to make. The owner's decisions
+(6 November 2026) are at the end, under "Decided". Today the site leaves combined
 authorities out ([`DATA.md`](../DATA.md): "Combined authorities are left out"), although the Greater London
 Authority is already listed (below, "One thing already wrong").
 
@@ -390,17 +391,21 @@ their own ("strategic authorities"), by the mayor's party when asked, never mixe
 7. **Keys and dates:** ONS `E47` codes where they exist; a stated, provisional key for the newest authorities; coverage
    from May 2018 or creation.
 
-### Decisions to record in `docs/DECISIONS.md` if approved
+### Decided
 
-Suggested wording, numbered after the current 16:
+The owner decided on 6 November 2026, and the decisions are recorded in [`DECISIONS.md`](../DECISIONS.md), 17–21.
+Where they differ from the draft wording first suggested here:
 
-| # | Topic | Decision |
-|---|---|---|
-| 17 | Strategic authorities | England's **strategic authorities** (combined authorities, combined county authorities and, if agreed, the Greater London Authority) are covered as a separate kind of record, alongside councils, where their meetings are published through a reader the site has and the site allows crawling. Each is keyed by its ONS code, or a stated provisional key until ONS publishes one. Its page links to its constituent councils, with dates. |
-| 18 | Strategic authorities' meetings | The authority's **main decision-making meeting** (its board, "Combined Authority" or cabinet), including budget meetings, from **May 2018 or the authority's creation**, whichever is later. [Mayor's decisions: in / out.] [Overview and scrutiny: in / out.] |
-| 19 | Mayors and control | An authority isn't given a "party in control". Its page shows the **mayor's party on the date**, where there is a mayor, and the parties of its board members as recorded. Briefings group authorities on their own, by the mayor's party when asked, never with councils' control groups. |
-| 20 | Members' party | A board member's party on the date is taken from their **home council's** record where the site has it, otherwise from the authority's; appointed members who aren't councillors are [named / not named]. |
-| 21 | Robots.txt | [A Modern.gov site whose robots.txt forbids crawling is treated as a CMIS one: left out, and the council or authority is asked.] |
+- **Meetings (18):** the mayor's decisions (where the meetings system publishes them as decisions) and overview and
+  scrutiny committees are in, as well as the main board or cabinet.
+- **Briefings (19):** authorities are in briefings from the start, not held back. "Control" for an authority with a
+  mayor is the mayor's party on the date, labelled as the mayor's; one without a mayor is "no single party".
+- **Members (20):** appointed members who aren't councillors are not named.
+- **Robots.txt (21):** applies to every reader, Modern.gov's included. Checking every Modern.gov site in the registry
+  on 6 November 2026 found 44 sites (45 councils, with the GLA) whose robots.txt forbids reading, not only East
+  Sussex's; 41 of those councils had been loaded. Their data is kept but withheld until permission is given
+  ([`DATA.md`](../DATA.md), "Robots.txt").
+- **The GLA (3 above):** listed as a strategic authority, not covered: its meetings site's robots.txt forbids reading.
 
 ## Sources
 
