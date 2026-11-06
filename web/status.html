@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <!--#include head-->
+    <title>Status — Where Councils Stand</title>
+    <meta name="description" content="Whether Where Councils Stand is working, how many councils it covers and how up to date its record of their minutes is." />
+    <link rel="canonical" href="https://wherecouncilsstand.com/status" />
+  </head>
+  <body class="wts-headings">
+    <!--#include header-->
+    <main id="main">
+      <div class="prose">
+        <h1>Status</h1>
+        <p class="lede">Whether the service is working, and how up to date its record of councils' minutes is.</p>
+        <div id="status-live" aria-live="polite">
+          <p class="progress">Checking</p>
+          <noscript><p>This part of the page needs JavaScript. The same figures are at <a href="/api/status">/api/status</a>.</p></noscript>
+        </div>
+
+        <h2 class="minute-heading">How updates work</h2>
+        <p>The record is brought up to date every night, starting at about 03:17 UTC, when councils' sites are quietest. New full council and cabinet meetings are added, and the minutes of the last four months are read again, because minutes can change until they are approved at the next meeting. Councils usually publish minutes a few days to a few weeks after a meeting, so the newest meetings appear here when the council publishes them.</p>
+        <p>The record starts in May 2018. Councils whose minutes aren't covered yet, and why, are on the <a href="/councils">list of councils</a>. For anything older, or not covered, see the council's own website.</p>
+
+        <h2 class="minute-heading">When briefings are paused</h2>
+        <p>Each briefing costs money to write, so there is a daily and a monthly budget, and each visitor can ask for a limited number of new briefings a day. When a limit is reached, new briefings pause until it resets at midnight UTC (or the start of the next month). Searching the minutes, the council and vote pages, and briefings already written for the same question keep working, and the sources found are always shown.</p>
+
+        <h2 class="minute-heading">Something wrong?</h2>
+        <p>If a page isn't working, or something on it is wrong, please <a href="/corrections">report a problem</a>.</p>
+      </div>
+    </main>
+    <!--#include footer-->
+    <script type="module" src="/src/status.ts"></script>
+  </body>
+</html>
