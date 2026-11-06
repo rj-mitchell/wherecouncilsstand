@@ -183,3 +183,51 @@ def test_no_interactive_api_pages(client):
     c, _, _, _ = client
     assert c.get("/api/docs").status_code == 404 and c.get("/redoc").status_code == 404
     assert c.get("/api/openapi.json").json()["info"]["title"] == "Where Councils Stand"
+
+
+def test_an_ipv6_visitor_is_counted_by_their_slash_64(client):
+    """One home or phone connection is given a whole IPv6 /64: its addresses are one visitor (as Where MPs Stand)."""
+    from councils.api.usage import network_of, visitor_key
+
+    _, _, state, _ = client
+    assert network_of("2001:db8:1:2:aaaa::1") == network_of("2001:db8:1:2:ffff::9") == "2001:db8:1:2::/64"
+    assert network_of("2001:db8:1:3::1") != network_of("2001:db8:1:2::1")
+    assert network_of("203.0.113.7") == "203.0.113.7" and network_of("::ffff:203.0.113.7") == "203.0.113.7"
+    assert network_of("::1") == "::1" and network_of(None) == "-" and network_of("testclient") == "testclient"
+    assert visitor_key(state, "2001:db8:1:2::1") == visitor_key(state, "2001:db8:1:2:9::9")
+    assert visitor_key(state, "203.0.113.7") != visitor_key(state, "203.0.113.8")
+
+
+def test_status(client):
+    c, _, _, cfg = client
+    s = c.get("/api/status").json()
+    assert s["loaded"] == 2 and s["councils"] > 300 and s["meetings"] == 2
+    assert s["latest_meeting"] == "2025-03-05" and s["start"] == "2018-05-01"
+    assert s["briefings"] == "available" and s["briefings_note"] is None and s["last_update"] is None
+    (cfg.data_dir / "updates.jsonl").write_text(json.dumps(
+        {"finished": "2026-10-24T03:40:00", "councils": 2, "changed": 1, "new_meetings": 3, "failed": ["E07000209"],
+         "needs_attention": False}) + "\n")
+    last = c.get("/api/status").json()["last_update"]
+    assert last == {"finished": "2026-10-24T03:40:00", "councils": 2, "changed": 1, "new_meetings": 3, "failed": 1,
+                    "ok": True}
+    cfg.raw["usage"]["daily_spend_cap_usd"] = 0.0
+    s = c.get("/api/status").json()
+    assert s["briefings"] == "paused" and "today's limit" in s["briefings_note"]
+
+
+def test_cost_counts_cache_writes_once_whichever_names_the_usage_uses():
+    """The SDK's input_tokens leaves out cache writes and reads; the site's own counts (rag/answer.usage_dict) put
+    the writes into input_tokens. Either way each token is priced once: before, the SDK's names were undercounted."""
+    from types import SimpleNamespace as NS
+
+    from councils.api.usage import cost_usd
+    from councils.rag.answer import usage_dict
+
+    prices = {"price_input_per_mtok": 3.0, "price_output_per_mtok": 15.0, "price_cache_read_per_mtok": 0.3,
+              "cache_write_multiplier": 1.25}
+    sdk = NS(input_tokens=1_200, output_tokens=800, cache_creation_input_tokens=20_000, cache_read_input_tokens=5_000)
+    expected = round(1_200 / 1e6 * 3.0 + 20_000 / 1e6 * 3.0 * 1.25 + 800 / 1e6 * 15.0 + 5_000 / 1e6 * 0.3, 6)
+    raw = {"input_tokens": 1_200, "output_tokens": 800, "cache_creation_input_tokens": 20_000,
+           "cache_read_input_tokens": 5_000}
+    assert cost_usd(raw, prices) == expected == 0.0921
+    assert cost_usd(usage_dict(sdk), prices) == expected

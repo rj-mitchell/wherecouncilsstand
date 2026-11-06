@@ -14,14 +14,16 @@ import queue
 import threading
 from collections.abc import Iterator
 from datetime import date
+from html import escape
 from pathlib import Path
 from typing import Any, Literal
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+from councils.api import plaintext
 from councils.api.data import Data
 from councils.api.state import StateDB
 from councils.api.usage import (
@@ -30,6 +32,7 @@ from councils.api.usage import (
     blocked,
     count_question,
     record_usage,
+    site_paused,
     visitor_key,
 )
 from councils.config import Settings, load_settings
@@ -204,6 +207,27 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                 "start": settings.start_date.isoformat(), "examples": EXAMPLES,
                 "regions": REGION_NAMES, "types": TYPE_NAMES}
 
+    @app.get("/api/status")
+    def status():
+        """For the status page (as Where MPs Stand): how up to date the record is and whether briefings are being
+        written. The last update is summarised; its list of councils that failed is not shown."""
+        p = get_pipeline()
+        totals = data.totals()
+        model_on = p.has_model()
+        paused = site_paused(state, usage_cfg) if model_on else None
+        last = data.last_update()
+        return {
+            "councils": totals.get("councils", 0), "loaded": totals.get("loaded", 0),
+            "meetings": totals.get("meetings", 0), "named_votes": totals.get("named_votes", 0),
+            "start": settings.start_date.isoformat(), "latest_meeting": totals.get("to"),
+            "last_update": {"finished": last.get("finished"), "councils": last.get("councils"),
+                            "changed": last.get("changed"), "new_meetings": last.get("new_meetings"),
+                            "failed": len(last.get("failed") or []),
+                            "ok": not last.get("needs_attention")} if last else None,
+            "briefings": "unavailable" if not model_on else ("paused" if paused else "available"),
+            "briefings_note": paused,
+        }
+
     # ---- questions -----------------------------------------------------------------------------------
     @app.post("/api/ask")
     def ask(body: AskBody, request: Request):
@@ -350,25 +374,111 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             raise HTTPException(404, "Not found.")
         return FileResponse(path, media_type="text/html")
 
+    def site_url(request: Request) -> str:
+        """The site's own address, for canonical links and the sitemap: the configured one, so a page reached by
+        another name (the server's address, www) still points search engines to the one address."""
+        return (site.get("url") or str(request.base_url)).rstrip("/")
+
+    def readable(name: str, build) -> Response:
+        """A page with its own title, description, canonical link and structured data, and its content as plain
+        HTML for readers without scripts and search engines (api/plaintext.py), which the app replaces when it
+        starts. ``build`` gives (status, title, description, url, data, text). If the record can't be read, the page
+        is sent as it is: it still works with scripts on."""
+        path = dist / f"{name}.html"
+        if not path.exists():
+            raise HTTPException(404, "Not found.")
+        html = path.read_text(encoding="utf-8")
+        try:
+            status, title, description, url, ld, text = build()
+        except Exception:  # noqa: BLE001 - the readable copy is a courtesy; never fail the page for it
+            log.exception("readable page text not built for %s", name)
+            return HTMLResponse(html)
+        html = plaintext.page_with_meta(html, title=title, description=description, url=url, data=ld,
+                                        noindex=status != 200)
+        return HTMLResponse(plaintext.with_text(html, text), status_code=status)
+
     @app.get("/", include_in_schema=False)
-    def home():
-        return page("index")
+    def home(request: Request):
+        base = site_url(request)
+
+        def build():
+            totals = data.totals()
+            ld = {"@context": "https://schema.org", "@type": "WebSite", "name": "Where Councils Stand",
+                  "url": base + "/", "inLanguage": "en-GB",
+                  "description": "Sourced briefings on what councils across the UK have discussed, decided and voted "
+                                 "on, from their own minutes.",
+                  "publisher": {"@type": "Organization", "name": "Where They Stand", "url": "https://wheretheystand.uk"}}
+            return (200, "Where Councils Stand",
+                    "Sourced briefings on what councils across the UK have discussed, decided and voted on. Every "
+                    "point cites the council's own minutes.", base + "/", ld, plaintext.home_text(totals, EXAMPLES))
+
+        return readable("index", build)
 
     @app.get("/b/{bid}", include_in_schema=False)
     def shared(bid: str):
         return page("index")
 
     @app.get("/councils", include_in_schema=False)
-    def councils_page():
-        return page("councils")
+    def councils_page(request: Request):
+        base = site_url(request)
+
+        def build():
+            directory = data.directory()
+            t = directory["totals"]
+            return (200, "Councils — Where Councils Stand",
+                    f"The {t['councils']:,} principal councils in the UK: which {t['loaded']:,} are covered, from when, "
+                    "and which party is in overall control.", base + "/councils", None,
+                    plaintext.councils_text(directory))
+
+        return readable("councils", build)
 
     @app.get("/councils/{gss}", include_in_schema=False)
-    def council_page(gss: str):
-        return page("council")
+    def council_page(gss: str, request: Request):
+        base = site_url(request)
+
+        def build():
+            c = data.council(gss.upper())
+            if c is None:
+                return (404, "Council not found — Where Councils Stand", "There is no council at this address.",
+                        base + plaintext.council_path(gss), None,
+                        "<h1>Council not found</h1><p>There is no council at this address. See the "
+                        '<a href="/councils">list of councils</a>.</p>')
+            url = base + plaintext.council_path(c["gss"])
+            return (200, f"{c['name']} — Where Councils Stand", plaintext.council_description(c), url,
+                    plaintext.council_data(c, url, base), plaintext.council_text(c))
+
+        return readable("council", build)
 
     @app.get("/votes/{vote_id}", include_in_schema=False)
-    def vote_page(vote_id: str):
-        return page("vote")
+    def vote_page(vote_id: str, request: Request):
+        base = site_url(request)
+
+        def build():
+            v = data.vote(vote_id)
+            if v is None:
+                return (404, "Named vote not found — Where Councils Stand", "There is no named vote at this address.",
+                        base + plaintext.vote_path(vote_id), None,
+                        "<h1>Named vote not found</h1><p>There is no named vote at this address. Each council's "
+                        'named votes are listed on its page: see the <a href="/councils">list of councils</a>.</p>')
+            url = base + plaintext.vote_path(vote_id)
+            return (200, f"{plaintext.vote_title(v)} — Where Councils Stand", plaintext.vote_description(v), url,
+                    plaintext.vote_data(v, url, base), plaintext.vote_text(v))
+
+        return readable("vote", build)
+
+    @app.get("/sitemap.xml", include_in_schema=False)
+    def sitemap(request: Request):
+        """Every page worth finding: the home page, the pages of text, every council and every named vote."""
+        base = site_url(request)
+        fixed = ["/", "/councils"] + [f"/{p.stem}" for p in sorted(dist.glob("*.html"))
+                                      if p.stem not in ("index", "councils", "council", "vote", "404")]
+        urls = [base + p for p in fixed]
+        urls += [base + plaintext.council_path(r["gss"]) for r in data.directory()["councils"]]
+        urls += [base + plaintext.vote_path(v) for v in data.vote_ids()]
+        body = "".join(f"<url><loc>{escape(u)}</loc></url>" for u in urls[:50000])
+        return Response('<?xml version="1.0" encoding="UTF-8"?>'
+                        f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{body}</urlset>',
+                        media_type="application/xml")
 
     if (dist / "assets").exists():
         app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")

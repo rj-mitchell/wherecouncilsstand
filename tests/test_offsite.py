@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+from datetime import UTC, datetime, timedelta
 
 import httpx
 import pytest
 
-from councils.offsite import OffsiteError, check, configured, send
+from councils.offsite import OffsiteError, backup_alerts, check, configured, send
 
 ENV = {"COUNCILS_B2_BUCKET": "wts-backups", "COUNCILS_B2_KEY_ID": "kid", "COUNCILS_B2_APPLICATION_KEY": "secret"}
 
@@ -98,3 +100,43 @@ def test_sites_sharing_a_bucket_keep_their_own_backups(tmp_path):
     for day in ("2026-10-11", "2026-10-12"):
         out = send(archive(tmp_path, day), keep=1, env=ENV, client=client)
     assert out["stored"] == 1 and "where-they-stand-2026-10-01.tar.gz" in b2.files
+
+
+def test_backup_alerts(tmp_path):
+    """As Where MPs Stand's admin page: a backup over two days old, or a failed off-site copy, is an error."""
+    now = datetime.now(UTC)
+    assert backup_alerts(tmp_path / "missing") == []
+    assert "No backups" in backup_alerts(tmp_path, env=ENV)[0]["text"]
+    a = archive(tmp_path, "2026-10-12")
+    old = (now - timedelta(days=3)).timestamp()
+    os.utime(a, (old, old))
+    alerts = backup_alerts(tmp_path, env={})
+    assert alerts[0]["level"] == "error" and "over two days ago" in alerts[0]["text"]
+    assert "server only" in alerts[1]["text"]
+    os.utime(a, None)
+    assert "No off-site copy has been made yet" in backup_alerts(tmp_path, env=ENV)[0]["text"]
+    (tmp_path / "offsite.json").write_text(json.dumps({"ok": False, "when": now.isoformat(), "error": "503"}))
+    assert backup_alerts(tmp_path, env=ENV)[0]["level"] == "error"
+    stale = (now - timedelta(days=3)).isoformat()
+    (tmp_path / "offsite.json").write_text(json.dumps({"ok": True, "when": stale}))
+    assert "off-site copy was over two days ago" in backup_alerts(tmp_path, env=ENV)[0]["text"]
+    (tmp_path / "offsite.json").write_text(json.dumps({"ok": True, "when": now.isoformat()}))
+    assert backup_alerts(tmp_path, env=ENV) == []
+
+
+def test_backup_check_command_exits_1_when_backups_are_stale(tmp_path, monkeypatch):
+    from typer.testing import CliRunner
+
+    from councils.cli import app
+
+    for k in ENV:
+        monkeypatch.delenv(k, raising=False)
+    runner = CliRunner()
+    assert runner.invoke(app, ["backup-check", "--in", str(tmp_path / "missing")]).exit_code == 1
+    a = archive(tmp_path, "2026-10-12")
+    ok = runner.invoke(app, ["backup-check", "--in", str(tmp_path)])
+    assert ok.exit_code == 0 and "server only" in ok.output   # a warning, not a failure
+    old = (datetime.now(UTC) - timedelta(days=3)).timestamp()
+    os.utime(a, (old, old))
+    stale = runner.invoke(app, ["backup-check", "--in", str(tmp_path)])
+    assert stale.exit_code == 1 and "over two days ago" in stale.output

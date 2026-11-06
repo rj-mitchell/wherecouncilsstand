@@ -342,6 +342,50 @@ h2 {
   margin-block: var(--space-m);
 }
 
+/* ---- the status page ----------------------------------------------------------------------- */
+
+.status-list {
+  display: grid;
+  grid-template-columns: minmax(8rem, max-content) 1fr;
+  gap: var(--space-xs) var(--space-m);
+  margin-block: var(--space-m);
+  font-family: var(--sans);
+}
+
+.status-list dt {
+  font-weight: 650;
+}
+
+.status-list dd {
+  margin: 0;
+}
+
+/* a state is said in words; the mark beside it only repeats them */
+.status-list dd[data-state]::before {
+  content: "";
+  display: inline-block;
+  inline-size: 0.6em;
+  block-size: 0.6em;
+  margin-inline-end: 0.4em;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.status-list dd[data-state="available"]::before {
+  background: currentColor;
+}
+
+@media (width < 30rem) {
+  .status-list {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .status-list dd {
+    margin-block-end: var(--space-xs);
+  }
+}
+
 /* ---- controls ------------------------------------------------------------------------------- */
 
 .button {

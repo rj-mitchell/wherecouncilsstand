@@ -4,6 +4,7 @@
     <!--#include head-->
     <title>Accessibility — Where Councils Stand</title>
     <meta name="description" content="How accessible Where Councils Stand is, how it was tested, what is known not to work well, and how to report a problem." />
+    <link rel="canonical" href="https://wherecouncilsstand.com/accessibility" />
   </head>
   <body class="wts-headings">
     <!--#include header-->
@@ -20,13 +21,13 @@
           <li>Text and controls are meant to meet the guidelines' colour contrast levels, in light and dark modes.</li>
           <li>Progress while a briefing is prepared, and the briefing when it is ready, are announced to screen readers.</li>
           <li>Votes are shown with marks and words, never colour alone. Charts of members by party repeat their figures as a list.</li>
-          <li>The site uses no cookies and needs no account. The text pages, such as this one, work without JavaScript.</li>
+          <li>The site uses no cookies and needs no account. The text pages, such as this one, work without JavaScript, and the list of councils, each council's page and each vote can be read without it.</li>
         </ul>
 
         <h2 class="minute-heading">Standard and testing</h2>
         <p>The site aims to meet the <a href="https://www.w3.org/TR/WCAG22/">Web Content Accessibility Guidelines (WCAG) 2.2</a> at level AA. It was last tested on 6 November 2026, on a copy of the site running on test data:</p>
         <ul>
-          <li>the home page (before and after a search), the list of councils, a council's page, a named vote that can't be found, the about, how it works, privacy, corrections, accessibility, terms and not-found pages were checked with the axe-core automated checker (version 4.10.2), at desktop and phone widths, in light and dark modes. It found no failures against WCAG 2.2 A or AA;</li>
+          <li>the home page (before and after a search), the list of councils, a council's page, a named vote that can't be found, the about, how it works, privacy, corrections, accessibility, terms and not-found pages were checked with the axe-core automated checker (version 4.10.2), at desktop and phone widths, in light and dark modes. It found no failures against WCAG 2.2 A or AA. The same automated check now runs on every change to the site's code, on these pages and the press and status pages, and on the council and vote pages with their scripts turned off;</li>
           <li>on the same pages, the keyboard was used to move through every link and control, checking that each one can be reached, in order, with a visible focus ring;</li>
           <li>each page was checked at 320 pixels wide (the same as 400% zoom on a desktop screen) for sideways scrolling.</li>
         </ul>
@@ -34,7 +35,7 @@
 
         <h2 class="minute-heading">Known limitations</h2>
         <ul>
-          <li>The home page, the list of councils, council pages and vote pages need JavaScript. Without it they say so, and point to each council's own website, where the minutes are.</li>
+          <li>Asking a question, filtering the list of councils and opening a saved briefing need JavaScript. Without it, the list of councils, council pages and vote pages show their content as plain text.</li>
           <li>Briefings are written by AI. They are checked for citations, not for plain English, so some may be harder to read than we would like.</li>
           <li>Quotations are reproduced as they appear in councils' minutes, including any errors, so that they can be checked against the council's record.</li>
           <li>The minutes themselves are on councils' own websites, often as PDF documents, whose accessibility we can't control.</li>

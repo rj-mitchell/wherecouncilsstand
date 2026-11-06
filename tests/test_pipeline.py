@@ -262,3 +262,18 @@ def test_meaning_search_is_trained_again_once_it_has_grown_by_a_fifth(tmp_path, 
     for n, rebuild in ((119, False), (120, True)):
         monkeypatch.setattr(idx, "vectors", lambda n=n: Table(n))
         assert idx.needs_build() is rebuild
+
+
+def test_lancedb_logs_only_errors_unless_told_otherwise():
+    """LanceDB warns once per cluster while the vector index is small, which filled the update logs."""
+    import os
+    import subprocess
+    import sys
+
+    code = "import os, councils.index.lance; print(os.environ['LANCEDB_LOG'])"
+    env = {k: v for k, v in os.environ.items() if k != "LANCEDB_LOG"}
+    out = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True, check=True)
+    assert out.stdout.strip() == "error"
+    out = subprocess.run([sys.executable, "-c", code], env={**env, "LANCEDB_LOG": "debug"}, capture_output=True,
+                         text=True, check=True)
+    assert out.stdout.strip() == "debug"

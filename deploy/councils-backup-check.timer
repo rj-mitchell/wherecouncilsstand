@@ -1,0 +1,10 @@
+[Unit]
+Description=Where Councils Stand: check the backups every day
+
+[Timer]
+# UTC, in the working day, well after the 04:30 backup
+OnCalendar=*-*-* 11:47:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

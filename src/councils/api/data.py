@@ -91,6 +91,7 @@ class Data:
         self._stamp: float | None = None
         self._directory: list[dict[str, Any]] = []
         self._totals: dict[str, Any] = {}
+        self._vote_ids: list[str] | None = None
 
     # freshness ------------------------------------------------------------------------------------------
     def stamp(self) -> float:
@@ -105,6 +106,7 @@ class Data:
                 if stamp != self._stamp:
                     self._build_directory()
                     self._council.cache_clear()
+                    self._vote_ids = None
                     self._stamp = stamp
 
     def last_update(self) -> dict[str, Any] | None:
@@ -166,6 +168,17 @@ class Data:
         att = store.parquet.read(self.root, "attendance", gss)
         meetings = store.parquet.read(self.root, "meetings", gss)
         return people.build(att, meetings).get(gss)
+
+    def vote_ids(self) -> list[str]:
+        """Every named vote's id, for the sitemap: newest first."""
+        self._fresh()
+        if self._vote_ids is None:
+            con = duckdb.connect()
+            names = store.parquet.attach(con, self.root)
+            rows = con.execute("SELECT vote_id, max(date) AS d FROM votes GROUP BY vote_id ORDER BY d DESC, vote_id"
+                               ).fetchall() if "votes" in names else []
+            self._vote_ids = [r[0] for r in rows]
+        return self._vote_ids
 
     def directory(self) -> dict[str, Any]:
         self._fresh()

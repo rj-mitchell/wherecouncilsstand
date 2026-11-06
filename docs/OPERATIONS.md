@@ -78,6 +78,11 @@ If a run, or the nightly backup, fails (exits 1 when something needs attention, 
 emails wheretheystanduk@gmail.com with the result and the run's last log lines, at most once every six hours. That is
 set up once for every site on the server (Where MPs Stand's `docs/HOSTING.md`, "Email from the server").
 
+A backup timer that stops running sends no failure of its own, so every day at 11:47 UTC `councils backup-check`
+(`councils-backup-check.timer`) looks at the backups folder, as Where MPs Stand's admin page does. It fails, and so
+sends the same email, if the last backup or off-site copy is over two days old or the last off-site copy failed. To
+run it by hand: `docker compose run --rm --no-deps -T app councils backup-check --in /backups`.
+
 It runs at about 03:17 UTC. Councils publish minutes during the working day, and their servers are quietest at night.
 It is also clear of the other sites' updates on the shared server. In case a job runs long, every site's update takes
 the same lock (`/var/lock/wheretheystand-update.lock`) and waits for it, so only one runs at a time. A run can

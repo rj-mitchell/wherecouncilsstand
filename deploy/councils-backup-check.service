@@ -1,0 +1,17 @@
+# Checks every day that the nightly backup and its off-site copy are up to date (councils backup-check): a backup
+# timer that has stopped, or a copy that keeps failing, would otherwise go unnoticed. Installed by deploy/update.sh
+# with councils-backup-check.timer.
+[Unit]
+Description=Where Councils Stand: check the backups are up to date
+After=docker.service
+Requires=docker.service
+# Emails the alerts address if this fails (deploy/alert@.service in Where MPs Stand, docs/HOSTING.md there)
+OnFailure=alert@%n.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/wherecouncilsstand/deploy
+# Exits 1 when the last backup or off-site copy is over two days old, or the last off-site copy failed.
+ExecStart=/usr/bin/docker compose run --rm --no-deps -T app councils backup-check --in /backups
+Nice=10
+TimeoutStartSec=10min

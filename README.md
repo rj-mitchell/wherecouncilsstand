@@ -29,7 +29,7 @@ shared server. It is still being built and tested, and says so on every page.
 - **The website** (`web/`, served by `councils serve`): questions answered as streamed, sourced briefings, each saved
   at its own address; a page for every council (the party in control over time, members by party, named votes and
   meetings, and links to Where Landlords Stand); a page for every named vote; pages on how it works, corrections and
-  takedown requests, accessibility, privacy and terms.
+  takedown requests, accessibility, privacy, terms, press and the site's status.
 - **Next:** a test set of checked votes, before the beta (decision 15).
 
 It was first run on 20 councils chosen by a fixed rule; the pilot's results, and the hand checks of the votes, are in
@@ -78,6 +78,7 @@ described in the charity's family overview.
 | [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | The nightly update, and running the website: limits, costs, reports |
 | [`docs/DEPLOY.md`](docs/DEPLOY.md) | This site's steps on the charity's shared server |
 | [`docs/PILOT.md`](docs/PILOT.md) | The 20-council pilot, the full load, and hand checks of the votes |
+| [`docs/EVALUATION.md`](docs/EVALUATION.md) | The briefing test set (`eval/questions.toml`) and its results |
 | [`outreach/`](outreach/) | Letters asking councils for permission to read their meetings sites |
 
 How the site works, for readers, is on its [How it works](https://wherecouncilsstand.com/methodology) page.
@@ -149,10 +150,21 @@ uv run councils index                     # keyword index of everything loaded
 uv sync --extra embed && uv run councils embed --max-minutes 30   # meaning search (local model; resumable)
 uv run councils search "bin collections" --control NOC
 uv run councils ask "What have Labour-run councils decided about bin collections since 2023?"
+uv run councils evaluate                  # score question reading and evidence against eval/questions.toml (free)
 uv run pytest
 cd web && npm ci && npm test && npm run build && cd ..
 uv run councils serve                     # the website, at http://127.0.0.1:8000
 ```
+
+To run the website without the real data, on a small made-up record of three councils:
+
+```bash
+uv run python scripts/fixture_site.py /tmp/councils-fixture
+COUNCILS_DATA_DIR=/tmp/councils-fixture uv run councils serve
+```
+
+CI runs ruff, the Python tests, the web tests and build, and an accessibility check (`scripts/a11y.mjs`: axe in
+Chromium over the built site on that made-up record, failing on any serious or critical problem).
 
 Data is written to `data/` (raw responses and Parquet). `scripts/build_councils.py` rebuilds the council registry.
 
@@ -165,10 +177,12 @@ Data is written to `data/` (raw responses and Parquet). `scripts/build_councils.
   permission ([`outreach/`](outreach/)).
 - **Minutes are summaries** written by council officers, not word-for-word records, and briefings are written by AI:
   they are checked automatically against the minutes, and can still be wrong.
-- **JavaScript.** The home page, the list of councils, council pages and vote pages need it; there is no sitemap
-  yet, and search engines that don't run JavaScript see little of them.
-- **Accessibility** has been checked with axe-core, the keyboard and a reflow check, but not yet by people who use
-  assistive technology (the site's Accessibility page).
+- **JavaScript.** Asking a question needs it. The home page, the list of councils, council pages and vote pages
+  are sent with a readable copy of their content (`api/plaintext.py`), with their own title, canonical link and
+  structured data, for readers with scripts off and search engines; `/sitemap.xml` lists every council and vote.
+  Saved briefings (`/b/…`) still need JavaScript.
+- **Accessibility** is checked with axe-core in CI, and has been checked with the keyboard and a reflow check, but
+  not yet by people who use assistive technology (the site's Accessibility page).
 
 ## Licence
 

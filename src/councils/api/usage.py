@@ -5,6 +5,7 @@ are still shown, which costs nothing."""
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import secrets
 import threading
 import time
@@ -27,19 +28,41 @@ def cost_usd(usage: dict[str, int] | None, prices: dict[str, Any], model: str | 
         return 0.0
     p = prices_for(prices, model)
     price_in = float(p.get("price_input_per_mtok", 2.0))
-    writes = usage.get("cache_write_tokens", 0) or usage.get("cache_creation_input_tokens", 0) or 0
     reads = usage.get("cache_read_tokens", 0) or usage.get("cache_read_input_tokens", 0) or 0
-    # input_tokens includes cache writes (rag/answer.usage_dict), which are priced higher
-    return round((usage.get("input_tokens", 0) - writes) / 1e6 * price_in
+    if "cache_write_tokens" in usage:
+        # the site's own counts (rag/answer.usage_dict): input_tokens includes the cache writes, priced higher below
+        writes = usage.get("cache_write_tokens", 0) or 0
+        uncached = usage.get("input_tokens", 0) - writes
+    else:
+        # the SDK's own names: its input_tokens already leaves out cache writes (and cache reads)
+        writes = usage.get("cache_creation_input_tokens", 0) or 0
+        uncached = usage.get("input_tokens", 0)
+    return round(uncached / 1e6 * price_in
                  + writes / 1e6 * price_in * float(p.get("cache_write_multiplier", 1.25))
                  + usage.get("output_tokens", 0) / 1e6 * float(p.get("price_output_per_mtok", 10.0))
                  + reads / 1e6 * float(p.get("price_cache_read_per_mtok", 0.2)), 6)
 
 
+def network_of(address: str | None) -> str:
+    """The unit limits count by (as Where MPs Stand): an IPv4 address, or an IPv6 /64. One home or phone connection
+    is given a whole /64, so counting single IPv6 addresses would let one person appear as countless visitors."""
+    if not address:
+        return "-"
+    try:
+        ip = ipaddress.ip_address(address)
+    except ValueError:
+        return address
+    if ip.version == 4:
+        return str(ip)
+    if ip.ipv4_mapped:
+        return str(ip.ipv4_mapped)
+    return str(ip) if ip.is_loopback else str(ipaddress.ip_network(f"{ip}/64", strict=False))
+
+
 def visitor_key(state: StateDB, address: str | None) -> str:
-    """A code for a visitor's IP address, for daily limits; the address itself is not kept. The secret mixed in
-    changes every day (UTC) and old ones are deleted, so codes can't be linked across days or turned back into an
-    address."""
+    """A code for a visitor's IP address (an IPv6 address's /64), for daily limits; the address itself is not kept.
+    The secret mixed in changes every day (UTC) and old ones are deleted, so codes can't be linked across days or
+    turned back into an address."""
     name = f"visitor_salt:{today()}"
     salt = state.get(name)
     if salt is None:
@@ -47,7 +70,7 @@ def visitor_key(state: StateDB, address: str | None) -> str:
             con.execute("INSERT OR IGNORE INTO kv (key, value) VALUES (?, ?)", (name, secrets.token_hex(16)))
             con.execute("DELETE FROM kv WHERE key LIKE 'visitor_salt:%' AND key != ?", (name,))
         salt = state.get(name)
-    return hashlib.sha256(f"{salt}|{address or '-'}".encode()).hexdigest()[:24]
+    return hashlib.sha256(f"{salt}|{network_of(address)}".encode()).hexdigest()[:24]
 
 
 def record_usage(state: StateDB, visitor: str | None, kind: str, model: str | None, usage: dict[str, int] | None,
@@ -91,6 +114,11 @@ def blocked(state: StateDB, visitor: str, cfg: dict[str, Any], pending_usd: floa
     written at this moment, whose cost isn't recorded yet (InFlight)."""
     if questions_today(state, visitor) >= int(cfg.get("per_visitor_daily_questions", 30)):
         return "You have asked a lot of questions today, so new briefings are paused until tomorrow."
+    return site_paused(state, cfg, pending_usd)
+
+
+def site_paused(state: StateDB, cfg: dict[str, Any], pending_usd: float = 0.0) -> str | None:
+    """Why new briefings are paused for everyone (a spending cap reached), or None: for the status page."""
     if spent(state, today()) + pending_usd >= float(cfg.get("daily_spend_cap_usd", 3.0)):
         return "The site has reached today's limit on new briefings, which keeps its costs down."
     if spent(state, today()[:8] + "01") + pending_usd >= float(cfg.get("monthly_spend_cap_usd", 50.0)):

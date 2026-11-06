@@ -20,12 +20,22 @@ RUN groupadd --system --gid 10001 councils \
  && useradd --system --uid 10001 --gid councils --home-dir /home/councils --create-home councils \
  && mkdir -p /data /backups && chown councils:councils /data /backups
 WORKDIR /app
-COPY pyproject.toml uv.lock README.md LICENSE ./
+# uv's cache is kept between builds on the server (a cache mount) and never in the image; files are copied out of it
+ENV UV_LINK_MODE=copy UV_COMPILE_BYTECODE=1
+# The dependencies first, in a layer of their own: rebuilt only when pyproject.toml or uv.lock change, not with every
+# change to the code or the pages
+COPY pyproject.toml uv.lock ./
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-dev --extra embed --no-install-project
+# then the site itself, which takes seconds
+COPY README.md LICENSE ./
 COPY src ./src
 COPY config ./config
 COPY data_static ./data_static
+# the briefing test set, for `councils evaluate` on the server's record (docs/EVALUATION.md)
+COPY eval/questions.toml ./eval/questions.toml
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-dev --extra embed
+# the pages last: a change to them alone reuses every layer above
 COPY --from=web /web/dist ./web/dist
-RUN uv sync --frozen --no-dev --extra embed --compile-bytecode
 ENV COUNCILS_DATA_DIR=/data \
     PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1
