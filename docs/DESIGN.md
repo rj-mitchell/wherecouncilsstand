@@ -43,6 +43,9 @@ margin ("CO92", "45."), its heading in capitals, its decision introduced by **RE
   one grey. Party colours never mark a passage or a briefing.
 - **Votes use neutral marks:** filled for *for*, outlined for *against*, hatched for *abstained*. Never green for
   yes and red for no, which would imply that one way is right.
+- **Coverage uses neutral marks too:** on the councils page, "Coverage: full / partial / not yet", with a filled,
+  half-filled or outlined square beside the word. Coverage is how much of a council's record the site can read, a
+  fact about the site, so it is never shown in red, amber and green, which would read as rating the council.
 - **Literata** (SIL Open Font Licence), a book face, for the record and the briefing. **Public Sans** (SIL OFL) for
   controls only: navigation, buttons, chips, metadata and counts. Both are bundled with the site.
 

@@ -2,15 +2,14 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
-import { getCouncils, type CouncilRow } from "./api";
+import { getCouncils, type CouncilRow, type Coverage } from "./api";
+import { CoverageLabel } from "./components/Coverage";
 import { markNav, monthYear, number, setTitle } from "./format";
 
-const RATING: Record<string, string> = { green: "Working", amber: "Partly working", red: "Not working" };
-
-function Rating({ r }: { r: CouncilRow }) {
+function CoverageCell({ r }: { r: CouncilRow }) {
   return (
     <>
-      <span className={`rag rag-${r.rating}`}>{RATING[r.rating]}</span>
+      <CoverageLabel c={r.coverage} />
       {r.reasons.map((why) => (
         <div key={why} className="muted">
           {why}
@@ -26,7 +25,7 @@ function App() {
   const [q, setQ] = useState("");
   const [nation, setNation] = useState("");
   const [control, setControl] = useState("");
-  const [rating, setRating] = useState("");
+  const [coverage, setCoverage] = useState("");
   useEffect(() => {
     setTitle("Councils");
     getCouncils().then((d) => setRows(d.councils)).catch((e: Error) => setError(e.message));
@@ -40,8 +39,8 @@ function App() {
   const match = (r: CouncilRow) =>
     (!q || r.name.toLowerCase().includes(q.toLowerCase())) &&
     (!nation || r.nation === nation) &&
-    (!rating || r.rating === rating);
-  const count = (k: string) => rows.filter((r) => r.rating === k).length;
+    (!coverage || r.coverage === coverage);
+  const count = (k: Coverage) => rows.filter((r) => r.coverage === k).length;
   const covered = rows.filter((r) => r.loaded && match(r) && (!control || r.control?.name === control));
   const missing = rows.filter((r) => !r.loaded && match(r));
   return (
@@ -53,10 +52,14 @@ function App() {
         starts in May 2018.
       </p>
       <p>
-        <span className="rag rag-green">Working</span> {number(count("green"))} ·{" "}
-        <span className="rag rag-amber">Partly working</span> {number(count("amber"))} ·{" "}
-        <span className="rag rag-red">Not working</span> {number(count("red"))}. Each council's rating is worked out from
-        what is loaded, and kept up to date by the nightly update.
+        Coverage: {(["full", "partial", "not_yet"] as const).map((k, i) => (
+          <span key={k}>
+            {i > 0 && " · "}
+            <CoverageLabel c={k} /> {number(count(k))}
+          </span>
+        ))}
+        . Coverage says how much of each council's record the site can read, not how well the council works. It is
+        worked out from what is loaded, and kept up to date by the nightly update.
       </p>
       <div className="filters" role="search">
         <div className="field">
@@ -74,12 +77,12 @@ function App() {
           </select>
         </div>
         <div className="field">
-          <label htmlFor="rating">How well it works</label>
-          <select id="rating" value={rating} onChange={(e) => setRating(e.target.value)}>
+          <label htmlFor="coverage">Coverage</label>
+          <select id="coverage" value={coverage} onChange={(e) => setCoverage(e.target.value)}>
             <option value="">Any</option>
-            <option value="green">Working</option>
-            <option value="amber">Partly working</option>
-            <option value="red">Not working</option>
+            <option value="full">Full</option>
+            <option value="partial">Partial</option>
+            <option value="not_yet">Not yet</option>
           </select>
         </div>
         <div className="field">
@@ -102,7 +105,7 @@ function App() {
               <th className="num wide-only">Meetings</th>
               <th className="num">Named votes</th>
               <th className="wide-only">From</th>
-              <th>How well it works</th>
+              <th>Coverage</th>
             </tr>
           </thead>
           <tbody>
@@ -117,7 +120,7 @@ function App() {
                 <td className="num">{number(r.named_votes)}</td>
                 <td className="wide-only">{monthYear(r.from)}</td>
                 <td>
-                  <Rating r={r} />
+                  <CoverageCell r={r} />
                 </td>
               </tr>
             ))}
@@ -144,7 +147,7 @@ function App() {
                   <tr key={r.gss}>
                     <td>{r.name}</td>
                     <td>
-                      <Rating r={r} />
+                      <CoverageCell r={r} />
                     </td>
                   </tr>
                 ))}
