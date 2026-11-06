@@ -23,6 +23,9 @@ ROOT = Path(__file__).resolve().parent.parent
 BATCH = "2026-11"
 SITE = "https://wherecouncilsstand.com"
 SIGNATURE = "Where They Stand\nwheretheystanduk@gmail.com\n" + SITE
+# The server's address is never committed (the repository is public, and Cloudflare keeps it hidden): letters
+# carry this placeholder, and the address goes in only in the copy sent (outreach/README.md).
+SERVER_ADDRESS = "[the server's IP address, as given in the letter sent]"
 USER_AGENT = "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
 
 # gss: (address, greeting, passed on?) -- passed on: a general address, asked to forward the letter
@@ -126,7 +129,7 @@ def letter(row: dict, address: str, greeting: str, passed_on: bool, why_you: str
                if modgov else "it answers \"403 Forbidden\". ")
             + f"This may be a firewall or bot-protection setting rather than a choice about this kind of use. We have "
             f"left {name} out rather than try to get round it. We would like to include {short}, so I'm writing to "
-            "ask whether you would be willing to let our server's requests through. It is at 151.247.219.240, and "
+            f"ask whether you would be willing to let our server's requests through. It is at {SERVER_ADDRESS}, and "
             "identifies itself as \"WhereCouncilsStand\" (the full user agent is below). If you'd rather we read the "
             "published minutes some other way, I'd be glad to hear it.\n")
     elif status == "unreachable":
@@ -134,7 +137,7 @@ def letter(row: dict, address: str, greeting: str, passed_on: bool, why_you: str
             f"Your committee site, {url}, is public, but it doesn't answer requests from our server: the connection "
             "is refused, cut off or times out. This may be a firewall setting that turns away addresses in data centres. We "
             f"have left {name} out for now. We would like to include {short}, so I'm writing to ask whether you would "
-            "be willing to let our server's requests through. It is at 151.247.219.240, and identifies itself as "
+            f"be willing to let our server's requests through. It is at {SERVER_ADDRESS}, and identifies itself as "
             "\"WhereCouncilsStand\" (the full user agent is below).\n")
     elif hosted:
         parts.append(
