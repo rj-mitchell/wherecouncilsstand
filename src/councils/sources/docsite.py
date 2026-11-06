@@ -350,7 +350,9 @@ _OFFICER_ROLE = re.compile(r"\bofficer\b|chief executive|director|manager|head o
 _TITLE = re.compile(r"^(?:the\s+)?(?:(?:deputy|elected|city)\s+)?(?:councill?ors?|cllrs?\.?|mayor(?!\s+of\b))\s+", re.I)
 _PLURAL = re.compile(r"^(?:councill?ors|cllrs)\.?\s+", re.I)
 _NOT_NAME = {"none", "nil", "no", "apologies", "members", "officers", "present", "the", "and", "all", "of", "for",
-             "were", "was", "received", "absence", "attendance", "minutes", "meeting", "chair", "vice", "noted"}
+             "were", "was", "received", "absence", "attendance", "minutes", "meeting", "chair", "vice", "noted",
+             "did", "not", "attend", "attended", "services", "service", "item", "items", "page", "agenda", "public",
+             "press", "via", "remotely", "online", "teams", "substitute", "substitutes", "in", "on", "at", "by"}
 
 
 def _split(block: str) -> list[tuple[str, bool]]:
@@ -475,8 +477,8 @@ def _sentences(body: str) -> bool:
 
 
 def attendees(text: str) -> list[Attendee]:
-    """Who attended, from the list at the top of a meeting's minutes. Members, associate and other members, and
-    apologies are kept; under "In attendance" or "Officers", only councillors (those written as councillors), so
+    """Who attended, from the list at the top of a meeting's minutes. Members and associate and other members are
+    kept; under "Apologies", "In attendance" or "Officers", only councillors and mayors (those written as such), so
     officers and guests aren't stored. A column of roles printed beside the members' names ("Leader, Hartlepool
     Borough Council"), which comes out of the PDF after the names, is matched to them in order where it has at least
     as many lines as there are members."""
@@ -575,9 +577,24 @@ def attendees(text: str) -> list[Attendee]:
     # only a column of members' roles: officers' roles under "In attendance" (Cumbria's) aren't the members'
     if members and len(roles) >= len(members) and not any(a.representing for a in members) \
             and not any(_OFFICER_ROLE.search(r) for r in roles[:len(members)]):
-        unique = [Attendee(a.name, a.role, a.attendance, roles[members.index(a)]) if a in members else a
-                  for a in unique]
-    return unique
+        paired = dict(zip(map(id, members), roles, strict=False))
+        unique = [Attendee(a.name, a.role, a.attendance, paired[id(a)]) if id(a) in paired else a for a in unique]
+    unique = [_titled(a) for a in unique]
+    # apologies from anyone not written as a councillor or mayor aren't kept: Tees Valley's lists officers' apologies
+    # with the members', and nothing in the list tells them apart
+    return [a for a in unique if a.attendance != "Apologies" or _TITLE.match(a.name)]
+
+
+def _titled(a: Attendee) -> Attendee:
+    """A member written without a title whose role says they are a council's leader or elected mayor ("Andy Preston",
+    "Mayor of Middlesbrough"): titled as the councillor or mayor they are."""
+    if _TITLE.match(a.name):
+        return a
+    if re.match(r"^(?:deputy\s+)?(?:elected\s+)?mayor\s+of\b", a.representing, re.I):
+        return Attendee(f"Mayor {a.name}", a.role, a.attendance, a.representing)
+    if re.match(r"^(?:deputy\s+)?leader\b|^cabinet member\b|^councill?or\b", a.representing, re.I):
+        return Attendee(f"Councillor {a.name}", a.role, a.attendance, a.representing)
+    return a
 
 
 def representing_council(text: str) -> str:
@@ -820,6 +837,8 @@ def _meeting(client: Client, council: Council, committee: Committee, kind: str, 
                 member_id = f"{home}:{mid}"
             elif representing:
                 representing = representing_council(representing)
+        elif representing and not is_mayor:
+            representing = representing_council(representing)
         attendance.append({
             "meeting_id": key, "gss": gss, "date": m.date, "year": m.date.year,
             "member_id": member_id or cmis.slug(re.sub(r"^(?:Mayor|Councillor)\s+", "", name)), "member_type": "",

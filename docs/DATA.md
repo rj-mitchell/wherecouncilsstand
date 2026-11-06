@@ -311,10 +311,12 @@ What was found:
   committee's since 2026 and a few of its cabinet's; these meetings are kept without minutes or attendance. Tees
   Valley's site has nothing before April 2019 (the archive starts with the 2019/20 council year).
 - **Attendance** is read from the list at the top of the minutes: "Present:" or "ATTENDEES", with sections for
-  members, associate members, apologies, and those in attendance or officers (only councillors are kept from those).
+  members, associate members, apologies, and those in attendance or officers (only councillors and mayors are kept
+  from the last three: Tees Valley lists officers' apologies with the members', with nothing to tell them apart).
   The layouts differ: a name a line with the council in brackets ("Councillor Ian Blades (Middlesbrough Council)
   (Chair)"), a name a line with the roles in a column beside them, which comes out of the PDF after the names ("Leader,
-  Hartlepool Borough Council") and is matched in order, the council after a comma, or a sentence ("Councillors
+  Hartlepool Borough Council") and is matched in order (a member written without a title whose role is a council's
+  leader or "Mayor of Middlesbrough" is that councillor or mayor), the council after a comma, or a sentence ("Councillors
   Handley, Ross, Tock (substituting for Councillor Dad), and Tucker", "Cllr M Fryer (Chair), Cllr J Brook (Vice Chair)
   ..."). A councillor named without their council is matched to the authority's member councils' stored records by
   surname and first name or initial, within a year (`authority.find_member`), and takes that council and its record's

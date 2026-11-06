@@ -125,7 +125,8 @@ def test_attendance_with_a_column_of_roles():
     found = minutes("teesvalley_cabinet_2019-06-28")
     assert ("Mayor Andy Preston", "Mayor of Middlesbrough") in [(a.name, a.representing) for a in found]
     assert ("Darren Hankey", "Associate member", "Present") in _people(found)
-    assert sum(1 for a in found if a.attendance == "Apologies") == 9
+    # the apologies are local enterprise partnership members and officers, not written as councillors: not kept
+    assert not any(a.attendance == "Apologies" for a in found)
 
 
 def test_attendance_with_councils_in_brackets():
