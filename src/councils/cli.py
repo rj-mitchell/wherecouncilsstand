@@ -262,6 +262,17 @@ def embed(max_minutes: float = typer.Option(None, help="stop after this long; ru
     typer.echo(f"{n} passages embedded")
 
 
+@app.command()
+def optimize() -> None:
+    """Merge rows waiting to join the search indices, compact the index files and delete versions over an hour old.
+    The daily update does this itself; this is for a one-off clean-up. The site keeps serving meanwhile."""
+    from councils.index.lance import SearchIndex
+
+    s = load_settings()
+    SearchIndex(s.index_dir, int(s.embedding.get("dim", 384))).optimize()
+    typer.echo("search index optimised")
+
+
 def _filters(start, end, council, control, party, kind):
     from councils.engine import Filters
     from councils.registry import get

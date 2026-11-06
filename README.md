@@ -57,7 +57,7 @@ in [`docs/DESIGN.md`](docs/DESIGN.md).
                                                    ▼
  each council's Modern.gov web service ─► committees in scope (committees.py: council, cabinet, policy)
  (GetCommittees, GetMeetings, GetMeeting)          │
-          │ cached raw XML (data/raw/modgov/)      ▼
+          │ cached, gzipped (data/raw/modgov/)     ▼
           └──────────────────────────────► meetings, agenda items with minutes text, attendance with party
                                                    │  (sources/meeting.py, parse/minutes.py, parse/parties.py)
                                                    ▼

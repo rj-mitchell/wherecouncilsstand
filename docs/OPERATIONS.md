@@ -84,7 +84,34 @@ It is also clear of the other sites' updates on the shared server.
 - **`needs_attention`.** Check the network from the server, then the disk (`df -h`), then the log.
 - **`still_to_embed` keeps growing.** Raise `--embed-minutes`, or run `councils embed` on its own.
 - **A council's meetings suddenly drop to zero.** Its committees have probably been renamed. Look at its committee
-  list (`data/raw/modgov/<GSS>/committees.xml`) and add the new titles to `data_static/committees.csv`.
+  list (`zcat data/raw/modgov/<GSS>/committees.xml.gz`) and add the new titles to `data_static/committees.csv`.
+
+## Disk space
+
+The data folder holds the stored meetings (Parquet), the search index and a cache of every response from councils'
+servers, so that each meeting is fetched once. Two things keep it from growing for no reason:
+
+- **The search index cleans up after itself.** Each update merges its new rows into the indices and deletes
+  superseded versions of the index files over an hour old. `councils optimize` does the same clean-up by hand,
+  while the site keeps serving.
+- **The cache is gzipped.** Responses from CMIS and CoINS sites always were. Modern.gov responses have been since
+  November 2026, which saves about three quarters of their size. Older Modern.gov responses are plain XML and are
+  still read; each is replaced by a gzipped copy when next fetched. Meeting documents (PDFs) are stored as they
+  come, because they barely compress.
+
+To compress every older Modern.gov response at once, run this on the server once. It waits for any site's update
+to finish, through the same lock the updates take, and `gzip` keeps each file's modification time, which decides
+when a response is fetched again:
+
+```bash
+cd /opt/wherecouncilsstand/deploy
+docker compose run --rm -T app du -sh /data/raw/modgov          # before
+flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app sh -c \
+  'find /data/raw/modgov -name "*.xml" -print0 | xargs -0 -r -n 200 gzip -6'
+docker compose run --rm -T app du -sh /data/raw/modgov          # after
+```
+
+It can be stopped and run again: files already compressed are skipped.
 
 ## Commands
 
@@ -97,6 +124,7 @@ It is also clear of the other sites' updates on the shared server.
 | `councils parties` | Map stored party labels again (after `parse/parties.py` or `data_static/parties.csv` change) |
 | `councils index` | Rebuild the search index for all councils (keeps vectors of unchanged passages), then delete the superseded files |
 | `councils embed` | Embed passages not yet embedded |
+| `councils optimize` | Compact the search index and delete superseded versions (the update does this itself) |
 
 # Running the website
 

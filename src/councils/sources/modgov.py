@@ -1,14 +1,16 @@
 """Client for Civica Modern.gov's public web service, ``<site>/mgWebService.asmx``.
 
 The service is undocumented; what it returns was read from its WSDL and responses (docs/DATA.md). It needs no key.
-Every response is cached under ``raw/modgov/<council>/``, so a council is fetched once and parsed as often as
-needed. Requests to one council are spaced at least ``min_interval_seconds`` apart.
+Every response is cached under ``raw/modgov/<council>/``, gzipped (``committees.xml.gz``), so a council is fetched
+once and parsed as often as needed. Copies cached before November 2026 are plain XML; they are read as they are and
+replaced by a gzipped copy when next fetched (docs/OPERATIONS.md has the command that compresses them all at once). Requests to one council are spaced at least ``min_interval_seconds`` apart.
 
 Dates in requests and responses are day/month/year.
 """
 
 from __future__ import annotations
 
+import gzip
 import html
 import logging
 import re
@@ -146,25 +148,28 @@ class Client:
 
     def _cached(self, name: str, op: str, refresh: bool = False, max_age_days: float | None = None,
                 **params: str | int) -> str:
-        """A cached response, fetched if it isn't cached, if ``refresh``, or if older than ``max_age_days``. If
-        fetching again fails, the cached copy is used: a server that is down mustn't lose what is already known."""
-        path = self.cache / name
-        if path.exists() and max_age_days is not None:
+        """A cached response, fetched if it isn't cached, if ``refresh``, or if older than ``max_age_days`` (by the
+        file's modification time). If fetching again fails, the cached copy is used: a server that is down mustn't
+        lose what is already known."""
+        plain = self.cache / name
+        path = cached_path(plain)
+        if path and max_age_days is not None:
             refresh = refresh or (time.time() - path.stat().st_mtime) > max_age_days * 86_400
-        if path.exists() and not refresh:
-            return path.read_text(encoding="utf-8")
+        if path and not refresh:
+            return read_cached(path)
         try:
             text = self._get(op, **params)
         except ModgovError as e:
-            if not path.exists():
+            if not path:
                 raise
             log.warning("%s: %s; using the copy cached %s", self.council, e,
                         datetime.fromtimestamp(path.stat().st_mtime).date())
-            return path.read_text(encoding="utf-8")
-        path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_suffix(path.suffix + ".tmp")
-        tmp.write_text(text, encoding="utf-8")
-        tmp.replace(path)
+            return read_cached(path)
+        plain.parent.mkdir(parents=True, exist_ok=True)
+        tmp = plain.with_name(plain.name + ".gz.tmp")
+        tmp.write_bytes(gzip.compress(text.encode("utf-8"), compresslevel=6))
+        tmp.replace(plain.with_name(plain.name + ".gz"))
+        plain.unlink(missing_ok=True)      # a plain copy from before the cache was gzipped
         return text
 
     # Operations ----------------------------------------------------------------
@@ -260,6 +265,19 @@ def probe(settings: Settings, council: str, base_url: str) -> tuple[str, int]:
     return "none", r.status_code
 
 
+def cached_path(plain: Path) -> Path | None:
+    """The cached copy of a response: gzipped, or plain if it was cached before November 2026; None if neither."""
+    packed = plain.with_name(plain.name + ".gz")
+    if packed.exists():
+        return packed
+    return plain if plain.exists() else None
+
+
+def read_cached(path: Path) -> str:
+    data = path.read_bytes()
+    return (gzip.decompress(data) if path.suffix == ".gz" else data).decode("utf-8")
+
+
 def cached_meeting(cache_root: Path, council: str, meeting_id: int) -> etree._Element | None:
-    path = cache_root / "modgov" / council / "meeting" / f"{meeting_id}.xml"
-    return xml(path.read_text(encoding="utf-8")) if path.exists() else None
+    path = cached_path(cache_root / "modgov" / council / "meeting" / f"{meeting_id}.xml")
+    return xml(read_cached(path)) if path else None
