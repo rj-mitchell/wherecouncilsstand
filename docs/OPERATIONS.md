@@ -74,7 +74,9 @@ emails wheretheystanduk@gmail.com with the result and the run's last log lines, 
 set up once for every site on the server (Where They Stand's `docs/HOSTING.md`, "Email from the server").
 
 It runs at about 03:17 UTC. Councils publish minutes during the working day, and their servers are quietest at night.
-It is also clear of the other sites' updates on the shared server.
+It is also clear of the other sites' updates on the shared server. In case a job runs long, every site's update takes
+the same lock (`/var/lock/wheretheystand-update.lock`) and waits for it, so only one runs at a time. A run can
+therefore start late: while it waits, `systemctl status councils-update` shows it as "activating".
 
 ## When it reports a problem
 
