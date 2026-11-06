@@ -31,6 +31,8 @@ COPY README.md LICENSE ./
 COPY src ./src
 COPY config ./config
 COPY data_static ./data_static
+# the briefing test set, for `councils evaluate` on the server's record (docs/EVALUATION.md)
+COPY eval/questions.toml ./eval/questions.toml
 RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-dev --extra embed
 # the pages last: a change to them alone reuses every layer above
 COPY --from=web /web/dist ./web/dist
