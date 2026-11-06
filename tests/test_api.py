@@ -183,3 +183,16 @@ def test_no_interactive_api_pages(client):
     c, _, _, _ = client
     assert c.get("/api/docs").status_code == 404 and c.get("/redoc").status_code == 404
     assert c.get("/api/openapi.json").json()["info"]["title"] == "Where Councils Stand"
+
+
+def test_an_ipv6_visitor_is_counted_by_their_slash_64(client):
+    """One home or phone connection is given a whole IPv6 /64: its addresses are one visitor (as Where MPs Stand)."""
+    from councils.api.usage import network_of, visitor_key
+
+    _, _, state, _ = client
+    assert network_of("2001:db8:1:2:aaaa::1") == network_of("2001:db8:1:2:ffff::9") == "2001:db8:1:2::/64"
+    assert network_of("2001:db8:1:3::1") != network_of("2001:db8:1:2::1")
+    assert network_of("203.0.113.7") == "203.0.113.7" and network_of("::ffff:203.0.113.7") == "203.0.113.7"
+    assert network_of("::1") == "::1" and network_of(None) == "-" and network_of("testclient") == "testclient"
+    assert visitor_key(state, "2001:db8:1:2::1") == visitor_key(state, "2001:db8:1:2:9::9")
+    assert visitor_key(state, "203.0.113.7") != visitor_key(state, "203.0.113.8")
