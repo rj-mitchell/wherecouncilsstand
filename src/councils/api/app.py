@@ -372,6 +372,17 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
 
     if (dist / "assets").exists():
         app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+    # the Where They Stand family kit (web/public/family: icons, the shared stylesheet and fonts, the link card)
+    if (dist / "family").exists():
+        app.mount("/family", StaticFiles(directory=dist / "family"), name="family")
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    def favicon():
+        """Browsers ask for /favicon.ico whatever the page says: the kit's icon, the site's spine in its cloth."""
+        path = dist / "family" / "favicon.ico"
+        if not path.is_file():
+            raise HTTPException(404, "Not found.")
+        return FileResponse(path, media_type="image/vnd.microsoft.icon")
 
     @app.get("/{name}", include_in_schema=False)
     def static_page(name: str):

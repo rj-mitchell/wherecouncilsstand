@@ -165,7 +165,6 @@ h2 {
 
 /* a minute's heading: capitals between rules */
 .minute-heading {
-  font-family: var(--sans);
   font-size: var(--step--1);
   font-weight: 650;
   letter-spacing: 0.08em;
@@ -236,10 +235,24 @@ h2 {
 
 .wordmark {
   display: block;
+  font-family: var(--wts-serif, var(--serif));
   font-size: var(--step-2);
   font-weight: 700;
   line-height: 1.1;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.005em;
+}
+
+/* the site's name, and under it the family's endorsement (public/family: "A Where They Stand project"), lined up
+   with the name rather than the mark */
+.masthead-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: var(--space-xs);
+}
+
+.masthead-brand .wts-endorse {
+  margin-inline-start: calc(44px + var(--space-s));
 }
 
 .tagline,
@@ -281,10 +294,15 @@ h2 {
 
 /* ---- footer ----------------------------------------------------------------------------------- */
 
+/* the site's own footer, then the family's shelf (public/family/shelf.html), which runs the full width */
+.site-footer {
+  margin-block-start: var(--space-l);
+}
+
 .footer {
   max-width: var(--wide);
   margin-inline: auto;
-  padding: var(--space-m) var(--space-m) var(--space-xl);
+  padding: var(--space-m) var(--space-m) 0;
   border-block-start: 1px solid var(--rule-strong);
   font-family: var(--sans);
   font-size: var(--step--1);
@@ -478,7 +496,6 @@ h2 {
 
 .answer h2,
 .answer h3 {
-  font-family: var(--sans);
   font-size: var(--step--1);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -628,7 +645,6 @@ h2 {
 }
 
 .group-heading {
-  font-family: var(--sans);
   font-size: var(--step--1);
   font-weight: 650;
   letter-spacing: 0.06em;
@@ -840,6 +856,7 @@ th.num {
   .phase-banner,
   .site-nav,
   .footer-nav,
+  .wts-shelf,
   .ask-form,
   .agenda {
     display: none;
