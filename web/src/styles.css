@@ -240,18 +240,36 @@ h2 {
   text-decoration: none;
 }
 
-/* the site's mark, an open minute book (partials/mark.html), bound in the cloth. In dark mode the cloth is the
-   family's lifted brown, at 3:1 against the page, and a gilt edge keeps the square's outline */
+/* the site's mark (partials/mark.html, and public/mark.svg for others to use): a town hall, with a clock tower, a
+   pediment, four columns and a gilt step, on a tile of the cloth inside a gilt edge (the owner's choice: DECISIONS.md).
+   In dark mode the tile is the family's lifted brown, at 3:1 against the page; the stone and gilt keep their colours.
+   In forced colours it is drawn in the system's two colours. */
 .site-mark {
   flex: none;
+  inline-size: var(--mark-size, 52px);
+  block-size: var(--mark-size, 52px);
 }
-.site-mark__cloth {
+.site-mark__cloth,
+.site-mark__ink {
   fill: var(--binding);
-  stroke: light-dark(transparent, oklch(80% 0.1 89));
-  stroke-width: 3;
 }
-.site-mark__lines {
-  stroke: var(--binding);
+
+@media (forced-colors: active) {
+  .site-mark {
+    forced-color-adjust: none;
+  }
+  .site-mark__cloth,
+  .site-mark__ink {
+    fill: CanvasText;
+  }
+  .site-mark__gilt,
+  .site-mark__hands {
+    stroke: Canvas;
+  }
+  .site-mark__stone,
+  .site-mark__step {
+    fill: Canvas;
+  }
 }
 
 .wordmark {
@@ -266,6 +284,7 @@ h2 {
 /* the site's name, and under it the family's endorsement (public/family: "A Where They Stand project"), lined up
    with the name rather than the mark */
 .masthead-brand {
+  --mark-size: 52px;
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -273,7 +292,13 @@ h2 {
 }
 
 .masthead-brand .wts-endorse {
-  margin-inline-start: calc(44px + var(--space-s));
+  margin-inline-start: calc(var(--mark-size) + var(--space-s));
+}
+
+@media (width < 30rem) {
+  .masthead-brand {
+    --mark-size: 44px;
+  }
 }
 
 .tagline {

@@ -69,11 +69,16 @@ The kit's files are included as they are (`<!--#include family/shelf-->` in the 
 
 ## The mark
 
-An open minute book: two pages with ruled lines, and a short margin rule in gilt on the left page for the minute
-number, bound in Buckram brown (`web/partials/mark.html`, drawn inline so it takes the page's colours). In dark mode
-the brown is the family's lifted cloth, at 3:1 against the page, with a thin gilt edge. It looks nothing like a
-crest. It is the site's page mark (family decision 4); the favicon, the footer shelf and the link card use the
-family's spine instead.
+A town hall on a tile of Buckram brown with rounded corners and a fine gilt edge (`#D9BC72`, the family's spine
+gilt, so the edge still shows at 16 pixels), drawn in the same manner as Where MPs Stand's mark: a clock tower with a
+spire behind a pediment, four columns on a stylobate, and a gilt step (`web/partials/mark.html`, drawn inline at
+52 px, 44 px on a phone). The owner chose it from seven drawings (decision 16). In dark mode the tile and the clock
+face are the family's lifted cloth, at 3:1 against the page; the stone and gilt keep their colours. In forced colours
+it is redrawn in the system's two colours. It is the site's page mark (family decision 4).
+
+The same drawing is in `web/public/` for others to use: `mark.svg` (light), `mark-dark.svg` (the lifted cloth), and
+`mark-small.svg` and `mark-small-dark.svg` for 16 to 32 pixels, with three columns, a heavier edge and step, and no
+clock hands. Today the favicon, the footer shelf and the link card use the family's spine.
 
 ## Shared with the family
 
