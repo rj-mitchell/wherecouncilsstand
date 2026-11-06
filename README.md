@@ -1,53 +1,86 @@
 # Where Councils Stand
 
-**Sourced briefings on what councils across the UK have discussed, decided and voted on.**
+**Sourced briefings on what councils across the UK have discussed, decided and voted on, from their own minutes.**
 
-Where Councils Stand applies the approach of [Where MPs Stand](https://wherempsstand.com) to local government. It
-reads the minutes councils already publish for full council and cabinet meetings, and offers short, balanced
-briefings in which every point cites the council's own record, with each councillor's party on the date. If the
-record holds nothing relevant, it says "No records found."
+[wherecouncilsstand.com](https://wherecouncilsstand.com) · Status: Alpha
 
-It is a project of Where They Stand, which is applying to register as a charity in England and Wales. The code is adapted from Where Countries Stand and Where They Stand (same licence, same author).
+For journalists and anyone who wants to know what their council has done. Ask a question and get a short, balanced
+briefing from the minutes councils publish for full council and cabinet, or look up a council and see its named
+votes, with each councillor's party on the date. Every point cites the council's own record; if the record holds
+nothing relevant, the site says "No records found."
+
+A Where They Stand project. Where They Stand is applying to register as a charity in England and Wales
+([wheretheystand.uk](https://wheretheystand.uk)).
 
 > Where Councils Stand is independent. It is not affiliated with or endorsed by any council, the Local Government
 > Association, Civica or Northgate.
 
 ## Status
 
-A public alpha, live at [wherecouncilsstand.com](https://wherecouncilsstand.com) on the charity's shared server
-([`docs/DEPLOY.md`](docs/DEPLOY.md)). It is still being built and tested, and says so on every page. The data layer
-works on the real record:
+6 November 2026. A public alpha, live at [wherecouncilsstand.com](https://wherecouncilsstand.com) on the charity's
+shared server. It is still being built and tested, and says so on every page.
 
-- the registry of every principal council in the UK (England, Wales, Scotland and Northern Ireland), and which publish through Modern.gov, CMIS or CoINS;
-- loading full council and cabinet meetings from May 2018: minutes, attendance and party on the date;
-- minutes published only as a document, where the council serves documents;
-- reading named votes and declarations of interest from the minutes;
-- removing the names of people who aren't councillors before anything is indexed or shown.
+- **The record.** Every principal council in the UK (England, Wales, Scotland and Northern Ireland) is listed, with
+  which of them publish through Modern.gov, CMIS or CoINS. Full council and cabinet meetings are loaded from May 2018:
+  minutes (including those published only as a document), attendance with each member's party on the date, named
+  votes and declarations of interest. Names of people who aren't councillors are removed before anything is indexed
+  or shown. On 6 November 2026 the live site held 295 of the 383 councils, with about 43,300 meetings and 8,900 named
+  votes. The data is brought up to date every night (`councils update`, [`docs/OPERATIONS.md`](docs/OPERATIONS.md)).
+- **The website** (`web/`, served by `councils serve`): questions answered as streamed, sourced briefings, each saved
+  at its own address; a page for every council (the party in control over time, members by party, named votes and
+  meetings, and links to Where Landlords Stand); a page for every named vote; pages on how it works, corrections and
+  takedown requests, accessibility, privacy and terms.
+- **Next:** a test set of checked votes, before the beta (decision 15).
 
-It was first run on 20 councils chosen by a fixed rule. On 6 November 2026 the live site held 295 of the 383
-councils, with about 43,300 meetings and 8,900 named votes, each councillor with their party on the date. The pilot's
-results, and the hand checks of the votes, are in [`docs/PILOT.md`](docs/PILOT.md).
+It was first run on 20 councils chosen by a fixed rule; the pilot's results, and the hand checks of the votes, are in
+[`docs/PILOT.md`](docs/PILOT.md).
 
-The search index and briefing engine, adapted from Where Countries Stand, give keyword and meaning search over the
-minutes, evidence balanced across councils and party control, and Claude briefings with re-checked citations. The
-data is brought up to date every night (`councils update`, [`docs/OPERATIONS.md`](docs/OPERATIONS.md)).
+## In the family
 
-The website (`web/`, served by `councils serve`) has:
-- questions answered as streamed, sourced briefings, each saved at its own address;
-- a page for every council: the party in control over time, members by party, named votes and meetings;
-- a page for every named vote, with each councillor's party on the date;
-- pages on how it works, corrections and takedown requests, and privacy.
+Where Councils Stand is one of the Where They Stand projects, with Where MPs Stand, Where Landlords Stand, Where
+Countries Stand and Where Lives Stand. The family as a whole (the projects, the shelves, names and wording) is
+described in the charity's family overview.
 
-Its look is described in [`docs/DESIGN.md`](docs/DESIGN.md).
+- **Code.** Adapted from Where Countries Stand's and Where MPs Stand's code (same licence). The search index and
+  briefing engine came from Where Countries Stand; the web service, limits and visitor privacy from Where MPs Stand.
+- **Where it runs.** The charity's shared server in London, beside Where MPs Stand, Where Landlords Stand and Where
+  Countries Stand, behind the front door in Where MPs Stand's checkout. Where MPs Stand's `docs/HOSTING.md` is the
+  manual for the server; [`docs/DEPLOY.md`](docs/DEPLOY.md) has only this site's own steps.
+- **The family binding.** Every page carries "A Where They Stand project" under the site's name, the family shelf in
+  the footer, the favicon and link card in the site's cloth (Buckram brown), and Source Serif 4 for headings. They
+  come from the charity's family kit, copied into `web/public/family` and committed; don't edit the copies. To
+  update them, and before merging a change to them, run from a checkout of the charity's repository:
+
+  ```bash
+  node family/kit/sync.mjs --site councils --out ../wherecouncilsstand/web/public/family          # copy the kit in
+  node family/kit/sync.mjs --site councils --out ../wherecouncilsstand/web/public/family --check  # is it the latest?
+  ```
+
+  CI can't run `--check` (the charity's repository is private), so `tests/test_family.py` checks the copy against
+  the hash in its own `VERSION` file instead: an edited or missing file fails the tests.
+- **Links to sister sites.**
+  - *To Where Landlords Stand:* each council's page links to the council as a landlord (where it owns homes) and to
+    the social landlords with homes in its area. Both sites key councils by ONS GSS code. The pages are listed in
+    `data_static/landlords_links.csv`, rebuilt by `scripts/landlords_links.py` from that site's published data after
+    its weekly update ([`docs/DATA.md`](docs/DATA.md)).
+  - *To Where MPs Stand:* under each briefing, "Ask Where MPs Stand the same question" hands the question over in
+    its `?q=` parameter.
+  - *From Where Landlords Stand:* its council landlords link to their page here, `/councils/{gss}`.
+  - *Family links:* the endorsement links to wheretheystand.uk, and the footer shelf to every sister site.
+
+## Documents
 
 | File | What it is |
 |---|---|
-| [`docs/DECISIONS.md`](docs/DECISIONS.md) | Product decisions made so far. They override everything else. |
-| [`docs/DATA.md`](docs/DATA.md) | Data sources, what the Modern.gov web service returns, and what was found in it |
-| [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | The daily update, and running the website: limits, costs, reports |
-| [`docs/DEPLOY.md`](docs/DEPLOY.md) | Putting the site on the charity's shared server: Docker, Cloudflare, the first load |
-| [`docs/DESIGN.md`](docs/DESIGN.md) | The website's look: the minute book |
+| [`docs/DECISIONS.md`](docs/DECISIONS.md) | Product decisions made by the owner. They override everything else |
+| [`docs/DATA.md`](docs/DATA.md) | Data sources, what the councils' web services return, and the links to Where Landlords Stand |
+| [`docs/DESIGN.md`](docs/DESIGN.md) | The website's look: the minute book, in the family's binding |
+| [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | The nightly update, and running the website: limits, costs, reports |
+| [`docs/DEPLOY.md`](docs/DEPLOY.md) | This site's steps on the charity's shared server |
 | [`docs/PILOT.md`](docs/PILOT.md) | The 20-council pilot, the full load, and hand checks of the votes |
+| [`outreach/`](outreach/) | Letters asking councils for permission to read their meetings sites |
+
+How the site works, for readers, is on its [How it works](https://wherecouncilsstand.com/methodology) page.
 
 ## How it works
 
@@ -117,12 +150,28 @@ uv sync --extra embed && uv run councils embed --max-minutes 30   # meaning sear
 uv run councils search "bin collections" --control NOC
 uv run councils ask "What have Labour-run councils decided about bin collections since 2023?"
 uv run pytest
-cd web && npm ci && npm run build && npm test && cd ..
+cd web && npm ci && npm test && npm run build && cd ..
 uv run councils serve                     # the website, at http://127.0.0.1:8000
 ```
 
 Data is written to `data/` (raw responses and Parquet). `scripts/build_councils.py` rebuilds the council registry.
 
+## Known limitations
+
+- **Vote accuracy.** About 1 named vote in 100 has a councillor on the wrong side (three hand-checked samples of 100,
+  [`docs/PILOT.md`](docs/PILOT.md)). This is accepted for the alpha (decision 15) and said on the How it works page.
+- **Coverage.** Councils whose minutes aren't published through Modern.gov, CMIS or CoINS, and those whose sites
+  refuse the crawler or forbid it in robots.txt, are left out, with the reason shown. Councils were asked for
+  permission ([`outreach/`](outreach/)).
+- **Minutes are summaries** written by council officers, not word-for-word records, and briefings are written by AI:
+  they are checked automatically against the minutes, and can still be wrong.
+- **JavaScript.** The home page, the list of councils, council pages and vote pages need it; there is no sitemap
+  yet, and search engines that don't run JavaScript see little of them.
+- **Accessibility** has been checked with axe-core, the keyboard and a reflow check, but not yet by people who use
+  assistive technology (the site's Accessibility page).
+
 ## Licence
 
-Code: AGPL-3.0, as Where They Stand. Council minutes remain the councils' copyright. See docs/DECISIONS.md, 10.
+Code: AGPL-3.0 ([LICENSE](LICENSE)). Text written by the site, including briefings, and the data it publishes: CC BY
+4.0 (the site's Terms page). Data: each publisher's terms; councils' minutes remain each council's copyright and are
+shown only as cited extracts (decision 10). The name and mark are not covered.
