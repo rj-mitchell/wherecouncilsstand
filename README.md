@@ -47,9 +47,10 @@ described in the charity's family overview.
   Countries Stand, behind the front door in Where MPs Stand's checkout. Where MPs Stand's `docs/HOSTING.md` is the
   manual for the server; [`docs/DEPLOY.md`](docs/DEPLOY.md) has only this site's own steps.
 - **The family binding.** Every page carries "A Where They Stand project" under the site's name, the family shelf in
-  the footer, the favicon and link card in the site's cloth (Buckram brown), and Source Serif 4 for headings. They
-  come from the charity's family kit, copied into `web/public/family` and committed; don't edit the copies. To
-  update them, and before merging a change to them, run from a checkout of the charity's repository:
+  the footer, the town-hall mark as the favicon and on the link card, the theme colour in the site's cloth (Buckram
+  brown), and Source Serif 4 for headings. They come from the charity's family kit, copied into `web/public/family`
+  and committed; don't edit the copies. To update them, and before merging a change to them, run from a checkout of
+  the charity's repository:
 
   ```bash
   node family/kit/sync.mjs --site councils --out ../wherecouncilsstand/web/public/family          # copy the kit in
