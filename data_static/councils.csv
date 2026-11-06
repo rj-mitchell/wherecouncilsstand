@@ -11,7 +11,7 @@ E07000084,BAN,Basingstoke and Deane Borough Council,england,district,E12000008,h
 E07000171,BAE,Bassetlaw District Council,england,district,E12000004,https://www.bassetlaw.gov.uk,https://bassetlaw.moderngov.co.uk,ok,local-democracy-uk,modgov
 E06000022,BAS,Bath and North East Somerset Council,england,unitary,E12000009,https://www.bathnes.gov.uk,https://democracy.bathnes.gov.uk,ok,local-democracy-uk,modgov
 E06000055,BDF,Bedford Borough Council,england,unitary,E12000006,https://www.bedford.gov.uk,https://councillorsupport.bedford.gov.uk,ok,local-democracy-uk,modgov
-E08000025,BIR,Birmingham City Council,england,metropolitan,E12000005,https://www.birmingham.gov.uk,https://birmingham.cmis.uk.com/birmingham,robots,researched,cmis
+E08000025,BIR,Birmingham City Council,england,metropolitan,E12000005,https://www.birmingham.gov.uk,https://birmingham.cmis.uk.com/birmingham,ok,researched,cmis
 E07000129,BLA,Blaby District Council,england,district,E12000004,https://www.blaby.gov.uk,https://democracy.blaby.gov.uk,ok,local-democracy-uk,modgov
 E06000008,BBD,Blackburn with Darwen Borough Council,england,unitary,E12000002,https://www.blackburn.gov.uk,https://democracy.blackburn.gov.uk,ok,local-democracy-uk,modgov
 E06000009,BPL,Blackpool Borough Council,england,unitary,E12000002,https://www.blackpool.gov.uk,https://democracy.blackpool.gov.uk,ok,local-democracy-uk,modgov
@@ -21,7 +21,7 @@ E07000146,KIN,Borough Council of King's Lynn and West Norfolk,england,district,E
 E07000136,BOT,Boston Borough Council,england,district,E12000004,https://www.boston.gov.uk,https://democracy.boston.gov.uk,unreachable,local-democracy-uk,modgov
 E06000058,BPC,"Bournemouth, Christchurch and Poole Council",england,unitary,E12000009,https://www.bcpcouncil.gov.uk,https://democracy.bcpcouncil.gov.uk,ok,probed,modgov
 E06000036,BRC,Bracknell Forest Council,england,unitary,E12000008,https://www.bracknell-forest.gov.uk/,https://democratic.bracknell-forest.gov.uk,ok,local-democracy-uk,modgov
-E07000067,BRA,Braintree District Council,england,district,E12000006,https://www.braintree.gov.uk,https://braintree.cmis.uk.com/braintree,robots,researched,cmis
+E07000067,BRA,Braintree District Council,england,district,E12000006,https://www.braintree.gov.uk,https://braintree.cmis.uk.com/braintree,ok,researched,cmis
 E07000143,BRE,Breckland District Council,england,district,E12000006,https://www.breckland.gov.uk,https://democracy.breckland.gov.uk,ok,local-democracy-uk,modgov
 E07000068,BRW,Brentwood Borough Council,england,district,E12000006,https://www.brentwood.gov.uk,https://brentwood.moderngov.co.uk,ok,local-democracy-uk,modgov
 E06000043,BNH,Brighton and Hove City Council,england,unitary,E12000008,https://www.brighton-hove.gov.uk,https://democracy.brighton-hove.gov.uk,ok,probed,modgov
@@ -35,10 +35,10 @@ E07000117,BUN,Burnley Borough Council,england,district,E12000002,https://www.bur
 E08000002,BUR,Bury Metropolitan Borough Council,england,metropolitan,E12000002,https://www.bury.gov.uk,https://councildecisions.bury.gov.uk,ok,local-democracy-uk,modgov
 E08000033,CLD,Calderdale Metropolitan Borough Council,england,metropolitan,E12000003,https://www.calderdale.gov.uk,https://calderdale.moderngov.co.uk,ok,local-democracy-uk,modgov
 E07000008,CAB,Cambridge City Council,england,district,E12000006,https://www.cambridge.gov.uk,https://democracy.cambridge.gov.uk,ok,local-democracy-uk,modgov
-E10000003,CAM,Cambridgeshire County Council,england,county,E12000006,https://www.cambridgeshire.gov.uk,https://cambridgeshire.cmis.uk.com/ccc_live,robots,researched,cmis
+E10000003,CAM,Cambridgeshire County Council,england,county,E12000006,https://www.cambridgeshire.gov.uk,https://cambridgeshire.cmis.uk.com/ccc_live,ok,researched,cmis
 E07000192,CAN,Cannock Chase District Council,england,district,E12000005,https://www.cannockchasedc.gov.uk,,none,,modgov
 E07000106,CAT,Canterbury City Council,england,district,E12000008,https://www.canterbury.gov.uk,https://democracy.canterbury.gov.uk,unreachable,local-democracy-uk,modgov
-E07000069,CAS,Castle Point Borough Council,england,district,E12000006,https://www.castlepoint.gov.uk,https://castlepoint.cmis.uk.com/castlepoint,robots,researched,cmis
+E07000069,CAS,Castle Point Borough Council,england,district,E12000006,https://www.castlepoint.gov.uk,https://castlepoint.cmis.uk.com/castlepoint,ok,researched,cmis
 E06000056,CBF,Central Bedfordshire Council,england,unitary,E12000006,https://www.centralbedfordshire.gov.uk,https://centralbeds.moderngov.co.uk,ok,council website,modgov
 E07000130,CHA,Charnwood Borough Council,england,district,E12000004,https://www.charnwood.gov.uk,https://charnwood.moderngov.co.uk,ok,local-democracy-uk,modgov
 E07000070,CHL,Chelmsford City Council,england,district,E12000006,https://www.chelmsford.gov.uk,,none,,modgov
@@ -55,7 +55,7 @@ E09000001,LND,City of London Corporation,england,city_of_london,E12000007,https:
 E09000033,WSM,City of Westminster,england,london_borough,E12000007,https://www.westminster.gov.uk,https://committees.westminster.gov.uk,ok,probed,modgov
 E08000031,WLV,City of Wolverhampton Council,england,metropolitan,E12000005,https://www.wolverhampton.gov.uk,https://wolverhampton.moderngov.co.uk,ok,local-democracy-uk,modgov
 E06000014,YOR,City of York Council,england,unitary,E12000003,https://www.york.gov.uk,https://democracy.york.gov.uk,ok,local-democracy-uk,modgov
-E07000071,COL,Colchester City Council,england,district,E12000006,https://www.colchester.gov.uk,https://colchester.cmis.uk.com/colchester,robots,researched,cmis
+E07000071,COL,Colchester City Council,england,district,E12000006,https://www.colchester.gov.uk,https://colchester.cmis.uk.com/colchester,ok,researched,cmis
 E06000052,CON,Cornwall Council,england,unitary,E12000009,https://www.cornwall.gov.uk,https://democracy.cornwall.gov.uk,ok,local-democracy-uk,modgov
 E07000079,COT,Cotswold District Council,england,district,E12000009,https://www.cotswold.gov.uk,https://meetings.cotswold.gov.uk,ok,local-democracy-uk,modgov
 E06000053,IOS,Council of the Isles of Scilly,england,unitary,E12000009,https://www.scilly.gov.uk,https://committees.scilly.gov.uk,ok,probed,modgov
@@ -65,14 +65,14 @@ E06000063,CUA,Cumberland Council,england,unitary,E12000002,https://www.cumberlan
 E07000096,DAC,Dacorum Borough Council,england,district,E12000006,https://www.dacorum.gov.uk,https://democracy.dacorum.gov.uk,ok,local-democracy-uk,modgov
 E06000005,DAL,Darlington Borough Council,england,unitary,E12000001,https://www.darlington.gov.uk,https://democracy.darlington.gov.uk,ok,local-democracy-uk,modgov
 E07000107,DAR,Dartford Borough Council,england,district,E12000008,https://www.dartford.gov.uk,https://dartford.moderngov.co.uk,ok,local-democracy-uk,modgov
-E06000015,DER,Derby City Council,england,unitary,E12000004,https://www.derby.gov.uk,https://democracy.derby.gov.uk,robots,researched,cmis
+E06000015,DER,Derby City Council,england,unitary,E12000004,https://www.derby.gov.uk,https://democracy.derby.gov.uk,ok,researched,cmis
 E10000007,DBY,Derbyshire County Council,england,county,E12000004,https://www.derbyshire.gov.uk,https://democracy.derbyshire.gov.uk,ok,local-democracy-uk,modgov
 E07000035,DEB,Derbyshire Dales District Council,england,district,E12000004,https://www.derbyshiredales.gov.uk,https://democracy.derbyshiredales.gov.uk,ok,local-democracy-uk,modgov
 E10000008,DEV,Devon County Council,england,county,E12000009,https://www.devon.gov.uk,https://democracy.devon.gov.uk,ok,local-democracy-uk,modgov
 E08000017,DNC,Doncaster Metropolitan Borough Council,england,metropolitan,E12000003,https://www.doncaster.gov.uk,https://doncaster.moderngov.co.uk,ok,local-democracy-uk,modgov
 E06000059,DST,Dorset Council,england,unitary,E12000009,https://www.dorsetcouncil.gov.uk,https://moderngov.dorsetcouncil.gov.uk,ok,local-democracy-uk,modgov
 E07000108,DOV,Dover District Council,england,district,E12000008,https://www.dover.gov.uk,https://moderngov.dover.gov.uk,ok,local-democracy-uk,modgov
-E08000027,DUD,Dudley Metropolitan Borough Council,england,metropolitan,E12000005,https://www.dudley.gov.uk,https://dudley.cmis.uk.com,robots,researched,cmis
+E08000027,DUD,Dudley Metropolitan Borough Council,england,metropolitan,E12000005,https://www.dudley.gov.uk,https://dudley.cmis.uk.com,ok,researched,cmis
 E06000047,DUR,Durham County Council,england,unitary,E12000001,https://www.durham.gov.uk,https://durham.moderngov.co.uk,ok,probed,modgov
 E07000009,ECA,East Cambridgeshire District Council,england,district,E12000006,https://www.eastcambs.gov.uk,,none,,modgov
 E07000040,EDE,East Devon District Council,england,district,E12000009,https://eastdevon.gov.uk,https://democracy.eastdevon.gov.uk,ok,local-democracy-uk,modgov
@@ -81,7 +81,7 @@ E07000242,EHE,East Hertfordshire District Council,england,district,E12000006,htt
 E07000137,ELI,East Lindsey District Council,england,district,E12000004,https://www.e-lindsey.gov.uk,https://democracy.e-lindsey.gov.uk,unreachable,local-democracy-uk,modgov
 E06000011,ERY,East Riding of Yorkshire Council,england,unitary,E12000003,https://www.eastriding.gov.uk/,,none,,modgov
 E07000193,EST,East Staffordshire Borough Council,england,district,E12000005,https://www.eaststaffsbc.gov.uk,,none,,modgov
-E07000244,ESK,East Suffolk Council,england,district,E12000006,https://www.eastsuffolk.gov.uk,https://eastsuffolk.cmis.uk.com/eastsuffolk,robots,researched,cmis
+E07000244,ESK,East Suffolk Council,england,district,E12000006,https://www.eastsuffolk.gov.uk,https://eastsuffolk.cmis.uk.com/eastsuffolk,ok,researched,cmis
 E10000011,ESX,East Sussex County Council,england,county,E12000008,https://www.eastsussex.gov.uk,https://democracy.eastsussex.gov.uk,ok,local-democracy-uk,modgov
 E07000061,EAS,Eastbourne Borough Council,england,district,E12000008,https://www.eastbourne.gov.uk,https://democracy.lewes-eastbourne.gov.uk,ok,local-democracy-uk,modgov
 E07000086,EAT,Eastleigh Borough Council,england,district,E12000008,https://www.eastleigh.gov.uk,https://meetings.eastleigh.gov.uk,blocked,probed,modgov
@@ -89,24 +89,24 @@ E07000207,ELM,Elmbridge Borough Council,england,district,E12000008,https://www.e
 E07000072,EPP,Epping Forest District Council,england,district,E12000006,https://www.eppingforestdc.gov.uk,https://eppingforest.moderngov.co.uk,ok,local-democracy-uk,modgov
 E07000208,EPS,Epsom and Ewell Borough Council,england,district,E12000008,https://www.epsom-ewell.gov.uk,https://democracy.epsom-ewell.gov.uk,ok,local-democracy-uk,modgov
 E07000036,ERE,Erewash Borough Council,england,district,E12000004,https://www.erewash.gov.uk,https://moderngov.erewash.gov.uk,ok,local-democracy-uk,modgov
-E10000012,ESS,Essex County Council,england,county,E12000006,https://www.essex.gov.uk/,https://cmis.essex.gov.uk/essexcmis5,robots,researched,cmis
+E10000012,ESS,Essex County Council,england,county,E12000006,https://www.essex.gov.uk/,https://cmis.essex.gov.uk/essexcmis5,ok,researched,cmis
 E07000041,EXE,Exeter City Council,england,district,E12000009,https://www.exeter.gov.uk,https://committees.exeter.gov.uk,ok,local-democracy-uk,modgov
 E07000087,FAR,Fareham Borough Council,england,district,E12000008,https://www.fareham.gov.uk,https://moderngov.fareham.gov.uk,ok,local-democracy-uk,modgov
 E07000010,FEN,Fenland District Council,england,district,E12000006,https://www.fenland.gov.uk,https://www.fenland.gov.uk/localgov,blocked,council website,modgov
 E07000112,SHE,Folkestone and Hythe Council,england,district,E12000008,https://www.folkestone-hythe.gov.uk,https://folkestone-hythe.moderngov.co.uk,ok,local-democracy-uk,modgov
 E07000080,FOE,Forest of Dean District Council,england,district,E12000009,https://www.fdean.gov.uk,https://meetings.fdean.gov.uk,ok,local-democracy-uk,modgov
-E07000119,FYL,Fylde Borough Council,england,district,E12000002,https://www.fylde.gov.uk,https://fylde.cmis.uk.com/fylde,robots,researched,cmis
+E07000119,FYL,Fylde Borough Council,england,district,E12000002,https://www.fylde.gov.uk,https://fylde.cmis.uk.com/fylde,ok,researched,cmis
 E08000037,GAT,Gateshead Metropolitan Borough Council,england,metropolitan,E12000001,https://www.gateshead.gov.uk,https://gateshead.moderngov.co.uk,ok,local-democracy-uk,modgov
 E07000173,GED,Gedling Borough Council,england,district,E12000004,https://www.gedling.gov.uk,https://democracy.gedling.gov.uk,ok,local-democracy-uk,modgov
 E07000081,GLO,Gloucester City Council,england,district,E12000009,https://www.gloucester.gov.uk,https://democracy.gloucester.gov.uk,ok,probed,modgov
 E10000013,GLS,Gloucestershire County Council,england,county,E12000009,https://www.gloucestershire.gov.uk,https://gloucestershire.moderngov.co.uk,ok,probed,modgov
 E07000088,GOS,Gosport Borough Council,england,district,E12000008,https://www.gosport.gov.uk,https://democracy.gosport.gov.uk,ok,local-democracy-uk,modgov
 E07000109,GRA,Gravesham Borough Council,england,district,E12000008,https://www.gravesham.gov.uk,https://democracy.gravesham.gov.uk,ok,local-democracy-uk,modgov
-E07000145,GRY,Great Yarmouth Borough Council,england,district,E12000006,https://www.great-yarmouth.gov.uk,https://great-yarmouth.cmis.uk.com/great-yarmouth,robots,researched,cmis
+E07000145,GRY,Great Yarmouth Borough Council,england,district,E12000006,https://www.great-yarmouth.gov.uk,https://great-yarmouth.cmis.uk.com/great-yarmouth,ok,researched,cmis
 E07000209,GRT,Guildford Borough Council,england,district,E12000008,https://www.guildford.gov.uk,https://democracy.guildford.gov.uk,ok,local-democracy-uk,modgov
 E06000006,HAL,Halton Borough Council,england,unitary,E12000002,https://www.halton.gov.uk,https://moderngov.halton.gov.uk,ok,local-democracy-uk,modgov
 E10000014,HAM,Hampshire County Council,england,county,E12000008,https://www.hants.gov.uk,https://democracy.hants.gov.uk,ok,probed,modgov
-E07000131,HAO,Harborough District Council,england,district,E12000004,https://www.harborough.gov.uk,https://cmis.harborough.gov.uk/cmis5,robots,researched,cmis
+E07000131,HAO,Harborough District Council,england,district,E12000004,https://www.harborough.gov.uk,https://cmis.harborough.gov.uk/cmis5,ok,researched,cmis
 E07000073,HAR,Harlow District Council,england,district,E12000006,https://www.harlow.gov.uk,https://harlow.moderngov.co.uk,ok,local-democracy-uk,modgov
 E07000089,HAT,Hart District Council,england,district,E12000008,https://www.hart.gov.uk,https://hart.moderngov.co.uk,ok,local-democracy-uk,modgov
 E06000001,HPL,Hartlepool Borough Council,england,unitary,E12000001,https://www.hartlepool.gov.uk,,none,,modgov
@@ -118,7 +118,7 @@ E07000098,HER,Hertsmere Borough Council,england,district,E12000006,https://www.h
 E07000037,HIG,High Peak Borough Council,england,district,E12000004,https://www.highpeak.gov.uk,https://democracy.highpeak.gov.uk,ok,local-democracy-uk,modgov
 E07000132,HIN,Hinckley and Bosworth Borough Council,england,district,E12000004,https://www.hinckley-bosworth.gov.uk,https://moderngov.hinckley-bosworth.gov.uk,ok,local-democracy-uk,modgov
 E07000227,HOR,Horsham District Council,england,district,E12000008,https://www.horsham.gov.uk,https://horsham.moderngov.co.uk,ok,local-democracy-uk,modgov
-E06000010,KHL,Hull City Council,england,unitary,E12000003,https://www.hullcc.gov.uk,https://cmis.hullcc.gov.uk/cmis,robots,researched,cmis
+E06000010,KHL,Hull City Council,england,unitary,E12000003,https://www.hullcc.gov.uk,https://cmis.hullcc.gov.uk/cmis,ok,researched,cmis
 E07000011,HUN,Huntingdonshire District Council,england,district,E12000006,https://www.huntingdonshire.gov.uk,https://democracy.huntingdonshire.gov.uk/moderngov,ok,local-democracy-uk,modgov
 E07000120,HYN,Hyndburn Borough Council,england,district,E12000002,https://www.hyndburnbc.gov.uk,https://democracy.hyndburnbc.gov.uk,ok,local-democracy-uk,modgov
 E07000202,IPS,Ipswich Borough Council,england,district,E12000006,https://www.ipswich.gov.uk,https://democracy.ipswich.gov.uk,blocked,council website,modgov
@@ -181,7 +181,7 @@ E07000091,NEW,New Forest District Council,england,district,E12000008,https://www
 E07000175,NEA,Newark and Sherwood District Council,england,district,E12000004,https://www.newark-sherwooddc.gov.uk,https://democracy.newark-sherwooddc.gov.uk,ok,local-democracy-uk,modgov
 E08000021,NET,Newcastle City Council,england,metropolitan,E12000001,https://www.newcastle.gov.uk,https://democracy.newcastle.gov.uk,ok,local-democracy-uk,modgov
 E07000195,NEC,Newcastle-under-Lyme Borough Council,england,district,E12000005,https://www.newcastle-staffs.gov.uk,https://moderngov.newcastle-staffs.gov.uk,unreachable,local-democracy-uk,modgov
-E10000020,NFK,Norfolk County Council,england,county,E12000006,https://www.norfolk.gov.uk,https://norfolkcc.cmis.uk.com/norfolkcc,robots,researched,cmis
+E10000020,NFK,Norfolk County Council,england,county,E12000006,https://www.norfolk.gov.uk,https://norfolkcc.cmis.uk.com/norfolkcc,ok,researched,cmis
 E07000043,NDE,North Devon District Council,england,district,E12000009,https://www.northdevon.gov.uk,https://democracy.northdevon.gov.uk,ok,local-democracy-uk,modgov
 E07000038,NED,North East Derbyshire District Council,england,district,E12000004,https://www.ne-derbyshire.gov.uk,https://ne-derbyshire.moderngov.co.uk,ok,probed,modgov
 E06000012,NEL,North East Lincolnshire Council,england,unitary,E12000003,https://www.nelincs.gov.uk,,none,,modgov
@@ -238,7 +238,7 @@ E06000039,SLG,Slough Borough Council,england,unitary,E12000008,https://www.sloug
 E08000029,SOL,Solihull Metropolitan Borough Council,england,metropolitan,E12000005,https://www.solihull.gov.uk,https://democracy.solihull.gov.uk,unreachable,local-democracy-uk,modgov
 E06000066,SUA,Somerset Council,england,unitary,E12000009,https://www.somerset.gov.uk/,https://democracy.somerset.gov.uk,ok,local-democracy-uk,modgov
 E07000012,SCA,South Cambridgeshire District Council,england,district,E12000006,https://www.scambs.gov.uk,https://scambs.moderngov.co.uk,ok,local-democracy-uk,modgov
-E07000039,SDE,South Derbyshire District Council,england,district,E12000004,https://www.southderbyshire.gov.uk/,https://south-derbys.cmis.uk.com/south-derbys,robots,researched,cmis
+E07000039,SDE,South Derbyshire District Council,england,district,E12000004,https://www.southderbyshire.gov.uk/,https://south-derbys.cmis.uk.com/south-derbys,ok,researched,cmis
 E06000025,SGC,South Gloucestershire Council,england,unitary,E12000009,https://www.southglos.gov.uk,https://council.southglos.gov.uk,ok,local-democracy-uk,modgov
 E07000044,SHA,South Hams District Council,england,district,E12000009,https://www.southhams.gov.uk/,https://democracy.swdevon.gov.uk,unreachable,researched,modgov
 E07000140,SHO,South Holland District Council,england,district,E12000004,https://www.sholland.gov.uk,https://democracy.sholland.gov.uk,unreachable,local-democracy-uk,modgov
@@ -246,7 +246,7 @@ E07000141,SKE,South Kesteven District Council,england,district,E12000004,https:/
 E07000149,SNO,South Norfolk District Council,england,district,E12000006,https://www.south-norfolk.gov.uk,https://southnorfolkandbroadland.moderngov.co.uk,ok,local-democracy-uk,modgov
 E07000179,SOX,South Oxfordshire District Council,england,district,E12000008,https://www.southoxon.gov.uk,https://democratic.southoxon.gov.uk,ok,local-democracy-uk,modgov
 E07000126,SRI,South Ribble Borough Council,england,district,E12000002,https://www.southribble.gov.uk,https://southribble.moderngov.co.uk,ok,local-democracy-uk,modgov
-E07000196,SST,South Staffordshire Council,england,district,E12000005,https://www.sstaffs.gov.uk,https://southstaffs.cmis.uk.com,robots,researched,cmis
+E07000196,SST,South Staffordshire Council,england,district,E12000005,https://www.sstaffs.gov.uk,https://southstaffs.cmis.uk.com,ok,researched,cmis
 E08000023,STY,South Tyneside Council,england,metropolitan,E12000001,https://www.southtyneside.info,https://portal.southtyneside.info/cmis5,none,researched,cmis
 E06000045,STH,Southampton City Council,england,unitary,E12000008,https://www.southampton.gov.uk/,https://www.southampton.gov.uk/moderngov,blocked,researched,modgov
 E06000033,SOS,Southend-on-Sea Borough Council,england,unitary,E12000006,https://www.southend.gov.uk,https://democracy.southend.gov.uk,ok,local-democracy-uk,modgov
@@ -287,8 +287,8 @@ E07000116,TUN,Tunbridge Wells Borough Council,england,district,E12000008,https:/
 E07000077,UTT,Uttlesford District Council,england,district,E12000006,https://www.uttlesford.gov.uk,https://uttlesford.moderngov.co.uk,ok,local-democracy-uk,modgov
 E07000180,VAL,Vale of White Horse District Council,england,district,E12000008,https://www.whitehorsedc.gov.uk,https://democratic.whitehorsedc.gov.uk,ok,local-democracy-uk,modgov
 E08000036,WKF,Wakefield Metropolitan District Council,england,metropolitan,E12000003,https://www.wakefield.gov.uk,https://wakefield.moderngov.co.uk,ok,local-democracy-uk,modgov
-E08000030,WLL,Walsall Metropolitan Borough Council,england,metropolitan,E12000005,https://www.walsall.gov.uk,https://cmispublic.walsall.gov.uk/cmis,robots,researched,cmis
-E06000007,WRT,Warrington Borough Council,england,unitary,E12000002,https://www.warrington.gov.uk,https://cmis.warrington.gov.uk/cmis5,robots,researched,cmis
+E08000030,WLL,Walsall Metropolitan Borough Council,england,metropolitan,E12000005,https://www.walsall.gov.uk,https://cmispublic.walsall.gov.uk/cmis,ok,researched,cmis
+E06000007,WRT,Warrington Borough Council,england,unitary,E12000002,https://www.warrington.gov.uk,https://cmis.warrington.gov.uk/cmis5,ok,researched,cmis
 E07000222,WAW,Warwick District Council,england,district,E12000005,https://www.warwickdc.gov.uk,https://estates10.warwickdc.gov.uk/cmis,ok,researched,cmis
 E10000031,WAR,Warwickshire County Council,england,county,E12000005,https://www.warwickshire.gov.uk,https://democracy.warwickshire.gov.uk,ok,local-democracy-uk,modgov
 E07000103,WAT,Watford Borough Council,england,district,E12000006,https://www.watford.gov.uk,https://watford.moderngov.co.uk,ok,local-democracy-uk,modgov
@@ -324,7 +324,7 @@ N09000004,N09000004,Causeway Coast and Glens Borough Council,northern_ireland,di
 N09000005,N09000005,Derry City and Strabane District Council,northern_ireland,district,northern_ireland,https://www.derrystrabane.com,https://meetings.derrycityandstrabanedistrict.com,unreachable,researched,modgov
 N09000006,N09000006,Fermanagh and Omagh District Council,northern_ireland,district,northern_ireland,https://www.fermanaghomagh.com,,none,,modgov
 N09000007,N09000007,Lisburn and Castlereagh City Council,northern_ireland,district,northern_ireland,https://www.lisburncastlereagh.gov.uk,,none,,modgov
-N09000009,N09000009,Mid Ulster District Council,northern_ireland,district,northern_ireland,https://www.midulstercouncil.org,https://mid-ulster.cmis-ni.org/midulster,robots,researched,cmis
+N09000009,N09000009,Mid Ulster District Council,northern_ireland,district,northern_ireland,https://www.midulstercouncil.org,https://mid-ulster.cmis-ni.org/midulster,ok,researched,cmis
 N09000008,N09000008,Mid and East Antrim Borough Council,northern_ireland,district,northern_ireland,https://www.midandeastantrim.gov.uk,,none,,modgov
 N09000010,N09000010,"Newry, Mourne and Down District Council",northern_ireland,district,northern_ireland,https://www.newrymournedown.org,,none,,modgov
 S12000033,S12000033,Aberdeen City Council,scotland,unitary,scotland,https://www.aberdeencity.gov.uk,https://aberdeen.moderngov.co.uk,ok,researched,modgov
@@ -344,20 +344,20 @@ S12000014,S12000014,Falkirk Council,scotland,unitary,scotland,https://www.falkir
 S12000047,S12000047,Fife Council,scotland,unitary,scotland,https://www.fife.gov.uk,,none,,modgov
 S12000049,S12000049,Glasgow City Council,scotland,unitary,scotland,https://www.glasgow.gov.uk,https://onlineservices.glasgow.gov.uk/councillorsandcommittees,ok,researched,coins
 S12000018,S12000018,Inverclyde Council,scotland,unitary,scotland,https://www.inverclyde.gov.uk,,none,,modgov
-S12000019,S12000019,Midlothian Council,scotland,unitary,scotland,https://www.midlothian.gov.uk,https://midlothian.cmis.uk.com/live,robots,researched,cmis
-S12000021,S12000021,North Ayrshire Council,scotland,unitary,scotland,https://www.north-ayrshire.gov.uk,https://north-ayrshire.cmis.uk.com/north-ayrshire,robots,researched,cmis
-S12000050,S12000050,North Lanarkshire Council,scotland,unitary,scotland,https://www.northlanarkshire.gov.uk,https://northlanarkshire.cmis.uk.com,robots,researched,cmis
+S12000019,S12000019,Midlothian Council,scotland,unitary,scotland,https://www.midlothian.gov.uk,https://midlothian.cmis.uk.com/live,ok,researched,cmis
+S12000021,S12000021,North Ayrshire Council,scotland,unitary,scotland,https://www.north-ayrshire.gov.uk,https://north-ayrshire.cmis.uk.com/north-ayrshire,ok,researched,cmis
+S12000050,S12000050,North Lanarkshire Council,scotland,unitary,scotland,https://www.northlanarkshire.gov.uk,https://northlanarkshire.cmis.uk.com,ok,researched,cmis
 S12000023,S12000023,Orkney Islands Council,scotland,unitary,scotland,https://www.orkney.gov.uk,,none,,modgov
-S12000048,S12000048,Perth and Kinross Council,scotland,unitary,scotland,https://www.pkc.gov.uk,https://perth-and-kinross.cmis.uk.com/perth-and-kinross,robots,researched,cmis
-S12000038,S12000038,Renfrewshire Council,scotland,unitary,scotland,https://www.renfrewshire.gov.uk,https://renfrewshire.cmis.uk.com/renfrewshire,robots,researched,cmis
+S12000048,S12000048,Perth and Kinross Council,scotland,unitary,scotland,https://www.pkc.gov.uk,https://perth-and-kinross.cmis.uk.com/perth-and-kinross,ok,researched,cmis
+S12000038,S12000038,Renfrewshire Council,scotland,unitary,scotland,https://www.renfrewshire.gov.uk,https://renfrewshire.cmis.uk.com/renfrewshire,ok,researched,cmis
 S12000026,S12000026,Scottish Borders Council,scotland,unitary,scotland,https://www.scotborders.gov.uk,https://scottishborders.moderngov.co.uk,ok,researched,modgov
 S12000027,S12000027,Shetland Islands Council,scotland,unitary,scotland,https://www.shetland.gov.uk,https://coins.shetland.gov.uk,ok,researched,coins
 S12000028,S12000028,South Ayrshire Council,scotland,unitary,scotland,https://www.south-ayrshire.gov.uk,,none,,modgov
-S12000029,S12000029,South Lanarkshire Council,scotland,unitary,scotland,https://www.southlanarkshire.gov.uk,https://southlanarkshire.cmis.uk.com/southlanarkshire,robots,researched,cmis
+S12000029,S12000029,South Lanarkshire Council,scotland,unitary,scotland,https://www.southlanarkshire.gov.uk,https://southlanarkshire.cmis.uk.com/southlanarkshire,ok,researched,cmis
 S12000030,S12000030,Stirling Council,scotland,unitary,scotland,https://www.stirling.gov.uk,,none,,modgov
 S12000017,S12000017,The Highland Council,scotland,unitary,scotland,https://www.highland.gov.uk,,none,,modgov
 S12000020,S12000020,The Moray Council,scotland,unitary,scotland,https://www.moray.gov.uk,,none,,modgov
-S12000039,S12000039,West Dunbartonshire Council,scotland,unitary,scotland,https://www.west-dunbarton.gov.uk,https://wdccmis.west-dunbarton.gov.uk/cmis5,robots,researched,cmis
+S12000039,S12000039,West Dunbartonshire Council,scotland,unitary,scotland,https://www.west-dunbarton.gov.uk,https://wdccmis.west-dunbarton.gov.uk/cmis5,ok,researched,cmis
 S12000040,S12000040,West Lothian Council,scotland,unitary,scotland,https://www.westlothian.gov.uk,https://coins.westlothian.gov.uk/coins,ok,researched,coins
 W06000019,W06000019,Blaenau Gwent Council,wales,unitary,wales,,https://democracy.blaenau-gwent.gov.uk,ok,local-democracy-uk,modgov
 W06000013,W06000013,Bridgend Council,wales,unitary,wales,,https://democratic.bridgend.gov.uk,ok,local-democracy-uk,modgov

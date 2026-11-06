@@ -146,8 +146,9 @@ robots.txt can't be fetched are treated as forbidding. `scripts/build_councils.p
 
 On 6 November 2026, 44 Modern.gov sites (44 councils and the Greater London Authority) were found to forbid reading,
 nearly all with Civica's usual file ("Disallow all webbot searching BUT allow Google access to mgRss for calendar
-sync"). They are read as before. **26 councils on CMIS** are still marked `robots` in `councils.csv`, from the rule
-before decision 21; they aren't read until the registry is changed. A council marked `robots` (`Council.withheld`)
+sync"). They are read as before. The **26 councils on CMIS** marked `robots` under the earlier rule (every Civica-hosted site,
+and Derby, Essex, Harborough, Hull, Walsall, Warrington and West Dunbartonshire's own) are `ok` again, at the owner's
+request of 6 November 2026, and are loaded once on the server (docs/OPERATIONS.md). A council marked `robots` (`Council.withheld`)
 isn't asked, and anything stored for it is kept but not shown, searched or updated; none that is loaded is marked.
 
 ## Meetings: CMIS sites
@@ -160,7 +161,7 @@ base address.
 **Robots and refusals.** Every page is checked with `sources/robots.py` before it is fetched, and any `Crawl-delay`
 is honoured. With `[robots] obey` off (decision 21) every page is allowed. With it on, a site whose robots.txt forbids
 its pages gets "robots.txt forbids crawling" and nothing is read: every Civica-hosted site (`*.cmis.uk.com`,
-`*.cmis-ni.org`), whose robots.txt is `Disallow: /`, which is why 26 councils are still marked `robots`; and
+`*.cmis-ni.org`), whose robots.txt is `Disallow: /`, which is why 26 councils were left out until November 2026; and
 Nottinghamshire's documents (`Disallow: /DMS/Document.ashx`), which are read now. A 401, 403,
 429 or a bot check's page stops the council's load with an error; it isn't retried or worked around. (A redirect to
 `login.aspx`, as Norwich's home page does, is a page that needs a login, not a refusal: it is skipped.)

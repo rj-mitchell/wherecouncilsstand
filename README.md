@@ -183,11 +183,10 @@ Data is written to `data/` (raw responses and Parquet). `scripts/build_councils.
 - **Vote accuracy.** About 1 named vote in 100 has a councillor on the wrong side (three hand-checked samples of 100,
   [`docs/PILOT.md`](docs/PILOT.md)). This is accepted for the alpha (decision 15) and said on the How it works page.
 - **Coverage.** Councils whose minutes aren't published through Modern.gov, CMIS or CoINS, and those whose sites
-  refuse the crawler, are left out, with the reason shown, as are 26 on Civica's hosted CMIS sites marked earlier under
-  the old robots.txt rule. So are 6 of the 20 strategic authorities: three publish on their own web pages, the GLA
-  waits for a rule for naming London Assembly members, one is on a site that refused automated requests, and one's
-  meetings couldn't be found. Councils were asked for
-  permission ([`outreach/`](outreach/)).
+  refuse the crawler, are left out, with the reason shown. So are 6 of the 20 strategic authorities: three publish
+  on their own web pages, the GLA waits for a rule for naming London Assembly members, one is on a site that refused
+  automated requests, and one's meetings couldn't be found. Councils whose sites refused were asked for permission
+  ([`outreach/`](outreach/)).
 - **Minutes are summaries** written by council officers, not word-for-word records, and briefings are written by AI:
   they are checked automatically against the minutes, and can still be wrong.
 - **JavaScript.** Asking a question needs it. The home page, the list of councils, council pages and vote pages

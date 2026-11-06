@@ -27,3 +27,14 @@ def test_reports_are_listed_closed_and_briefings_withdrawn(tmp_path, monkeypatch
     assert run(app, ["withdraw", "nope", "--reason", "x"]).output.strip() == "no briefing with that id"
     r = TestClient(create_app(load_settings(), state=state)).get("/api/briefings/abc123")
     assert r.status_code == 410 and r.json()["detail"] == "This briefing has been withdrawn: It named the wrong council."
+
+
+def test_load_takes_named_councils(tmp_path, monkeypatch):
+    """The 26 CMIS councils read again in November 2026 are loaded once by name (docs/OPERATIONS.md)."""
+    from councils import load
+
+    monkeypatch.setenv("COUNCILS_DATA_DIR", str(tmp_path))
+    seen = []
+    monkeypatch.setattr(load, "many", lambda s, chosen, workers, resume: seen.extend(c.gss for c in chosen) or [])
+    CliRunner().invoke(app, ["load", "E08000025", "Essex County Council", "--workers", "2"])
+    assert sorted(seen) == ["E08000025", "E10000012"]
