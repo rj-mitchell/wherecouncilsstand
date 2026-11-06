@@ -28,10 +28,16 @@ def cost_usd(usage: dict[str, int] | None, prices: dict[str, Any], model: str | 
         return 0.0
     p = prices_for(prices, model)
     price_in = float(p.get("price_input_per_mtok", 2.0))
-    writes = usage.get("cache_write_tokens", 0) or usage.get("cache_creation_input_tokens", 0) or 0
     reads = usage.get("cache_read_tokens", 0) or usage.get("cache_read_input_tokens", 0) or 0
-    # input_tokens includes cache writes (rag/answer.usage_dict), which are priced higher
-    return round((usage.get("input_tokens", 0) - writes) / 1e6 * price_in
+    if "cache_write_tokens" in usage:
+        # the site's own counts (rag/answer.usage_dict): input_tokens includes the cache writes, priced higher below
+        writes = usage.get("cache_write_tokens", 0) or 0
+        uncached = usage.get("input_tokens", 0) - writes
+    else:
+        # the SDK's own names: its input_tokens already leaves out cache writes (and cache reads)
+        writes = usage.get("cache_creation_input_tokens", 0) or 0
+        uncached = usage.get("input_tokens", 0)
+    return round(uncached / 1e6 * price_in
                  + writes / 1e6 * price_in * float(p.get("cache_write_multiplier", 1.25))
                  + usage.get("output_tokens", 0) / 1e6 * float(p.get("price_output_per_mtok", 10.0))
                  + reads / 1e6 * float(p.get("price_cache_read_per_mtok", 0.2)), 6)

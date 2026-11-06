@@ -213,3 +213,21 @@ def test_status(client):
     cfg.raw["usage"]["daily_spend_cap_usd"] = 0.0
     s = c.get("/api/status").json()
     assert s["briefings"] == "paused" and "today's limit" in s["briefings_note"]
+
+
+def test_cost_counts_cache_writes_once_whichever_names_the_usage_uses():
+    """The SDK's input_tokens leaves out cache writes and reads; the site's own counts (rag/answer.usage_dict) put
+    the writes into input_tokens. Either way each token is priced once: before, the SDK's names were undercounted."""
+    from types import SimpleNamespace as NS
+
+    from councils.api.usage import cost_usd
+    from councils.rag.answer import usage_dict
+
+    prices = {"price_input_per_mtok": 3.0, "price_output_per_mtok": 15.0, "price_cache_read_per_mtok": 0.3,
+              "cache_write_multiplier": 1.25}
+    sdk = NS(input_tokens=1_200, output_tokens=800, cache_creation_input_tokens=20_000, cache_read_input_tokens=5_000)
+    expected = round(1_200 / 1e6 * 3.0 + 20_000 / 1e6 * 3.0 * 1.25 + 800 / 1e6 * 15.0 + 5_000 / 1e6 * 0.3, 6)
+    raw = {"input_tokens": 1_200, "output_tokens": 800, "cache_creation_input_tokens": 20_000,
+           "cache_read_input_tokens": 5_000}
+    assert cost_usd(raw, prices) == expected == 0.0921
+    assert cost_usd(usage_dict(sdk), prices) == expected
