@@ -144,7 +144,8 @@ def committee_links(text: str, page_url: str) -> list[CommitteeRef]:
 
 def committee_pages(text: str, page_url: str, base: str) -> list[str]:
     """The site's own pages of committees, linked from its navigation: "Committees.aspx", "FormerCommittees.aspx",
-    "CommitteesandNotices/CommitteesfromMay2016.aspx", "Committees/HistoricalCommittees.aspx"."""
+    "CommitteesandNotices/CommitteesfromMay2016.aspx", "Committees/HistoricalCommittees.aspx"; and Renfrewshire's
+    "CouncilandBoards.aspx" and "CouncilandBoards/TerminatedBoards.aspx", where its committees are called boards."""
     base_path = urlparse(base).path.rstrip("/").lower()
     out = []
     for a in _root(text).iter("a"):
@@ -154,7 +155,8 @@ def committee_pages(text: str, page_url: str, base: str) -> list[str]:
         if (u.netloc.lower() != urlparse(base).netloc.lower() or not path.startswith(base_path + "/")
                 or not path.endswith(".aspx") or "/ctl/" in path or "/tabid/" in path):
             continue
-        if "committee" in path[len(base_path):] and url not in out:
+        rest = path[len(base_path):]
+        if ("committee" in rest or "boards" in rest) and url not in out:
             out.append(url)
     return out
 

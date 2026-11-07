@@ -333,3 +333,18 @@ def test_the_setting_is_off_by_default():
     from councils.config import load_settings as fresh
 
     assert fresh().section("robots").get("obey") is False
+
+
+def test_a_site_that_calls_its_committees_boards_is_followed():
+    """Renfrewshire lists its committees under "Council and Boards", not Committees.aspx (November 2026)."""
+    from councils import committees
+
+    base = "https://renfrewshire.cmis.uk.com/renfrewshire"
+    home = ('<html><body><a href="http://renfrewshire.cmis.uk.com/renfrewshire/CouncilandBoards.aspx">Council and '
+            'Boards</a><a href="http://renfrewshire.cmis.uk.com/renfrewshire/CouncilandBoards/TerminatedBoards.aspx">'
+            'Terminated</a><a href="http://renfrewshire.cmis.uk.com/renfrewshire/Documents/AppealsBoard.aspx">Appeals'
+            '</a><a href="http://renfrewshire.cmis.uk.com/renfrewshire/Meetings.aspx">Meetings</a></body></html>')
+    pages = cmis.committee_pages(home, f"{base}/", base)
+    assert [p.rsplit("/", 1)[-1] for p in pages] == ["CouncilandBoards.aspx", "TerminatedBoards.aspx"]
+    assert committees.kind("Leadership Board", "S12000038") == "policy"
+    assert committees.kind("Council", "S12000038") == "council"
