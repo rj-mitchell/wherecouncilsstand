@@ -195,24 +195,33 @@ def slug(name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", short_name(name).lower()).strip("-")
 
 
+def needs_asking(row: dict) -> bool:
+    """A council still left out because its site refuses or doesn't answer the server. Since decision 21 (robots.txt
+    isn't treated as a barrier, 6 November 2026), councils whose robots.txt forbids crawling are read, so they aren't
+    asked: their letters were withdrawn unsent, and a council whose site answers again has none."""
+    return row["modgov_status"] in ("blocked", "unreachable")
+
+
 def main() -> None:
     rows = council_rows()
     out = ROOT / "outreach" / BATCH
     out.mkdir(parents=True, exist_ok=True)
-    for gss, (address, greeting, passed_on) in LETTERS.items():
-        row = rows[gss]
-        (out / f"{slug(row['name'])}.txt").write_text(letter(row, address, greeting, passed_on))
-    for gss, (address, greeting, why_you) in NAMED.items():
-        row = rows[gss]
-        (out / f"{slug(row['name'])}.txt").write_text(letter(row, address, greeting, False, why_you))
     post = out / "post"          # not sent by mail.sh (its command takes the batch's own folder)
     post.mkdir(exist_ok=True)
-    for gss, postal in POST.items():
+    written = 0
+    for folder, gss, write in (
+            [(out, g, lambda r, a=a, g_=gr, p=p: letter(r, a, g_, p)) for g, (a, gr, p) in LETTERS.items()]
+            + [(out, g, lambda r, a=a, g_=gr, w=w: letter(r, a, g_, False, w)) for g, (a, gr, w) in NAMED.items()]
+            + [(post, g, lambda r, pa=pa: letter(r, "", "Democratic Services team", False, by_post=pa))
+               for g, pa in POST.items()]):
         row = rows[gss]
-        (post / f"{slug(row['name'])}.txt").write_text(letter(row, "", "Democratic Services team", False,
-                                                              by_post=postal))
-    print(f"{len(LETTERS) + len(NAMED)} letters to send in {out.relative_to(ROOT)}, {len(POST)} to post in "
-          f"{post.relative_to(ROOT)}")
+        path = folder / f"{slug(row['name'])}.txt"
+        if needs_asking(row):
+            path.write_text(write(row))
+            written += 1
+        elif path.exists():
+            path.unlink()        # read now: its letter is withdrawn (it stays in git history)
+    print(f"{written} letters in {out.relative_to(ROOT)} (and {post.relative_to(ROOT)})")
 
 
 if __name__ == "__main__":

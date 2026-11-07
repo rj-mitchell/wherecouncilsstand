@@ -1,5 +1,12 @@
 # Letters to councils
 
+**7 November 2026: the letters asking permission because of robots.txt are withdrawn, unsent.** Since decision 21
+(the owner's decision of 6 November 2026), robots.txt isn't treated as a barrier, and those councils' sites are read,
+so 25 letters in `2026-11/` that said "we have left you out" were deleted (they are in git history). Only councils
+whose sites refuse or don't answer the server are still asked (`scripts/outreach.py`, `needs_asking`). Hull's letter
+now asks about its site not answering the server: if its earlier, robots.txt letter was already sent, send this
+one with `--again`.
+
 Requests for permission to read councils' meetings sites, where robots.txt forbids it or the site refuses the
 crawler (docs/DECISIONS.md, 2: asked, not worked around). `scripts/outreach.py` writes them from the registry and the
 addresses each council publishes; they are kept here as the record of who was asked, and when.
