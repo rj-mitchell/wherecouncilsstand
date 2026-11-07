@@ -155,7 +155,8 @@ On 6 November 2026, 44 Modern.gov sites (44 councils and the Greater London Auth
 nearly all with Civica's usual file ("Disallow all webbot searching BUT allow Google access to mgRss for calendar
 sync"). They are read as before. The **26 councils on CMIS** marked `robots` under the earlier rule (every Civica-hosted site,
 and Derby, Essex, Harborough, Hull, Walsall, Warrington and West Dunbartonshire's own) are `ok` again, at the owner's
-request of 6 November 2026, and are loaded once on the server (docs/OPERATIONS.md). A council marked `robots` (`Council.withheld`)
+request of 6 November 2026, and are loaded once on the server (docs/OPERATIONS.md). Hull's (`cmis.hullcc.gov.uk`) accepts connections but never completes the secure handshake, from the
+server as from elsewhere (7 November 2026), so it is marked `unreachable` until it answers again. A council marked `robots` (`Council.withheld`)
 isn't asked, and anything stored for it is kept but not shown, searched or updated; none that is loaded is marked.
 
 ## Meetings: CMIS sites

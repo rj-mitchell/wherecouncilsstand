@@ -118,7 +118,7 @@ E07000098,HER,Hertsmere Borough Council,england,district,E12000006,https://www.h
 E07000037,HIG,High Peak Borough Council,england,district,E12000004,https://www.highpeak.gov.uk,https://democracy.highpeak.gov.uk,ok,local-democracy-uk,modgov
 E07000132,HIN,Hinckley and Bosworth Borough Council,england,district,E12000004,https://www.hinckley-bosworth.gov.uk,https://moderngov.hinckley-bosworth.gov.uk,ok,local-democracy-uk,modgov
 E07000227,HOR,Horsham District Council,england,district,E12000008,https://www.horsham.gov.uk,https://horsham.moderngov.co.uk,ok,local-democracy-uk,modgov
-E06000010,KHL,Hull City Council,england,unitary,E12000003,https://www.hullcc.gov.uk,https://cmis.hullcc.gov.uk/cmis,ok,researched,cmis
+E06000010,KHL,Hull City Council,england,unitary,E12000003,https://www.hullcc.gov.uk,https://cmis.hullcc.gov.uk/cmis,unreachable,researched,cmis
 E07000011,HUN,Huntingdonshire District Council,england,district,E12000006,https://www.huntingdonshire.gov.uk,https://democracy.huntingdonshire.gov.uk/moderngov,ok,local-democracy-uk,modgov
 E07000120,HYN,Hyndburn Borough Council,england,district,E12000002,https://www.hyndburnbc.gov.uk,https://democracy.hyndburnbc.gov.uk,ok,local-democracy-uk,modgov
 E07000202,IPS,Ipswich Borough Council,england,district,E12000006,https://www.ipswich.gov.uk,https://democracy.ipswich.gov.uk,blocked,council website,modgov
