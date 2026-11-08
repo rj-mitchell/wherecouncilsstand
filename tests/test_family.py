@@ -79,3 +79,14 @@ def test_the_landlords_lookup_covers_only_councils_in_scope():
         rows = list(csv.DictReader(fh))
     assert rows and all(r["gss"] in ours for r in rows)
     assert all(re.fullmatch(r"[a-z0-9-]+", r["area_slug"] + r["council_landlord_slug"] or "x") for r in rows)
+
+
+def test_the_masthead_reads_name_endorsement_then_tagline():
+    """As on the sister sites (docs/DESIGN.md, "The family binding"): the tagline comes after the endorsement, and
+    sits outside the home link, so the link is the name alone."""
+    header = (FAMILY.parents[1] / "partials" / "header.html").read_text(encoding="utf-8")
+    brand = re.search(r'<div class="masthead-brand">(.*?)\n    </div>', header, re.S).group(1)
+    name, endorse, tagline = (brand.index(s) for s in ('class="wordmark"', "family/endorsement", 'class="tagline"'))
+    assert name < endorse < tagline
+    home = re.search(r'<a href="/" class="home-link">(.*?)</a>', brand, re.S).group(1)
+    assert "tagline" not in home and "Where Councils Stand" in home

@@ -39,11 +39,16 @@ function Form() {
     <form className="form-grid" onSubmit={submit}>
       <div className="field">
         <label htmlFor="kind">What is it about?</label>
-        <select id="kind" value={kind} onChange={(e) => setKind(e.target.value)}>
-          <option value="error">Something is wrong: a vote, a party, a briefing or a page</option>
-          <option value="takedown">I'm named and want something removed</option>
+        {/* the options kept short enough to show whole in the closed box on a phone; the detail is in the hint */}
+        <select id="kind" value={kind} onChange={(e) => setKind(e.target.value)} aria-describedby="kind-hint">
+          <option value="error">Something is wrong</option>
+          <option value="takedown">A takedown request</option>
           <option value="other">Something else</option>
         </select>
+        <span className="muted" id="kind-hint">
+          Something wrong can be a vote, a party, a briefing or a page. A takedown request is for someone named on
+          the site who wants something removed.
+        </span>
       </div>
       <div className="field">
         <label htmlFor="page">Address of the page or briefing (if there is one)</label>
@@ -56,8 +61,9 @@ function Form() {
       </div>
       <div className="field">
         <label htmlFor="contact">Your email address, if you'd like a reply (optional)</label>
-        <input id="contact" type="email" value={contact} onChange={(e) => setContact(e.target.value)} maxLength={300} />
-        <span className="muted">Used only to reply, and deleted when the report is dealt with.</span>
+        <input id="contact" type="email" value={contact} onChange={(e) => setContact(e.target.value)} maxLength={300}
+          aria-describedby="contact-hint" />
+        <span className="muted" id="contact-hint">Used only to reply, and deleted when the report is dealt with.</span>
       </div>
       {error && <p className="notice">The report couldn't be sent: {error}</p>}
       <p>

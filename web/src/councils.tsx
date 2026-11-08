@@ -35,31 +35,31 @@ function Authorities({ rows }: { rows: CouncilRow[] }) {
         or of its councils; one without a mayor has no single party.
       </p>
       <div className="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Strategic authority</th>
-              <th>Mayor</th>
-              <th className="num wide-only">Meetings</th>
-              <th className="num">Named votes</th>
-              <th>Coverage</th>
+        <table className="stack-table" role="table">
+          <thead role="rowgroup">
+            <tr role="row">
+              <th scope="col" role="columnheader">Strategic authority</th>
+              <th scope="col" role="columnheader">Mayor</th>
+              <th scope="col" role="columnheader" className="num wide-only">Meetings</th>
+              <th scope="col" role="columnheader" className="num">Named votes</th>
+              <th scope="col" role="columnheader">Coverage</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody role="rowgroup">
             {rows.map((r) => (
-              <tr key={r.gss}>
-                <td>
+              <tr key={r.gss} role="row">
+                <th scope="row" role="rowheader">
                   <a href={`/councils/${encodeURIComponent(r.gss)}`}>{r.name}</a>
                   <div className="muted">
                     {r.kind_name} · {(r.regions || []).map((x) => x.name).join(" and ") || r.region_name}
                   </div>
-                </td>
-                <td>
+                </th>
+                <td role="cell" data-label="Mayor">
                   {r.control?.mayor ? `${r.control.mayor} (${r.control.name.replace(/^Mayor: /, "")})` : "No mayor"}
                 </td>
-                <td className="num wide-only">{r.loaded ? number(r.meetings) : "–"}</td>
-                <td className="num">{r.loaded ? number(r.named_votes) : "–"}</td>
-                <td>
+                <td role="cell" className="num wide-only">{r.loaded ? number(r.meetings) : "–"}</td>
+                <td role="cell" className="num" data-label="Named votes">{r.loaded ? number(r.named_votes) : "–"}</td>
+                <td role="cell" data-label="Coverage">
                   <CoverageCell r={r} />
                 </td>
               </tr>
@@ -162,30 +162,32 @@ function App() {
         </div>
       </div>
       <h2 className="minute-heading">Covered ({number(covered.length)})</h2>
+      {/* On a phone each row is a block: the council as its heading, then the rest as labelled pairs (data-label;
+          docs/DESIGN.md, "Tables"). The roles keep it a table for screen readers once the display changes. */}
       <div className="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Council</th>
-              <th>In overall control</th>
-              <th className="num wide-only">Meetings</th>
-              <th className="num">Named votes</th>
-              <th className="wide-only">From</th>
-              <th>Coverage</th>
+        <table className="stack-table" role="table">
+          <thead role="rowgroup">
+            <tr role="row">
+              <th scope="col" role="columnheader">Council</th>
+              <th scope="col" role="columnheader">In overall control</th>
+              <th scope="col" role="columnheader" className="num wide-only">Meetings</th>
+              <th scope="col" role="columnheader" className="num">Named votes</th>
+              <th scope="col" role="columnheader" className="wide-only">From</th>
+              <th scope="col" role="columnheader">Coverage</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody role="rowgroup">
             {covered.map((r) => (
-              <tr key={r.gss}>
-                <td>
+              <tr key={r.gss} role="row">
+                <th scope="row" role="rowheader">
                   <a href={`/councils/${r.gss}`}>{r.name}</a>
                   <div className="muted">{r.type_name} · {r.region_name}</div>
-                </td>
-                <td>{r.control?.name || "Not recorded"}</td>
-                <td className="num wide-only">{number(r.meetings)}</td>
-                <td className="num">{number(r.named_votes)}</td>
-                <td className="wide-only nowrap">{monthYear(r.from)}</td>
-                <td>
+                </th>
+                <td role="cell" data-label="In overall control">{r.control?.name || "Not recorded"}</td>
+                <td role="cell" className="num wide-only">{number(r.meetings)}</td>
+                <td role="cell" className="num" data-label="Named votes">{number(r.named_votes)}</td>
+                <td role="cell" className="wide-only nowrap">{monthYear(r.from)}</td>
+                <td role="cell" data-label="Coverage">
                   <CoverageCell r={r} />
                 </td>
               </tr>

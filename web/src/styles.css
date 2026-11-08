@@ -292,10 +292,8 @@ blockquote {
   border-block-end: 3px double var(--rule-strong);
 }
 
-.home-link {
-  display: flex;
-  gap: var(--space-s);
-  align-items: center;
+.home-link,
+.home-mark {
   color: inherit;
   text-decoration: none;
 }
@@ -341,18 +339,35 @@ blockquote {
   letter-spacing: 0.005em;
 }
 
-/* the site's name, and under it the family's endorsement (public/family: "A Where They Stand project"), lined up
-   with the name rather than the mark */
+/* the mark, and beside it the site's name and under that the family's endorsement (public/family: "A Where They
+   Stand project"), as on the sister sites; then the tagline, lined up with the name */
 .masthead-brand {
   --mark-size: 52px;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: var(--space-xs);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "mark name"
+    "mark endorse"
+    ". tagline";
+  justify-items: start;
+  align-items: center;
+  gap: var(--space-xs) var(--space-s);
+}
+
+.home-mark {
+  grid-area: mark;
+}
+
+.masthead-brand .home-link {
+  grid-area: name;
 }
 
 .masthead-brand .wts-endorse {
-  margin-inline-start: calc(var(--mark-size) + var(--space-s));
+  grid-area: endorse;
+}
+
+.masthead-brand .tagline {
+  grid-area: tagline;
 }
 
 @media (width < 30rem) {
@@ -792,6 +807,35 @@ input[type="checkbox"] {
   line-height: 0;
   text-decoration: none;
   padding-inline: 0.12em;
+  /* kept whole on one line: one split across two lines would stretch its tap area (below) over the text between */
+  white-space: nowrap;
+  /* a larger, invisible place to tap or click (below): 24px tall, 28px on a touch screen, which still fits inside a
+     line, and reaching a little either side, but never into a citation next to it */
+  position: relative;
+  --cite-hit: 24px;
+  --cite-reach: 4px;
+}
+
+.cite::after {
+  content: "";
+  position: absolute;
+  inset-block: calc((100% - var(--cite-hit)) / 2);
+  inset-inline: calc(-1 * var(--cite-reach));
+}
+
+.cite:has(+ .cite)::after {
+  inset-inline-end: 0;
+}
+
+.cite + .cite::after {
+  inset-inline-start: 0;
+}
+
+@media (pointer: coarse) {
+  .cite {
+    --cite-hit: 28px;
+    --cite-reach: 8px;
+  }
 }
 
 .unsupported {
@@ -1050,6 +1094,13 @@ input[type="checkbox"] {
   max-width: 100%;
 }
 
+/* a table of a few short figures (meetings by year), kept narrow so each row's numbers sit close enough to follow
+   across, as the members-by-party list is */
+.table-wrap.narrow {
+  max-inline-size: 40rem;
+  font-variant-numeric: tabular-nums;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;
@@ -1094,6 +1145,77 @@ th.num {
   }
 }
 
+/* a table whose rows are headed by their first cell (the councils page): on a wide screen it looks like any other */
+.stack-table tbody th {
+  font-weight: 400;
+  border-block-end-color: var(--rule);
+}
+
+/* On a phone each row becomes a block: the council (its row heading) on top, then each other cell as a pair, its
+   column's name (data-label) beside its value, so nothing is squeezed into a narrow column or scrolls sideways. The
+   column headings stay for screen readers, and the roles in the markup keep it a table for them, which some browsers
+   stop announcing once a table's display changes. */
+@media (width < 30rem) {
+  .stack-table thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .stack-table,
+  .stack-table tbody,
+  .stack-table tr {
+    display: block;
+  }
+
+  .stack-table tr {
+    padding-block: var(--space-s);
+    border-block-end: 1px solid var(--rule);
+  }
+
+  .stack-table tbody th,
+  .stack-table td {
+    padding: 0;
+    border: 0;
+    text-align: start;
+  }
+
+  .stack-table tbody th {
+    display: block;
+    margin-block-end: var(--space-xs);
+  }
+
+  .stack-table tbody th a {
+    font-weight: 600;
+  }
+
+  .stack-table td {
+    display: grid;
+    grid-template-columns: minmax(0, 8.5em) 1fr;
+    gap: 0 var(--space-s);
+  }
+
+  .stack-table td + td {
+    margin-block-start: 0.2em;
+  }
+
+  .stack-table td::before {
+    content: attr(data-label);
+    color: var(--ink-soft);
+  }
+
+  .stack-table td > * {
+    grid-column: 2;
+  }
+
+  .stack-table .wide-only {
+    display: none;
+  }
+}
+
 /* members by party: one bar, parties in their colours */
 .seats-bar {
   display: flex;
@@ -1127,7 +1249,8 @@ th.num {
 }
 
 /* dates and what happened, the dates' column as wide as the longest (a mayor's "From 3 May 2018 to 5 May 2022"),
-   lined up from row to row; where subgrid isn't supported, a fixed column */
+   lined up from row to row, but never more than 16rem or 45% of the width, so on a narrow phone a long date range
+   wraps rather than squeezing the names; where subgrid isn't supported, a fixed column */
 .timeline li {
   display: grid;
   grid-template-columns: 9rem 1fr;
@@ -1139,7 +1262,7 @@ th.num {
 @supports (grid-template-columns: subgrid) {
   .timeline {
     display: grid;
-    grid-template-columns: fit-content(16rem) 1fr;
+    grid-template-columns: fit-content(min(16rem, 45%)) 1fr;
   }
 
   .timeline li {
