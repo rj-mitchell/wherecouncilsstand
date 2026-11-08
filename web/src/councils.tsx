@@ -184,7 +184,7 @@ function App() {
                 <td>{r.control?.name || "Not recorded"}</td>
                 <td className="num wide-only">{number(r.meetings)}</td>
                 <td className="num">{number(r.named_votes)}</td>
-                <td className="wide-only">{monthYear(r.from)}</td>
+                <td className="wide-only nowrap">{monthYear(r.from)}</td>
                 <td>
                   <CoverageCell r={r} />
                 </td>

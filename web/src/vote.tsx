@@ -58,10 +58,10 @@ function App() {
           if (!members.length) return null;
           return (
             <section key={side} className="vote-side">
-              <h3>
+              <h2>
                 <Mark side={side} />
                 {sideLabel(side, v.question)} ({members.length}):
-              </h3>
+              </h2>
               <ul>
                 {members.map((m, i) => (
                   <li key={i}>
