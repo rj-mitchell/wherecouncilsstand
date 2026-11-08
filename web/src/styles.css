@@ -143,6 +143,9 @@ button {
   --target: var(--wts-target, 44px);
   --ease-out: var(--wts-ease-out, cubic-bezier(0.23, 1, 0.32, 1));
   --duration: var(--wts-duration, 160ms);
+  /* the footer shelf lines up with the page's column: the same gutter and width as the masthead and main */
+  --wts-gutter: var(--space-m);
+  --wts-shelf-width: calc(var(--wide) - 2 * var(--space-m));
 }
 
 /* ---- page --------------------------------------------------------------------------------------- */
@@ -272,6 +275,7 @@ blockquote {
   color: var(--on-binding);
   font-weight: 600;
   letter-spacing: 0.04em;
+  text-transform: uppercase;  /* ALPHA, as on the sister sites' banners */
   /* invisible, but drawn as a box in forced colours, where the background goes */
   border: 1px solid transparent;
 }
