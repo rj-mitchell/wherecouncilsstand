@@ -34,7 +34,9 @@ Where Councils Stand is a Where They Stand project, and carries the family's bin
 (the charity's family kit, copied into `web/public/family` by its `family/kit/sync.mjs`; README, "In the family"):
 
 - **the endorsement** under the site's name in the masthead: the site's spine in Buckram brown and "A Where They
-  Stand project" in gilt capitals, linking to wheretheystand.uk;
+  Stand project" in gilt capitals, linking to wheretheystand.uk. The masthead reads as on the sister sites: the mark,
+  and beside it the name and under that the endorsement; then the tagline below both, outside the home link
+  (`.masthead-brand` is a grid, the mark spanning the name's and the endorsement's rows);
 - **the family shelf** at the foot of every page: the charity, every project's spine and a link to each sister site;
 - **the favicon and link card**: the site's own town-hall mark, as on the page, with its simplified drawing at 16
   and 32 px (decision 4 of the family plan, amended at the owner's request on 6 November 2026; kit 1.1.0), and the
@@ -90,4 +92,18 @@ clock hands. Today the favicon, the footer shelf and the link card use the famil
   setting.
 - One fluid type scale, logical properties, visible focus rings, hover styles only for a mouse, and animation only
   when reduced motion isn't requested.
-- No horizontal scrolling on phones. Pages are checked at 390 px wide.
+- No horizontal scrolling on phones. Pages are checked at 390 px wide, and at 320 px.
+
+## Tables and citations
+
+- **On a phone (below 30rem) the councils page's tables become blocks**, one per council (`.stack-table`): the
+  council's name and type, its row heading, on top, then each other column as a pair, its name (`data-label`) beside
+  its value. The column headings stay for screen readers, and explicit table roles keep it a table for them once its
+  display changes. Columns marked `wide-only` (meetings, from) are left out there, as before.
+- **A table of a few short figures is kept narrow** (`.table-wrap.narrow`, at most 40rem, figures in tabular
+  numerals), so a council's meetings by year can be read across a row on a wide screen.
+- **Dates in a timeline** take the width of the longest, but never more than 16rem or 45% of the line, so on a narrow
+  phone a long date range wraps rather than squeezing the names.
+- **Citation marks** ("[1]") keep their small size, with an invisible area to tap or click around each: 24 px tall,
+  28 px on a touch screen, reaching a little either side but never into a citation next to it. Each mark is kept on
+  one line.

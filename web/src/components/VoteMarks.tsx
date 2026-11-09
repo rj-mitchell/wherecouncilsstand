@@ -10,7 +10,7 @@ export function Tally({ counts, question }: { counts: VoteSummary["counts"]; que
   return (
     <span className="vote-tally">
       {(["for", "against", "abstain"] as const).map((side) => (
-        <span key={side} style={{ marginInlineEnd: "0.9em" }}>
+        <span key={side}>
           <Mark side={side} />
           {sideLabel(side, question)} {counts[side]}
         </span>

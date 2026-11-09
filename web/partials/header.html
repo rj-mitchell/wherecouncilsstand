@@ -3,14 +3,12 @@
   <p class="phase-banner"><strong class="phase-tag">Alpha</strong> <span>This is a new service, still being built and tested, and it will have mistakes: please <a href="/corrections">tell us about a problem</a>.</span></p>
   <div class="masthead-inner">
     <div class="masthead-brand">
-      <a href="/" class="home-link">
-        <!--#include mark-->
-        <span>
-          <span class="wordmark">Where Councils Stand</span>
-          <span class="tagline">Sourced briefings on the record of councils across the UK</span>
-        </span>
-      </a>
+      <!-- the mark beside the name and the endorsement, as on the sister sites, and the tagline under them. The mark
+           links home like the name, but only the name is announced and takes focus. -->
+      <a href="/" class="home-mark" tabindex="-1" aria-hidden="true"><!--#include mark--></a>
+      <a href="/" class="home-link"><span class="wordmark">Where Councils Stand</span></a>
       <!--#include family/endorsement-->
+      <p class="tagline">Sourced briefings on the record of councils across the UK</p>
     </div>
   </div>
   <nav class="site-nav" aria-label="Site">

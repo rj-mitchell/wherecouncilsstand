@@ -72,7 +72,7 @@ function ByYear({ c, kinds }: { c: CouncilPage; kinds: (keyof CouncilPage["by_ye
   return (
     <>
       <h2 className="minute-heading">Meetings by year</h2>
-      <div className="table-wrap">
+      <div className="table-wrap narrow">
         <table>
           <thead>
             <tr>
