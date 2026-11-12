@@ -1,5 +1,5 @@
-"""The web service: questions answered as streamed briefings, search, council and vote pages, saved briefings and
-problem reports. Serves the built web pages (web/dist) too. Run with ``councils serve``.
+"""The web service: questions answered as streamed briefings, search, council and vote pages, saved briefings, problem
+reports and statements under the right of reply. Serves the built web pages (web/dist) too. Run with ``councils serve``.
 
 Adapted from Where MPs Stand's service, without accounts: the site is public, so new briefings are limited per
 visitor and overall (api/usage.py). Over a limit, the sources are still shown, which costs nothing.
@@ -17,13 +17,14 @@ from datetime import date
 from html import escape
 from pathlib import Path
 from typing import Any, Literal
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from councils.api import plaintext
+from councils.api import plaintext, statements
 from councils.api.data import Data
 from councils.api.state import StateDB
 from councils.api.usage import (
@@ -67,10 +68,25 @@ class AskBody(BaseModel):
 
 
 class ReportBody(BaseModel):
-    kind: Literal["error", "takedown", "other"] = "error"
+    # the policy's routes (impartiality policy 7.1): "error" is "Something is wrong", "unfair" is "You've been
+    # characterised unfairly"; a statement in someone's own words has its own form (StatementBody). "takedown" is a
+    # request about someone who isn't a councillor, dealt with first. Links such as ?kind=takedown rely on these.
+    kind: Literal["error", "unfair", "takedown", "other"] = "error"
     page: str = Field(default="", max_length=500)
     message: str = Field(min_length=5, max_length=5000)
     contact: str = Field(default="", max_length=300)
+
+
+class StatementBody(BaseModel):
+    """A statement under the right of reply (api/statements.py): checked again in the handler, with words for the
+    reader."""
+    page: str = Field(max_length=500)
+    name: str = Field(min_length=2, max_length=200)
+    role: str = Field(min_length=2, max_length=200)
+    text: str = Field(max_length=statements.MAX_CHARS + 100)
+    link: str = Field(default="", max_length=500)
+    email: str = Field(max_length=300)
+    acting: bool = False
 
 
 def sse(events: Iterator[dict[str, Any]], keep_alive: float = KEEP_ALIVE_SECONDS) -> Iterator[bytes]:
@@ -368,6 +384,70 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         rid = state.add_report(body.kind, body.page, body.message, body.contact)
         return {"ok": True, "id": rid}
 
+    # ---- statements under the right of reply (decision 22) -------------------------------------------
+    def site_hosts(request: Request) -> tuple[str, ...]:
+        own = urlsplit(site.get("url") or "").hostname
+        return (*statements.SITE_HOSTS, *([own, f"www.{own}"] if own else []), request.url.hostname or "")
+
+    def item_exists(page: str) -> bool:
+        kind, key = page.split("/")[1:3]
+        if kind == "councils":
+            return data.council(key) is not None
+        if kind == "votes":
+            return data.vote(key) is not None
+        return state.briefing(key) is not None
+
+    def with_about(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Each statement with the name of the item it is about, for a council's page, which gathers them all."""
+        out = []
+        for r in rows:
+            kind, key = r["page"].split("/")[1:3]
+            try:
+                if kind == "votes":
+                    v = data.vote(key)
+                    about = f"{v.get('item') or 'Named vote'}, {plaintext.long_date(v.get('date'))}" if v else None
+                elif kind == "councils":
+                    about = (data.council(key) or {}).get("name")
+                else:
+                    about = f"Briefing: {(state.briefing(key) or {}).get('question', '')}"
+            except Exception:  # noqa: BLE001 - a name is a courtesy; the link still works without it
+                about = None
+            out.append({**r, "about": about or r["page"]})
+        return out
+
+    @app.post("/api/statements")
+    def add_statement(body: StatementBody, request: Request):
+        """A statement as sent: held until the owner has confirmed who sent it, then published or declined."""
+        visitor(request)
+        if not body.acting:
+            raise HTTPException(422, "Please confirm that you are the person or organisation the item is about, or "
+                                     "act for them.")
+        try:
+            page, council = statements.item_address(body.page, site_hosts(request))
+            text = statements.check_text(body.text)
+            link = statements.check_link(body.link)
+            email = statements.check_email(body.email)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from None
+        if not item_exists(page):
+            raise HTTPException(422, "There's no page at that address on this site. Copy the address from the page "
+                                     "the statement is about.")
+        sid = state.add_statement(page, council, body.name.strip(), body.role.strip(), text, link, email)
+        return {"ok": True, "id": sid}
+
+    @app.get("/api/statements")
+    def published_statements(page: str = "", council: str = ""):
+        """The published statements beside one item (``page``, its path) or on one council's page (``council``)."""
+        if not page and not council:
+            raise HTTPException(422, "Give a page or a council.")
+        if page:
+            try:
+                page, _ = statements.item_address(page)
+            except ValueError as exc:
+                raise HTTPException(422, str(exc)) from None
+        rows = state.published_statements(page or None, council.upper() or None)
+        return {"statements": with_about(rows) if council else rows, "note": statements.NOT_ENDORSED}
+
     # ---- pages ---------------------------------------------------------------------------------------
     def page(name: str) -> FileResponse:
         path = dist / f"{name}.html"
@@ -447,8 +527,10 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                         "<h1>Council not found</h1><p>There is no council at this address. See the "
                         '<a href="/councils">list of councils</a>.</p>')
             url = base + plaintext.council_path(c["gss"])
+            # statements are shown after the record, never in its description or structured data (decision 22)
             return (200, f"{c['name']} — Where Councils Stand", plaintext.council_description(c), url,
-                    plaintext.council_data(c, url, base), plaintext.council_text(c))
+                    plaintext.council_data(c, url, base), plaintext.council_text(c) + plaintext.statements_text(
+                        with_about(state.published_statements(council=c["gss"])), here=plaintext.council_path(c["gss"])))
 
         return readable("council", build)
 
@@ -464,8 +546,10 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                         "<h1>Named vote not found</h1><p>There is no named vote at this address. Each council's "
                         'named votes are listed on its page: see the <a href="/councils">list of councils</a>.</p>')
             url = base + plaintext.vote_path(vote_id)
+            mine = state.published_statements(page=statements.item_address(plaintext.vote_path(vote_id))[0])
             return (200, f"{plaintext.vote_title(v)} — Where Councils Stand", plaintext.vote_description(v), url,
-                    plaintext.vote_data(v, url, base), plaintext.vote_text(v))
+                    plaintext.vote_data(v, url, base),
+                    plaintext.vote_text(v) + plaintext.statements_text(mine, here=plaintext.vote_path(vote_id)))
 
         return readable("vote", build)
 

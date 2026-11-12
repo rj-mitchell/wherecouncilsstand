@@ -1,11 +1,12 @@
-"""The site's own small database (SQLite, data/state.db): model spending, the answer cache, saved briefings and
-problem reports. The minutes themselves are in Parquet and the search index; nothing here is needed to rebuild them.
+"""The site's own small database (SQLite, data/state.db): model spending, the answer cache, saved briefings, problem
+reports and statements under the right of reply (api/statements.py). The minutes themselves are in Parquet and the search index; nothing here is needed to rebuild them.
 
 No IP address is stored. A visitor is a salted hash that changes every day (usage.visitor_key).
 """
 
 from __future__ import annotations
 
+import calendar
 import json
 import secrets
 import sqlite3
@@ -31,7 +32,18 @@ CREATE TABLE IF NOT EXISTS briefings (
 CREATE TABLE IF NOT EXISTS reports (
     id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, kind TEXT NOT NULL, page TEXT, message TEXT NOT NULL,
     contact TEXT, closed_at TEXT);
+CREATE TABLE IF NOT EXISTS statements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, page TEXT NOT NULL, council TEXT, name TEXT NOT NULL,
+    role TEXT NOT NULL, text TEXT NOT NULL, link TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'pending', shown_on TEXT, ended_at TEXT, reason TEXT, log TEXT NOT NULL DEFAULT '[]');
+CREATE INDEX IF NOT EXISTS statements_page ON statements (status, page);
 """
+# How long the address used to confirm who wrote a statement is kept after it is withdrawn or declined (the privacy
+# notice, "Statements under the right of reply"; decision 22). While a statement is shown it is kept, so that its
+# author can update or withdraw it.
+STATEMENT_EMAIL_MONTHS = 3
+# what the public sees of a statement: never its author's email address or the owner's notes
+PUBLIC_STATEMENT = ("id", "page", "council", "name", "role", "text", "link", "shown_on")
 
 
 def utcnow() -> str:
@@ -40,6 +52,13 @@ def utcnow() -> str:
 
 def today() -> str:
     return datetime.now(UTC).strftime("%Y-%m-%d")
+
+
+def months_before(when: datetime, months: int) -> datetime:
+    """The same day ``months`` calendar months earlier (the month's last day where that day doesn't exist)."""
+    y, m = divmod(when.month - 1 - months, 12)
+    year, month = when.year + y, m + 1
+    return when.replace(year=year, month=month, day=min(when.day, calendar.monthrange(year, month)[1]))
 
 
 class StateDB:
@@ -132,3 +151,90 @@ class StateDB:
             # the contact address is used only to reply, and deleted when the report is dealt with (privacy notice)
             return bool(con.execute("UPDATE reports SET closed_at = ?, contact = '' WHERE id = ? AND closed_at IS NULL",
                                     (utcnow(), report_id)).rowcount)
+
+    # statements under the right of reply (api/statements.py) ---------------------------------------------
+    def add_statement(self, page: str, council: str | None, name: str, role: str, text: str, link: str,
+                      email: str) -> int:
+        """A statement as sent, waiting for the owner to confirm who sent it and publish or decline it."""
+        self.forget_statement_emails()
+        with self.connect() as con:
+            cur = con.execute("INSERT INTO statements (at, page, council, name, role, text, link, email, log) "
+                              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                              (utcnow(), page, council, name, role, text, link, email,
+                               json.dumps([{"at": utcnow(), "action": "received"}])))
+            return int(cur.lastrowid)
+
+    def statement(self, sid: int) -> dict[str, Any] | None:
+        with self.connect() as con:
+            row = con.execute("SELECT * FROM statements WHERE id = ?", (sid,)).fetchone()
+        return {**dict(row), "log": json.loads(row["log"])} if row else None
+
+    def statements(self, open_only: bool = True) -> list[dict[str, Any]]:
+        """For the owner: waiting and published statements (every one with ``open_only`` off), newest first."""
+        with self.connect() as con:
+            rows = con.execute("SELECT * FROM statements" +
+                               (" WHERE status IN ('pending', 'published')" if open_only else "") +
+                               " ORDER BY id DESC").fetchall()
+        return [{**dict(r), "log": json.loads(r["log"])} for r in rows]
+
+    def published_statements(self, page: str | None = None, council: str | None = None) -> list[dict[str, Any]]:
+        """What the public sees: the published statements beside one item, or all of one council's (on its page),
+        oldest first. Never the author's email address."""
+        where, args = ["status = 'published'"], []
+        if page:
+            where.append("page = ?")
+            args.append(page)
+        if council:
+            where.append("council = ?")
+            args.append(council)
+        with self.connect() as con:
+            rows = con.execute(f"SELECT {', '.join(PUBLIC_STATEMENT)} FROM statements WHERE {' AND '.join(where)} "
+                               "ORDER BY shown_on, id", args).fetchall()
+        return [dict(r) for r in rows]
+
+    def _change_statement(self, sid: int, from_status: tuple[str, ...], action: str, note: str = "",
+                          **fields: Any) -> bool:
+        with self.connect() as con:
+            row = con.execute("SELECT status, log FROM statements WHERE id = ?", (sid,)).fetchone()
+            if not row or row["status"] not in from_status:
+                return False
+            log = json.loads(row["log"]) + [{"at": utcnow(), "action": action, **({"note": note} if note else {})}]
+            fields["log"] = json.dumps(log)
+            con.execute(f"UPDATE statements SET {', '.join(f'{k} = ?' for k in fields)} WHERE id = ?",
+                        (*fields.values(), sid))
+        return True
+
+    def publish_statement(self, sid: int, council: str | None = None) -> bool:
+        """Show a waiting statement, dated today. ``council`` puts it on that council's page too (needed for a
+        statement about a briefing, which belongs to no one council)."""
+        extra = {"council": council} if council else {}
+        return self._change_statement(sid, ("pending",), "published", status="published", shown_on=today(), **extra)
+
+    def decline_statement(self, sid: int, reason: str) -> bool:
+        return self._change_statement(sid, ("pending",), "declined", reason, status="declined", ended_at=utcnow(),
+                                      reason=reason)
+
+    def update_statement(self, sid: int, **changes: str) -> bool:
+        """The author's new wording, name, role or link, as they sent it. A published statement is dated afresh."""
+        changes = {k: v for k, v in changes.items() if k in ("text", "name", "role", "link") and v is not None}
+        if not changes:
+            return False
+        with self.connect() as con:
+            row = con.execute("SELECT status FROM statements WHERE id = ?", (sid,)).fetchone()
+        if row and row["status"] == "published":
+            changes["shown_on"] = today()
+        return self._change_statement(sid, ("pending", "published"), "updated", ", ".join(sorted(changes)), **changes)
+
+    def withdraw_statement(self, sid: int, reason: str) -> bool:
+        """Take a statement down: at its author's request, or because it breaks the rules (policy 7.2)."""
+        return self._change_statement(sid, ("pending", "published"), "withdrawn", reason, status="withdrawn",
+                                      ended_at=utcnow(), reason=reason)
+
+    def forget_statement_emails(self, now: datetime | None = None) -> int:
+        """Delete the confirming address of every statement withdrawn or declined more than three months ago (the
+        privacy notice). Run as each statement arrives, by every owner's command on statements, and nightly by
+        ``councils update``."""
+        cutoff = months_before(now or datetime.now(UTC), STATEMENT_EMAIL_MONTHS).isoformat(timespec="seconds")
+        with self.connect() as con:
+            return con.execute("UPDATE statements SET email = '' WHERE status IN ('withdrawn', 'declined') "
+                               "AND email != '' AND ended_at < ?", (cutoff,)).rowcount

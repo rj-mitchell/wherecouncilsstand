@@ -333,6 +333,25 @@ def vote_data(v: dict[str, Any], url: str, base: str) -> dict[str, Any]:
                        **({"url": v["url"]} if v.get("url") else {})}]}
 
 
+def statements_text(rows: list[dict[str, Any]], here: str) -> str:
+    """Statements under the right of reply (decision 22), after the record: each headed "Statement from [name], [date]"
+    and followed by the words that say it is the author's own, not the site's. On a council's page they are gathered
+    under their own heading, each saying which item it is about when that isn't the page itself."""
+    if not rows:
+        return ""
+    gathered = len({r["page"] for r in rows}) > 1 or rows[0]["page"] != here
+    level = 3 if here.startswith("/councils/") else 2
+    parts = ["<h2>Statements in their own words</h2>"] if level == 3 else []
+    for r in rows:
+        about = "" if r["page"] == here else f"<p>About: {_link(r['page'], r.get('about') or r['page'])}</p>"
+        words = "".join(f"<p>{e(p.strip())}</p>" for p in re.split(r"\n\s*\n", r["text"]) if p.strip())
+        link = f"<p>{_link(r['link'], 'The record they point to')}</p>" if r.get("link") else ""
+        parts.append(f'<article class="statement"><h{level}>Statement from {e(r["name"])}, {e(long_date(r["shown_on"]))}'
+                     f"</h{level}><p>{e(r['role'])}</p>{about if gathered else ''}{words}{link}"
+                     f"<p><em>In their own words. Not checked or endorsed by {SITE}.</em></p></article>")
+    return "".join(parts)
+
+
 def vote_text(v: dict[str, Any]) -> str:
     what = KIND_LABEL.get(v.get("kind", ""), v.get("committee") or "")
     parts = [f'<p class="meta"><a href="/councils">Councils</a> · {_link(council_path(v["gss"]), v["council"])}</p>',
