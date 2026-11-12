@@ -38,7 +38,9 @@ shared server. It is still being built and tested, and says so on every page.
 - **The website** (`web/`, served by `councils serve`): questions answered as streamed, sourced briefings, each saved
   at its own address; a page for every council (the party in control over time, members by party, named votes and
   meetings, and links to Where Landlords Stand); a page for every named vote; pages on how it works, corrections and
-  takedown requests, accessibility, privacy, terms, press and the site's status.
+  takedown requests, "If you're named" (for councillors and councils: the three routes for corrections and the right
+  of reply, decision 22), accessibility, privacy, terms, press and the site's status. Statements in their authors' own
+  words are shown beside votes, briefings and council pages, never given to the AI model.
 - **Next:** a test set of checked votes, before the beta (decision 15).
 
 It was first run on 20 councils chosen by a fixed rule; the pilot's results, and the hand checks of the votes, are in

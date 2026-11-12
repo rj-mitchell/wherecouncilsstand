@@ -206,13 +206,14 @@ It can be stopped and run again: files already compressed are skipped.
 | `councils index` | Rebuild the search index for all councils (keeps vectors of unchanged passages), then delete the superseded files |
 | `councils embed` | Embed passages not yet embedded |
 | `councils list-reports`, `close-report`, `withdraw` | Reports and takedown requests, and withdrawn briefings ("Running the website", below) |
+| `councils list-statements`, `publish-statement`, `decline-statement`, `update-statement`, `withdraw-statement` | Statements under the right of reply (decision 22; "Running the website", below) |
 | `councils optimize` | Compact the search index and delete superseded versions (the update does this itself) |
 
 ## Running the website
 
 The website and its API are one service, `councils serve` (FastAPI, in `src/councils/api/`). It serves the built pages
 from `web/dist`, reads the same data folder as the update, and keeps its own small database in `data/state.db`:
-spending, the answer cache, saved briefings and problem reports.
+spending, the answer cache, saved briefings, problem reports and statements under the right of reply.
 
 ```bash
 cd web && npm ci && npm run build && cd ..          # the pages (Vite, TypeScript, React)
@@ -245,6 +246,32 @@ docker compose run --rm -T app councils withdraw <id> --reason "It named the wro
 
 Closing a report deletes the reporter's email address (privacy notice). Withdrawing a saved briefing (the `<id>` in
 its address, `/b/<id>`) keeps it in the database, but its address then says it has been withdrawn, with the reason.
+
+Reports come in on the policy's routes (decision 22): `error` ("Something is wrong"), `unfair` ("You've been
+characterised unfairly"), `takedown` (someone who isn't a councillor: deal with these first) and `other`. Reply within
+5 working days, and decide within 20 working days; log the decision and its reasons for the trustees.
+
+**Statements under the right of reply** (decision 22; the impartiality policy, section 7.2) arrive as waiting, from
+the form at `/corrections?kind=statement`. Before publishing one, confirm who sent it: write to its address, which
+should be the councillor's or council's own (one the council publishes) or the party group's. Check it against the
+rules on `/named` (150 words, about the item, nothing defamatory, abusive, about a private individual or another
+person's conduct, no appeals for votes, money or support, nothing that campaigns in an election period). Publish it as
+written or decline it with reasons; never edit it, except to take out something the rules don't allow, with the
+author's agreement.
+
+```bash
+docker compose run --rm -T app councils list-statements          # waiting and published, newest first (--all for every one)
+docker compose run --rm -T app councils publish-statement 3      # show it, dated today, beside its item and on its council's page
+docker compose run --rm -T app councils publish-statement 4 --council barnsley   # one about a briefing: on Barnsley's page too
+docker compose run --rm -T app councils decline-statement 5 --reason "It is about another councillor's conduct."
+docker compose run --rm -T app councils update-statement 3 --text "The author's new wording, as sent."   # or --text-file, --name, --role, --link
+docker compose run --rm -T app councils withdraw-statement 3     # at the author's request; --reason "..." if the site removes it
+```
+
+Change or withdraw a statement only on a request confirmed from its author's address. A statement's address is kept
+while it is shown and deleted three months after it is withdrawn or declined (the privacy notice): every statement
+command, each new statement and the nightly update do this. Statements are never given to the AI model or put in the
+search index.
 
 When the update has changed the data, the service notices within a request or two: the councils' directory is rebuilt
 when the stored meetings change. The search index is opened afresh for each search.
