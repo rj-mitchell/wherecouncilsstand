@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { getCouncil, type CouncilPage } from "./api";
 import { SisterLinks } from "./components/Sister";
+import { Statements } from "./components/Statements";
 import { Tally } from "./components/VoteMarks";
 import { KIND_LABEL, longDate, markNav, monthYear, number, partyColour, setTitle, voteOn } from "./format";
 
@@ -198,6 +199,7 @@ function Authority({ c }: { c: CouncilPage }) {
             their minutes are published through a system the site can read and their site can be read.
           </p>
           {mayorSection}
+          <Statements council={c.gss} here={`/councils/${c.gss}`} />
         </>
       ) : (
         <>
@@ -287,6 +289,7 @@ function Authority({ c }: { c: CouncilPage }) {
           )}
 
           <Votes c={c} whose="this authority's minutes" />
+          <Statements council={c.gss} here={`/councils/${c.gss}`} />
           <ByYear c={c} kinds={c.mayor_meetings ? ["board", "scrutiny", "mayor"] : ["board", "scrutiny"]} />
           <Recent c={c} />
         </>
@@ -352,6 +355,7 @@ function App() {
             through a system the site can read (Modern.gov, CMIS or CoINS) and their site can be read.
           </p>
           {landlords}
+          <Statements council={c.gss} here={`/councils/${c.gss}`} />
         </>
       ) : (
         <>
@@ -430,6 +434,7 @@ function App() {
           )}
 
           <Votes c={c} whose="this council's minutes" />
+          <Statements council={c.gss} here={`/councils/${c.gss}`} />
           <ByYear c={c} kinds={c.policy_meetings ? ["council", "cabinet", "policy"] : ["council", "cabinet"]} />
           <Recent c={c} />
         </>

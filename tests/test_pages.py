@@ -4,6 +4,7 @@ readable text for readers without scripts and search engines (api/plaintext.py),
 import json
 import re
 from datetime import date
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
@@ -39,7 +40,7 @@ def site(settings, tmp_path):  # noqa: F811
     for name, title in (("index", "Where Councils Stand"), ("councils", "Councils"), ("council", "Council"),
                         ("vote", "Named vote")):
         (dist / f"{name}.html").write_text(SHELL.format(title=title))
-    for name in ("about", "methodology", "press", "status", "404"):
+    for name in ("about", "methodology", "press", "status", "named", "404"):
         (dist / f"{name}.html").write_text(f"<!doctype html><title>{name}</title>")
     settings.raw.setdefault("paths", {})["web_dist"] = str(dist)
     store.parquet.write(settings.parquet_dir, "votes", BARNSLEY, [
@@ -106,7 +107,8 @@ def test_sitemap_lists_every_council_and_vote(site):
     locs = re.findall(r"<loc>(.*?)</loc>", r.text)
     base = "https://wherecouncilsstand.com"
     assert locs[:2] == [f"{base}/", f"{base}/councils"]
-    assert {f"{base}/about", f"{base}/press", f"{base}/status"} <= set(locs) and f"{base}/404" not in locs
+    assert {f"{base}/about", f"{base}/press", f"{base}/status", f"{base}/named"} <= set(locs)
+    assert f"{base}/404" not in locs
     assert f"{base}/councils/{BARNSLEY}" in locs and len([u for u in locs if "/councils/" in u]) > 300
     assert f"{base}/votes/{VOTE}" in locs
 
@@ -174,3 +176,31 @@ def test_an_authority_page_and_its_councils_pages_link_both_ways(site, settings)
     totals = site.get("/api/status").json()
     assert totals["authorities"] == 20 and totals["authorities_loaded"] == 1
     assert f"/councils/{SOUTH_YORKSHIRE}" in site.get("/sitemap.xml").text
+
+
+WEB = Path(__file__).resolve().parents[1] / "web"
+TIMES = "We reply within 5 working days, and decide within 20 working days."
+
+
+def test_if_youre_named_is_in_every_footer_beside_corrections_and_built():
+    """The page for people named on the site (decision 22), in the family's words (the charity's glossary)."""
+    assert ('<a href="/corrections">Corrections</a>\n      <a href="/named">If you\'re named</a>'
+            in (WEB / "partials" / "footer.html").read_text())
+    assert '"corrections", "named"' in (WEB / "vite.config.ts").read_text()
+
+
+def test_if_youre_named_uses_the_familys_words():
+    page = (WEB / "named.html").read_text()
+    assert "<h1>If you're named</h1>" in page and "<title>If you're named — Where Councils Stand</title>" in page
+    for route in ("Something is wrong", "You've been characterised unfairly", "Add a statement in your own words"):
+        assert f"<h3>{route}</h3>" in page
+    for kind in ("error", "unfair", "statement", "takedown"):
+        assert f"/corrections?kind={kind}" in page
+    assert "Statement from [your name], [date]" in page and TIMES in page
+    assert "In their own words. Not checked or endorsed by Where Councils Stand." in page
+    assert not re.search(r"right to reply|rebuttal", page, re.I)
+
+
+def test_the_corrections_page_gives_the_response_times_and_links_to_if_youre_named():
+    page = (WEB / "corrections.html").read_text()
+    assert TIMES in page and '<a href="/named">If you\'re named on this site</a>' in page

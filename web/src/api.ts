@@ -220,6 +220,39 @@ export async function sendReport(body: { kind: string; page: string; message: st
   }).then((r) => json<{ ok: boolean; id: number }>(r));
 }
 
+/** A statement under the right of reply (decision 22), in its author's own words: never part of the record. */
+export type Statement = {
+  id: number;
+  page: string;
+  council: string | null;
+  name: string;
+  role: string;
+  text: string;
+  link: string;
+  shown_on: string;
+  /** on a council's page: the name of the item it is about */
+  about?: string;
+};
+
+export const getStatements = (q: { page: string } | { council: string }) =>
+  fetch(`/api/statements?${new URLSearchParams(q)}`).then((r) => json<{ statements: Statement[]; note: string }>(r));
+
+export async function sendStatement(body: {
+  page: string;
+  name: string;
+  role: string;
+  text: string;
+  link: string;
+  email: string;
+  acting: boolean;
+}) {
+  return fetch("/api/statements", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  }).then((r) => json<{ ok: boolean; id: number }>(r));
+}
+
 /** Ask a question: the briefing arrives as server-sent events, passed to ``onEvent`` as they come. */
 export async function ask(
   body: { question: string; mode?: string; sources_only?: boolean; plan?: Record<string, unknown> | null },

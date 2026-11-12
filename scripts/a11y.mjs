@@ -13,12 +13,14 @@ const base = process.argv[2] ?? "http://127.0.0.1:8000";
 const VOTE = "/votes/E08000038:1:10:0";
 // E47000002: South Yorkshire's strategic authority; E12000007: the GLA, not covered; E10000011: East Sussex, withheld
 const pages = ["/", "/councils", "/councils/E08000038", "/councils/W06000015", "/councils/E06000001", VOTE, "/about",
-  "/methodology", "/corrections", "/accessibility", "/privacy", "/terms", "/press", "/status", "/no-such-page",
+  "/methodology", "/corrections", "/corrections?kind=statement", "/named", "/accessibility", "/privacy", "/terms",
+  "/press", "/status", "/no-such-page",
   "/councils/E99999999", "/councils/E47000002", "/councils/E12000007", "/councils/E10000011"];
 // what each page must show once its script has drawn it, so a page that never loads isn't passed as accessible
-const ready = { "/councils": "table", "/councils/E08000038": ".cards", "/councils/W06000015": ".cards",
-  "/councils/E47000002": ".cards",
-  [VOTE]: ".vote-sides", "/status": ".status-list" };
+// (the made-up record has a statement beside Barnsley's vote, so the vote's page and Barnsley's wait for it: decision 22)
+const ready = { "/councils": "table", "/councils/E08000038": ".statements", "/councils/W06000015": ".cards",
+  "/councils/E47000002": ".cards", "/corrections?kind=statement": "#st-text",
+  [VOTE]: ".statement", "/status": ".status-list" };
 
 const browser = await chromium.launch();
 let failures = 0;
@@ -53,7 +55,8 @@ for (const scheme of ["light", "dark"]) {
 // Council and vote pages as sent by the server, before (or without) their scripts: the page's own scripts are
 // blocked, so its readable copy is what is checked, both for axe and for its text.
 const plain = [["/", "What has your council decided?"], ["/councils", "Barnsley"],
-  ["/councils/E08000038", "Members by party"], [VOTE, "Against"], ["/councils/E47000002", "Constituent councils"]];
+  ["/councils/E08000038", "Members by party"], [VOTE, "Against"], [VOTE, "Not checked or endorsed by Where Councils Stand"],
+  ["/councils/E47000002", "Constituent councils"]];
 for (const scheme of ["light", "dark"]) {
   for (const width of [1280, 390]) {
     const ctx = await browser.newContext({ viewport: { width, height: 1000 }, colorScheme: scheme, bypassCSP: true });
