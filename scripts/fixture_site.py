@@ -1,7 +1,7 @@
 """A small made-up record for running the site without the real data: three councils' meetings, members and named
-votes, and one strategic authority's board and scrutiny meetings (South Yorkshire, of which Barnsley is a constituent
-council), indexed with the offline test embedder. Used by CI's accessibility check (scripts/a11y.mjs), and handy for
-working on the pages.
+votes, one made-up statement beside a vote, and one strategic authority's board and scrutiny meetings (South
+Yorkshire, of which Barnsley is a constituent council), indexed with the offline test embedder. Used by CI's
+accessibility check (scripts/a11y.mjs), and handy for working on the pages.
 
     uv run python scripts/fixture_site.py /tmp/councils-fixture
     COUNCILS_DATA_DIR=/tmp/councils-fixture uv run councils serve
@@ -162,6 +162,17 @@ def build(folder: Path) -> None:
     idx = Indexer(settings)
     idx.index_all()
     embed_pending(settings, idx.index, idx.state, HashingEmbedder(64))
+    # a statement under the right of reply (decision 22), published beside Barnsley's named vote and so on its page
+    # too: plainly made up, from no real person, so the pages can be checked with one shown
+    from councils.api.state import StateDB
+
+    state = StateDB(settings.data_dir / "state.db")
+    sid = state.add_statement(
+        f"/votes/{BARNSLEY}:1:10:0", BARNSLEY, "An Example Councillor", "A made-up statement, for testing the site",
+        "This is a made-up statement, to show how one is set beside the record. A real one would be up to 150 words, "
+        "in its author's own name, about this vote.\n\nIt would point to the record where it could.",
+        "https://example.org/minutes", "")
+    state.publish_statement(sid)
     (folder / "updates.jsonl").write_text(json.dumps(
         {"finished": "2025-10-16T03:41:00", "minutes": 21.5, "councils": 3, "changed": 1, "new_meetings": 1,
          "failed": [], "needs_attention": False}) + "\n")

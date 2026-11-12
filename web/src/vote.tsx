@@ -3,6 +3,7 @@ import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { getVote, type VotePage } from "./api";
+import { Statements } from "./components/Statements";
 import { Mark, Tally } from "./components/VoteMarks";
 import { KIND_LABEL, longDate, markNav, setTitle, sideLabel, voteOn } from "./format";
 
@@ -83,7 +84,10 @@ function App() {
       <p className="small">
         <a href={v.url}>The item in the council's own minutes</a> · Names are matched to the councillors listed at the meeting.
         The names of people who aren't councillors are removed. <a href={`/corrections?page=${encodeURIComponent(location.href)}`}>Report a problem with this vote</a>
+        {" · "}
+        <a href="/named">If you're named on this site</a>
       </p>
+      <Statements page={`/votes/${id}`} />
     </>
   );
 }

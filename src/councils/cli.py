@@ -12,6 +12,8 @@
     councils list-reports                     # problems and takedown requests sent through the site
     councils close-report 12                  # mark one dealt with (its contact address is deleted)
     councils withdraw <id> --reason "..."     # withdraw a saved briefing (/b/<id>)
+    councils list-statements                  # statements under the right of reply, waiting and published
+    councils publish-statement 3              # show it, once its author is confirmed (decision 22)
     councils search "bin collections" --control NOC
     councils ask "What have Labour-run councils decided about bin collections since 2023?"
 """
@@ -157,6 +159,8 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
                "robots": sorted(ln["gss"] for ln in lines if ln.get("error") == ROBOTS_ERROR), **indexed}
     # needs attention: many councils failing at once means something on our side, not one council's server
     summary["needs_attention"] = not lines or len(summary["failed"]) > max(5, len(lines) // 10)
+    # the site's own retention: confirming addresses of statements that ended three months ago (decision 22)
+    summary["statement_emails_deleted"] = _state().forget_statement_emails()
     with open(s.data_dir / log_file, "a", encoding="utf-8") as fh:
         fh.write(json.dumps(summary) + "\n")
     typer.echo(json.dumps(summary))
@@ -259,6 +263,86 @@ def withdraw(briefing_id: str, reason: str = typer.Option(..., help="shown at it
                                                                    "decision to the wrong council.'")) -> None:
     """Withdraw a saved briefing (/b/<id>): its address then says it has been withdrawn, and why."""
     typer.echo("withdrawn" if _state().withdraw_briefing(briefing_id, reason) else "no briefing with that id")
+
+
+def _statement_lines(st: dict) -> list[str]:
+    from councils.api.statements import word_count
+
+    lines = [f"#{st['id']}  {st['at']}  {st['status']}  {st['page']}"
+             + (f"  (on {st['council']}'s page)" if st["council"] else "  (on no council's page: --council)"),
+             f"    from: {st['name']}, {st['role']}"]
+    if st["email"]:
+        lines.append(f"    confirm with: {st['email']}")
+    if st["link"]:
+        lines.append(f"    record: {st['link']}")
+    lines += [f"    {para}" for para in st["text"].splitlines() if para.strip()]
+    lines.append(f"    ({word_count(st['text'])} words"
+                 + (f"; shown from {st['shown_on']}" if st["status"] == "published" else "")
+                 + (f"; {st['status']}: {st['reason']}" if st["reason"] else "") + ")")
+    return lines
+
+
+def _statements_state():
+    state = _state()
+    state.forget_statement_emails()    # the privacy notice: deleted three months after a statement ends
+    return state
+
+
+@app.command("list-statements")
+def list_statements(all_: bool = typer.Option(False, "--all", help="include declined and withdrawn statements")) -> None:
+    """Statements under the right of reply sent through the site, newest first: those waiting for a decision and
+    those shown. Confirm who sent one (reply to its address, ideally a council address) before publishing it."""
+    for st in _statements_state().statements(open_only=not all_):
+        typer.echo("\n".join(_statement_lines(st)))
+
+
+@app.command("publish-statement")
+def publish_statement(statement_id: int, council: str = typer.Option(
+        None, help="also show it on this council's page (GSS code or name): for a statement about a briefing")) -> None:
+    """Show a waiting statement beside its item and on its council's page, dated today, as written (never edited)."""
+    from councils.registry import get
+
+    gss = get(council).gss if council else None
+    typer.echo("published" if _statements_state().publish_statement(statement_id, gss)
+               else "no waiting statement with that number")
+
+
+@app.command("decline-statement")
+def decline_statement(statement_id: int, reason: str = typer.Option(
+        ..., help="for the author and the log, e.g. 'It is about another councillor's conduct.'")) -> None:
+    """Decline a waiting statement, with the reason (tell its author). Its address is deleted three months later."""
+    typer.echo("declined" if _statements_state().decline_statement(statement_id, reason)
+               else "no waiting statement with that number")
+
+
+@app.command("update-statement")
+def update_statement(statement_id: int, text: str = typer.Option(None, help="the author's new wording, as sent"),
+                     text_file: str = typer.Option(None, help="the new wording, from a file"),
+                     name: str = typer.Option(None), role: str = typer.Option(None),
+                     link: str = typer.Option(None, help="the link to the record ('' for none)")) -> None:
+    """Change a statement at its author's request (confirmed from their address). A published one is dated afresh."""
+    from pathlib import Path
+
+    from councils.api.statements import check_link, check_text
+
+    try:
+        new_text = check_text(Path(text_file).read_text(encoding="utf-8") if text_file else text) \
+            if (text or text_file) else None
+        new_link = check_link(link) if link is not None else None
+    except ValueError as exc:
+        typer.echo(f"error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+    ok = _statements_state().update_statement(statement_id, text=new_text, name=name, role=role, link=new_link)
+    typer.echo("updated" if ok else "nothing changed: no waiting or published statement with that number, or no change")
+
+
+@app.command("withdraw-statement")
+def withdraw_statement(statement_id: int, reason: str = typer.Option(
+        "Withdrawn by its author.", help="if the site removes it, why (policy 7.2: say why)")) -> None:
+    """Take a statement down, at its author's request or because it breaks the rules. Its address is deleted three
+    months later."""
+    typer.echo("withdrawn" if _statements_state().withdraw_statement(statement_id, reason)
+               else "no waiting or published statement with that number")
 
 
 @app.command()

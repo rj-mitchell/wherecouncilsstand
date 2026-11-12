@@ -858,6 +858,88 @@ input[type="checkbox"] {
   background: var(--accent-subtle);
 }
 
+/* a statement under the right of reply (decision 22): its author's words, not the site's, so set apart from the
+   record and the briefing as a letter laid in the minute book would be: a sunk panel with a dashed edge, in the sans
+   face the site keeps for its own controls, never in the book face of the record. Its heading names the author */
+.statement {
+  max-width: var(--measure);
+  margin-block: var(--space-m);
+  padding: var(--space-s) var(--space-m);
+  background: var(--paper-sunk);
+  border: 1px dashed var(--rule-strong);
+  font-family: var(--sans);
+}
+
+.statement .statement-head {
+  font-family: var(--sans);
+  font-size: var(--step-0);
+  font-weight: 650;
+  margin-block: 0;
+}
+
+.statement-role,
+.statement-about,
+.statement-link,
+.statement-note {
+  font-size: var(--step--1);
+  margin-block: var(--space-xs) 0;
+}
+
+.statement-role,
+.statement-note {
+  color: var(--ink-soft);
+}
+
+.statement-text p {
+  margin-block: var(--space-s) 0;
+}
+
+.statement-note {
+  font-style: italic;
+  margin-block-start: var(--space-s);
+  padding-block-start: var(--space-xs);
+  border-block-start: 1px solid var(--rule);
+}
+
+/* "How a statement is shown", on the page for people who are named */
+.statement-example {
+  margin: var(--space-m) 0;
+}
+
+.statement-example figcaption {
+  font-family: var(--sans);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+/* the page for people who are named: its three routes, each with a way to start it */
+.routes {
+  display: grid;
+  gap: var(--space-s);
+  padding: 0;
+  list-style: none;
+  max-width: var(--measure);
+}
+
+.routes > li {
+  border-inline-start: 4px solid var(--accent);
+  padding: var(--space-xs) var(--space-m);
+}
+
+.routes h3 {
+  margin-block: 0 var(--space-xs);
+  font-size: var(--step-1);
+}
+
+.routes p {
+  margin-block: var(--space-xs);
+}
+
+.word-count[data-over] {
+  color: var(--ink);
+  font-weight: 650;
+}
+
 .progress {
   font-family: var(--sans);
   font-size: var(--step--1);
