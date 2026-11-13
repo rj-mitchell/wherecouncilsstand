@@ -72,6 +72,9 @@ def test_a_statement_is_received_as_waiting_and_not_shown(site):
     ({"page": f"/votes/{BARNSLEY}:9:9:9"}, "no page at that address"),
     ({"page": "/b/nosuchbriefing"}, "no page at that address"),
     ({"link": "javascript:alert(1)"}, "web address"),
+    ({"name": "    "}, "Give your name"),
+    ({"name": " \n\tX "}, "Give your name"),
+    ({"role": "\u00a0 \u00a0"}, "Give your role"),
 ])
 def test_a_statement_that_breaks_the_rules_is_refused_with_words_for_the_reader(site, over, says):
     c, _, state, _ = site
@@ -88,6 +91,22 @@ def test_every_required_field_is_required(site, missing):
     assert c.post("/api/statements", json=b).status_code == 422
     assert c.post("/api/statements", json=body(**{missing: " "})).status_code == 422
     assert state.statements(open_only=False) == []
+
+
+def test_a_name_and_role_are_kept_on_one_line(site):
+    """A name or role is never blank or only spaces (as Where Countries Stand); spaces around and within are tidied."""
+    from councils.api.statements import check_line
+
+    assert check_line("  Cllr  Steve\nHoughton ", "a name") == "Cllr Steve Houghton"
+    for bad in ("", " ", "X", "  \t ", None):
+        with pytest.raises(ValueError, match="Give a name"):
+            check_line(bad, "a name")
+    with pytest.raises(ValueError, match="A role can be up to 200 characters"):
+        check_line("x" * 201, "a role")
+    c, _, state, _ = site
+    r = c.post("/api/statements", json=body(name="  Steve   Houghton ", role=" Leader of  the council "))
+    st = state.statement(r.json()["id"])
+    assert (st["name"], st["role"]) == ("Steve Houghton", "Leader of the council")
 
 
 def test_exactly_150_words_and_no_link_are_accepted(site):
@@ -139,6 +158,10 @@ def test_the_owner_lists_publishes_updates_declines_and_withdraws_statements(tmp
         "updated"
     st = state.statement(first)
     assert st["text"] == "New words." and st["role"] == "Leader" and st["status"] == "published"
+    for field in ("--name", "--role"):      # a name or role can't be changed to nothing
+        r = run(cli, ["update-statement", str(first), field, "   "])
+        assert r.exit_code == 1 and f"Give a {field[2:]}" in r.output
+    assert (state.statement(first)["name"], state.statement(first)["role"]) == ("Steve Houghton", "Leader")
     assert [e["action"] for e in st["log"]] == ["received", "published", "updated"]
 
     assert run(cli, ["withdraw-statement", str(first)]).output.strip() == "withdrawn"

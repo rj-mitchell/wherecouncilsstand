@@ -323,16 +323,18 @@ def update_statement(statement_id: int, text: str = typer.Option(None, help="the
     """Change a statement at its author's request (confirmed from their address). A published one is dated afresh."""
     from pathlib import Path
 
-    from councils.api.statements import check_link, check_text
+    from councils.api.statements import check_line, check_link, check_text
 
     try:
         new_text = check_text(Path(text_file).read_text(encoding="utf-8") if text_file else text) \
             if (text or text_file) else None
+        new_name = check_line(name, "a name") if name is not None else None
+        new_role = check_line(role, "a role") if role is not None else None
         new_link = check_link(link) if link is not None else None
     except ValueError as exc:
         typer.echo(f"error: {exc}", err=True)
         raise typer.Exit(1) from exc
-    ok = _statements_state().update_statement(statement_id, text=new_text, name=name, role=role, link=new_link)
+    ok = _statements_state().update_statement(statement_id, text=new_text, name=new_name, role=new_role, link=new_link)
     typer.echo("updated" if ok else "nothing changed: no waiting or published statement with that number, or no change")
 
 

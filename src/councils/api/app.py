@@ -464,6 +464,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                                      "act for them.")
         try:
             page, council = statements.item_address(body.page, site_hosts(request))
+            name = statements.check_line(body.name, "your name, as it should be shown")
+            role = statements.check_line(body.role, "your role, such as Councillor, Barnsley Metropolitan Borough "
+                                                    "Council")
             text = statements.check_text(body.text)
             link = statements.check_link(body.link)
             email = statements.check_email(body.email)
@@ -472,7 +475,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         if not item_exists(page):
             raise HTTPException(422, "There's no page at that address on this site. Copy the address from the page "
                                      "the statement is about.")
-        sid = state.add_statement(page, council, body.name.strip(), body.role.strip(), text, link, email)
+        sid = state.add_statement(page, council, name, role, text, link, email)
         return {"ok": True, "id": sid}
 
     @app.get("/api/statements")

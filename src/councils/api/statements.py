@@ -63,6 +63,16 @@ def check_text(text: str) -> str:
     return t
 
 
+def check_line(value: str, what: str, longest: int = 200) -> str:
+    """A name or role, on one line (as Where Countries Stand): never blank or only spaces."""
+    v = " ".join((value or "").split())
+    if len(v) < 2:
+        raise ValueError(f"Give {what}.")
+    if len(v) > longest:
+        raise ValueError(f"{what[0].upper()}{what[1:]} can be up to {longest} characters.")
+    return v
+
+
 def check_link(link: str) -> str:
     link = (link or "").strip()
     if link and (urlsplit(link).scheme not in ("http", "https") or not urlsplit(link).hostname or " " in link):
