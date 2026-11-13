@@ -60,3 +60,18 @@ def test_saved_briefings_with_a_lead_in_in_pieces_are_cleared():
     out = recheck_flags(answer)
     assert [s["status"] for s in out["segments"]] == ["connective", "connective", "cited"]
     assert out["unsupported_segments"] == 0 and out["grounded_ratio"] == 1.0
+
+
+def test_a_claim_above_a_lead_in_stays_a_point_to_check_when_shown_again():
+    from councils.rag.verify import _classify_uncited, recheck_flags
+
+    for block in ("- Spending on the scheme rose by 40% under the last administration\n- Cllr Jones said ",
+                  "Was the funding cut by 40% in real terms? Cllr Jones said ",
+                  "The scheme was cut by 40% in real terms! Cllr Jones said "):
+        parts = _classify_uncited(block, True)
+        assert [p.status for p in parts] == ["unsupported", "connective"], block
+        answer = {"segments": [*({"text": p.text, "status": p.status} for p in parts),
+                               {"text": "\"it has failed\"", "status": "cited"}],
+                  "unsupported_segments": 1, "grounded_ratio": 0.3}
+        # judged again without the block it was written in, it must not pass for the opening of the quotation
+        assert recheck_flags(answer) is answer, block
