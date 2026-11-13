@@ -162,6 +162,17 @@ def test_pipeline_end_to_end_is_grounded(settings):
     assert all("Bloggs" not in b["text"] for s in sent if s["type"] == "search_result" for b in s["content"])
 
 
+def test_pipeline_returns_no_records_without_calling_the_model(settings):
+    client = FakeClient()
+    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), client=client, today=TODAY)
+    req = AskRequest("anything", plan={"search_text": "bin collections", "filters": {
+        "date_from": "2019-01-01", "date_to": "2019-01-02"}})
+    answer = answer_once(pipe, req)["final"]["answer"]
+    assert answer["no_records"] is True and client.calls == []
+    # the same counts as a written answer carries, so readers of the answer need no special case
+    assert (answer["unsupported_segments"], answer["citations_total"], answer["grounded_ratio"]) == (0, 0, 1.0)
+
+
 def test_pipeline_reports_refusals_instead_of_answering(settings):
     """The model declining to answer is an error for the reader (as Where MPs Stand). Before, its empty answer was
     checked and sent as a briefing with nothing unsupported and a grounded ratio of 1.0."""
