@@ -233,3 +233,38 @@ def test_cost_counts_cache_writes_once_whichever_names_the_usage_uses():
            "cache_read_input_tokens": 5_000}
     assert cost_usd(raw, prices) == expected == 0.0921
     assert cost_usd(usage_dict(sdk), prices) == expected
+
+
+def test_token_counts_are_stored_the_same_whichever_names_the_usage_uses(tmp_path):
+    """What is written to the usage table (as Where MPs Stand's token_counts): the site's own counts are stored as
+    they are, and the SDK's own names are stored the same way, with the cache writes counted into input_tokens.
+    Before, the SDK's names were stored with the cache writes left out of the input."""
+    from councils.api.usage import cost_usd, record_usage, token_counts
+
+    prices = {"price_input_per_mtok": 3.0, "price_output_per_mtok": 15.0, "price_cache_read_per_mtok": 0.3}
+    ours = {"input_tokens": 1500, "output_tokens": 200, "cache_read_tokens": 3000, "cache_write_tokens": 500}
+    raw = {"input_tokens": 1000, "output_tokens": 200, "cache_read_input_tokens": 3000,
+           "cache_creation_input_tokens": 500}
+    assert token_counts(ours) == ours and token_counts(raw) == ours
+    assert token_counts({"input_tokens": 1000, "cache_read_input_tokens": None}) == {
+        "input_tokens": 1000, "output_tokens": 0, "cache_read_tokens": 0, "cache_write_tokens": 0}
+    assert cost_usd({"input_tokens": 1000, "output_tokens": None}, prices) == 0.003   # a missing count is nought
+    state = StateDB(tmp_path / "s.db")
+    cost = record_usage(state, "v1", "answer", "m", ours, prices)
+    assert cost == cost_usd(raw, prices) == record_usage(state, "v1", "answer", "m", raw, prices)
+    with state.connect() as con:
+        rows = [tuple(r) for r in con.execute(
+            "SELECT visitor, kind, model, input_tokens, output_tokens, cache_read_tokens, cache_write_tokens, "
+            "cost_usd FROM usage")]
+    assert rows == [("v1", "answer", "m", 1500, 200, 3000, 500, cost)] * 2
+    assert record_usage(state, "v1", "answer", "m", None, prices) == 0.0   # no usage: nothing is written
+    with state.connect() as con:
+        assert con.execute("SELECT count(*) FROM usage").fetchone()[0] == 2
+
+
+def test_default_prices_are_the_sites_own():
+    """Where a price is missing from the settings, the fallback is this site's own: $2 a million tokens in, $10
+    out (the other sites fall back to $4 and $20)."""
+    from councils.api.usage import cost_usd
+
+    assert cost_usd({"input_tokens": 1_000_000, "output_tokens": 1_000_000}, {}) == 12.0
