@@ -261,12 +261,16 @@ author's agreement.
 
 ```bash
 docker compose run --rm -T app councils list-statements          # waiting and published, newest first (--all for every one)
-docker compose run --rm -T app councils publish-statement 3      # show it, dated today, beside its item and on its council's page
-docker compose run --rm -T app councils publish-statement 4 --council barnsley   # one about a briefing: on Barnsley's page too
+docker compose run --rm -T app councils publish-statement 3 --checked "Reply from the councillor's address on the council's website, 14 November."   # show it, dated today, beside its item and on its council's page
+docker compose run --rm -T app councils publish-statement 4 --checked "..." --council barnsley   # one about a briefing: on Barnsley's page too
 docker compose run --rm -T app councils decline-statement 5 --reason "It is about another councillor's conduct."
 docker compose run --rm -T app councils update-statement 3 --text "The author's new wording, as sent."   # or --text-file, --name, --role, --link
 docker compose run --rm -T app councils withdraw-statement 3     # at the author's request; --reason "..." if the site removes it
 ```
+
+`publish-statement` needs `--checked`: a few words on how the sender was confirmed. It is kept in the statement's
+log, which only the owner can read, and is never shown on the site. Don't put the sender's email address in it: the
+privacy notice promises that address is deleted, and the log is kept.
 
 Change or withdraw a statement only on a request confirmed from its author's address. A statement's address is kept
 while it is shown and deleted three months after it is withdrawn or declined (the privacy notice): every statement

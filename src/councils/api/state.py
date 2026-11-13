@@ -204,11 +204,18 @@ class StateDB:
                         (*fields.values(), sid))
         return True
 
-    def publish_statement(self, sid: int, council: str | None = None) -> bool:
-        """Show a waiting statement, dated today. ``council`` puts it on that council's page too (needed for a
-        statement about a briefing, which belongs to no one council)."""
+    def publish_statement(self, sid: int, council: str | None = None, *, checked: str) -> bool:
+        """Show a waiting statement, dated today, once the owner has confirmed who sent it. ``checked`` says how
+        (policy 7.2; as Where Landlords Stand): it is kept in the log's entry for the publishing, which only the owner
+        sees, and should not hold the sender's email address, which the privacy notice promises to delete.
+        ``council`` puts it on that council's page too (needed for a statement about a briefing, which belongs to no
+        one council)."""
+        checked = " ".join((checked or "").split())
+        if not checked:
+            raise ValueError("Say how you confirmed who sent it (--checked), for the log.")
         extra = {"council": council} if council else {}
-        return self._change_statement(sid, ("pending",), "published", status="published", shown_on=today(), **extra)
+        return self._change_statement(sid, ("pending",), "published", checked, status="published", shown_on=today(),
+                                      **extra)
 
     def decline_statement(self, sid: int, reason: str) -> bool:
         return self._change_statement(sid, ("pending",), "declined", reason, status="declined", ended_at=utcnow(),

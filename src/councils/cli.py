@@ -13,7 +13,7 @@
     councils close-report 12                  # mark one dealt with (its contact address is deleted)
     councils withdraw <id> --reason "..."     # withdraw a saved briefing (/b/<id>)
     councils list-statements                  # statements under the right of reply, waiting and published
-    councils publish-statement 3              # show it, once its author is confirmed (decision 22)
+    councils publish-statement 3 --checked "..."   # show it, once its author is confirmed (decision 22)
     councils search "bin collections" --control NOC
     councils ask "What have Labour-run councils decided about bin collections since 2023?"
 """
@@ -297,14 +297,23 @@ def list_statements(all_: bool = typer.Option(False, "--all", help="include decl
 
 
 @app.command("publish-statement")
-def publish_statement(statement_id: int, council: str = typer.Option(
+def publish_statement(statement_id: int, checked: str = typer.Option(
+        ..., help="how you confirmed who sent it, for the log (never shown on the site), e.g. 'Reply from the "
+                  "councillor's address on the council's website, 14 November.' Do not put the sender's email "
+                  "address in it: the privacy notice promises that address is deleted"),
+        council: str = typer.Option(
         None, help="also show it on this council's page (GSS code or name): for a statement about a briefing")) -> None:
-    """Show a waiting statement beside its item and on its council's page, dated today, as written (never edited)."""
+    """Show a waiting statement beside its item and on its council's page, dated today, as written (never edited),
+    once you have confirmed who sent it: --checked says how."""
     from councils.registry import get
 
     gss = get(council).gss if council else None
-    typer.echo("published" if _statements_state().publish_statement(statement_id, gss)
-               else "no waiting statement with that number")
+    try:
+        ok = _statements_state().publish_statement(statement_id, gss, checked=checked)
+    except ValueError as exc:
+        typer.echo(f"error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+    typer.echo("published" if ok else "no waiting statement with that number")
 
 
 @app.command("decline-statement")
