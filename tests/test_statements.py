@@ -109,6 +109,16 @@ def test_a_name_and_role_are_kept_on_one_line(site):
     assert (st["name"], st["role"]) == ("Steve Houghton", "Leader of the council")
 
 
+def test_a_statement_beside_a_withdrawn_briefing_is_refused(site):
+    c, _, state, _ = site
+    state.save_briefing("abc123", "Bins?", {}, [{"type": "final", "answer": None}])
+    assert c.post("/api/statements", json=body(page="/b/abc123")).status_code == 200
+    assert state.withdraw_briefing("abc123", "It misattributed a decision.")
+    r = c.post("/api/statements", json=body(page="/b/abc123"))
+    assert r.status_code == 422 and "no page at that address" in r.json()["detail"]
+    assert len(state.statements(open_only=False)) == 1
+
+
 def test_exactly_150_words_and_no_link_are_accepted(site):
     c, _, _, _ = site
     r = c.post("/api/statements", json=body(text=" ".join(["word"] * MAX_WORDS), link=""))

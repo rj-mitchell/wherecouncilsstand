@@ -435,7 +435,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             return data.council(key) is not None
         if kind == "votes":
             return data.vote(key) is not None
-        return state.briefing(key) is not None
+        b = state.briefing(key)
+        return b is not None and not b["withdrawn_at"]   # a withdrawn briefing has no page to stand beside
 
     def with_about(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Each statement with the name of the item it is about, for a council's page, which gathers them all."""
