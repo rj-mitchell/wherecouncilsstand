@@ -9,7 +9,7 @@ RUN npm ci --no-audit --no-fund
 COPY web ./
 RUN npm run build
 
-FROM python:3.12.15-slim
+FROM python:3.12.16-slim
 # security fixes published since the base image was built
 RUN apt-get update && apt-get upgrade -y \
  && apt-get install -y --no-install-recommends ca-certificates \
