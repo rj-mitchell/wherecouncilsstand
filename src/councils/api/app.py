@@ -258,7 +258,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         why_not = None if hit is not None or body.sources_only or not p.has_model() else blocked(state, v, usage_cfg)
 
         def sources_only(note: str, free: bool) -> Iterator[dict[str, Any]]:
-            if free:      # over a limit: the question is read by the free rules
+            if free:      # over a limit, or the site's spending cap is reached: the question is read by the free rules
                 plan = offline_plan(body)
             else:         # the model reads the question better, for a fraction of a penny
                 plan, used = p.make_plan(req)
@@ -274,8 +274,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                 yield from rechecked(hit)
                 return
             if body.sources_only:
+                # the model reads the question only while the site's spending caps allow it (as Where MPs Stand)
                 yield from sources_only("Sources only: no briefing was written. Ask again without 'Sources only' "
-                                        "for a written briefing.", free=False)
+                                        "for a written briefing.", free=site_paused(state, usage_cfg) is not None)
                 return
             if why_not:
                 yield from sources_only(f"{why_not} The sources found are shown below.", free=True)

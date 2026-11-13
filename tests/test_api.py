@@ -60,6 +60,44 @@ def test_over_the_daily_cap_the_sources_are_still_shown(client):
     assert evs[-1]["answer"] is None and "limit" in evs[-1]["note"]
 
 
+def test_sources_only_reads_the_question_with_the_model_only_while_the_caps_allow(client):
+    """'Sources only' writes no briefing, but the model reads the question, for a fraction of a penny. Once a
+    spending cap is reached that stops too: the free rules read it (as Where MPs Stand). Before, it carried on."""
+    from types import SimpleNamespace as NS
+
+    from councils.rag.query_parse import ParsedQuery
+
+    c, fake, state, cfg = client
+    read: list[str] = []
+
+    def parse(**kw):
+        read.append(kw["messages"][0]["content"])
+        return NS(stop_reason="end_turn", parsed_output=ParsedQuery(
+            search_text="bin collections", date_from=None, date_to=None, councils=[], control=[], parties=[],
+            nations=[], council_types=[], kinds=[], group_by="control", wants_votes=False,
+            interpretation="Bin collections, in every council."),
+                  usage=NS(input_tokens=1000, output_tokens=100, cache_read_input_tokens=0,
+                           cache_creation_input_tokens=0))
+
+    fake.messages.parse = parse
+    ask = {"question": "What have councils decided about bin collections?", "sources_only": True}
+    evs = events(c.post("/api/ask", json=ask))
+    assert len(read) == 1 and evs[0]["plan"]["parser"] == "model" and evs[1]["sources"]
+    assert evs[-1]["answer"] is None and evs[-1]["note"].startswith("Sources only")
+    with state.connect() as con:
+        assert [r[0] for r in con.execute("SELECT kind FROM usage")] == ["parse"]
+    for cap in ("daily_spend_cap_usd", "monthly_spend_cap_usd"):
+        cfg.raw["usage"].update(daily_spend_cap_usd=3.0, monthly_spend_cap_usd=50.0)
+        cfg.raw["usage"][cap] = 0.0
+        evs = events(c.post("/api/ask", json=ask))
+        assert len(read) == 1, cap                              # no further call to the model
+        assert evs[0]["plan"]["parser"] == "offline" and evs[1]["sources"], cap
+        assert evs[-1]["answer"] is None and evs[-1]["note"].startswith("Sources only"), cap
+    with state.connect() as con:
+        assert con.execute("SELECT count(*) FROM usage").fetchone()[0] == 1
+    assert not fake.calls                                       # and never a briefing
+
+
 def test_search_councils_votes_and_reports(client):
     c, _, state, cfg = client
     r = c.post("/api/search", json={"question": "bin collections in Barnsley"})
