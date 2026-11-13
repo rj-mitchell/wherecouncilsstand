@@ -11,6 +11,7 @@ import hashlib
 import json
 import logging
 import queue
+import sqlite3
 import threading
 from collections.abc import Iterator
 from datetime import date
@@ -39,7 +40,7 @@ from councils.api.usage import (
 from councils.config import Settings, load_settings
 from councils.rag.neutral import still_loaded
 from councils.rag.pipeline import AskRequest, Pipeline
-from councils.rag.query_parse import QueryPlan, parse_offline
+from councils.rag.query_parse import QueryPlan, parse_model, parse_offline
 from councils.rag.verify import recheck_flags
 from councils.registry import REGION_NAMES, TYPE_NAMES
 
@@ -292,7 +293,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                 plan = offline_plan(body)
             else:         # the model reads the question better, for a fraction of a penny
                 plan, used = p.make_plan(req)
-                record_usage(state, v, "parse", settings.answer.get("query_parse_model"), used, usage_cfg)
+                record_usage(state, v, "parse", parse_model(settings), used, usage_cfg)
             result, sources = p.find(plan, req)
             yield {"type": "plan", "plan": plan.to_dict(), "usage": None}
             yield {"type": "sources", "sources": [s.card() for s in sources], "candidates": result.candidates,
@@ -316,7 +317,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             try:
                 for ev in p.run(req):
                     if ev["type"] == "plan":
-                        record_usage(state, v, "parse", settings.answer.get("query_parse_model"), ev.get("usage"),
+                        record_usage(state, v, "parse", parse_model(settings), ev.get("usage"),
                                      usage_cfg)
                         ev = {k: val for k, val in ev.items() if k not in ("usage", "parse_error")}
                     if ev["type"] == "final":
@@ -327,8 +328,16 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                         if ev.get("answer") and not ev["answer"].get("no_records"):
                             replay = [e for e in kept if e["type"] in ("plan", "sources")]
                             replay.append({"type": "text", "text": "".join(text)})
-                            ev["briefing_id"] = state.new_briefing_id()
-                            state.save_briefing(ev["briefing_id"], body.question, options, replay + [ev])
+                            for attempt in range(5):
+                                ev["briefing_id"] = state.new_briefing_id()
+                                try:
+                                    state.save_briefing(ev["briefing_id"], body.question, options, replay + [ev])
+                                    break
+                                except sqlite3.IntegrityError:
+                                    # an id already in use is astronomically unlikely; try another (as Where MPs
+                                    # Stand), rather than lose a briefing that has been paid for
+                                    if attempt == 4:
+                                        raise RuntimeError("could not allocate a briefing id") from None
                     if ev["type"] == "error":
                         # the model declined to answer (rag/pipeline.py): nothing is saved or cached, but the call
                         # was paid for, so it is counted as before

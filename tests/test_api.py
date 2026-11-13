@@ -84,8 +84,8 @@ def test_sources_only_reads_the_question_with_the_model_only_while_the_caps_allo
     evs = events(c.post("/api/ask", json=ask))
     assert len(read) == 1 and evs[0]["plan"]["parser"] == "model" and evs[1]["sources"]
     assert evs[-1]["answer"] is None and evs[-1]["note"].startswith("Sources only")
-    with state.connect() as con:
-        assert [r[0] for r in con.execute("SELECT kind FROM usage")] == ["parse"]
+    with state.connect() as con:   # priced as the model that read it
+        assert [tuple(r) for r in con.execute("SELECT kind, model FROM usage")] == [("parse", "claude-haiku-5-5")]
     for cap in ("daily_spend_cap_usd", "monthly_spend_cap_usd"):
         cfg.raw["usage"].update(daily_spend_cap_usd=3.0, monthly_spend_cap_usd=50.0)
         cfg.raw["usage"][cap] = 0.0
@@ -164,6 +164,56 @@ def test_a_refusal_is_an_error_and_nothing_is_saved_or_cached(client):
     fake.refuse = False
     final = events(c.post("/api/ask", json=ask))[-1]
     assert final["type"] == "final" and final["answer"]["citations_total"] == 1 and final["briefing_id"]
+
+
+def test_reading_a_question_is_priced_as_the_model_that_read_it(client):
+    """With no query_parse_model set, the briefing model reads the question, and its cost is recorded against that
+    model (as Where MPs Stand's parse_model). Before, it was recorded against no model, at the base prices."""
+    from types import SimpleNamespace as NS
+
+    from councils.rag.query_parse import ParsedQuery, parse_model
+
+    c, fake, state, cfg = client
+    assert parse_model(cfg) == "claude-haiku-5-5"
+    del cfg.raw["answer"]["query_parse_model"]
+    assert parse_model(cfg) == "claude-sonnet-5-5"
+    asked: list[str] = []
+
+    def parse(**kw):
+        asked.append(kw["model"])
+        return NS(stop_reason="end_turn", parsed_output=ParsedQuery(
+            search_text="bin collections", date_from=None, date_to=None, councils=[], control=[], parties=[],
+            nations=[], council_types=[], kinds=[], group_by="control", wants_votes=False,
+            interpretation="Bin collections, in every council."),
+            usage=NS(input_tokens=1000, output_tokens=100, cache_read_input_tokens=0,
+                     cache_creation_input_tokens=0))
+
+    fake.messages.parse = parse
+    question = {"question": "What have councils decided about bin collections?"}
+    events(c.post("/api/ask", json={**question, "sources_only": True}))
+    assert events(c.post("/api/ask", json=question))[-1]["answer"]
+    with state.connect() as con:
+        assert [tuple(r) for r in con.execute("SELECT kind, model FROM usage ORDER BY rowid")] == [
+            ("parse", "claude-sonnet-5-5"), ("parse", "claude-sonnet-5-5"), ("answer", "claude-sonnet-5-5")]
+    assert asked == ["claude-sonnet-5-5"] * 2
+
+
+def test_a_briefing_id_already_in_use_is_tried_again(client):
+    """A new briefing's id is 64 random bits, so a clash is astronomically unlikely; if one happens another id is
+    tried (as Where MPs Stand), rather than the reader getting an error after the briefing was paid for."""
+    c, fake, state, _ = client
+    state.save_briefing("taken111", "An earlier question?", {}, [{"type": "final", "answer": None}])
+    ids = iter(["taken111", "taken111", "fresh222"])
+    state.new_briefing_id = lambda: next(ids)
+    final = events(c.post("/api/ask", json={"question": "What have councils decided about bin collections?"}))[-1]
+    assert final["type"] == "final" and final["briefing_id"] == "fresh222"
+    assert state.briefing("taken111")["question"] == "An earlier question?"
+    saved = state.briefing("fresh222")
+    assert saved["question"].startswith("What have councils") and saved["events"][-1]["briefing_id"] == "fresh222"
+    # five clashes in a row: the reader is told the briefing could not be written, as for any other failure
+    state.new_briefing_id = lambda: "taken111"
+    last = events(c.post("/api/ask", json={"question": "What have councils decided about public toilets?"}))[-1]
+    assert last["type"] == "error" and "could not be written" in last["message"]
 
 
 def test_search_councils_votes_and_reports(client):
