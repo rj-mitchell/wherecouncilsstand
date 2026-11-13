@@ -478,5 +478,6 @@ def ask(question: str, comprehensive: bool = False, show_plan: bool = True) -> N
         typer.echo(json.dumps(out["plan"]["plan"], indent=1, default=str))
     for src in out["sources"]["sources"]:
         typer.echo(f"[Source {src['n']}] {src['title']}\n    {src['url']}")
-    final = out["final"]
-    typer.echo("\n" + ((final.get("answer") or {}).get("markdown") or final.get("note") or ""))
+    final = out.get("final") or {}   # no final when the model declined to answer: the error says so
+    typer.echo("\n" + ((final.get("answer") or {}).get("markdown") or final.get("note")
+                       or (out.get("error") or {}).get("message") or ""))

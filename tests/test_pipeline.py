@@ -19,8 +19,8 @@ BARNSLEY, GUILDFORD = "E08000038", "E07000209"
 
 
 class FakeStream:
-    def __init__(self, blocks):
-        self.blocks = blocks
+    def __init__(self, blocks, stop_reason="end_turn"):
+        self.blocks, self.stop_reason = blocks, stop_reason
 
     def __enter__(self):
         return self
@@ -36,7 +36,7 @@ class FakeStream:
         content = [NS(type="text", text=b["text"], citations=[NS(type="search_result_location", **c)
                                                               for c in b.get("citations", [])])
                    for b in self.blocks]
-        return NS(content=content, stop_reason="end_turn", model="claude-sonnet-5-5",
+        return NS(content=content, stop_reason=self.stop_reason, model="claude-sonnet-5-5",
                   usage=NS(input_tokens=1000, output_tokens=200, cache_read_input_tokens=0,
                            cache_creation_input_tokens=0))
 
@@ -44,8 +44,9 @@ class FakeStream:
 class FakeClient:
     """Cites the first block of the first source, then adds a sentence with a loaded word and no citation."""
 
-    def __init__(self):
+    def __init__(self, refuse=False):
         self.calls = []
+        self.refuse = refuse
         self.beta = NS(messages=NS(stream=self._stream))
         self.messages = NS(stream=self._stream, parse=self._parse)
 
@@ -54,6 +55,8 @@ class FakeClient:
 
     def _stream(self, **kw):
         self.calls.append(kw)
+        if self.refuse:
+            return FakeStream([], stop_reason="refusal")
         first = next(b for b in kw["messages"][0]["content"] if b["type"] == "search_result")
         quote = first["content"][0]["text"]
         return FakeStream([
@@ -157,6 +160,17 @@ def test_pipeline_end_to_end_is_grounded(settings):
     assert answer["loaded_words"] == 1                  # "fiasco" in the model's own voice is flagged
     sent = client.calls[0]["messages"][0]["content"]
     assert all("Bloggs" not in b["text"] for s in sent if s["type"] == "search_result" for b in s["content"])
+
+
+def test_pipeline_reports_refusals_instead_of_answering(settings):
+    """The model declining to answer is an error for the reader (as Where MPs Stand). Before, its empty answer was
+    checked and sent as a briefing with nothing unsupported and a grounded ratio of 1.0."""
+    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), client=FakeClient(refuse=True),
+                    today=TODAY)
+    out = answer_once(pipe, AskRequest("What have councils decided about bin collections?"))
+    assert "final" not in out and out["sources"]["sources"]
+    assert out["error"]["message"] == "The model declined to answer this question."
+    assert out["error"]["usage"]["input_tokens"] == 1000      # the call was still paid for
 
 
 def test_reindex_keeps_embeddings_of_unchanged_passages_and_updates_tags(settings):

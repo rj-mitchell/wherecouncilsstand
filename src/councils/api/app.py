@@ -329,6 +329,13 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                             replay.append({"type": "text", "text": "".join(text)})
                             ev["briefing_id"] = state.new_briefing_id()
                             state.save_briefing(ev["briefing_id"], body.question, options, replay + [ev])
+                    if ev["type"] == "error":
+                        # the model declined to answer (rag/pipeline.py): nothing is saved or cached, but the call
+                        # was paid for, so it is counted as before
+                        if ev.get("usage"):
+                            record_usage(state, v, "answer", ev.get("model"), ev["usage"], usage_cfg)
+                            count_question(state, v)
+                        ev = {k: val for k, val in ev.items() if k not in ("usage", "model")}
                     if ev["type"] == "text":
                         text.append(ev["text"])
                     else:

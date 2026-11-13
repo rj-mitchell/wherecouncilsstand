@@ -145,6 +145,27 @@ def test_an_oversized_plan_is_refused(client):
     assert not fake.calls
 
 
+def test_a_refusal_is_an_error_and_nothing_is_saved_or_cached(client):
+    """When the model declines to answer, the reader is told so. No briefing is saved, nothing is cached (the same
+    question is put to the model again), and the call, which was paid for, is still counted."""
+    c, fake, state, _ = client
+    fake.refuse = True
+    ask = {"question": "What have councils decided about bin collections?"}
+    evs = events(c.post("/api/ask", json=ask))
+    assert [e["type"] for e in evs] == ["plan", "sources", "error"]
+    assert evs[-1] == {"type": "error", "message": "The model declined to answer this question."}
+    with state.connect() as con:
+        assert con.execute("SELECT count(*) FROM briefings").fetchone()[0] == 0
+        assert con.execute("SELECT count(*) FROM answer_cache").fetchone()[0] == 0
+        assert [tuple(r) for r in con.execute("SELECT kind, input_tokens, output_tokens FROM usage")] == [
+            ("answer", 1000, 200)]
+        assert con.execute("SELECT n FROM questions").fetchone()[0] == 1
+    assert events(c.post("/api/ask", json=ask))[-1]["type"] == "error" and len(fake.calls) == 2
+    fake.refuse = False
+    final = events(c.post("/api/ask", json=ask))[-1]
+    assert final["type"] == "final" and final["answer"]["citations_total"] == 1 and final["briefing_id"]
+
+
 def test_search_councils_votes_and_reports(client):
     c, _, state, cfg = client
     r = c.post("/api/search", json={"question": "bin collections in Barnsley"})
