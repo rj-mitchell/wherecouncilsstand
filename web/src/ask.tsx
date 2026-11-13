@@ -8,6 +8,7 @@ import { Statements } from "./components/Statements";
 import { AskSister } from "./components/Sister";
 import { PlanChips } from "./components/PlanChips";
 import { Sources } from "./components/Sources";
+import { Why } from "./components/Why";
 import { longDate, markNav, monthYear, number, setTitle } from "./format";
 
 type State = {
@@ -109,7 +110,6 @@ function App() {
       <p className="lede">
         Ask about anything councils across the UK have discussed, decided or voted on at full council and cabinet, and
         England's strategic authorities at their boards and scrutiny committees.
-        Every point in the briefing cites the council's own minutes.
       </p>
       <form className="ask-form" onSubmit={submit}>
         <label htmlFor="question" className="visually-hidden">
@@ -135,6 +135,7 @@ function App() {
           </label>
         </div>
       </form>
+      <Why />
       {t && (
         <p className="coverage">
           {number(t.loaded)} councils · {number(t.meetings)} meetings · {number(t.named_votes)} named votes · since{" "}

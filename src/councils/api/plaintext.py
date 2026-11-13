@@ -433,7 +433,8 @@ def councils_text(directory: dict[str, Any]) -> str:
 def home_text(totals: dict[str, Any], examples: list[str]) -> str:
     return ("<h1>What has your council decided?</h1>"
             "<p>Ask about anything councils across the UK have discussed, decided or voted on at full council and "
-            "cabinet. Every point in the briefing cites the council's own minutes.</p>"
+            "cabinet. Answers only from the official record, every point linked and checked. "
+            '<a href="/methodology#why">Why use this rather than a chatbot?</a></p>'
             f"<p>The record holds {totals.get('meetings', 0):,} meetings and {totals.get('named_votes', 0):,} named "
             f"votes from {totals.get('loaded', 0):,} of the {totals.get('councils', 0):,} councils in the UK"
             + (f" and {totals['authorities_loaded']:,} of England's {totals['authorities']:,} strategic authorities"
