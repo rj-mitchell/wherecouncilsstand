@@ -98,6 +98,40 @@ def test_sources_only_reads_the_question_with_the_model_only_while_the_caps_allo
     assert not fake.calls                                       # and never a briefing
 
 
+def test_follow_up_history_is_bounded_and_not_kept_with_the_saved_briefing(client):
+    """The earlier questions a follow-up carries go to the model, cut to a fixed length, and into the cache key (the
+    answer depends on them). They are not saved with the briefing, nor served with it (as Where MPs Stand and Where
+    Countries Stand): a shared page should not carry an earlier conversation."""
+    from councils.api.app import AskBody
+
+    body = AskBody.model_validate({"question": "And libraries?", "history": [
+        {"question": "x" * 600_000, "answer": "y" * 600_000, "anything": "z" * 9_000}, {"answer": None}]})
+    assert [(len(h["question"]), len(h["answer"]), sorted(h)) for h in body.history_dicts()] == [
+        (500, 1000, ["answer", "question"]), (0, 0, ["answer", "question"])]
+    c, fake, state, _ = client
+    assert c.post("/api/ask", json={"question": "And libraries?", "history": [{}] * 7}).status_code == 422
+    earlier = [{"question": "What have councils decided about bin collections?", "answer": "A" * 5000}]
+    ask = {"question": "And what about Barnsley's bin collections?", "history": earlier}
+    final = events(c.post("/api/ask", json=ask))[-1]
+    assert final["type"] == "final" and final["answer"] and len(fake.calls) == 1
+    prompt = fake.calls[0]["messages"][0]["content"][-1]["text"]
+    assert "Q: What have councils decided about bin collections?" in prompt and "A" * 600 in prompt
+    saved = state.briefing(final["briefing_id"])
+    assert saved["options"] == {"mode": "summary", "plan": None, "sources_only": False}
+    assert "A" * 50 not in json.dumps(saved)
+    assert c.get(f"/api/briefings/{final['briefing_id']}").json()["options"] == saved["options"]
+    # the same follow-up again is answered from the cache; the same question after a different one is not
+    assert events(c.post("/api/ask", json=ask))[-1]["cached"] is True and len(fake.calls) == 1
+    other = [{"question": "What have councils decided about libraries?", "answer": "B"}]
+    assert "cached" not in events(c.post("/api/ask", json={**ask, "history": other}))[-1] and len(fake.calls) == 2
+    assert "cached" not in events(c.post("/api/ask", json={"question": ask["question"]}))[-1] and len(fake.calls) == 3
+    # a briefing saved before this keeps its row as it is, and is served without the earlier questions
+    state.save_briefing("old123", "Bins?", {"mode": "summary", "plan": None, "history": earlier,
+                                            "sources_only": False}, [{"type": "final", "answer": None}])
+    assert c.get("/api/briefings/old123").json()["options"] == {"mode": "summary", "plan": None, "sources_only": False}
+    assert state.briefing("old123")["options"]["history"] == earlier
+
+
 def test_search_councils_votes_and_reports(client):
     c, _, state, cfg = client
     r = c.post("/api/search", json={"question": "bin collections in Barnsley"})

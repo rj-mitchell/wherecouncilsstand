@@ -22,7 +22,7 @@ from urllib.parse import urlsplit
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
 from councils.api import plaintext, statements
 from councils.api.data import Data
@@ -59,12 +59,32 @@ EXAMPLES = [
 ]
 
 
+class HistoryItem(BaseModel):
+    """An earlier question in the conversation, as a follow-up sends it back (as Where MPs Stand). Each part is cut
+    to a fixed length, so a request cannot inflate the prompt: the question to the longest a question may be, the
+    answer to more than the briefing instructions use of it (rag/answer.py)."""
+
+    question: str = ""
+    answer: str = ""
+
+    @field_validator("question", "answer", mode="before")
+    @classmethod
+    def _trimmed(cls, v: Any, info: ValidationInfo) -> str:
+        return str(v or "")[:HISTORY_LIMITS[info.field_name]]
+
+
+HISTORY_LIMITS = {"question": 500, "answer": 1000}
+
+
 class AskBody(BaseModel):
     question: str = Field(min_length=3, max_length=500)
     mode: Literal["summary", "comprehensive"] = "summary"
     plan: dict[str, Any] | None = None
-    history: list[dict[str, str]] = Field(default_factory=list, max_length=6)
+    history: list[HistoryItem] = Field(default_factory=list, max_length=6)
     sources_only: bool = False
+
+    def history_dicts(self) -> list[dict[str, str]]:
+        return [h.model_dump() for h in self.history]
 
 
 class ReportBody(BaseModel):
@@ -250,10 +270,12 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     def ask(body: AskBody, request: Request):
         v = visitor(request)
         p = get_pipeline()
-        req = AskRequest(question=body.question, mode=body.mode, plan=body.plan, history=body.history)
-        options = body.model_dump(exclude={"question"})
-        key = cache_key({"q": " ".join(body.question.lower().split()), **options, "data": data.stamp(),
-                         "model": settings.answer.get("model"), "v": INSTRUCTIONS_VERSION})
+        req = AskRequest(question=body.question, mode=body.mode, plan=body.plan, history=body.history_dicts())
+        # A follow-up's answer depends on the earlier questions it was given, so they are part of the cache key. They
+        # are not kept with the saved briefing: a shared page should not carry an earlier conversation.
+        key = cache_key({"q": " ".join(body.question.lower().split()), **body.model_dump(exclude={"question"}),
+                         "data": data.stamp(), "model": settings.answer.get("model"), "v": INSTRUCTIONS_VERSION})
+        options = body.model_dump(exclude={"question", "history"})
         hit = state.cached(key, cache_hours) if p.has_model() and not body.sources_only else None
         why_not = None if hit is not None or body.sources_only or not p.has_model() else blocked(state, v, usage_cfg)
 
@@ -356,7 +378,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         if b["withdrawn_at"]:
             why = (b["withdrawn_reason"] or "").strip()
             raise HTTPException(410, "This briefing has been withdrawn" + (f": {why}" if why else "."))
-        return {"id": b["id"], "at": b["at"], "question": b["question"], "options": b["options"],
+        # a briefing saved before follow-up questions were left out of its options is served without them
+        return {"id": b["id"], "at": b["at"], "question": b["question"],
+                "options": {k: val for k, val in b["options"].items() if k != "history"},
                 "events": rechecked(b["events"])}
 
     # ---- councils and votes --------------------------------------------------------------------------
