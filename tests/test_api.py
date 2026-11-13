@@ -130,7 +130,9 @@ def test_in_flight_reservations():
     assert f.pending_usd(besides=1) == 0.1
     f.finish("a")
     f.finish("b")
-    assert f.pending_usd() == 0 and f.start("c") is None
+    # a visitor who was refused ("c", and "a" the second time) leaves nothing behind
+    assert f.running == {} and f.pending_usd() == 0
+    assert f.start("c") is None
 
 
 def test_a_saved_briefing_is_checked_again_when_shown(client):
