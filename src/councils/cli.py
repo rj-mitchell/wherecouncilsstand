@@ -242,6 +242,14 @@ def _state():
     return StateDB(load_settings().data_dir / "state.db")
 
 
+def _done(ok: bool, done: str, failed: str) -> None:
+    """Say what a reports or statements command did. One that changed nothing exits 1 (as the sister sites), so the
+    owner, or a script, can tell it from one that worked."""
+    typer.echo(done if ok else failed)
+    if not ok:
+        raise typer.Exit(1)
+
+
 @app.command("list-reports")
 def list_reports(all_: bool = typer.Option(False, "--all", help="include reports already dealt with")) -> None:
     """Problems and takedown requests sent through the site's form, newest first."""
@@ -255,14 +263,14 @@ def list_reports(all_: bool = typer.Option(False, "--all", help="include reports
 @app.command("close-report")
 def close_report(report_id: int) -> None:
     """Mark a report dealt with. Its contact address is deleted, as the privacy notice says."""
-    typer.echo("closed" if _state().close_report(report_id) else "no open report with that number")
+    _done(_state().close_report(report_id), "closed", "no open report with that number")
 
 
 @app.command()
 def withdraw(briefing_id: str, reason: str = typer.Option(..., help="shown at its address, e.g. 'It misattributed a "
                                                                    "decision to the wrong council.'")) -> None:
     """Withdraw a saved briefing (/b/<id>): its address then says it has been withdrawn, and why."""
-    typer.echo("withdrawn" if _state().withdraw_briefing(briefing_id, reason) else "no briefing with that id")
+    _done(_state().withdraw_briefing(briefing_id, reason), "withdrawn", "no briefing with that id")
 
 
 def _statement_lines(st: dict) -> list[str]:
@@ -313,15 +321,15 @@ def publish_statement(statement_id: int, checked: str = typer.Option(
     except ValueError as exc:
         typer.echo(f"error: {exc}", err=True)
         raise typer.Exit(1) from exc
-    typer.echo("published" if ok else "no waiting statement with that number")
+    _done(ok, "published", "no waiting statement with that number")
 
 
 @app.command("decline-statement")
 def decline_statement(statement_id: int, reason: str = typer.Option(
         ..., help="for the author and the log, e.g. 'It is about another councillor's conduct.'")) -> None:
     """Decline a waiting statement, with the reason (tell its author). Its address is deleted three months later."""
-    typer.echo("declined" if _statements_state().decline_statement(statement_id, reason)
-               else "no waiting statement with that number")
+    _done(_statements_state().decline_statement(statement_id, reason), "declined",
+          "no waiting statement with that number")
 
 
 @app.command("update-statement")
@@ -344,7 +352,7 @@ def update_statement(statement_id: int, text: str = typer.Option(None, help="the
         typer.echo(f"error: {exc}", err=True)
         raise typer.Exit(1) from exc
     ok = _statements_state().update_statement(statement_id, text=new_text, name=new_name, role=new_role, link=new_link)
-    typer.echo("updated" if ok else "nothing changed: no waiting or published statement with that number, or no change")
+    _done(ok, "updated", "nothing changed: no waiting or published statement with that number, or no change")
 
 
 @app.command("withdraw-statement")
@@ -352,8 +360,8 @@ def withdraw_statement(statement_id: int, reason: str = typer.Option(
         "Withdrawn by its author.", help="if the site removes it, why (policy 7.2: say why)")) -> None:
     """Take a statement down, at its author's request or because it breaks the rules. Its address is deleted three
     months later."""
-    typer.echo("withdrawn" if _statements_state().withdraw_statement(statement_id, reason)
-               else "no waiting or published statement with that number")
+    _done(_statements_state().withdraw_statement(statement_id, reason), "withdrawn",
+          "no waiting or published statement with that number")
 
 
 @app.command()

@@ -219,6 +219,20 @@ def test_the_owner_lists_publishes_updates_declines_and_withdraws_statements(tmp
         "declined"
     assert run(cli, ["decline-statement", str(third), "--reason", "again"]).output.strip() == \
         "no waiting statement with that number"
+    # a command that changed nothing exits 1; one that worked exits 0
+    for failed in (["publish-statement", str(first), "--checked", CHECKED], ["withdraw-statement", str(first)],
+                   ["decline-statement", str(third), "--reason", "again"], ["decline-statement", "999", "--reason", "x"],
+                   ["update-statement", str(first), "--role", "Mayor"], ["update-statement", str(second)],
+                   ["close-report", "999"], ["withdraw", "nosuchid", "--reason", "x"]):
+        assert run(cli, failed).exit_code == 1, failed
+    rid = state.add_report("error", "/votes/x", "Something is wrong here.", "me@example.org")
+    state.save_briefing("abc123", "Bins?", {}, [{"type": "final", "answer": None}])
+    for worked, says in ((["close-report", str(rid)], "closed"), (["withdraw", "abc123", "--reason", "Wrong."],
+                         "withdrawn"), (["update-statement", str(second), "--role", "Clerk"], "updated"),
+                         (["list-statements"], f"#{second}"), (["list-reports", "--all"], f"#{rid}")):
+        r = run(cli, worked)
+        assert r.exit_code == 0 and says in r.output, worked
+    assert run(cli, ["close-report", str(rid)]).exit_code == 1      # already closed
     out = run(cli, ["list-statements"]).output
     assert f"#{third}" not in out and f"#{first}" not in out and f"#{second}" in out
     out = run(cli, ["list-statements", "--all"]).output

@@ -268,6 +268,9 @@ docker compose run --rm -T app councils update-statement 3 --text "The author's 
 docker compose run --rm -T app councils withdraw-statement 3     # at the author's request; --reason "..." if the site removes it
 ```
 
+A reports or statements command that changes nothing (no report, briefing or statement with that number, or one
+already dealt with) says so and exits 1.
+
 `publish-statement` needs `--checked`: a few words on how the sender was confirmed. It is kept in the statement's
 log, which only the owner can read, and is never shown on the site. Don't put the sender's email address in it: the
 privacy notice promises that address is deleted, and the log is kept.
