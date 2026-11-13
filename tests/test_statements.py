@@ -21,6 +21,7 @@ from councils.api.statements import MAX_WORDS, NOT_ENDORSED, item_address
 from councils.cli import app as cli
 
 VOTE = f"{BARNSLEY}:1:10:0"
+CHECKED = "Reply from the address on the council's website, 12 November."   # how the sender was confirmed
 MARKER = "Zanzibarquokka"   # a word found nowhere in the record, to follow a statement's text
 WORDS = ("I voted against this motion because the council had already agreed a review of collections, and the "
          f"minutes of that meeting set it out. {MARKER}.")
@@ -72,6 +73,12 @@ def test_a_statement_is_received_as_waiting_and_not_shown(site):
     ({"page": f"/votes/{BARNSLEY}:9:9:9"}, "no page at that address"),
     ({"page": "/b/nosuchbriefing"}, "no page at that address"),
     ({"link": "javascript:alert(1)"}, "web address"),
+    ({"link": "https://example.org/a\"onmouseover=\"alert(1)"}, "web address"),
+    ({"link": "https://example.org/<script>"}, "web address"),
+    ({"link": "https://example.org/it's"}, "web address"),
+    ({"name": "    "}, "Give your name"),
+    ({"name": " \n\tX "}, "Give your name"),
+    ({"role": "\u00a0 \u00a0"}, "Give your role"),
 ])
 def test_a_statement_that_breaks_the_rules_is_refused_with_words_for_the_reader(site, over, says):
     c, _, state, _ = site
@@ -88,6 +95,50 @@ def test_every_required_field_is_required(site, missing):
     assert c.post("/api/statements", json=b).status_code == 422
     assert c.post("/api/statements", json=body(**{missing: " "})).status_code == 422
     assert state.statements(open_only=False) == []
+
+
+def test_a_name_and_role_are_kept_on_one_line(site):
+    """A name or role is never blank or only spaces (as Where Countries Stand); spaces around and within are tidied."""
+    from councils.api.statements import check_line
+
+    assert check_line("  Cllr  Steve\nHoughton ", "a name") == "Cllr Steve Houghton"
+    for bad in ("", " ", "X", "  \t ", None):
+        with pytest.raises(ValueError, match="Give a name"):
+            check_line(bad, "a name")
+    with pytest.raises(ValueError, match="A role can be up to 200 characters"):
+        check_line("x" * 201, "a role")
+    c, _, state, _ = site
+    r = c.post("/api/statements", json=body(name="  Steve   Houghton ", role=" Leader of  the council "))
+    st = state.statement(r.json()["id"])
+    assert (st["name"], st["role"]) == ("Steve Houghton", "Leader of the council")
+
+
+def test_a_statement_beside_a_withdrawn_briefing_is_refused(site):
+    c, _, state, _ = site
+    state.save_briefing("abc123", "Bins?", {}, [{"type": "final", "answer": None}])
+    assert c.post("/api/statements", json=body(page="/b/abc123")).status_code == 200
+    assert state.withdraw_briefing("abc123", "It misattributed a decision.")
+    r = c.post("/api/statements", json=body(page="/b/abc123"))
+    assert r.status_code == 422 and "no page at that address" in r.json()["detail"]
+    assert len(state.statements(open_only=False)) == 1
+
+
+def test_a_stored_link_is_checked_again_where_it_is_shown():
+    """The form checks a link (as Where MPs Stand's does: no quotes, angle brackets or spaces). The pages check it
+    again, so a row that reached the database another way can never be shown as a link that runs a script."""
+    from councils.api.plaintext import statements_text
+    from councils.api.statements import check_link, safe_link
+
+    good = "https://barnsley.moderngov.co.uk/ieListDocuments.aspx?CId=137&MId=1"
+    assert check_link(f"  {good} ") == good and check_link("") == "" and safe_link(good) == good
+    for bad in ("javascript:alert(1)", "data:text/html,x", "https://example.org/a b", "//example.org", "", None,
+                "https://example.org/\"x", "ftp://example.org/minutes"):
+        assert safe_link(bad) is None, bad
+    row = {"id": 1, "page": "/votes/x", "council": BARNSLEY, "name": "N", "role": "R", "text": "Words.",
+           "shown_on": "2026-11-12", "link": good}
+    assert "The record they point to" in statements_text([row], "/votes/x")
+    shown = statements_text([{**row, "link": "javascript:alert(1)"}], "/votes/x")
+    assert "javascript" not in shown and "The record they point to" not in shown and "Words." in shown
 
 
 def test_exactly_150_words_and_no_link_are_accepted(site):
@@ -126,11 +177,29 @@ def test_the_owner_lists_publishes_updates_declines_and_withdraws_statements(tmp
     assert f"#{first}" in out and f"#{second}" in out and "pending" in out and "confirm with: a@b.gov.uk" in out
     assert "(on no council's page: --council)" in out and f"(on {BARNSLEY}'s page)" in out and "(25 words)" in out
 
-    assert run(cli, ["publish-statement", str(first)]).output.strip() == "published"
-    assert run(cli, ["publish-statement", str(first)]).output.strip() == "no waiting statement with that number"
-    assert run(cli, ["publish-statement", str(second), "--council", "barnsley"]).output.strip() == "published"
+    # publishing needs a note of how the sender was confirmed: kept in the log, never shown
+    r = run(cli, ["publish-statement", str(first)])
+    assert r.exit_code == 2 and "checked" in r.output and state.statement(first)["status"] == "pending"
+    r = run(cli, ["publish-statement", str(first), "--checked", "   "])
+    assert r.exit_code == 1 and "Say how you confirmed who sent it" in r.output
+    assert state.statement(first)["status"] == "pending"
+    assert run(cli, ["publish-statement", str(first), "--checked", CHECKED]).output.strip() == "published"
+    assert state.statement(first)["log"][-1] == {
+        "at": state.statement(first)["log"][-1]["at"], "action": "published", "note": CHECKED}
+    assert run(cli, ["publish-statement", str(first), "--checked", CHECKED]).output.strip() == \
+        "no waiting statement with that number"
+    assert run(cli, ["publish-statement", str(second), "--council", "barnsley", "--checked", CHECKED]) \
+        .output.strip() == "published"
     shown = state.published_statements(council=BARNSLEY)
     assert [s["id"] for s in shown] == [first, second] and "email" not in shown[0]
+    assert all("log" not in s and CHECKED not in json.dumps(s) for s in shown)
+    assert CHECKED not in run(cli, ["list-statements", "--all"]).output
+    import inspect
+
+    from councils.cli import publish_statement
+
+    said = inspect.signature(publish_statement).parameters["checked"].default.help   # as --help prints it
+    assert "never shown on the site" in said and "Do not put the sender's email address in it" in said
 
     long = " ".join(["word"] * (MAX_WORDS + 1))
     r = run(cli, ["update-statement", str(first), "--text", long])
@@ -139,6 +208,10 @@ def test_the_owner_lists_publishes_updates_declines_and_withdraws_statements(tmp
         "updated"
     st = state.statement(first)
     assert st["text"] == "New words." and st["role"] == "Leader" and st["status"] == "published"
+    for field in ("--name", "--role"):      # a name or role can't be changed to nothing
+        r = run(cli, ["update-statement", str(first), field, "   "])
+        assert r.exit_code == 1 and f"Give a {field[2:]}" in r.output
+    assert (state.statement(first)["name"], state.statement(first)["role"]) == ("Steve Houghton", "Leader")
     assert [e["action"] for e in st["log"]] == ["received", "published", "updated"]
 
     assert run(cli, ["withdraw-statement", str(first)]).output.strip() == "withdrawn"
@@ -151,6 +224,20 @@ def test_the_owner_lists_publishes_updates_declines_and_withdraws_statements(tmp
         "declined"
     assert run(cli, ["decline-statement", str(third), "--reason", "again"]).output.strip() == \
         "no waiting statement with that number"
+    # a command that changed nothing exits 1; one that worked exits 0
+    for failed in (["publish-statement", str(first), "--checked", CHECKED], ["withdraw-statement", str(first)],
+                   ["decline-statement", str(third), "--reason", "again"], ["decline-statement", "999", "--reason", "x"],
+                   ["update-statement", str(first), "--role", "Mayor"], ["update-statement", str(second)],
+                   ["close-report", "999"], ["withdraw", "nosuchid", "--reason", "x"]):
+        assert run(cli, failed).exit_code == 1, failed
+    rid = state.add_report("error", "/votes/x", "Something is wrong here.", "me@example.org")
+    state.save_briefing("abc123", "Bins?", {}, [{"type": "final", "answer": None}])
+    for worked, says in ((["close-report", str(rid)], "closed"), (["withdraw", "abc123", "--reason", "Wrong."],
+                         "withdrawn"), (["update-statement", str(second), "--role", "Clerk"], "updated"),
+                         (["list-statements"], f"#{second}"), (["list-reports", "--all"], f"#{rid}")):
+        r = run(cli, worked)
+        assert r.exit_code == 0 and says in r.output, worked
+    assert run(cli, ["close-report", str(rid)]).exit_code == 1      # already closed
     out = run(cli, ["list-statements"]).output
     assert f"#{third}" not in out and f"#{first}" not in out and f"#{second}" in out
     out = run(cli, ["list-statements", "--all"]).output
@@ -163,8 +250,8 @@ def test_the_confirming_address_is_deleted_three_months_after_a_statement_ends(t
     shown = state.add_statement(f"/councils/{BARNSLEY}", BARNSLEY, "A", "B", "Words.", "", "shown@x.gov.uk")
     gone = state.add_statement(f"/councils/{BARNSLEY}", BARNSLEY, "A", "B", "Words.", "", "gone@x.gov.uk")
     no = state.add_statement(f"/councils/{BARNSLEY}", BARNSLEY, "A", "B", "Words.", "", "no@x.gov.uk")
-    state.publish_statement(shown)
-    state.publish_statement(gone)
+    state.publish_statement(shown, checked=CHECKED)
+    state.publish_statement(gone, checked=CHECKED)
     state.withdraw_statement(gone, "Withdrawn by its author.")
     state.decline_statement(no, "It names a member of the public.")
     assert state.forget_statement_emails() == 0                          # not yet
@@ -192,7 +279,7 @@ def test_the_address_is_kept_for_just_under_three_months(tmp_path):
 def test_a_published_statement_is_shown_beside_its_item_and_on_its_councils_page(site):
     c, _, state, _ = site
     sid = c.post("/api/statements", json=body()).json()["id"]
-    state.publish_statement(sid)
+    state.publish_statement(sid, checked=CHECKED)
     beside = c.get("/api/statements", params={"page": f"https://wherecouncilsstand.com/votes/{VOTE}"}).json()
     assert beside["note"] == NOT_ENDORSED == "In their own words. Not checked or endorsed by Where Councils Stand."
     [st] = beside["statements"]
@@ -216,7 +303,7 @@ def test_the_pages_sent_to_readers_without_scripts_carry_the_statement_after_the
     t = TestClient(create_app(cfg, state=state))
     sid = state.add_statement(f"/votes/{VOTE}", BARNSLEY, "Steve <Houghton>", "Councillor", "First para.\n\nSecond.",
                               "https://example.org/r", "a@b.gov.uk")
-    state.publish_statement(sid)
+    state.publish_statement(sid, checked=CHECKED)
     vote = t.get(f"/votes/{VOTE}").text
     today = date.today()
     heading = f"<h2>Statement from Steve &lt;Houghton&gt;, {today.day} {today.strftime('%B %Y')}</h2>"
@@ -238,7 +325,8 @@ def test_a_statement_never_reaches_the_ai_model_or_the_search(site):
     c, fake, state, _ = site
     for page in (f"/votes/{VOTE}", f"/councils/{BARNSLEY}"):
         state.publish_statement(state.add_statement(page, BARNSLEY, "Steve Houghton", "Councillor",
-                                                    f"bin collections weekly {WORDS}", "", "a@b.gov.uk"))
+                                                    f"bin collections weekly {WORDS}", "", "a@b.gov.uk"),
+                                checked=CHECKED)
     evs = events(c.post("/api/ask", json={"question": "What has Barnsley decided about weekly bin collections?"}))
     assert fake.calls and evs[-1]["type"] == "final"
     assert MARKER not in json.dumps(fake.calls, default=str) and MARKER not in json.dumps(evs)

@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Statement } from "../api";
 import { ReportForm, words } from "../components/ReportForm";
-import { NOT_ENDORSED, StatementCard } from "../components/Statements";
+import { NOT_ENDORSED, StatementCard, safeLink } from "../components/Statements";
 
 const STATEMENT: Statement = {
   id: 7,
@@ -35,6 +35,16 @@ describe("StatementCard", () => {
     expect(link.getAttribute("href")).toBe("https://example.org/minutes");
     expect(link.getAttribute("rel")).toContain("nofollow");
     expect(article.querySelector(".statement-about")).toBeNull(); // beside its own item
+  });
+
+  it("shows a link to the record only when it is a web address", () => {
+    expect(safeLink("https://example.org/minutes?id=1&x=2")).toBe("https://example.org/minutes?id=1&x=2");
+    for (const bad of ["javascript:alert(1)", "data:text/html,x", "https://example.org/a b", "//example.org", "", null])
+      expect(safeLink(bad)).toBeNull();
+    const { container } = render(<StatementCard s={{ ...STATEMENT, link: "javascript:alert(1)" }} />);
+    expect(container.querySelector(".statement-link")).toBeNull();
+    expect(container.querySelector("a")).toBeNull();
+    expect(container.querySelector(".statement-text")!.textContent).toContain("First paragraph.");
   });
 
   it("says which item it is about on a council's page, under a lower heading", () => {

@@ -7,9 +7,15 @@ import { longDate } from "../format";
 
 export const NOT_ENDORSED = "In their own words. Not checked or endorsed by Where Councils Stand.";
 
+/** A statement's link as it may be shown: an http or https address and nothing else (as Where MPs Stand). The
+ * service checks it when the statement is sent; it is checked again here, where it becomes a link. */
+export const safeLink = (link: string | null | undefined) =>
+  link && /^https?:\/\/[^\s"'<>]+$/i.test(link) ? link : null;
+
 export function StatementCard({ s, level = 2, here }: { s: Statement; level?: 2 | 3; here?: string }) {
   const H = level === 2 ? "h2" : "h3";
   const id = `statement-${s.id}`;
+  const link = safeLink(s.link);
   return (
     <article className="statement" aria-labelledby={id}>
       <H id={id} className="statement-head">
@@ -29,9 +35,9 @@ export function StatementCard({ s, level = 2, here }: { s: Statement; level?: 2 
             <p key={i}>{p.trim()}</p>
           ))}
       </div>
-      {s.link && (
+      {link && (
         <p className="statement-link">
-          <a href={s.link} rel="nofollow ugc">
+          <a href={link} rel="nofollow ugc">
             The record they point to
           </a>
         </p>

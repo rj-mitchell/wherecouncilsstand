@@ -172,7 +172,7 @@ def build(folder: Path) -> None:
         "This is a made-up statement, to show how one is set beside the record. A real one would be up to 150 words, "
         "in its author's own name, about this vote.\n\nIt would point to the record where it could.",
         "https://example.org/minutes", "")
-    state.publish_statement(sid)
+    state.publish_statement(sid, checked="A made-up statement, for testing the site: nobody sent it.")
     (folder / "updates.jsonl").write_text(json.dumps(
         {"finished": "2025-10-16T03:41:00", "minutes": 21.5, "councils": 3, "changed": 1, "new_meetings": 1,
          "failed": [], "needs_attention": False}) + "\n")

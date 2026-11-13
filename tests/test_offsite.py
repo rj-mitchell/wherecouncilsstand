@@ -117,6 +117,11 @@ def test_backup_alerts(tmp_path):
     assert "No off-site copy has been made yet" in backup_alerts(tmp_path, env=ENV)[0]["text"]
     (tmp_path / "offsite.json").write_text(json.dumps({"ok": False, "when": now.isoformat(), "error": "503"}))
     assert backup_alerts(tmp_path, env=ENV)[0]["level"] == "error"
+    # a failed copy whose record has no usable time (null, or a number) is still reported, not an exception
+    for when in (None, 1731400000):
+        (tmp_path / "offsite.json").write_text(json.dumps({"ok": False, "when": when, "error": "503"}))
+        alert = backup_alerts(tmp_path, env=ENV)[0]
+        assert alert["level"] == "error" and alert["text"].endswith("): 503")
     stale = (now - timedelta(days=3)).isoformat()
     (tmp_path / "offsite.json").write_text(json.dumps({"ok": True, "when": stale}))
     assert "off-site copy was over two days ago" in backup_alerts(tmp_path, env=ENV)[0]["text"]

@@ -60,6 +60,162 @@ def test_over_the_daily_cap_the_sources_are_still_shown(client):
     assert evs[-1]["answer"] is None and "limit" in evs[-1]["note"]
 
 
+def test_sources_only_reads_the_question_with_the_model_only_while_the_caps_allow(client):
+    """'Sources only' writes no briefing, but the model reads the question, for a fraction of a penny. Once a
+    spending cap is reached that stops too: the free rules read it (as Where MPs Stand). Before, it carried on."""
+    from types import SimpleNamespace as NS
+
+    from councils.rag.query_parse import ParsedQuery
+
+    c, fake, state, cfg = client
+    read: list[str] = []
+
+    def parse(**kw):
+        read.append(kw["messages"][0]["content"])
+        return NS(stop_reason="end_turn", parsed_output=ParsedQuery(
+            search_text="bin collections", date_from=None, date_to=None, councils=[], control=[], parties=[],
+            nations=[], council_types=[], kinds=[], group_by="control", wants_votes=False,
+            interpretation="Bin collections, in every council."),
+                  usage=NS(input_tokens=1000, output_tokens=100, cache_read_input_tokens=0,
+                           cache_creation_input_tokens=0))
+
+    fake.messages.parse = parse
+    ask = {"question": "What have councils decided about bin collections?", "sources_only": True}
+    evs = events(c.post("/api/ask", json=ask))
+    assert len(read) == 1 and evs[0]["plan"]["parser"] == "model" and evs[1]["sources"]
+    assert evs[-1]["answer"] is None and evs[-1]["note"].startswith("Sources only")
+    with state.connect() as con:   # priced as the model that read it
+        assert [tuple(r) for r in con.execute("SELECT kind, model FROM usage")] == [("parse", "claude-haiku-5-5")]
+    for cap in ("daily_spend_cap_usd", "monthly_spend_cap_usd"):
+        cfg.raw["usage"].update(daily_spend_cap_usd=3.0, monthly_spend_cap_usd=50.0)
+        cfg.raw["usage"][cap] = 0.0
+        evs = events(c.post("/api/ask", json=ask))
+        assert len(read) == 1, cap                              # no further call to the model
+        assert evs[0]["plan"]["parser"] == "offline" and evs[1]["sources"], cap
+        assert evs[-1]["answer"] is None and evs[-1]["note"].startswith("Sources only"), cap
+    with state.connect() as con:
+        assert con.execute("SELECT count(*) FROM usage").fetchone()[0] == 1
+    assert not fake.calls                                       # and never a briefing
+
+
+def test_follow_up_history_is_bounded_and_not_kept_with_the_saved_briefing(client):
+    """The earlier questions a follow-up carries go to the model, cut to a fixed length, and into the cache key (the
+    answer depends on them). They are not saved with the briefing, nor served with it (as Where MPs Stand and Where
+    Countries Stand): a shared page should not carry an earlier conversation."""
+    from councils.api.app import AskBody
+
+    body = AskBody.model_validate({"question": "And libraries?", "history": [
+        {"question": "x" * 600_000, "answer": "y" * 600_000, "anything": "z" * 9_000}, {"answer": None}]})
+    assert [(len(h["question"]), len(h["answer"]), sorted(h)) for h in body.history_dicts()] == [
+        (500, 1000, ["answer", "question"]), (0, 0, ["answer", "question"])]
+    c, fake, state, _ = client
+    assert c.post("/api/ask", json={"question": "And libraries?", "history": [{}] * 7}).status_code == 422
+    earlier = [{"question": "What have councils decided about bin collections?", "answer": "A" * 5000}]
+    ask = {"question": "And what about Barnsley's bin collections?", "history": earlier}
+    final = events(c.post("/api/ask", json=ask))[-1]
+    assert final["type"] == "final" and final["answer"] and len(fake.calls) == 1
+    prompt = fake.calls[0]["messages"][0]["content"][-1]["text"]
+    assert "Q: What have councils decided about bin collections?" in prompt and "A" * 600 in prompt
+    saved = state.briefing(final["briefing_id"])
+    assert saved["options"] == {"mode": "summary", "plan": None, "sources_only": False}
+    assert "A" * 50 not in json.dumps(saved)
+    assert c.get(f"/api/briefings/{final['briefing_id']}").json()["options"] == saved["options"]
+    # the same follow-up again is answered from the cache; the same question after a different one is not
+    assert events(c.post("/api/ask", json=ask))[-1]["cached"] is True and len(fake.calls) == 1
+    other = [{"question": "What have councils decided about libraries?", "answer": "B"}]
+    assert "cached" not in events(c.post("/api/ask", json={**ask, "history": other}))[-1] and len(fake.calls) == 2
+    assert "cached" not in events(c.post("/api/ask", json={"question": ask["question"]}))[-1] and len(fake.calls) == 3
+    # a briefing saved before this keeps its row as it is, and is served without the earlier questions
+    state.save_briefing("old123", "Bins?", {"mode": "summary", "plan": None, "history": earlier,
+                                            "sources_only": False}, [{"type": "final", "answer": None}])
+    assert c.get("/api/briefings/old123").json()["options"] == {"mode": "summary", "plan": None, "sources_only": False}
+    assert state.briefing("old123")["options"]["history"] == earlier
+
+
+def test_an_oversized_plan_is_refused(client):
+    """A reader's edited plan is a few hundred characters: one far larger is refused before any work is done (as
+    Where MPs Stand)."""
+    c, fake, _, _ = client
+    plan = {"search_text": "bin collections", "filters": {"councils": [BARNSLEY]}}
+    assert c.post("/api/search", json={"question": "bin collections", "plan": plan}).status_code == 200
+    huge = {"search_text": "bins", "filters": {"councils": [str(i) for i in range(100_000)]}}
+    for route in ("/api/search", "/api/ask"):
+        r = c.post(route, json={"question": "bin collections", "plan": huge})
+        assert r.status_code == 422 and "the search plan is too large" in r.text, route
+    assert not fake.calls
+
+
+def test_a_refusal_is_an_error_and_nothing_is_saved_or_cached(client):
+    """When the model declines to answer, the reader is told so. No briefing is saved, nothing is cached (the same
+    question is put to the model again), and the call, which was paid for, is still counted."""
+    c, fake, state, _ = client
+    fake.refuse = True
+    ask = {"question": "What have councils decided about bin collections?"}
+    evs = events(c.post("/api/ask", json=ask))
+    assert [e["type"] for e in evs] == ["plan", "sources", "error"]
+    assert evs[-1] == {"type": "error", "message": "The model declined to answer this question."}
+    with state.connect() as con:
+        assert con.execute("SELECT count(*) FROM briefings").fetchone()[0] == 0
+        assert con.execute("SELECT count(*) FROM answer_cache").fetchone()[0] == 0
+        assert [tuple(r) for r in con.execute("SELECT kind, input_tokens, output_tokens FROM usage")] == [
+            ("answer", 1000, 200)]
+        assert con.execute("SELECT n FROM questions").fetchone()[0] == 1
+    assert events(c.post("/api/ask", json=ask))[-1]["type"] == "error" and len(fake.calls) == 2
+    fake.refuse = False
+    final = events(c.post("/api/ask", json=ask))[-1]
+    assert final["type"] == "final" and final["answer"]["citations_total"] == 1 and final["briefing_id"]
+
+
+def test_reading_a_question_is_priced_as_the_model_that_read_it(client):
+    """With no query_parse_model set, the briefing model reads the question, and its cost is recorded against that
+    model (as Where MPs Stand's parse_model). Before, it was recorded against no model, at the base prices."""
+    from types import SimpleNamespace as NS
+
+    from councils.rag.query_parse import ParsedQuery, parse_model
+
+    c, fake, state, cfg = client
+    assert parse_model(cfg) == "claude-haiku-5-5"
+    del cfg.raw["answer"]["query_parse_model"]
+    assert parse_model(cfg) == "claude-sonnet-5-5"
+    asked: list[str] = []
+
+    def parse(**kw):
+        asked.append(kw["model"])
+        return NS(stop_reason="end_turn", parsed_output=ParsedQuery(
+            search_text="bin collections", date_from=None, date_to=None, councils=[], control=[], parties=[],
+            nations=[], council_types=[], kinds=[], group_by="control", wants_votes=False,
+            interpretation="Bin collections, in every council."),
+            usage=NS(input_tokens=1000, output_tokens=100, cache_read_input_tokens=0,
+                     cache_creation_input_tokens=0))
+
+    fake.messages.parse = parse
+    question = {"question": "What have councils decided about bin collections?"}
+    events(c.post("/api/ask", json={**question, "sources_only": True}))
+    assert events(c.post("/api/ask", json=question))[-1]["answer"]
+    with state.connect() as con:
+        assert [tuple(r) for r in con.execute("SELECT kind, model FROM usage ORDER BY rowid")] == [
+            ("parse", "claude-sonnet-5-5"), ("parse", "claude-sonnet-5-5"), ("answer", "claude-sonnet-5-5")]
+    assert asked == ["claude-sonnet-5-5"] * 2
+
+
+def test_a_briefing_id_already_in_use_is_tried_again(client):
+    """A new briefing's id is 64 random bits, so a clash is astronomically unlikely; if one happens another id is
+    tried (as Where MPs Stand), rather than the reader getting an error after the briefing was paid for."""
+    c, fake, state, _ = client
+    state.save_briefing("taken111", "An earlier question?", {}, [{"type": "final", "answer": None}])
+    ids = iter(["taken111", "taken111", "fresh222"])
+    state.new_briefing_id = lambda: next(ids)
+    final = events(c.post("/api/ask", json={"question": "What have councils decided about bin collections?"}))[-1]
+    assert final["type"] == "final" and final["briefing_id"] == "fresh222"
+    assert state.briefing("taken111")["question"] == "An earlier question?"
+    saved = state.briefing("fresh222")
+    assert saved["question"].startswith("What have councils") and saved["events"][-1]["briefing_id"] == "fresh222"
+    # five clashes in a row: the reader is told the briefing could not be written, as for any other failure
+    state.new_briefing_id = lambda: "taken111"
+    last = events(c.post("/api/ask", json={"question": "What have councils decided about public toilets?"}))[-1]
+    assert last["type"] == "error" and "could not be written" in last["message"]
+
+
 def test_search_councils_votes_and_reports(client):
     c, _, state, cfg = client
     r = c.post("/api/search", json={"question": "bin collections in Barnsley"})
@@ -130,7 +286,9 @@ def test_in_flight_reservations():
     assert f.pending_usd(besides=1) == 0.1
     f.finish("a")
     f.finish("b")
-    assert f.pending_usd() == 0 and f.start("c") is None
+    # a visitor who was refused ("c", and "a" the second time) leaves nothing behind
+    assert f.running == {} and f.pending_usd() == 0
+    assert f.start("c") is None
 
 
 def test_a_saved_briefing_is_checked_again_when_shown(client):
@@ -231,3 +389,38 @@ def test_cost_counts_cache_writes_once_whichever_names_the_usage_uses():
            "cache_read_input_tokens": 5_000}
     assert cost_usd(raw, prices) == expected == 0.0921
     assert cost_usd(usage_dict(sdk), prices) == expected
+
+
+def test_token_counts_are_stored_the_same_whichever_names_the_usage_uses(tmp_path):
+    """What is written to the usage table (as Where MPs Stand's token_counts): the site's own counts are stored as
+    they are, and the SDK's own names are stored the same way, with the cache writes counted into input_tokens.
+    Before, the SDK's names were stored with the cache writes left out of the input."""
+    from councils.api.usage import cost_usd, record_usage, token_counts
+
+    prices = {"price_input_per_mtok": 3.0, "price_output_per_mtok": 15.0, "price_cache_read_per_mtok": 0.3}
+    ours = {"input_tokens": 1500, "output_tokens": 200, "cache_read_tokens": 3000, "cache_write_tokens": 500}
+    raw = {"input_tokens": 1000, "output_tokens": 200, "cache_read_input_tokens": 3000,
+           "cache_creation_input_tokens": 500}
+    assert token_counts(ours) == ours and token_counts(raw) == ours
+    assert token_counts({"input_tokens": 1000, "cache_read_input_tokens": None}) == {
+        "input_tokens": 1000, "output_tokens": 0, "cache_read_tokens": 0, "cache_write_tokens": 0}
+    assert cost_usd({"input_tokens": 1000, "output_tokens": None}, prices) == 0.003   # a missing count is nought
+    state = StateDB(tmp_path / "s.db")
+    cost = record_usage(state, "v1", "answer", "m", ours, prices)
+    assert cost == cost_usd(raw, prices) == record_usage(state, "v1", "answer", "m", raw, prices)
+    with state.connect() as con:
+        rows = [tuple(r) for r in con.execute(
+            "SELECT visitor, kind, model, input_tokens, output_tokens, cache_read_tokens, cache_write_tokens, "
+            "cost_usd FROM usage")]
+    assert rows == [("v1", "answer", "m", 1500, 200, 3000, 500, cost)] * 2
+    assert record_usage(state, "v1", "answer", "m", None, prices) == 0.0   # no usage: nothing is written
+    with state.connect() as con:
+        assert con.execute("SELECT count(*) FROM usage").fetchone()[0] == 2
+
+
+def test_default_prices_are_the_sites_own():
+    """Where a price is missing from the settings, the fallback is this site's own: $2 a million tokens in, $10
+    out (the other sites fall back to $4 and $20)."""
+    from councils.api.usage import cost_usd
+
+    assert cost_usd({"input_tokens": 1_000_000, "output_tokens": 1_000_000}, {}) == 12.0

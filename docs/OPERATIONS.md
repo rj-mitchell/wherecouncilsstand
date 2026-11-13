@@ -228,7 +228,7 @@ a daily visitor code at once and never stored, and requests are not logged (priv
 
 **Costs and limits** are in `config/settings.toml`, `[usage]`. Each new briefing is counted against a visitor's daily
 allowance (`per_visitor_daily_questions`) and the site's daily and monthly caps (`daily_spend_cap_usd`,
-`monthly_spend_cap_usd`). A briefing's cost is known only when it finishes, so while one is being written it counts against the caps at an estimate (`briefing_estimate_usd`), and only a few are written at once (`briefings_at_once`, `briefings_at_once_per_visitor`). Many questions at once therefore can't all pass the daily cap before any is counted. Over a limit, readers still get the sources, which cost nothing. An identical question is
+`monthly_spend_cap_usd`). A briefing's cost is known only when it finishes, so while one is being written it counts against the caps at an estimate (`briefing_estimate_usd`), and only a few are written at once (`briefings_at_once`, `briefings_at_once_per_visitor`). Many questions at once therefore can't all pass the daily cap before any is counted. Over a limit, readers still get the sources, which cost nothing. With "Sources only" ticked no briefing is written, but the model still reads the question (a fraction of a penny) while the daily and monthly caps allow it; once a cap is reached the built-in rules read it, which costs nothing. An identical question is
 answered from the cache until the data changes. Spending so far:
 
 ```bash
@@ -261,12 +261,19 @@ author's agreement.
 
 ```bash
 docker compose run --rm -T app councils list-statements          # waiting and published, newest first (--all for every one)
-docker compose run --rm -T app councils publish-statement 3      # show it, dated today, beside its item and on its council's page
-docker compose run --rm -T app councils publish-statement 4 --council barnsley   # one about a briefing: on Barnsley's page too
+docker compose run --rm -T app councils publish-statement 3 --checked "Reply from the councillor's address on the council's website, 14 November."   # show it, dated today, beside its item and on its council's page
+docker compose run --rm -T app councils publish-statement 4 --checked "..." --council barnsley   # one about a briefing: on Barnsley's page too
 docker compose run --rm -T app councils decline-statement 5 --reason "It is about another councillor's conduct."
 docker compose run --rm -T app councils update-statement 3 --text "The author's new wording, as sent."   # or --text-file, --name, --role, --link
 docker compose run --rm -T app councils withdraw-statement 3     # at the author's request; --reason "..." if the site removes it
 ```
+
+A reports or statements command that changes nothing (no report, briefing or statement with that number, or one
+already dealt with) says so and exits 1.
+
+`publish-statement` needs `--checked`: a few words on how the sender was confirmed. It is kept in the statement's
+log, which only the owner can read, and is never shown on the site. Don't put the sender's email address in it: the
+privacy notice promises that address is deleted, and the log is kept.
 
 Change or withdraw a statement only on a request confirmed from its author's address. A statement's address is kept
 while it is shown and deleted three months after it is withdrawn or declined (the privacy notice): every statement
