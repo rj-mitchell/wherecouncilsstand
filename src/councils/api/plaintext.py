@@ -12,6 +12,8 @@ from html import escape as e
 from typing import Any
 from urllib.parse import quote
 
+from councils.api.statements import safe_link
+
 SITE = "Where Councils Stand"
 MAX_ITEMS = 60
 KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy committee", "board": "Board",
@@ -345,7 +347,7 @@ def statements_text(rows: list[dict[str, Any]], here: str) -> str:
     for r in rows:
         about = "" if r["page"] == here else f"<p>About: {_link(r['page'], r.get('about') or r['page'])}</p>"
         words = "".join(f"<p>{e(p.strip())}</p>" for p in re.split(r"\n\s*\n", r["text"]) if p.strip())
-        link = f"<p>{_link(r['link'], 'The record they point to')}</p>" if r.get("link") else ""
+        link = f"<p>{_link(r['link'], 'The record they point to')}</p>" if safe_link(r.get("link")) else ""
         parts.append(f'<article class="statement"><h{level}>Statement from {e(r["name"])}, {e(long_date(r["shown_on"]))}'
                      f"</h{level}><p>{e(r['role'])}</p>{about if gathered else ''}{words}{link}"
                      f"<p><em>In their own words. Not checked or endorsed by {SITE}.</em></p></article>")

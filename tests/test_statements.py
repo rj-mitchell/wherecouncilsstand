@@ -72,6 +72,9 @@ def test_a_statement_is_received_as_waiting_and_not_shown(site):
     ({"page": f"/votes/{BARNSLEY}:9:9:9"}, "no page at that address"),
     ({"page": "/b/nosuchbriefing"}, "no page at that address"),
     ({"link": "javascript:alert(1)"}, "web address"),
+    ({"link": "https://example.org/a\"onmouseover=\"alert(1)"}, "web address"),
+    ({"link": "https://example.org/<script>"}, "web address"),
+    ({"link": "https://example.org/it's"}, "web address"),
     ({"name": "    "}, "Give your name"),
     ({"name": " \n\tX "}, "Give your name"),
     ({"role": "\u00a0 \u00a0"}, "Give your role"),
@@ -117,6 +120,24 @@ def test_a_statement_beside_a_withdrawn_briefing_is_refused(site):
     r = c.post("/api/statements", json=body(page="/b/abc123"))
     assert r.status_code == 422 and "no page at that address" in r.json()["detail"]
     assert len(state.statements(open_only=False)) == 1
+
+
+def test_a_stored_link_is_checked_again_where_it_is_shown():
+    """The form checks a link (as Where MPs Stand's does: no quotes, angle brackets or spaces). The pages check it
+    again, so a row that reached the database another way can never be shown as a link that runs a script."""
+    from councils.api.plaintext import statements_text
+    from councils.api.statements import check_link, safe_link
+
+    good = "https://barnsley.moderngov.co.uk/ieListDocuments.aspx?CId=137&MId=1"
+    assert check_link(f"  {good} ") == good and check_link("") == "" and safe_link(good) == good
+    for bad in ("javascript:alert(1)", "data:text/html,x", "https://example.org/a b", "//example.org", "", None,
+                "https://example.org/\"x", "ftp://example.org/minutes"):
+        assert safe_link(bad) is None, bad
+    row = {"id": 1, "page": "/votes/x", "council": BARNSLEY, "name": "N", "role": "R", "text": "Words.",
+           "shown_on": "2026-11-12", "link": good}
+    assert "The record they point to" in statements_text([row], "/votes/x")
+    shown = statements_text([{**row, "link": "javascript:alert(1)"}], "/votes/x")
+    assert "javascript" not in shown and "The record they point to" not in shown and "Words." in shown
 
 
 def test_exactly_150_words_and_no_link_are_accepted(site):
