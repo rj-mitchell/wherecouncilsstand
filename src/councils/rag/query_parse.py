@@ -244,13 +244,17 @@ Rules:
 - interpretation: one plain sentence describing the filters you chose, in British English."""
 
 
+def parse_model(settings) -> str:
+    return settings.answer.get("query_parse_model") or settings.answer.get("model", "claude-sonnet-5-5")
+
+
 def parse_with_model(client, settings, question: str, today: date | None = None) -> tuple[QueryPlan, Any]:
     from councils.rag.answer import cached_system
 
     today = today or date.today()
     default_years = int(settings.archive.get("default_years", 4))
     resp = client.messages.parse(
-        model=settings.answer.get("query_parse_model") or settings.answer.get("model", "claude-sonnet-5-5"),
+        model=parse_model(settings),
         max_tokens=2000,
         system=cached_system(system_prompt(today, settings.start_date, default_years)),
         messages=[{"role": "user", "content": f"Question: {question}"}],

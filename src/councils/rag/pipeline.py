@@ -123,7 +123,7 @@ class Pipeline:
             yield {"type": "final", "answer": {"segments": [{"text": NO_RECORDS + " The minutes contain no records "
                    "matching this question and these filters.", "sources": [], "cited": [], "status": "connective"}],
                    "markdown": NO_RECORDS, "no_records": True, "citations_total": 0, "citations_invalid": 0,
-                   "grounded_ratio": 1.0}, "usage": None}
+                   "grounded_ratio": 1.0, "unsupported_segments": 0}, "usage": None}
             return
         if not self.has_model():
             yield {"type": "final", "answer": None, "usage": None,
@@ -141,6 +141,12 @@ class Pipeline:
                 yield event
         if final is None:
             raise RuntimeError("the model returned no answer")
+        if final.get("stop_reason") == "refusal":
+            # The model declined (as Where MPs Stand): an error for the reader, never an empty briefing saved and
+            # shown as fully grounded. The call was still paid for, so its token counts go with the event.
+            yield {"type": "error", "message": "The model declined to answer this question.",
+                   "usage": final["usage"], "model": final.get("model")}
+            return
         report = verify(final["blocks"], sources)
         drop_preambles(report.segments)
         britishise_segments(report.segments)
@@ -153,6 +159,6 @@ class Pipeline:
 def answer_once(pipeline: Pipeline, req: AskRequest) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for ev in pipeline.run(req):
-        if ev["type"] in ("plan", "sources", "final"):
+        if ev["type"] in ("plan", "sources", "final", "error"):
             out[ev["type"]] = ev
     return out

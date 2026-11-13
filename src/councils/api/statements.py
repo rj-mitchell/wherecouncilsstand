@@ -63,11 +63,31 @@ def check_text(text: str) -> str:
     return t
 
 
+def check_line(value: str, what: str, longest: int = 200) -> str:
+    """A name or role, on one line (as Where Countries Stand): never blank or only spaces."""
+    v = " ".join((value or "").split())
+    if len(v) < 2:
+        raise ValueError(f"Give {what}.")
+    if len(v) > longest:
+        raise ValueError(f"{what[0].upper()}{what[1:]} can be up to {longest} characters.")
+    return v
+
+
 def check_link(link: str) -> str:
     link = (link or "").strip()
-    if link and (urlsplit(link).scheme not in ("http", "https") or not urlsplit(link).hostname or " " in link):
+    if link and (urlsplit(link).scheme not in ("http", "https") or not urlsplit(link).hostname
+                 or any(c in link for c in "\"'<> ")):   # nor anything that could break out of a link's markup
         raise ValueError("The link to the record must be a web address starting https:// (or leave it empty).")
     return link
+
+
+_SAFE_LINK = re.compile(r"https?://[^\s\"'<>]+", re.IGNORECASE)
+
+
+def safe_link(link: str | None) -> str | None:
+    """A stored link as it may be shown: checked again (as Where MPs Stand's pages do), so a row that reached the
+    database some other way than the form can never become a link that runs a script."""
+    return link if link and _SAFE_LINK.fullmatch(link) else None
 
 
 def check_email(email: str) -> str:

@@ -42,7 +42,7 @@ def api_key() -> str | None:
 # could help: give up after five minutes of silence (ten seconds to connect), and retry twice, as the SDK does.
 TIMEOUT_SECONDS = 300.0
 CONNECT_SECONDS = 10.0
-RETRIES = 2
+MAX_RETRIES = 2
 
 
 def make_client():
@@ -50,7 +50,7 @@ def make_client():
 
     # Never follow an ANTHROPIC_BASE_URL inherited from another tool; the app talks to the API itself.
     base_url = os.environ.get("COUNCILS_ANTHROPIC_BASE_URL", "https://api.anthropic.com")
-    options: dict[str, Any] = {"base_url": base_url, "max_retries": RETRIES,
+    options: dict[str, Any] = {"base_url": base_url, "max_retries": MAX_RETRIES,
                                "timeout": anthropic.Timeout(TIMEOUT_SECONDS, connect=CONNECT_SECONDS)}
     key = api_key()
     return anthropic.Anthropic(api_key=key, **options) if key else anthropic.Anthropic(**options)

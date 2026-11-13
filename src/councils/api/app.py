@@ -11,6 +11,7 @@ import hashlib
 import json
 import logging
 import queue
+import sqlite3
 import threading
 from collections.abc import Iterator
 from datetime import date
@@ -22,7 +23,7 @@ from urllib.parse import urlsplit
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
 from councils.api import plaintext, statements
 from councils.api.data import Data
@@ -39,7 +40,7 @@ from councils.api.usage import (
 from councils.config import Settings, load_settings
 from councils.rag.neutral import still_loaded
 from councils.rag.pipeline import AskRequest, Pipeline
-from councils.rag.query_parse import QueryPlan, parse_offline
+from councils.rag.query_parse import QueryPlan, parse_model, parse_offline
 from councils.rag.verify import recheck_flags
 from councils.registry import REGION_NAMES, TYPE_NAMES
 
@@ -59,12 +60,40 @@ EXAMPLES = [
 ]
 
 
+class HistoryItem(BaseModel):
+    """An earlier question in the conversation, as a follow-up sends it back (as Where MPs Stand). Each part is cut
+    to a fixed length, so a request cannot inflate the prompt: the question to the longest a question may be, the
+    answer to more than the briefing instructions use of it (rag/answer.py)."""
+
+    question: str = ""
+    answer: str = ""
+
+    @field_validator("question", "answer", mode="before")
+    @classmethod
+    def _trimmed(cls, v: Any, info: ValidationInfo) -> str:
+        return str(v or "")[:HISTORY_LIMITS[info.field_name]]
+
+
+HISTORY_LIMITS = {"question": 500, "answer": 1000}
+PLAN_MAX_CHARS = 20_000  # an edited plan is a few hundred characters; this is far more than any reader needs
+
+
 class AskBody(BaseModel):
     question: str = Field(min_length=3, max_length=500)
     mode: Literal["summary", "comprehensive"] = "summary"
     plan: dict[str, Any] | None = None
-    history: list[dict[str, str]] = Field(default_factory=list, max_length=6)
+    history: list[HistoryItem] = Field(default_factory=list, max_length=6)
     sources_only: bool = False
+
+    @field_validator("plan")
+    @classmethod
+    def _plan_size(cls, v: dict[str, Any] | None) -> dict[str, Any] | None:
+        if v is not None and len(json.dumps(v, default=str)) > PLAN_MAX_CHARS:
+            raise ValueError("the search plan is too large")
+        return v
+
+    def history_dicts(self) -> list[dict[str, str]]:
+        return [h.model_dump() for h in self.history]
 
 
 class ReportBody(BaseModel):
@@ -90,8 +119,10 @@ class StatementBody(BaseModel):
 
 
 def sse(events: Iterator[dict[str, Any]], keep_alive: float = KEEP_ALIVE_SECONDS) -> Iterator[bytes]:
-    """Server-sent events, with a comment line after each few seconds of silence (while the model thinks), so proxies
-    don't close the connection. The events are worked out in their own thread, which stops once the reader has gone."""
+    """Server-sent events, with a comment line after a few seconds of silence (while the model is thinking): proxies
+    close a response that sends nothing for too long. The events are worked out in a thread of their own, which stops
+    at the next event once the reader has gone, and closes them, so a briefing nobody is reading stops being written
+    (and paid for)."""
     q: queue.Queue = queue.Queue()
     gone = threading.Event()
     end = object()
@@ -106,7 +137,7 @@ def sse(events: Iterator[dict[str, Any]], keep_alive: float = KEEP_ALIVE_SECONDS
             q.put(exc)
         finally:
             if hasattr(events, "close"):
-                events.close()
+                events.close()  # here, in the thread that ran it: the model's stream is closed with it
             q.put(end)
 
     threading.Thread(target=work, name="sse", daemon=True).start()
@@ -250,19 +281,21 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     def ask(body: AskBody, request: Request):
         v = visitor(request)
         p = get_pipeline()
-        req = AskRequest(question=body.question, mode=body.mode, plan=body.plan, history=body.history)
-        options = body.model_dump(exclude={"question"})
-        key = cache_key({"q": " ".join(body.question.lower().split()), **options, "data": data.stamp(),
-                         "model": settings.answer.get("model"), "v": INSTRUCTIONS_VERSION})
+        req = AskRequest(question=body.question, mode=body.mode, plan=body.plan, history=body.history_dicts())
+        # A follow-up's answer depends on the earlier questions it was given, so they are part of the cache key. They
+        # are not kept with the saved briefing: a shared page should not carry an earlier conversation.
+        key = cache_key({"q": " ".join(body.question.lower().split()), **body.model_dump(exclude={"question"}),
+                         "data": data.stamp(), "model": settings.answer.get("model"), "v": INSTRUCTIONS_VERSION})
+        options = body.model_dump(exclude={"question", "history"})
         hit = state.cached(key, cache_hours) if p.has_model() and not body.sources_only else None
         why_not = None if hit is not None or body.sources_only or not p.has_model() else blocked(state, v, usage_cfg)
 
         def sources_only(note: str, free: bool) -> Iterator[dict[str, Any]]:
-            if free:      # over a limit: the question is read by the free rules
+            if free:      # over a limit, or the site's spending cap is reached: the question is read by the free rules
                 plan = offline_plan(body)
             else:         # the model reads the question better, for a fraction of a penny
                 plan, used = p.make_plan(req)
-                record_usage(state, v, "parse", settings.answer.get("query_parse_model"), used, usage_cfg)
+                record_usage(state, v, "parse", parse_model(settings), used, usage_cfg)
             result, sources = p.find(plan, req)
             yield {"type": "plan", "plan": plan.to_dict(), "usage": None}
             yield {"type": "sources", "sources": [s.card() for s in sources], "candidates": result.candidates,
@@ -274,8 +307,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                 yield from rechecked(hit)
                 return
             if body.sources_only:
+                # the model reads the question only while the site's spending caps allow it (as Where MPs Stand)
                 yield from sources_only("Sources only: no briefing was written. Ask again without 'Sources only' "
-                                        "for a written briefing.", free=False)
+                                        "for a written briefing.", free=site_paused(state, usage_cfg) is not None)
                 return
             if why_not:
                 yield from sources_only(f"{why_not} The sources found are shown below.", free=True)
@@ -285,7 +319,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             try:
                 for ev in p.run(req):
                     if ev["type"] == "plan":
-                        record_usage(state, v, "parse", settings.answer.get("query_parse_model"), ev.get("usage"),
+                        record_usage(state, v, "parse", parse_model(settings), ev.get("usage"),
                                      usage_cfg)
                         ev = {k: val for k, val in ev.items() if k not in ("usage", "parse_error")}
                     if ev["type"] == "final":
@@ -296,8 +330,23 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                         if ev.get("answer") and not ev["answer"].get("no_records"):
                             replay = [e for e in kept if e["type"] in ("plan", "sources")]
                             replay.append({"type": "text", "text": "".join(text)})
-                            ev["briefing_id"] = state.new_briefing_id()
-                            state.save_briefing(ev["briefing_id"], body.question, options, replay + [ev])
+                            for attempt in range(5):
+                                ev["briefing_id"] = state.new_briefing_id()
+                                try:
+                                    state.save_briefing(ev["briefing_id"], body.question, options, replay + [ev])
+                                    break
+                                except sqlite3.IntegrityError:
+                                    # an id already in use is astronomically unlikely; try another (as Where MPs
+                                    # Stand), rather than lose a briefing that has been paid for
+                                    if attempt == 4:
+                                        raise RuntimeError("could not allocate a briefing id") from None
+                    if ev["type"] == "error":
+                        # the model declined to answer (rag/pipeline.py): nothing is saved or cached, but the call
+                        # was paid for, so it is counted as before
+                        if ev.get("usage"):
+                            record_usage(state, v, "answer", ev.get("model"), ev["usage"], usage_cfg)
+                            count_question(state, v)
+                        ev = {k: val for k, val in ev.items() if k not in ("usage", "model")}
                     if ev["type"] == "text":
                         text.append(ev["text"])
                     else:
@@ -355,7 +404,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         if b["withdrawn_at"]:
             why = (b["withdrawn_reason"] or "").strip()
             raise HTTPException(410, "This briefing has been withdrawn" + (f": {why}" if why else "."))
-        return {"id": b["id"], "at": b["at"], "question": b["question"], "options": b["options"],
+        # a briefing saved before follow-up questions were left out of its options is served without them
+        return {"id": b["id"], "at": b["at"], "question": b["question"],
+                "options": {k: val for k, val in b["options"].items() if k != "history"},
                 "events": rechecked(b["events"])}
 
     # ---- councils and votes --------------------------------------------------------------------------
@@ -395,7 +446,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             return data.council(key) is not None
         if kind == "votes":
             return data.vote(key) is not None
-        return state.briefing(key) is not None
+        b = state.briefing(key)
+        return b is not None and not b["withdrawn_at"]   # a withdrawn briefing has no page to stand beside
 
     def with_about(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Each statement with the name of the item it is about, for a council's page, which gathers them all."""
@@ -424,6 +476,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                                      "act for them.")
         try:
             page, council = statements.item_address(body.page, site_hosts(request))
+            name = statements.check_line(body.name, "your name, as it should be shown")
+            role = statements.check_line(body.role, "your role, such as Councillor, Barnsley Metropolitan Borough "
+                                                    "Council")
             text = statements.check_text(body.text)
             link = statements.check_link(body.link)
             email = statements.check_email(body.email)
@@ -432,7 +487,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         if not item_exists(page):
             raise HTTPException(422, "There's no page at that address on this site. Copy the address from the page "
                                      "the statement is about.")
-        sid = state.add_statement(page, council, body.name.strip(), body.role.strip(), text, link, email)
+        sid = state.add_statement(page, council, name, role, text, link, email)
         return {"ok": True, "id": sid}
 
     @app.get("/api/statements")

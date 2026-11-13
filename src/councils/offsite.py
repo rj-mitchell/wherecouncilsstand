@@ -177,7 +177,7 @@ def backup_alerts(folder: Path, env: dict[str, str] | None = None, now: datetime
     if local and status is None:
         out.append({"level": "warning", "text": "No off-site copy has been made yet; one is made with the next backup."})
     elif status and not status.get("ok"):
-        out.append({"level": "error", "text": f"The last off-site copy failed ({status.get('when', '')[:16]}): "
+        out.append({"level": "error", "text": f"The last off-site copy failed ({str(status.get('when', ''))[:16]}): "
                                               f"{status.get('error', '')}"})
     elif status and (now - datetime.fromisoformat(status["when"])).total_seconds() > stale_hours * 3600:
         out.append({"level": "error", "text": f"The last off-site copy was over two days ago ({status['when'][:10]})."})
