@@ -132,6 +132,19 @@ def test_follow_up_history_is_bounded_and_not_kept_with_the_saved_briefing(clien
     assert state.briefing("old123")["options"]["history"] == earlier
 
 
+def test_an_oversized_plan_is_refused(client):
+    """A reader's edited plan is a few hundred characters: one far larger is refused before any work is done (as
+    Where MPs Stand)."""
+    c, fake, _, _ = client
+    plan = {"search_text": "bin collections", "filters": {"councils": [BARNSLEY]}}
+    assert c.post("/api/search", json={"question": "bin collections", "plan": plan}).status_code == 200
+    huge = {"search_text": "bins", "filters": {"councils": [str(i) for i in range(100_000)]}}
+    for route in ("/api/search", "/api/ask"):
+        r = c.post(route, json={"question": "bin collections", "plan": huge})
+        assert r.status_code == 422 and "the search plan is too large" in r.text, route
+    assert not fake.calls
+
+
 def test_search_councils_votes_and_reports(client):
     c, _, state, cfg = client
     r = c.post("/api/search", json={"question": "bin collections in Barnsley"})

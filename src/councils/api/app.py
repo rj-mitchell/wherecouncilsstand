@@ -74,6 +74,7 @@ class HistoryItem(BaseModel):
 
 
 HISTORY_LIMITS = {"question": 500, "answer": 1000}
+PLAN_MAX_CHARS = 20_000  # an edited plan is a few hundred characters; this is far more than any reader needs
 
 
 class AskBody(BaseModel):
@@ -82,6 +83,13 @@ class AskBody(BaseModel):
     plan: dict[str, Any] | None = None
     history: list[HistoryItem] = Field(default_factory=list, max_length=6)
     sources_only: bool = False
+
+    @field_validator("plan")
+    @classmethod
+    def _plan_size(cls, v: dict[str, Any] | None) -> dict[str, Any] | None:
+        if v is not None and len(json.dumps(v, default=str)) > PLAN_MAX_CHARS:
+            raise ValueError("the search plan is too large")
+        return v
 
     def history_dicts(self) -> list[dict[str, str]]:
         return [h.model_dump() for h in self.history]
