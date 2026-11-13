@@ -179,7 +179,7 @@ def test_the_owner_lists_publishes_updates_declines_and_withdraws_statements(tmp
 
     # publishing needs a note of how the sender was confirmed: kept in the log, never shown
     r = run(cli, ["publish-statement", str(first)])
-    assert r.exit_code == 2 and "--checked" in r.output and state.statement(first)["status"] == "pending"
+    assert r.exit_code == 2 and "checked" in r.output and state.statement(first)["status"] == "pending"
     r = run(cli, ["publish-statement", str(first), "--checked", "   "])
     assert r.exit_code == 1 and "Say how you confirmed who sent it" in r.output
     assert state.statement(first)["status"] == "pending"
@@ -194,7 +194,12 @@ def test_the_owner_lists_publishes_updates_declines_and_withdraws_statements(tmp
     assert [s["id"] for s in shown] == [first, second] and "email" not in shown[0]
     assert all("log" not in s and CHECKED not in json.dumps(s) for s in shown)
     assert CHECKED not in run(cli, ["list-statements", "--all"]).output
-    assert "privacy notice" in " ".join(run(cli, ["publish-statement", "--help"]).output.split())
+    import inspect
+
+    from councils.cli import publish_statement
+
+    said = inspect.signature(publish_statement).parameters["checked"].default.help   # as --help prints it
+    assert "never shown on the site" in said and "Do not put the sender's email address in it" in said
 
     long = " ".join(["word"] * (MAX_WORDS + 1))
     r = run(cli, ["update-statement", str(first), "--text", long])
