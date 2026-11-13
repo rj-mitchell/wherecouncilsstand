@@ -13,6 +13,9 @@
         <h1>How it works</h1>
         <p class="lede">Where Councils Stand reads the minutes councils already publish, and writes briefings in which every point cites those minutes.</p>
 
+<!--#include why-->
+        <p>Briefings here are written by AI too. The difference is what the AI is given and how it is checked. The rest of this page sets out how, step by step: see <a href="#briefing">How a briefing is written</a>.</p>
+
         <h2 class="minute-heading">Where the record comes from</h2>
         <p>Most councils in the UK publish their meetings through one of three systems: <strong>Modern.gov</strong> and <strong>CMIS</strong>, both made by Civica, and <strong>CoINS</strong>, made by Northgate. Where Councils Stand reads all three. Each Modern.gov site has a public web service that gives every meeting's agenda, the minutes of each item, and the councillors listed at the meeting with their party on the day. CMIS and CoINS sites have no such service, so their public pages are read as a browser would read them. Each council is sent one request at a time, at least a second apart (longer if its site asks), by a reader that names itself, and a copy is kept so that each meeting is fetched once. A site that refuses these requests is asked for permission, never worked around.</p>
         <p>It covers <strong>full council and cabinet meetings since May 2018</strong>, including annual, budget and extraordinary meetings. Councils run by committees, which have no cabinet, are covered through the committees that make their main policy and budget decisions, usually a policy and resources committee. Other committees, cabinet members' individual decisions, and planning and licensing are not included.</p>
@@ -36,7 +39,7 @@
         <p>The reading has been checked by hand against the minutes: 300 named votes, drawn at random in three samples of 100. The first sample found 9 votes with a councillor on the wrong side. After the reading was fixed, the second and third found 2 each, every time from a way of writing the list not seen before. Those are now read correctly or left out. A vote is also left out when the names read don't match a count printed in the minutes, or when it puts one councillor on two sides.</p>
         <p><strong>Even so, expect about 1 vote in 100 to have a councillor on the wrong side.</strong> That is accepted while the site is in alpha, and it is being worked on: before the beta, a fixed set of checked votes will be built, so that every change to the reading is tested against it. If only one side of a vote could be read, the page says so. Each vote links to the council's own minutes, so you can check it, and please <a href="/corrections">report</a> any mistake you find.</p>
 
-        <h2 class="minute-heading">How a briefing is written</h2>
+        <h2 class="minute-heading" id="briefing">How a briefing is written</h2>
         <ol>
           <li><strong>The question is read</strong> into filters: dates, councils, the party in control, kinds of meeting. By default the last four years are searched. Ask about earlier years to go back to May 2018. The filters used are shown above the briefing.</li>
           <li><strong>The minutes are searched</strong>, both by keyword and by meaning, using a model that runs on the site's own server.</li>
@@ -49,7 +52,7 @@
         <h2 class="minute-heading">People who aren't councillors</h2>
         <p>Minutes also name members of the public (people who speak, ask questions, present petitions, apply for planning permission or object) and council staff. Briefings and pages are limited to councillors' own words and actions. Other people's names are replaced with "[name removed]" before anything is searched, shown or sent to the AI model, and roles are kept ("[name removed], Chief Executive"). The council's own record is unchanged; it remains the council's responsibility. If you are named and something should not be shown, <a href="/corrections?kind=takedown">ask for it to be removed</a>.</p>
 
-        <h2 class="minute-heading">Code and data</h2>
+        <h2 class="minute-heading" id="code">Code and data</h2>
         <p>The code is open source (AGPL-3.0) on <a href="https://github.com/rj-mitchell/wherecouncilsstand">GitHub</a>, with the decisions behind it and the results of every check.</p>
       </div>
     </main>

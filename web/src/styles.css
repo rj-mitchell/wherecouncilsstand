@@ -722,6 +722,57 @@ input[type="checkbox"] {
   text-decoration-thickness: 2px;
 }
 
+/* "Why use this rather than a chatbot?" (components/Why.tsx): one line under the question box, always shown, and a
+   disclosure that opens to five points. It sits below the box, so the box never moves down for it. */
+.why {
+  max-width: var(--measure);
+  margin-block: var(--space-s) 0;
+  font-family: var(--sans);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.why p {
+  margin: 0;
+}
+
+.why > p {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.why summary {
+  cursor: pointer;
+  color: var(--accent);
+  inline-size: fit-content;
+  min-block-size: var(--target-min);
+  padding-block: 0.15em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .why summary:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 0.07em;
+    text-underline-offset: 0.18em;
+  }
+}
+
+.why ul {
+  display: grid;
+  gap: var(--space-xs);
+  margin-block: var(--space-xs) var(--space-s);
+  padding-inline-start: 1.2em;
+}
+
+.why strong {
+  color: var(--ink);
+}
+
+/* "How it works" stays in one piece at the end of the last line */
+.why details a {
+  white-space: nowrap;
+}
+
 .coverage {
   font-family: var(--sans);
   font-size: var(--step--1);
@@ -1449,6 +1500,7 @@ th.num {
   .footer-nav,
   .wts-shelf,
   .ask-form,
+  .why,
   .agenda {
     display: none;
   }
