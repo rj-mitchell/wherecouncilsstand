@@ -43,6 +43,11 @@ shared server. It is still being built and tested, and says so on every page.
   and councils: the three routes for corrections and the right of reply, decision 22), accessibility, privacy, terms,
   press and the site's status. Statements in their authors' own words are shown beside votes, briefings and council
   pages, never given to the AI model.
+- **The shared package** (decision 24, 14 November 2026). The site runs on wts-core, the Where They Stand sites'
+  shared package: its state database, limits, answer cache, checks on briefings, reports and statements, model
+  client and search index's store are the family's, and tests hold the site to what it gave before the move. With
+  it the site gained a public corrections log, hiding a page while a concern is decided, a record of how each
+  briefing went with a weekly report, and the family's nightly check.
 - **Next:** a test set of checked votes, before the beta (decision 15).
 
 It was first run on 20 councils chosen by a fixed rule; the pilot's results, and the hand checks of the votes, are in
@@ -56,6 +61,11 @@ described in the charity's family overview.
 
 - **Code.** Adapted from Where Countries Stand's and Where MPs Stand's code (same licence). The search index and
   briefing engine came from Where Countries Stand; the web service, limits and visitor privacy from Where MPs Stand.
+  What the sites had each copied from one another is now one package, **wts-core** (`rj-mitchell/wts-core`),
+  installed as the wheel of a tagged release (`pyproject.toml`), with CI's shared workflows called at the same tag.
+  What is this site's own is in `src/councils/`; `tests/test_dependencies.py` checks that the site uses only what
+  the package makes public and keeps no copy of what the package does. Taking a newer release:
+  [`docs/OPERATIONS.md`](docs/OPERATIONS.md), "A newer wts-core".
 - **Where it runs.** The charity's shared server in London, beside Where MPs Stand, Where Landlords Stand and Where
   Countries Stand, behind the front door in Where MPs Stand's checkout. Where MPs Stand's `docs/HOSTING.md` is the
   manual for the server; [`docs/DEPLOY.md`](docs/DEPLOY.md) has only this site's own steps.
@@ -89,10 +99,10 @@ described in the charity's family overview.
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Product decisions made by the owner. They override everything else |
 | [`docs/DATA.md`](docs/DATA.md) | Data sources, what the councils' web services return, and the links to Where Landlords Stand |
 | [`docs/DESIGN.md`](docs/DESIGN.md) | The website's look: the minute book, in the family's binding |
-| [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | The nightly update, and running the website: limits, costs, reports |
+| [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | The nightly update, and running the website: limits, costs, reports, statements, the corrections log, hiding a page, how briefings went, the state database |
 | [`docs/DEPLOY.md`](docs/DEPLOY.md) | This site's steps on the charity's shared server |
 | [`docs/PILOT.md`](docs/PILOT.md) | The 20-council pilot, the full load, and hand checks of the votes |
-| [`docs/EVALUATION.md`](docs/EVALUATION.md) | The briefing test set (`eval/questions.toml`) and its results |
+| [`docs/EVALUATION.md`](docs/EVALUATION.md) | The briefing test set (`eval/questions.toml`), `councils evaluate` and `councils eval`, and the results |
 | [`outreach/`](outreach/) | Letters asking councils for permission to read their meetings sites |
 
 How the site works, for readers, is on its [How it works](https://wherecouncilsstand.com/methodology) page.

@@ -39,7 +39,8 @@ briefings (without one, the site shows the sources only).
    ```bash
    bash /opt/wherecouncilsstand/deploy/update.sh
    ```
-   It builds and starts the site, and installs its update and backup timers. With no data yet, it finds nothing.
+   It builds and starts the site, and installs its timers: the update, the backup (with the nightly tidy after
+   it), the daily check of the backups, and the weekly report. With no data yet, it finds nothing.
 4. **The front door:** `wherecouncilsstand.com=wherecouncilsstand` in `SITES` in `/opt/hansardgpt/deploy/.env`, and
    the origin certificate pasted with `bash /opt/hansardgpt/deploy/cloudflare.sh site wherecouncilsstand.com`
    (HOSTING.md, "Other sites on this server").
@@ -67,7 +68,7 @@ Commands are run in `/opt/wherecouncilsstand/deploy`. Any `councils` command run
 * **Updates** run once a day (`councils-update.timer`, 03:17 UTC; [`OPERATIONS.md`](OPERATIONS.md)).
 * **New code:** merge it into `main` on GitHub, then `bash /opt/wherecouncilsstand/deploy/update.sh`.
 * **Backups:** everything but the state database can be rebuilt. That database (spending, saved briefings,
-  reports) is copied every night (`councils-backup.timer`) to `/opt/wherecouncilsstand/deploy/backups`, the last 7
+  reports, statements, the record of each briefing) is copied every night (`councils-backup.timer`) to `/opt/wherecouncilsstand/deploy/backups`, the last 7
   kept, and to the charity's B2 bucket as `councils-state-….sqlite.gz`, the last 60 kept there (each site deletes
   only its own old copies). To set up the off-site copy, once, copy the bucket and key from Where MPs Stand's
   settings (its `HANSARD_B2_*` variables) and check them:
@@ -80,8 +81,16 @@ Commands are run in `/opt/wherecouncilsstand/deploy`. Any `councils` command run
   ```
   Every day `councils-backup-check.timer` checks the backups are up to date, and fails (sending the usual alert)
   if the last backup or off-site copy is over two days old ([`OPERATIONS.md`](OPERATIONS.md)).
-  To get a backup back: download the newest `councils-state-….sqlite.gz` from the bucket, unzip it, and copy it into
-  the data volume as `/data/state.db` with the site stopped.
+  To get a backup back: put the `councils-state-….sqlite.gz` wanted in `/opt/wherecouncilsstand/deploy/backups`
+  (download it from the bucket if it is no longer there), stop the site, and run `councils restore` on it
+  ([`OPERATIONS.md`](OPERATIONS.md), "The state database", which also covers a backup made before November 2026's
+  move onto the shared package).
+* **After the backup, the nightly tidy** (`councils tidy`, run by the backup's unit) deletes what the privacy
+  notice says is deleted in time, and **every Monday the weekly report** on how briefings went is written
+  (`councils-weekly-report.timer`): [`OPERATIONS.md`](OPERATIONS.md), "How briefings went" and "What is deleted,
+  and when".
+* **The family's nightly check** needs `COUNCILS_CHECK_TOKEN` in `.env` ([`OPERATIONS.md`](OPERATIONS.md), "The
+  family's nightly check"). Without it the site runs as before, and that check reports the site as not set up.
 * **The privacy notice** (`web/privacy.html`) names Cloudflare, which carries the site's visits, and says requests
   are not logged (`councils serve` turns the access log off, and the front door keeps none). Keep it true when
   changing either.
