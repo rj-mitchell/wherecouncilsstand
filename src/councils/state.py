@@ -48,6 +48,9 @@ BACKUPS = BackupSpec(prefix="councils-state-", keep=14, keep_offsite=60, site=SI
 # Nothing else that holds old rows (the copy of the database made before the one-off import, the weekly reports)
 # is kept longer than the backups are: one a night, 60 kept off site, so about two months (the privacy page).
 BACKUPS_KEPT_DAYS = BACKUPS.keep_offsite
+# where the nightly backup is written on the server (deploy/councils-backup.service), and where the daily check and
+# the family's nightly check look for it
+BACKUPS_FOLDER = "/backups"
 
 # What `councils backup-check` says when backups or their off-site copies have stopped (each a sentence, as before)
 BACKUP_ALERTS = AlertWording(

@@ -11,6 +11,7 @@ costs nothing.
 
 from __future__ import annotations
 
+import hmac
 import json
 import logging
 import re
@@ -23,8 +24,8 @@ from pathlib import Path
 from typing import Any, Literal
 from urllib.parse import urlsplit
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
+from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 from wts_core.briefing import (
@@ -38,6 +39,7 @@ from wts_core.briefing import (
     desk_parts,
     sse,
 )
+from wts_core.cli import backup_ages, check_route, last_day_figures
 from wts_core.observe import LOGGER, SqliteBriefingLog, json_logging
 from wts_core.ports import SYSTEM_CLOCK, SYSTEM_RANDOM, Clock, Random
 from wts_core.replies import Refused, Replies
@@ -207,6 +209,8 @@ class Councils:
     replies: Replies
     clock: Clock
     random: Random
+    # the family's check token, as this site holds it (COUNCILS_CHECK_TOKEN in deploy/.env); None: not set up
+    check_token: str | None = None
 
 
 def new_briefing_id(chance: Random) -> str:
@@ -235,7 +239,7 @@ def build(settings: Settings, state: StateDB | None = None, *, clock: Clock = SY
                       group_of=lambda card: card.get("group"))
     replies = right_of_reply.open_replies(db, lambda: data, parts.archive, clock)
     return Councils(settings=settings, db=db, data=data, parts=parts, log=log, desk=desk, replies=replies,
-                    clock=clock, random=random)
+                    clock=clock, random=random, check_token=SITE.env("CHECK_TOKEN"))
 
 
 def start_logging(settings: Settings, clock: Clock = SYSTEM_CLOCK) -> logging.Handler:
@@ -303,6 +307,15 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             raise HTTPException(429, exc.message) from None
         return v
 
+    def is_the_nightly_check(request: Request) -> bool:
+        """Whether the request carries the family's check token (wts-core docs/adr/0010). Such a question skips
+        the answer cache, or it would prove nothing on six nights in seven, and its record is kept apart from
+        readers' (kind "check"), so the statistics count only what readers asked."""
+        wanted = (site_parts.check_token or "").strip()
+        scheme, _, presented = request.headers.get("authorization", "").partition(" ")
+        return bool(wanted) and scheme.lower() == "bearer" and hmac.compare_digest(presented.strip().encode(),
+                                                                                  wanted.encode())
+
     app.add_middleware(HeadAsGet)
 
     @app.middleware("http")
@@ -352,12 +365,27 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             "briefings_note": paused,
         }
 
+    # Counts, ages and versions for whoever holds the family's check token, and for no one else (wts-core
+    # docs/adr/0010): 404 with no token set on this site, 401 for a wrong one. Never a question, a name or a word
+    # of a report: what is waiting and for how long, how old the newest backup and its off-site copy are, and how
+    # the last day's briefings ended.
+    check = check_route(SITE, token=site_parts.check_token, replies=replies,
+                        backups=lambda: backup_ages(Path(state_database.BACKUPS_FOLDER), state_database.BACKUPS,
+                                                    clock=clock),
+                        figures=lambda: last_day_figures(site_parts.log, clock=clock), clock=clock)
+
+    @app.get("/api/check", include_in_schema=False)
+    def api_check(authorization: str | None = Header(None)):
+        status_code, body = check(authorization)
+        return JSONResponse(body, status_code=status_code)
+
     # ---- questions -----------------------------------------------------------------------------------
     @app.post("/api/ask")
     def ask(body: AskBody, request: Request):
         v = visitor(request)
         p = get_pipeline()
         now = hidden()
+        check = is_the_nightly_check(request)
         req = AskRequest(question=body.question, mode=body.mode, plan=body.plan, history=body.history_dicts(),
                          without_councils=tuple(sorted(now.councils)), without_votes=tuple(sorted(now.votes)))
 
@@ -380,7 +408,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         # are not kept with the saved briefing: a shared page should not carry an earlier conversation.
         events = desk.handle(Ask(
             question=body.question, visitor=v, write=lambda: p.run(req), sources_only=sources_only,
-            cache_key=answer_key(body, data.stamp(), settings.answer.get("model"), now.notes),
+            cache_key=None if check else answer_key(body, data.stamp(), settings.answer.get("model"), now.notes),
+            kind="check" if check else "reader",
             only_sources=body.sources_only, model_available=p.has_model(), follow_up=bool(body.history),
             mode=body.mode,
             filters_set=tuple(sorted(k for k, val in ((body.plan or {}).get("filters") or {}).items() if val)),

@@ -58,6 +58,7 @@ from councils.replies import OWNERS_MESSAGES, open_replies
 from councils.state import (
     BACKUP_ALERTS,
     BACKUPS,
+    BACKUPS_FOLDER,
     BACKUPS_KEPT_DAYS,
     forget_old_secret,
     open_archive,
@@ -419,7 +420,7 @@ OPS_WORDING = OpsWording(
              "is checked before anything is replaced, and the database it replaces is kept beside it.",
         archive_help="a backup: /backups/councils-state-YYYY-MM-DD.sqlite.gz", yes_help="don't ask first"),
     backup_check=BackupCheckWords(
-        folder="/backups",
+        folder=BACKUPS_FOLDER,
         no_folder="error: there is no backup folder at {folder}",
         alert="{level}: {text}",
         up_to_date="Backups are up to date.",

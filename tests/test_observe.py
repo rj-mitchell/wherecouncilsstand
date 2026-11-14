@@ -8,14 +8,18 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
 from test_api import events, rows, site_with
-from test_pipeline import FakeClient, settings  # noqa: F401 - the fixture
+from test_pipeline import TODAY, FakeClient, as_model, settings  # noqa: F401 - the fixture
 from typer.testing import CliRunner
+from wts_core.adapters.hashing import HashingEmbedder
 from wts_core.observe import LOGGER
 from wts_core.testing import FixedClock
 
 from councils import cli
-from councils.api.app import start_logging
+from councils.api.app import create_app, start_logging
+from councils.engine import Engine
+from councils.rag.pipeline import Pipeline
 from councils.state import forget_old_secret, open_state
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -191,3 +195,41 @@ def test_every_command_the_timers_run_is_one_the_site_has():
     installed = (ROOT / "deploy" / "update.sh").read_text()
     for unit in sorted((ROOT / "deploy").glob("councils-*.*")):
         assert unit.name in installed, f"deploy/update.sh does not install {unit.name}"
+
+
+def test_the_familys_check_gets_counts_and_ages_and_nothing_a_reader_wrote(settings, monkeypatch):  # noqa: F811
+    """GET /api/check (wts-core docs/adr/0010): not there until the site has the family's token; then only for
+    whoever presents it. A question asked with the token is written afresh, and kept apart from readers'."""
+    c, _, site, _ = site_with(settings)
+    assert c.get("/api/check").status_code == 404 and c.get("/api/check").json() == {"detail": "Not Found"}
+    assert c.get("/api/check", headers={"Authorization": "Bearer anything"}).status_code == 404
+
+    monkeypatch.setenv("COUNCILS_CHECK_TOKEN", "the-family-token")
+    clock = FixedClock(datetime.now(UTC))
+    fake = FakeClient()
+    app = create_app(settings, pipeline=Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY),
+                                                 model=as_model(fake), today=TODAY), clock=clock)
+    c, site = TestClient(app), app.state.councils
+    assert c.get("/api/check").status_code == 401
+    assert c.get("/api/check", headers={"Authorization": "Bearer wrong"}).json() == {}
+    with_token = {"Authorization": "Bearer the-family-token"}
+    c.post("/api/ask", json={"question": BINS})
+    c.post("/api/report", json={"kind": "error", "message": "The date in this briefing is wrong.", "page": "",
+                                "contact": "reader@example.org"})
+    # the check's own question: never from the cache (it would prove nothing on six nights in seven)
+    for _ in range(2):
+        final = events(c.post("/api/ask", json={"question": BINS}, headers=with_token))[-1]
+        assert final["type"] == "final" and not final.get("cached")
+    assert len(fake.calls) == 3
+    assert [r["kind"] for r in record(site)] == ["reader", "check", "check"]
+
+    clock.advance(minutes=5)
+    answer = c.get("/api/check", headers=with_token)
+    assert answer.status_code == 200
+    body = answer.json()
+    assert set(body) == {"site", "at", "versions", "waiting", "backups", "figures"} and body["site"] == "councils"
+    assert body["waiting"] == {"reports": 1, "statements": 0, "hidden": 0, "oldest_working_days": 0}
+    assert set(body["backups"]) == {"newest_hours", "offsite_hours", "offsite_ok"}
+    assert body["figures"]["briefings"] == 1 and body["figures"]["checks"] == 2 and body["figures"]["errors"] == 0
+    assert "bin collections" not in answer.text and "reader@example.org" not in answer.text
+    assert "the-family-token" not in answer.text
