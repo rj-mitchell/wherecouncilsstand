@@ -1,0 +1,880 @@
+{
+ "cache": [
+  {
+   "gives": null,
+   "step": [
+    "get",
+    "k1",
+    168
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "put",
+    "k1",
+    168
+   ]
+  },
+  {
+   "gives": [
+    {
+     "plan": {
+      "question": "Q"
+     },
+     "type": "plan"
+    },
+    {
+     "text": "words",
+     "type": "text"
+    },
+    {
+     "answer": {
+      "segments": []
+     },
+     "cached": true,
+     "type": "final",
+     "when": "2026-11-13"
+    }
+   ],
+   "step": [
+    "get",
+    "k1",
+    168
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "get",
+    "k1",
+    0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "advance",
+    3600.0
+   ]
+  },
+  {
+   "gives": [
+    {
+     "plan": {
+      "question": "Q"
+     },
+     "type": "plan"
+    },
+    {
+     "text": "words",
+     "type": "text"
+    },
+    {
+     "answer": {
+      "segments": []
+     },
+     "cached": true,
+     "type": "final",
+     "when": "2026-11-13"
+    }
+   ],
+   "step": [
+    "get",
+    "k1",
+    168
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "get",
+    "k1",
+    1
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "get",
+    "k1",
+    0.5
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "put",
+    "k2",
+    168
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "advance",
+    601199.0
+   ]
+  },
+  {
+   "gives": [
+    {
+     "plan": {
+      "question": "Q"
+     },
+     "type": "plan"
+    },
+    {
+     "text": "words",
+     "type": "text"
+    },
+    {
+     "answer": {
+      "segments": []
+     },
+     "cached": true,
+     "type": "final",
+     "when": "2026-11-13"
+    }
+   ],
+   "step": [
+    "get",
+    "k1",
+    168
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "advance",
+    1.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "get",
+    "k1",
+    168
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "advance",
+    1.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "get",
+    "k1",
+    168
+   ]
+  },
+  {
+   "gives": [
+    {
+     "plan": {
+      "question": "Q"
+     },
+     "type": "plan"
+    },
+    {
+     "text": "words",
+     "type": "text"
+    },
+    {
+     "answer": {
+      "segments": []
+     },
+     "cached": true,
+     "type": "final",
+     "when": "2026-11-13"
+    }
+   ],
+   "step": [
+    "get",
+    "k2",
+    168
+   ]
+  },
+  {
+   "gives": [
+    "k1",
+    "k2"
+   ],
+   "step": [
+    "keys"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "put",
+    "k3",
+    168
+   ]
+  },
+  {
+   "gives": [
+    "k2",
+    "k3"
+   ],
+   "step": [
+    "keys"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "put",
+    "k2",
+    168
+   ]
+  },
+  {
+   "gives": [
+    {
+     "plan": {
+      "question": "Q"
+     },
+     "type": "plan"
+    },
+    {
+     "text": "words",
+     "type": "text"
+    },
+    {
+     "answer": {
+      "segments": []
+     },
+     "cached": true,
+     "type": "final",
+     "when": "2026-11-13"
+    }
+   ],
+   "step": [
+    "get",
+    "k2",
+    168
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "advance",
+    720000.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "put",
+    "k4",
+    0
+   ]
+  },
+  {
+   "gives": [
+    "k4"
+   ],
+   "step": [
+    "keys"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "get",
+    "k4",
+    0
+   ]
+  },
+  {
+   "gives": [
+    {
+     "plan": {
+      "question": "Q"
+     },
+     "type": "plan"
+    },
+    {
+     "text": "words",
+     "type": "text"
+    },
+    {
+     "answer": {
+      "segments": []
+     },
+     "cached": true,
+     "type": "final",
+     "when": "2026-11-13"
+    }
+   ],
+   "step": [
+    "get",
+    "k4",
+    168
+   ]
+  }
+ ],
+ "in_progress": [
+  {
+   "gives": 0.0,
+   "step": [
+    "pending",
+    0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "start",
+    "a"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "start",
+    "a"
+   ]
+  },
+  {
+   "gives": "A briefing is already being written for you; please wait for it to finish.",
+   "step": [
+    "start",
+    "a"
+   ]
+  },
+  {
+   "gives": 0.3,
+   "step": [
+    "pending",
+    0
+   ]
+  },
+  {
+   "gives": 0.15,
+   "step": [
+    "pending",
+    1
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "start",
+    "b"
+   ]
+  },
+  {
+   "gives": "Many briefings are being written at the moment; please try again in a minute.",
+   "step": [
+    "start",
+    "c"
+   ]
+  },
+  {
+   "gives": 0.3,
+   "step": [
+    "pending",
+    1
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "finish",
+    "a"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "start",
+    "c"
+   ]
+  },
+  {
+   "gives": "Many briefings are being written at the moment; please try again in a minute.",
+   "step": [
+    "start",
+    "c"
+   ]
+  },
+  {
+   "gives": "Many briefings are being written at the moment; please try again in a minute.",
+   "step": [
+    "start",
+    "a"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "finish",
+    "a"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "finish",
+    "b"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "finish",
+    "c"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "finish",
+    "c"
+   ]
+  },
+  {
+   "gives": 0.0,
+   "step": [
+    "pending",
+    0
+   ]
+  },
+  {
+   "gives": 0.0,
+   "step": [
+    "pending",
+    3
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "start",
+    "d"
+   ]
+  }
+ ],
+ "limits": {
+  "daily_spend_cap_usd": 0.05,
+  "monthly_spend_cap_usd": 0.12,
+  "per_visitor_daily_questions": 3
+ },
+ "start": "2026-11-29T22:00:00+00:00",
+ "steps": [
+  {
+   "gives": null,
+   "step": [
+    "check",
+    "v1",
+    0.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "paused",
+    0.0
+   ]
+  },
+  {
+   "gives": 0,
+   "step": [
+    "count",
+    "v1"
+   ]
+  },
+  {
+   "gives": [
+    0.0,
+    0.0
+   ],
+   "step": [
+    "spent"
+   ]
+  },
+  {
+   "gives": 0.0002,
+   "step": [
+    "spend",
+    "parse",
+    "claude-haiku-5-5",
+    3,
+    "v1"
+   ]
+  },
+  {
+   "gives": 0.004,
+   "step": [
+    "spend",
+    "answer",
+    "claude-sonnet-5-5",
+    3,
+    "v1"
+   ]
+  },
+  {
+   "gives": 1,
+   "step": [
+    "count",
+    "v1"
+   ]
+  },
+  {
+   "gives": 0,
+   "step": [
+    "count",
+    "v2"
+   ]
+  },
+  {
+   "gives": [
+    0.0042,
+    0.0042
+   ],
+   "step": [
+    "spent"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "check",
+    "v1",
+    0.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "check",
+    "v1",
+    0.04
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "check",
+    "v1",
+    0.045
+   ]
+  },
+  {
+   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "step": [
+    "check",
+    "v1",
+    0.0461
+   ]
+  },
+  {
+   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "step": [
+    "paused",
+    0.15
+   ]
+  },
+  {
+   "gives": 0.004,
+   "step": [
+    "spend",
+    "answer",
+    "claude-sonnet-5-5",
+    3,
+    "v1"
+   ]
+  },
+  {
+   "gives": 0.004,
+   "step": [
+    "spend",
+    "answer",
+    "claude-sonnet-5-5",
+    3,
+    "v1"
+   ]
+  },
+  {
+   "gives": 3,
+   "step": [
+    "count",
+    "v1"
+   ]
+  },
+  {
+   "gives": "You have asked a lot of questions today, so new briefings are paused until tomorrow.",
+   "step": [
+    "check",
+    "v1",
+    0.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "check",
+    "v2",
+    0.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "check",
+    null,
+    0.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "paused",
+    0.0
+   ]
+  },
+  {
+   "gives": 0.0266,
+   "step": [
+    "spend",
+    "answer",
+    "claude-sonnet-5-5",
+    4,
+    "v2"
+   ]
+  },
+  {
+   "gives": [
+    0.0388,
+    0.0388
+   ],
+   "step": [
+    "spent"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "check",
+    "v2",
+    0.0
+   ]
+  },
+  {
+   "gives": "You have asked a lot of questions today, so new briefings are paused until tomorrow.",
+   "step": [
+    "check",
+    "v1",
+    0.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "paused",
+    0.0
+   ]
+  },
+  {
+   "gives": 0.004,
+   "step": [
+    "spend",
+    "parse",
+    null,
+    3,
+    null
+   ]
+  },
+  {
+   "gives": 0.0,
+   "step": [
+    "spend",
+    "answer",
+    "claude-sonnet-5-5",
+    null,
+    "v2"
+   ]
+  },
+  {
+   "gives": 1,
+   "step": [
+    "count",
+    "v2"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "set",
+    "2026-11-29T23:59:59+00:00"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "check",
+    "v2",
+    0.0
+   ]
+  },
+  {
+   "gives": 3,
+   "step": [
+    "count",
+    "v1"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "set",
+    "2026-11-30T00:00:00+00:00"
+   ]
+  },
+  {
+   "gives": 0,
+   "step": [
+    "count",
+    "v1"
+   ]
+  },
+  {
+   "gives": [
+    0.0,
+    0.0428
+   ],
+   "step": [
+    "spent"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "check",
+    "v1",
+    0.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "paused",
+    0.0
+   ]
+  },
+  {
+   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "step": [
+    "paused",
+    0.05
+   ]
+  },
+  {
+   "gives": 0.0828,
+   "step": [
+    "spend",
+    "answer",
+    "claude-sonnet-5-5",
+    5,
+    "v3"
+   ]
+  },
+  {
+   "gives": [
+    0.0828,
+    0.1256
+   ],
+   "step": [
+    "spent"
+   ]
+  },
+  {
+   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "step": [
+    "check",
+    "v3",
+    0.0
+   ]
+  },
+  {
+   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "step": [
+    "paused",
+    0.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "set",
+    "2026-11-30T23:59:59+00:00"
+   ]
+  },
+  {
+   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "step": [
+    "paused",
+    0.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "set",
+    "2026-12-01T00:00:00+00:00"
+   ]
+  },
+  {
+   "gives": [
+    0.0,
+    0.0
+   ],
+   "step": [
+    "spent"
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "paused",
+    0.0
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "check",
+    "v3",
+    0.0
+   ]
+  },
+  {
+   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "step": [
+    "paused",
+    0.12
+   ]
+  },
+  {
+   "gives": null,
+   "step": [
+    "paused",
+    0.049
+   ]
+  },
+  {
+   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "step": [
+    "paused",
+    0.05
+   ]
+  }
+ ]
+}

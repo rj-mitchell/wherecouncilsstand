@@ -1,0 +1,4904 @@
+{
+ "british": {
+  "": "",
+  "A program to catalog gray areas: 40 percent traveled toward the theater.": "A programme to catalogue grey areas: 40 per cent travelled towards the theatre.",
+  "Bin collections, in every council.": "Bin collections, in every council.",
+  "Labor-run councils' programs for neighborhoods since 2020.": "Labour-run councils' programmes for neighbourhoods since 2020.",
+  "The organization of recycling centers, and how councils analyze costs.": "The organisation of recycling centres, and how councils analyse costs.",
+  "What the World Health Organization said; \"the color of money\" and the Center Parcs proposal.": "What the World Health Organization said; \"the color of money\" and the Center Parcs proposal.",
+  "color": "colour"
+ },
+ "named": {
+  "American spellings in the model's own words, never in a quotation": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.078,
+    "loaded_words": 0,
+    "markdown": "The council's programme to organise recycling centres was criticised, and its labour costs analysed. Members said \"the program was organized in the center\" and the World Health Organization was cited. Seized bins were prized. Members welcomed the programme [Source 2] “The color of the bins was not favored”, one said; the colour was later changed towards grey, and 40 per cent of neighbours approved.",
+    "no_records": false,
+    "quotes_total": 2,
+    "quotes_unverified": 2,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 155,
+        "start": 114,
+        "text": "the program was organized in the center"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": "The council's programme to organise recycling centres was criticised, and its labour costs analysed. Members said \"the program was organized in the center\" and the World Health Organization was cited. Seized bins were prized. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Members welcomed the programme and noted that 62% of residents favoured the change (a) in rural wards and",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "Members welcomed the programme"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 40,
+        "start": 1,
+        "text": "The color of the bins was not favored"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": " “The color of the bins was not favored”, one said; the colour was later changed towards grey, and 40 per cent of neighbours approved."
+     }
+    ],
+    "unsupported_segments": 2
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.078,
+    "loaded_words": 0,
+    "markdown": "The council's programme to organise recycling centres was criticised, and its labour costs analysed. Members said \"the program was organized in the center\" and the World Health Organization was cited. Seized bins were prized. Members welcomed the programme [Source 2] “The color of the bins was not favored”, one said; the colour was later changed towards grey, and 40 per cent of neighbours approved.",
+    "no_records": false,
+    "quotes_total": 2,
+    "quotes_unverified": 2,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 155,
+        "start": 114,
+        "text": "the program was organized in the center"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": "The council's programme to organise recycling centres was criticised, and its labour costs analysed. Members said \"the program was organized in the center\" and the World Health Organization was cited. Seized bins were prized. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Members welcomed the programme and noted that 62% of residents favoured the change (a) in rural wards and",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "Members welcomed the programme"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 40,
+        "start": 1,
+        "text": "The color of the bins was not favored"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": " “The color of the bins was not favored”, one said; the colour was later changed towards grey, and 40 per cent of neighbours approved."
+     }
+    ],
+    "unsupported_segments": 2
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.078,
+    "loaded_words": 0,
+    "markdown": "The council's programme to organise recycling centres was criticised, and its labour costs analysed. Members said \"the program was organized in the center\" and the World Health Organization was cited. Seized bins were prized. Members welcomed the programme [Source 2] “The color of the bins was not favored”, one said; the colour was later changed towards grey, and 40 per cent of neighbours approved.",
+    "no_records": false,
+    "quotes_total": 2,
+    "quotes_unverified": 2,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 155,
+        "start": 114,
+        "text": "the program was organized in the center"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": "The council's programme to organise recycling centres was criticised, and its labour costs analysed. Members said \"the program was organized in the center\" and the World Health Organization was cited. Seized bins were prized. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Members welcomed the programme and noted that 62% of residents favoured the change (a) in rural wards and",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "Members welcomed the programme"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 40,
+        "start": 1,
+        "text": "The color of the bins was not favored"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": " “The color of the bins was not favored”, one said; the colour was later changed towards grey, and 40 per cent of neighbours approved."
+     }
+    ],
+    "unsupported_segments": 2
+   }
+  },
+  "a citation across two passages, joined without the space": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "Residents favoured the change in rural wards and the town centre. [Source 2]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "62% of residents favoured the change (a) in rural wards and(b) in the town centre.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "Residents favoured the change in rural wards and the town centre."
+     }
+    ],
+    "unsupported_segments": 0
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "Residents favoured the change in rural wards and the town centre. [Source 2]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "62% of residents favoured the change (a) in rural wards and(b) in the town centre.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "Residents favoured the change in rural wards and the town centre."
+     }
+    ],
+    "unsupported_segments": 0
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "Residents favoured the change in rural wards and the town centre. [Source 2]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "62% of residents favoured the change (a) in rural wards and(b) in the town centre.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "Residents favoured the change in rural wards and the town centre."
+     }
+    ],
+    "unsupported_segments": 0
+   }
+  },
+  "a citation in curly quotes of a source in straight ones, and the other way": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 2,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "Jones called it fair. [Source 3] Kitching moved the motion. [Source 1]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "it was \"a fair contribution\" from those who could afford it",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "Jones called it fair."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor  Kitching moved\nthat weekly bin collections",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " Kitching moved the motion."
+     }
+    ],
+    "unsupported_segments": 0
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 2,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "Jones called it fair. [Source 3] Kitching moved the motion. [Source 1]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "it was \"a fair contribution\" from those who could afford it",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "Jones called it fair."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor  Kitching moved\nthat weekly bin collections",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " Kitching moved the motion."
+     }
+    ],
+    "unsupported_segments": 0
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 2,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "Jones called it fair. [Source 3] Kitching moved the motion. [Source 1]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "it was \"a fair contribution\" from those who could afford it",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "Jones called it fair."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor  Kitching moved\nthat weekly bin collections",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " Kitching moved the motion."
+     }
+    ],
+    "unsupported_segments": 0
+   }
+  },
+  "a citation that is right, one of another source's words, one of no source": {
+   "answer": {
+    "citations_invalid": 2,
+    "citations_total": 8,
+    "grounded_ratio": 0.64,
+    "loaded_words": 0,
+    "markdown": "Barnsley's motion to restore weekly collections was lost. [Source 1] Guildford adopted its strategy. Cornwall agreed a premium. It applies from April 2026. [Source 3] Two sources say so. [Source 2][Source 3]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       },
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Barnsley's motion to restore weekly collections was lost."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "invalid",
+      "text": " Guildford adopted its strategy."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "invalid",
+      "text": " Cornwall agreed a premium."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Cabinet agreed to charge a 100% council tax premium on second homes from April 2026.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": " It applies from April 2026."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       },
+       {
+        "cited_text": "The Cabinet agreed to charge a 100% council tax premium on second homes from April 2026.",
+        "source": 3
+       },
+       {
+        "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2,
+       3
+      ],
+      "status": "cited",
+      "text": " Two sources say so."
+     }
+    ],
+    "unsupported_segments": 0
+   },
+   "older": {
+    "citations_invalid": 2,
+    "citations_total": 8,
+    "grounded_ratio": 0.64,
+    "loaded_words": 0,
+    "markdown": "Barnsley's motion to restore weekly collections was lost. [Source 1] Guildford adopted its strategy. Cornwall agreed a premium. It applies from April 2026. [Source 3] Two sources say so. [Source 2][Source 3]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       },
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Barnsley's motion to restore weekly collections was lost."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "invalid",
+      "text": " Guildford adopted its strategy."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "invalid",
+      "text": " Cornwall agreed a premium."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Cabinet agreed to charge a 100% council tax premium on second homes from April 2026.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": " It applies from April 2026."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       },
+       {
+        "cited_text": "The Cabinet agreed to charge a 100% council tax premium on second homes from April 2026.",
+        "source": 3
+       },
+       {
+        "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2,
+       3
+      ],
+      "status": "cited",
+      "text": " Two sources say so."
+     }
+    ],
+    "unsupported_segments": 0
+   },
+   "shown_again": {
+    "citations_invalid": 2,
+    "citations_total": 8,
+    "grounded_ratio": 0.64,
+    "loaded_words": 0,
+    "markdown": "Barnsley's motion to restore weekly collections was lost. [Source 1] Guildford adopted its strategy. Cornwall agreed a premium. It applies from April 2026. [Source 3] Two sources say so. [Source 2][Source 3]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       },
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Barnsley's motion to restore weekly collections was lost."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "invalid",
+      "text": " Guildford adopted its strategy."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "invalid",
+      "text": " Cornwall agreed a premium."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Cabinet agreed to charge a 100% council tax premium on second homes from April 2026.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": " It applies from April 2026."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       },
+       {
+        "cited_text": "The Cabinet agreed to charge a 100% council tax premium on second homes from April 2026.",
+        "source": 3
+       },
+       {
+        "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2,
+       3
+      ],
+      "status": "cited",
+      "text": " Two sources say so."
+     }
+    ],
+    "unsupported_segments": 0
+   }
+  },
+  "a claim with no citation, long and short": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.267,
+    "loaded_words": 0,
+    "markdown": "Councils across England have cut waste services since 2019, and residents have objected. Costs rose. Guildford adopted its strategy. [Source 2] Most councils agree.\nSpending fell by a fifth in real terms over the period.\n",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Councils across England have cut waste services since 2019, and residents have objected."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " Costs rose."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": " Guildford adopted its strategy."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " Most councils agree.\nSpending fell by a fifth in real terms over the period.\n"
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.267,
+    "loaded_words": 0,
+    "markdown": "Councils across England have cut waste services since 2019, and residents have objected. Costs rose. Guildford adopted its strategy. [Source 2] Most councils agree.\nSpending fell by a fifth in real terms over the period.\n",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Councils across England have cut waste services since 2019, and residents have objected."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " Costs rose."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": " Guildford adopted its strategy."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " Most councils agree.\nSpending fell by a fifth in real terms over the period.\n"
+     }
+    ],
+    "unsupported_segments": 3
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.267,
+    "loaded_words": 0,
+    "markdown": "Councils across England have cut waste services since 2019, and residents have objected. Costs rose. Guildford adopted its strategy. [Source 2] Most councils agree.\nSpending fell by a fifth in real terms over the period.\n",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Councils across England have cut waste services since 2019, and residents have objected."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " Costs rose."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": " Guildford adopted its strategy."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " Most councils agree.\nSpending fell by a fifth in real terms over the period.\n"
+     }
+    ],
+    "unsupported_segments": 1
+   }
+  },
+  "a lead-in written in pieces (tests/test_verify.py)": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.524,
+    "loaded_words": 0,
+    "markdown": "- Members differed on how often bins should be collected, as when the Leader, Cllr. Jones said \"The council agreed to restore weekly bin collections from April.\" [Source 1] The opposition then voted against every budget since 2019. ",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "- Members differed on how often bins should be collected, as when the Leader, Cllr. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Jones said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The council agreed to restore weekly bin collections from April.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "\"The council agreed to restore weekly bin collections from April.\""
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " The opposition then voted against every budget since 2019. "
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.524,
+    "loaded_words": 0,
+    "markdown": "- Members differed on how often bins should be collected, as when the Leader, Cllr. Jones said \"The council agreed to restore weekly bin collections from April.\" [Source 1] The opposition then voted against every budget since 2019. ",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "- Members differed on how often bins should be collected, as when the Leader, Cllr. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Jones said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The council agreed to restore weekly bin collections from April.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "\"The council agreed to restore weekly bin collections from April.\""
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " The opposition then voted against every budget since 2019. "
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.524,
+    "loaded_words": 0,
+    "markdown": "- Members differed on how often bins should be collected, as when the Leader, Cllr. Jones said \"The council agreed to restore weekly bin collections from April.\" [Source 1] The opposition then voted against every budget since 2019. ",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "- Members differed on how often bins should be collected, as when the Leader, Cllr. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Jones said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The council agreed to restore weekly bin collections from April.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "\"The council agreed to restore weekly bin collections from April.\""
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " The opposition then voted against every budget since 2019. "
+     }
+    ],
+    "unsupported_segments": 1
+   }
+  },
+  "a long uncited piece breaks the lead-in (tests/test_verify.py)": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.462,
+    "loaded_words": 0,
+    "markdown": "Cllr. The council has cut every library budget since 2019 and closed six branches. \"The council agreed to restore weekly bin collections from April.\" [Source 1]",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Cllr. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "The council has cut every library budget since 2019 and closed six branches. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The council agreed to restore weekly bin collections from April.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "\"The council agreed to restore weekly bin collections from April.\""
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.462,
+    "loaded_words": 0,
+    "markdown": "Cllr. The council has cut every library budget since 2019 and closed six branches. \"The council agreed to restore weekly bin collections from April.\" [Source 1]",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Cllr. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "The council has cut every library budget since 2019 and closed six branches. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The council agreed to restore weekly bin collections from April.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "\"The council agreed to restore weekly bin collections from April.\""
+     }
+    ],
+    "unsupported_segments": 2
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.462,
+    "loaded_words": 0,
+    "markdown": "Cllr. The council has cut every library budget since 2019 and closed six branches. \"The council agreed to restore weekly bin collections from April.\" [Source 1]",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Cllr. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "The council has cut every library budget since 2019 and closed six branches. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The council agreed to restore weekly bin collections from April.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "\"The council agreed to restore weekly bin collections from April.\""
+     }
+    ],
+    "unsupported_segments": 1
+   }
+  },
+  "a quotation across two blocks, and an apostrophe that is no quotation": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.143,
+    "loaded_words": 0,
+    "markdown": "The Leader said the company's \"positioning of that company [Source 1] was a matter\" for others. It's the council's view that residents' bins weren't collected.",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The Leader said the company's \"positioning "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Leader said that the positioning of of that company was a matter for the cabinet.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "of that company"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " was a matter\" for others. It's the council's view that residents' bins weren't collected."
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.143,
+    "loaded_words": 0,
+    "markdown": "The Leader said the company's \"positioning of that company [Source 1] was a matter\" for others. It's the council's view that residents' bins weren't collected.",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The Leader said the company's \"positioning "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Leader said that the positioning of of that company was a matter for the cabinet.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "of that company"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " was a matter\" for others. It's the council's view that residents' bins weren't collected."
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.143,
+    "loaded_words": 0,
+    "markdown": "The Leader said the company's \"positioning of that company [Source 1] was a matter\" for others. It's the council's view that residents' bins weren't collected.",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The Leader said the company's \"positioning "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Leader said that the positioning of of that company was a matter for the cabinet.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "of that company"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " was a matter\" for others. It's the council's view that residents' bins weren't collected."
+     }
+    ],
+    "unsupported_segments": 1
+   }
+  },
+  "a sentence before a lead-in is a claim; the lead-in is not": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 4,
+    "grounded_ratio": 0.302,
+    "loaded_words": 0,
+    "markdown": "Opposition councillors criticised the budget. Cllr Jones said on 4 May that \"it was a fair contribution\" [Source 3] The vote was close. Mr. Smith, the portfolio holder, said the motion was lost [Source 1]. Was the funding cut by 40% in real terms? Cllr Jones said it was fair [Source 3]\n- Spending on the scheme rose by 40% under the last administration\n- Cllr Jones said a fair contribution [Source 3]",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Opposition councillors criticised the budget. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Cllr Jones said on 4 May that "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "\"it was a fair contribution\""
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " The vote was close. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Mr. Smith, the portfolio holder, said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "the motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ". Was the funding cut by 40% in real terms? "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Cllr Jones said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "it was fair"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "- Spending on the scheme rose by 40% under the last administration\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "- Cllr Jones said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "a fair contribution"
+     }
+    ],
+    "unsupported_segments": 4
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 4,
+    "grounded_ratio": 0.302,
+    "loaded_words": 0,
+    "markdown": "Opposition councillors criticised the budget. Cllr Jones said on 4 May that \"it was a fair contribution\" [Source 3] The vote was close. Mr. Smith, the portfolio holder, said the motion was lost [Source 1]. Was the funding cut by 40% in real terms? Cllr Jones said it was fair [Source 3]\n- Spending on the scheme rose by 40% under the last administration\n- Cllr Jones said a fair contribution [Source 3]",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Opposition councillors criticised the budget. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Cllr Jones said on 4 May that "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "\"it was a fair contribution\""
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " The vote was close. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Mr. Smith, the portfolio holder, said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "the motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ". Was the funding cut by 40% in real terms? "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Cllr Jones said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "it was fair"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "- Spending on the scheme rose by 40% under the last administration\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "- Cllr Jones said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "a fair contribution"
+     }
+    ],
+    "unsupported_segments": 4
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 4,
+    "grounded_ratio": 0.302,
+    "loaded_words": 0,
+    "markdown": "Opposition councillors criticised the budget. Cllr Jones said on 4 May that \"it was a fair contribution\" [Source 3] The vote was close. Mr. Smith, the portfolio holder, said the motion was lost [Source 1]. Was the funding cut by 40% in real terms? Cllr Jones said it was fair [Source 3]\n- Spending on the scheme rose by 40% under the last administration\n- Cllr Jones said a fair contribution [Source 3]",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Opposition councillors criticised the budget. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Cllr Jones said on 4 May that "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "\"it was a fair contribution\""
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " The vote was close. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Mr. Smith, the portfolio holder, said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "the motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ". Was the funding cut by 40% in real terms? "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Cllr Jones said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "it was fair"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "- Spending on the scheme rose by 40% under the last administration\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "- Cllr Jones said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "a fair contribution"
+     }
+    ],
+    "unsupported_segments": 4
+   }
+  },
+  "an empty block and one of spaces": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "  \n",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ""
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "  \n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ""
+     }
+    ],
+    "unsupported_segments": 0
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "  \n",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ""
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "  \n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ""
+     }
+    ],
+    "unsupported_segments": 0
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "  \n",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ""
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "  \n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ""
+     }
+    ],
+    "unsupported_segments": 0
+   }
+  },
+  "headings, labels, bullets, dates and joins": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 4,
+    "grounded_ratio": 0.701,
+    "loaded_words": 0,
+    "markdown": "## Councils controlled by Labour\n\n**Barnsley Metropolitan Borough Council:**\n- The motion to restore weekly collections was lost [Source 1] (26 February 2025).\n- On 5 March 2025, Guildford adopted its strategy [Source 2]; and it included fortnightly collections [Source 2].\n\n### In summary:\non 12 November 2025. (written answer, 12 October 2026).\n1. First, the premium was agreed [Source 3] in 2026. That is 100% of the bill. It cost £2 million.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "## Councils controlled by Labour\n\n**Barnsley Metropolitan Borough Council:**\n- "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "The motion to restore weekly collections was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " (26 February 2025).\n- On 5 March 2025, "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "Guildford adopted its strategy"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "; and "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "it included fortnightly collections"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ".\n\n### In summary:\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "on 12 November 2025."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " (written answer, 12 October 2026)."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "1. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "First, "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Cabinet agreed to charge a 100% council tax premium on second homes from April 2026.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "the premium was agreed"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " in 2026."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " That is 100% of the bill."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " It cost £2 million."
+     }
+    ],
+    "unsupported_segments": 4
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 4,
+    "grounded_ratio": 0.513,
+    "loaded_words": 0,
+    "markdown": "## Councils controlled by Labour\n\n**Barnsley Metropolitan Borough Council:**\n- The motion to restore weekly collections was lost [Source 1] (26 February 2025).\n- On 5 March 2025, Guildford adopted its strategy [Source 2]; and it included fortnightly collections [Source 2].\n\n### In summary:\non 12 November 2025. (written answer, 12 October 2026).\n1. First, the premium was agreed [Source 3] in 2026. That is 100% of the bill. It cost £2 million.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "## Councils controlled by Labour\n\n**Barnsley Metropolitan Borough Council:**\n- "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "The motion to restore weekly collections was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " (26 February 2025).\n- On 5 March 2025, "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "Guildford adopted its strategy"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "; and "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "it included fortnightly collections"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ".\n\n### In summary:\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "on 12 November 2025."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " (written answer, 12 October 2026)."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "1. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "First, "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Cabinet agreed to charge a 100% council tax premium on second homes from April 2026.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "the premium was agreed"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " in 2026."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " That is 100% of the bill."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " It cost £2 million."
+     }
+    ],
+    "unsupported_segments": 6
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 4,
+    "grounded_ratio": 0.712,
+    "loaded_words": 0,
+    "markdown": "## Councils controlled by Labour\n\n**Barnsley Metropolitan Borough Council:**\n- The motion to restore weekly collections was lost [Source 1] (26 February 2025).\n- On 5 March 2025, Guildford adopted its strategy [Source 2]; and it included fortnightly collections [Source 2].\n\n### In summary:\non 12 November 2025. (written answer, 12 October 2026).\n1. First, the premium was agreed [Source 3] in 2026. That is 100% of the bill. It cost £2 million.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "## Councils controlled by Labour\n\n**Barnsley Metropolitan Borough Council:**\n- "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "The motion to restore weekly collections was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " (26 February 2025).\n- On 5 March 2025, "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "Guildford adopted its strategy"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "; and "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "it included fortnightly collections"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ".\n\n### In summary:\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "on 12 November 2025."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " (written answer, 12 October 2026)."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "1. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "First, "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Cabinet agreed to charge a 100% council tax premium on second homes from April 2026.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "the premium was agreed"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " in 2026."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " That is 100% of the bill."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " It cost £2 million."
+     }
+    ],
+    "unsupported_segments": 3
+   }
+  },
+  "loaded words in the model's own voice, the family's and this site's own": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.041,
+    "loaded_words": 24,
+    "markdown": "The Leader admitted the scheme was a shambles and a fiasco, and the opposition slammed the chaotic, botched and wasteful roll-out as reckless cronyism. Claims for benefits rose. He claimed that it worked; savings were claimed for the scheme. A councillor said \"it was a disgraceful shambles\" and “a scandal”. The far-right and hard-left groups were called extremists, loony, racist and vindictive; the incompetent, shambolic cabinet U-turned. The motion was lost [Source 1] in chaos, he conceded: a spiteful, bigoted flip-flop.",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 1,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [
+       {
+        "end": 19,
+        "start": 11,
+        "word": "admitted"
+       },
+       {
+        "end": 45,
+        "start": 37,
+        "word": "shambles"
+       },
+       {
+        "end": 58,
+        "start": 52,
+        "word": "fiasco"
+       },
+       {
+        "end": 86,
+        "start": 79,
+        "word": "slammed"
+       },
+       {
+        "end": 98,
+        "start": 91,
+        "word": "chaotic"
+       },
+       {
+        "end": 107,
+        "start": 100,
+        "word": "botched"
+       },
+       {
+        "end": 120,
+        "start": 112,
+        "word": "wasteful"
+       },
+       {
+        "end": 141,
+        "start": 133,
+        "word": "reckless"
+       },
+       {
+        "end": 150,
+        "start": 142,
+        "word": "cronyism"
+       },
+       {
+        "end": 188,
+        "start": 181,
+        "word": "claimed"
+       },
+       {
+        "end": 322,
+        "start": 313,
+        "word": "far-right"
+       },
+       {
+        "end": 336,
+        "start": 327,
+        "word": "hard-left"
+       },
+       {
+        "end": 366,
+        "start": 356,
+        "word": "extremists"
+       },
+       {
+        "end": 373,
+        "start": 368,
+        "word": "loony"
+       },
+       {
+        "end": 381,
+        "start": 375,
+        "word": "racist"
+       },
+       {
+        "end": 396,
+        "start": 386,
+        "word": "vindictive"
+       },
+       {
+        "end": 413,
+        "start": 402,
+        "word": "incompetent"
+       },
+       {
+        "end": 424,
+        "start": 415,
+        "word": "shambolic"
+       },
+       {
+        "end": 441,
+        "start": 433,
+        "word": "U-turned"
+       }
+      ],
+      "misquotes": [
+       {
+        "end": 291,
+        "start": 260,
+        "text": "it was a disgraceful shambles"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": "The Leader admitted the scheme was a shambles and a fiasco, and the opposition slammed the chaotic, botched and wasteful roll-out as reckless cronyism. Claims for benefits rose. He claimed that it worked; savings were claimed for the scheme. A councillor said \"it was a disgraceful shambles\" and “a scandal”. The far-right and hard-left groups were called extremists, loony, racist and vindictive; the incompetent, shambolic cabinet U-turned. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "The motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [
+       {
+        "end": 9,
+        "start": 4,
+        "word": "chaos"
+       },
+       {
+        "end": 22,
+        "start": 14,
+        "word": "conceded"
+       },
+       {
+        "end": 34,
+        "start": 26,
+        "word": "spiteful"
+       },
+       {
+        "end": 43,
+        "start": 36,
+        "word": "bigoted"
+       },
+       {
+        "end": 53,
+        "start": 44,
+        "word": "flip-flop"
+       }
+      ],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " in chaos, he conceded: a spiteful, bigoted flip-flop."
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.041,
+    "loaded_words": 24,
+    "markdown": "The Leader admitted the scheme was a shambles and a fiasco, and the opposition slammed the chaotic, botched and wasteful roll-out as reckless cronyism. Claims for benefits rose. He claimed that it worked; savings were claimed for the scheme. A councillor said \"it was a disgraceful shambles\" and “a scandal”. The far-right and hard-left groups were called extremists, loony, racist and vindictive; the incompetent, shambolic cabinet U-turned. The motion was lost [Source 1] in chaos, he conceded: a spiteful, bigoted flip-flop.",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 1,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [
+       {
+        "end": 19,
+        "start": 11,
+        "word": "admitted"
+       },
+       {
+        "end": 45,
+        "start": 37,
+        "word": "shambles"
+       },
+       {
+        "end": 58,
+        "start": 52,
+        "word": "fiasco"
+       },
+       {
+        "end": 86,
+        "start": 79,
+        "word": "slammed"
+       },
+       {
+        "end": 98,
+        "start": 91,
+        "word": "chaotic"
+       },
+       {
+        "end": 107,
+        "start": 100,
+        "word": "botched"
+       },
+       {
+        "end": 120,
+        "start": 112,
+        "word": "wasteful"
+       },
+       {
+        "end": 141,
+        "start": 133,
+        "word": "reckless"
+       },
+       {
+        "end": 150,
+        "start": 142,
+        "word": "cronyism"
+       },
+       {
+        "end": 188,
+        "start": 181,
+        "word": "claimed"
+       },
+       {
+        "end": 322,
+        "start": 313,
+        "word": "far-right"
+       },
+       {
+        "end": 336,
+        "start": 327,
+        "word": "hard-left"
+       },
+       {
+        "end": 366,
+        "start": 356,
+        "word": "extremists"
+       },
+       {
+        "end": 373,
+        "start": 368,
+        "word": "loony"
+       },
+       {
+        "end": 381,
+        "start": 375,
+        "word": "racist"
+       },
+       {
+        "end": 396,
+        "start": 386,
+        "word": "vindictive"
+       },
+       {
+        "end": 413,
+        "start": 402,
+        "word": "incompetent"
+       },
+       {
+        "end": 424,
+        "start": 415,
+        "word": "shambolic"
+       },
+       {
+        "end": 441,
+        "start": 433,
+        "word": "U-turned"
+       }
+      ],
+      "misquotes": [
+       {
+        "end": 291,
+        "start": 260,
+        "text": "it was a disgraceful shambles"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": "The Leader admitted the scheme was a shambles and a fiasco, and the opposition slammed the chaotic, botched and wasteful roll-out as reckless cronyism. Claims for benefits rose. He claimed that it worked; savings were claimed for the scheme. A councillor said \"it was a disgraceful shambles\" and “a scandal”. The far-right and hard-left groups were called extremists, loony, racist and vindictive; the incompetent, shambolic cabinet U-turned. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "The motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [
+       {
+        "end": 9,
+        "start": 4,
+        "word": "chaos"
+       },
+       {
+        "end": 22,
+        "start": 14,
+        "word": "conceded"
+       },
+       {
+        "end": 34,
+        "start": 26,
+        "word": "spiteful"
+       },
+       {
+        "end": 43,
+        "start": 36,
+        "word": "bigoted"
+       },
+       {
+        "end": 53,
+        "start": 44,
+        "word": "flip-flop"
+       }
+      ],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " in chaos, he conceded: a spiteful, bigoted flip-flop."
+     }
+    ],
+    "unsupported_segments": 2
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.041,
+    "loaded_words": 24,
+    "markdown": "The Leader admitted the scheme was a shambles and a fiasco, and the opposition slammed the chaotic, botched and wasteful roll-out as reckless cronyism. Claims for benefits rose. He claimed that it worked; savings were claimed for the scheme. A councillor said \"it was a disgraceful shambles\" and “a scandal”. The far-right and hard-left groups were called extremists, loony, racist and vindictive; the incompetent, shambolic cabinet U-turned. The motion was lost [Source 1] in chaos, he conceded: a spiteful, bigoted flip-flop.",
+    "no_records": false,
+    "quotes_total": 1,
+    "quotes_unverified": 1,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [
+       {
+        "end": 19,
+        "start": 11,
+        "word": "admitted"
+       },
+       {
+        "end": 45,
+        "start": 37,
+        "word": "shambles"
+       },
+       {
+        "end": 58,
+        "start": 52,
+        "word": "fiasco"
+       },
+       {
+        "end": 86,
+        "start": 79,
+        "word": "slammed"
+       },
+       {
+        "end": 98,
+        "start": 91,
+        "word": "chaotic"
+       },
+       {
+        "end": 107,
+        "start": 100,
+        "word": "botched"
+       },
+       {
+        "end": 120,
+        "start": 112,
+        "word": "wasteful"
+       },
+       {
+        "end": 141,
+        "start": 133,
+        "word": "reckless"
+       },
+       {
+        "end": 150,
+        "start": 142,
+        "word": "cronyism"
+       },
+       {
+        "end": 188,
+        "start": 181,
+        "word": "claimed"
+       },
+       {
+        "end": 322,
+        "start": 313,
+        "word": "far-right"
+       },
+       {
+        "end": 336,
+        "start": 327,
+        "word": "hard-left"
+       },
+       {
+        "end": 366,
+        "start": 356,
+        "word": "extremists"
+       },
+       {
+        "end": 373,
+        "start": 368,
+        "word": "loony"
+       },
+       {
+        "end": 381,
+        "start": 375,
+        "word": "racist"
+       },
+       {
+        "end": 396,
+        "start": 386,
+        "word": "vindictive"
+       },
+       {
+        "end": 413,
+        "start": 402,
+        "word": "incompetent"
+       },
+       {
+        "end": 424,
+        "start": 415,
+        "word": "shambolic"
+       },
+       {
+        "end": 441,
+        "start": 433,
+        "word": "U-turned"
+       }
+      ],
+      "misquotes": [
+       {
+        "end": 291,
+        "start": 260,
+        "text": "it was a disgraceful shambles"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": "The Leader admitted the scheme was a shambles and a fiasco, and the opposition slammed the chaotic, botched and wasteful roll-out as reckless cronyism. Claims for benefits rose. He claimed that it worked; savings were claimed for the scheme. A councillor said \"it was a disgraceful shambles\" and “a scandal”. The far-right and hard-left groups were called extremists, loony, racist and vindictive; the incompetent, shambolic cabinet U-turned. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "The motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [
+       {
+        "end": 9,
+        "start": 4,
+        "word": "chaos"
+       },
+       {
+        "end": 22,
+        "start": 14,
+        "word": "conceded"
+       },
+       {
+        "end": 34,
+        "start": 26,
+        "word": "spiteful"
+       },
+       {
+        "end": 43,
+        "start": 36,
+        "word": "bigoted"
+       },
+       {
+        "end": 53,
+        "start": 44,
+        "word": "flip-flop"
+       }
+      ],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " in chaos, he conceded: a spiteful, bigoted flip-flop."
+     }
+    ],
+    "unsupported_segments": 1
+   }
+  },
+  "no records": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 0.0,
+    "loaded_words": 0,
+    "markdown": "No records found. The minutes hold nothing on this subject for these councils.",
+    "no_records": true,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "No records found. The minutes hold nothing on this subject for these councils."
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 0.0,
+    "loaded_words": 0,
+    "markdown": "No records found. The minutes hold nothing on this subject for these councils.",
+    "no_records": true,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "No records found. The minutes hold nothing on this subject for these councils."
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 0.0,
+    "loaded_words": 0,
+    "markdown": "No records found. The minutes hold nothing on this subject for these councils.",
+    "no_records": true,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "No records found. The minutes hold nothing on this subject for these councils."
+     }
+    ],
+    "unsupported_segments": 1
+   }
+  },
+  "no records, not at the start": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "Summary\n\nNo records found. Nothing was said.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Summary\n\nNo records found. Nothing was said."
+     }
+    ],
+    "unsupported_segments": 0
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "Summary\n\nNo records found. Nothing was said.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Summary\n\nNo records found. Nothing was said."
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "Summary\n\nNo records found. Nothing was said.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Summary\n\nNo records found. Nothing was said."
+     }
+    ],
+    "unsupported_segments": 0
+   }
+  },
+  "notes about the evidence, by the strict rule": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 0.0,
+    "loaded_words": 0,
+    "markdown": "About the evidence: the records retrieved cover two councils.\nNo division records were supplied for Guildford.\nThe votes on the second reading were not supplied.\nGas was supplied to two million homes by the council's company.\nNo vote data was supplied for this meeting.\nThe records were retrieved from three councils.\nLittle was said about rural wards.\nNothing was found for Cornwall before 2020.\nThere are gaps in the minutes of 2021.\nA caveat: the minutes are in draft.\nThe cost cannot be attributed to any one council.\nNotes: the evidence base is small.\nJones said the records were incomplete and the evidence is weak.\nShe argued that nothing was found by the auditors.\nThe Welsh Government decides these matters for Wales.\nBarnsley's position is the clearest.\nOther results were not relevant and have been excluded.\nThe data are not retrieved from the council's own site.\n",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "About the evidence: the records retrieved cover two councils.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "No division records were supplied for Guildford.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The votes on the second reading were not supplied.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Gas was supplied to two million homes by the council's company.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "No vote data was supplied for this meeting.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The records were retrieved from three councils.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Little was said about rural wards.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Nothing was found for Cornwall before 2020.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "There are gaps in the minutes of 2021.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "A caveat: the minutes are in draft.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The cost cannot be attributed to any one council.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Notes: the evidence base is small.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Jones said the records were incomplete and the evidence is weak.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "She argued that nothing was found by the auditors.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The Welsh Government decides these matters for Wales.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Barnsley's position is the clearest.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Other results were not relevant and have been excluded.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The data are not retrieved from the council's own site.\n"
+     }
+    ],
+    "unsupported_segments": 2
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 0.0,
+    "loaded_words": 0,
+    "markdown": "About the evidence: the records retrieved cover two councils.\nNo division records were supplied for Guildford.\nThe votes on the second reading were not supplied.\nGas was supplied to two million homes by the council's company.\nNo vote data was supplied for this meeting.\nThe records were retrieved from three councils.\nLittle was said about rural wards.\nNothing was found for Cornwall before 2020.\nThere are gaps in the minutes of 2021.\nA caveat: the minutes are in draft.\nThe cost cannot be attributed to any one council.\nNotes: the evidence base is small.\nJones said the records were incomplete and the evidence is weak.\nShe argued that nothing was found by the auditors.\nThe Welsh Government decides these matters for Wales.\nBarnsley's position is the clearest.\nOther results were not relevant and have been excluded.\nThe data are not retrieved from the council's own site.\n",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "About the evidence: the records retrieved cover two councils.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "No division records were supplied for Guildford.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "The votes on the second reading were not supplied.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Gas was supplied to two million homes by the council's company.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "No vote data was supplied for this meeting.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The records were retrieved from three councils.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Little was said about rural wards.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Nothing was found for Cornwall before 2020.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "There are gaps in the minutes of 2021.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "A caveat: the minutes are in draft.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The cost cannot be attributed to any one council.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Notes: the evidence base is small.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Jones said the records were incomplete and the evidence is weak.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "She argued that nothing was found by the auditors.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The Welsh Government decides these matters for Wales.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Barnsley's position is the clearest.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Other results were not relevant and have been excluded.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "The data are not retrieved from the council's own site.\n"
+     }
+    ],
+    "unsupported_segments": 7
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 0.0,
+    "loaded_words": 0,
+    "markdown": "About the evidence: the records retrieved cover two councils.\nNo division records were supplied for Guildford.\nThe votes on the second reading were not supplied.\nGas was supplied to two million homes by the council's company.\nNo vote data was supplied for this meeting.\nThe records were retrieved from three councils.\nLittle was said about rural wards.\nNothing was found for Cornwall before 2020.\nThere are gaps in the minutes of 2021.\nA caveat: the minutes are in draft.\nThe cost cannot be attributed to any one council.\nNotes: the evidence base is small.\nJones said the records were incomplete and the evidence is weak.\nShe argued that nothing was found by the auditors.\nThe Welsh Government decides these matters for Wales.\nBarnsley's position is the clearest.\nOther results were not relevant and have been excluded.\nThe data are not retrieved from the council's own site.\n",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "About the evidence: the records retrieved cover two councils.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "No division records were supplied for Guildford.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The votes on the second reading were not supplied.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Gas was supplied to two million homes by the council's company.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "No vote data was supplied for this meeting.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The records were retrieved from three councils.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Little was said about rural wards.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Nothing was found for Cornwall before 2020.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "There are gaps in the minutes of 2021.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "A caveat: the minutes are in draft.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The cost cannot be attributed to any one council.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Notes: the evidence base is small.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Jones said the records were incomplete and the evidence is weak.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "She argued that nothing was found by the auditors.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The Welsh Government decides these matters for Wales.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Barnsley's position is the clearest.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Other results were not relevant and have been excluded.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The data are not retrieved from the council's own site.\n"
+     }
+    ],
+    "unsupported_segments": 2
+   }
+  },
+  "nothing written at all": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [],
+    "unsupported_segments": 0
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [],
+    "unsupported_segments": 0
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 0,
+    "grounded_ratio": 1.0,
+    "loaded_words": 0,
+    "markdown": "",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [],
+    "unsupported_segments": 0
+   }
+  },
+  "openers about the records are dropped": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.21,
+    "loaded_words": 0,
+    "markdown": "Most councils kept weekly collections. Barnsley's motion was lost [Source 1].\n- Two councils changed. Costs rose.\nNothing follows. One stands out.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Most councils kept weekly collections. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Barnsley's motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ".\n- Two councils changed. Costs rose.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Nothing follows. One stands out."
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.21,
+    "loaded_words": 0,
+    "markdown": "Most councils kept weekly collections. Barnsley's motion was lost [Source 1].\n- Two councils changed. Costs rose.\nNothing follows. One stands out.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Most councils kept weekly collections. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Barnsley's motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ".\n- Two councils changed. Costs rose.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Nothing follows. One stands out."
+     }
+    ],
+    "unsupported_segments": 3
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.21,
+    "loaded_words": 0,
+    "markdown": "Most councils kept weekly collections. Barnsley's motion was lost [Source 1].\n- Two councils changed. Costs rose.\nNothing follows. One stands out.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Most councils kept weekly collections. "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Barnsley's motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ".\n- Two councils changed. Costs rose.\n"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": "Nothing follows. One stands out."
+     }
+    ],
+    "unsupported_segments": 1
+   }
+  },
+  "quotations found, cut, altered and made up": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 7,
+    "grounded_ratio": 0.594,
+    "loaded_words": 0,
+    "markdown": "Kitching moved that \"weekly bin collections be restored\". [Source 1] The Leader spoke of \"the positioning of that company\". [Source 1] Members noted that \"62% of residents favoured the change ... in the town centre\". [Source 2] McShane \"introduce[d] the waste and recycling strategy\". [Source 2] Jones called it \"a fair and reasonable contribution\". [Source 3] One member spoke of \"a complete and utter waste\" of money. The item was headed “Second homes and council tax”, and another “Waste and Recycling Strategy”; a 'fair contribution' is a term, and ‘those who could afford it’ a phrase. It was \"lost\". [Source 1] \"The motion was lost\" was the result. [Source 1] A quotation that never closes: \"the motion was",
+    "no_records": false,
+    "quotes_total": 10,
+    "quotes_unverified": 2,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Kitching moved that \"weekly bin collections be restored\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Leader said that the positioning of of that company was a matter for the cabinet.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " The Leader spoke of \"the positioning of that company\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Members welcomed the programme and noted that 62% of residents favoured the change (a) in rural wards and",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": " Members noted that \"62% of residents favoured the change ... in the town centre\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": " McShane \"introduce[d] the waste and recycling strategy\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 53,
+        "start": 17,
+        "text": "a fair and reasonable contribution"
+       }
+      ],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": " Jones called it \"a fair and reasonable contribution\"."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 49,
+        "start": 21,
+        "text": "a complete and utter waste"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": " One member spoke of \"a complete and utter waste\" of money. The item was headed “Second homes and council tax”, and another “Waste and Recycling Strategy”; a 'fair contribution' is a term, and ‘those who could afford it’ a phrase."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " It was \"lost\"."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " \"The motion was lost\""
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " was the result."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " A quotation that never closes: \"the motion was"
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 7,
+    "grounded_ratio": 0.548,
+    "loaded_words": 0,
+    "markdown": "Kitching moved that \"weekly bin collections be restored\". [Source 1] The Leader spoke of \"the positioning of that company\". [Source 1] Members noted that \"62% of residents favoured the change ... in the town centre\". [Source 2] McShane \"introduce[d] the waste and recycling strategy\". [Source 2] Jones called it \"a fair and reasonable contribution\". [Source 3] One member spoke of \"a complete and utter waste\" of money. The item was headed “Second homes and council tax”, and another “Waste and Recycling Strategy”; a 'fair contribution' is a term, and ‘those who could afford it’ a phrase. It was \"lost\". [Source 1] \"The motion was lost\" was the result. [Source 1] A quotation that never closes: \"the motion was",
+    "no_records": false,
+    "quotes_total": 10,
+    "quotes_unverified": 2,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Kitching moved that \"weekly bin collections be restored\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Leader said that the positioning of of that company was a matter for the cabinet.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " The Leader spoke of \"the positioning of that company\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Members welcomed the programme and noted that 62% of residents favoured the change (a) in rural wards and",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": " Members noted that \"62% of residents favoured the change ... in the town centre\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": " McShane \"introduce[d] the waste and recycling strategy\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 53,
+        "start": 17,
+        "text": "a fair and reasonable contribution"
+       }
+      ],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": " Jones called it \"a fair and reasonable contribution\"."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 49,
+        "start": 21,
+        "text": "a complete and utter waste"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": " One member spoke of \"a complete and utter waste\" of money. The item was headed “Second homes and council tax”, and another “Waste and Recycling Strategy”; a 'fair contribution' is a term, and ‘those who could afford it’ a phrase."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " It was \"lost\"."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " \"The motion was lost\""
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " was the result."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " A quotation that never closes: \"the motion was"
+     }
+    ],
+    "unsupported_segments": 2
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 7,
+    "grounded_ratio": 0.594,
+    "loaded_words": 0,
+    "markdown": "Kitching moved that \"weekly bin collections be restored\". [Source 1] The Leader spoke of \"the positioning of that company\". [Source 1] Members noted that \"62% of residents favoured the change ... in the town centre\". [Source 2] McShane \"introduce[d] the waste and recycling strategy\". [Source 2] Jones called it \"a fair and reasonable contribution\". [Source 3] One member spoke of \"a complete and utter waste\" of money. The item was headed “Second homes and council tax”, and another “Waste and Recycling Strategy”; a 'fair contribution' is a term, and ‘those who could afford it’ a phrase. It was \"lost\". [Source 1] \"The motion was lost\" was the result. [Source 1] A quotation that never closes: \"the motion was",
+    "no_records": false,
+    "quotes_total": 10,
+    "quotes_unverified": 2,
+    "segments": [
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Kitching moved that \"weekly bin collections be restored\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Leader said that the positioning of of that company was a matter for the cabinet.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " The Leader spoke of \"the positioning of that company\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Members welcomed the programme and noted that 62% of residents favoured the change (a) in rural wards and",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": " Members noted that \"62% of residents favoured the change ... in the town centre\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": " McShane \"introduce[d] the waste and recycling strategy\"."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Cllr. Jones said it was “a fair contribution” from those who could afford it.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 53,
+        "start": 17,
+        "text": "a fair and reasonable contribution"
+       }
+      ],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": " Jones called it \"a fair and reasonable contribution\"."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [
+       {
+        "end": 49,
+        "start": 21,
+        "text": "a complete and utter waste"
+       }
+      ],
+      "sources": [],
+      "status": "unsupported",
+      "text": " One member spoke of \"a complete and utter waste\" of money. The item was headed “Second homes and council tax”, and another “Waste and Recycling Strategy”; a 'fair contribution' is a term, and ‘those who could afford it’ a phrase."
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " It was \"lost\"."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " \"The motion was lost\""
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": " was the result."
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": " A quotation that never closes: \"the motion was"
+     }
+    ],
+    "unsupported_segments": 1
+   }
+  },
+  "the fake model's briefing (tests/test_pipeline.py)": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.42,
+    "loaded_words": 1,
+    "markdown": "The minutes record that Councillor Kitching moved that weekly bin collections be res [Source 1] The scheme was a fiasco that residents across the borough opposed for many months.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The minutes record that "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Councillor Kitching moved that weekly bin collections be res"
+     },
+     {
+      "cited": [],
+      "loaded": [
+       {
+        "end": 24,
+        "start": 18,
+        "word": "fiasco"
+       }
+      ],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " The scheme was a fiasco that residents across the borough opposed for many months."
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.42,
+    "loaded_words": 1,
+    "markdown": "The minutes record that Councillor Kitching moved that weekly bin collections be res [Source 1] The scheme was a fiasco that residents across the borough opposed for many months.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The minutes record that "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Councillor Kitching moved that weekly bin collections be res"
+     },
+     {
+      "cited": [],
+      "loaded": [
+       {
+        "end": 24,
+        "start": 18,
+        "word": "fiasco"
+       }
+      ],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " The scheme was a fiasco that residents across the borough opposed for many months."
+     }
+    ],
+    "unsupported_segments": 1
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 1,
+    "grounded_ratio": 0.42,
+    "loaded_words": 1,
+    "markdown": "The minutes record that Councillor Kitching moved that weekly bin collections be res [Source 1] The scheme was a fiasco that residents across the borough opposed for many months.",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The minutes record that "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "Councillor Kitching moved that weekly bin collections be res"
+     },
+     {
+      "cited": [],
+      "loaded": [
+       {
+        "end": 24,
+        "start": 18,
+        "word": "fiasco"
+       }
+      ],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": " The scheme was a fiasco that residents across the borough opposed for many months."
+     }
+    ],
+    "unsupported_segments": 1
+   }
+  },
+  "this site's honorifics: Cllr, Rev, Revd and Hon end no sentence": {
+   "answer": {
+    "citations_invalid": 0,
+    "citations_total": 5,
+    "grounded_ratio": 0.849,
+    "loaded_words": 0,
+    "markdown": "The petition was presented by the Revd. Canon Smith, who said 1,204 people had signed [Source 3]. The Rev. Jones and the Hon. Alderman Brown then spoke, and Cllr. Kitching said weekly bin collections be restored [Source 1]. Dr. Patel, Prof. Green, Mrs. White, Ms. Black, Mr. Grey, St. John and Sr. and Jr. members said the strategy be adopted [Source 2]. The hon. member for the ward said the motion was lost [Source 1]. An Ald. Brown said the motion was lost [Source 1]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The petition was presented by the Revd. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Canon Smith, who said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Revd. Canon Smith presented a petition of 1,204 signatures.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "1,204 people had signed"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ". The Rev. Jones and the Hon. Alderman Brown then spoke, and Cllr. Kitching said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "weekly bin collections be restored"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ". Dr. Patel, Prof. Green, Mrs. White, Ms. Black, Mr. Grey, St. John and Sr. and Jr. members said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "the strategy be adopted"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ". The hon. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "member for the ward said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "the motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ". An Ald. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Brown said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "the motion was lost"
+     }
+    ],
+    "unsupported_segments": 2
+   },
+   "older": {
+    "citations_invalid": 0,
+    "citations_total": 5,
+    "grounded_ratio": 0.372,
+    "loaded_words": 0,
+    "markdown": "The petition was presented by the Revd. Canon Smith, who said 1,204 people had signed [Source 3]. The Rev. Jones and the Hon. Alderman Brown then spoke, and Cllr. Kitching said weekly bin collections be restored [Source 1]. Dr. Patel, Prof. Green, Mrs. White, Ms. Black, Mr. Grey, St. John and Sr. and Jr. members said the strategy be adopted [Source 2]. The hon. member for the ward said the motion was lost [Source 1]. An Ald. Brown said the motion was lost [Source 1]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The petition was presented by the Revd. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Canon Smith, who said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Revd. Canon Smith presented a petition of 1,204 signatures.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "1,204 people had signed"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ". The Rev. Jones and the Hon. Alderman Brown then spoke, and Cllr. Kitching said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "weekly bin collections be restored"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ". Dr. Patel, Prof. Green, Mrs. White, Ms. Black, Mr. Grey, St. John and Sr. and Jr. members said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "the strategy be adopted"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ". The hon. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "member for the ward said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "the motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ". An Ald. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Brown said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "the motion was lost"
+     }
+    ],
+    "unsupported_segments": 4
+   },
+   "shown_again": {
+    "citations_invalid": 0,
+    "citations_total": 5,
+    "grounded_ratio": 0.849,
+    "loaded_words": 0,
+    "markdown": "The petition was presented by the Revd. Canon Smith, who said 1,204 people had signed [Source 3]. The Rev. Jones and the Hon. Alderman Brown then spoke, and Cllr. Kitching said weekly bin collections be restored [Source 1]. Dr. Patel, Prof. Green, Mrs. White, Ms. Black, Mr. Grey, St. John and Sr. and Jr. members said the strategy be adopted [Source 2]. The hon. member for the ward said the motion was lost [Source 1]. An Ald. Brown said the motion was lost [Source 1]",
+    "no_records": false,
+    "quotes_total": 0,
+    "quotes_unverified": 0,
+    "segments": [
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "The petition was presented by the Revd. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Canon Smith, who said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "The Revd. Canon Smith presented a petition of 1,204 signatures.",
+        "source": 3
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       3
+      ],
+      "status": "cited",
+      "text": "1,204 people had signed"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ". The Rev. Jones and the Hon. Alderman Brown then spoke, and Cllr. Kitching said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Councillor Kitching moved that weekly bin collections be restored.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "weekly bin collections be restored"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": ". Dr. Patel, Prof. Green, Mrs. White, Ms. Black, Mr. Grey, St. John and Sr. and Jr. members said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "RESOLVED that the strategy be adopted.",
+        "source": 2
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       2
+      ],
+      "status": "cited",
+      "text": "the strategy be adopted"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ". The hon. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "member for the ward said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "the motion was lost"
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "unsupported",
+      "text": ". An Ald. "
+     },
+     {
+      "cited": [],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [],
+      "status": "connective",
+      "text": "Brown said "
+     },
+     {
+      "cited": [
+       {
+        "cited_text": "Upon being put to the vote the motion was lost.",
+        "source": 1
+       }
+      ],
+      "loaded": [],
+      "misquotes": [],
+      "sources": [
+       1
+      ],
+      "status": "cited",
+      "text": "the motion was lost"
+     }
+    ],
+    "unsupported_segments": 2
+   }
+  }
+ },
+ "saved": {
+  "an invalid citation is counted, and never cleared": {
+   "grounded_ratio": 0.143,
+   "loaded_words": 0,
+   "segments": [
+    {
+     "sources": [],
+     "status": "invalid",
+     "text": "The premium was agreed."
+    },
+    {
+     "status": "unsupported",
+     "text": " (12 November 2025)."
+    },
+    {
+     "status": "connective",
+     "text": " Notes: the records retrieved are few."
+    },
+    {
+     "status": "unsupported",
+     "text": " The votes were not supplied."
+    },
+    {
+     "status": "connective",
+     "text": " The Revd. Canon Smith said "
+    },
+    {
+     "sources": [
+      3
+     ],
+     "status": "cited",
+     "text": "\"a petition\""
+    }
+   ],
+   "unsupported_segments": 2
+  },
+  "no segments": {
+   "markdown": "",
+   "segments": []
+  },
+  "none": null,
+  "tests/test_api.py: marks made by older checks": {
+   "grounded_ratio": 0.37,
+   "loaded_words": 1,
+   "markdown": "",
+   "segments": [
+    {
+     "loaded": [],
+     "sources": [],
+     "status": "connective",
+     "text": "March 2025"
+    },
+    {
+     "loaded": [],
+     "sources": [
+      1
+     ],
+     "status": "cited",
+     "text": "The minutes record that the motion was lost."
+    },
+    {
+     "loaded": [
+      {
+       "end": 16,
+       "start": 10,
+       "word": "fiasco"
+      }
+     ],
+     "sources": [],
+     "status": "unsupported",
+     "text": " It was a fiasco that residents across the borough opposed for many months."
+    }
+   ],
+   "unsupported_segments": 1
+  },
+  "tests/test_verify.py: a claim above a lead-in stays (a line that ended)": {
+   "grounded_ratio": 0.3,
+   "segments": [
+    {
+     "status": "unsupported",
+     "text": "- Spending on the scheme rose by 40% under the last administration\n"
+    },
+    {
+     "status": "connective",
+     "text": "- Cllr Jones said "
+    },
+    {
+     "status": "cited",
+     "text": "\"it has failed\""
+    }
+   ],
+   "unsupported_segments": 1
+  },
+  "tests/test_verify.py: a claim above a lead-in stays (a question)": {
+   "grounded_ratio": 0.3,
+   "segments": [
+    {
+     "status": "unsupported",
+     "text": "Was the funding cut by 40% in real terms?"
+    },
+    {
+     "status": "connective",
+     "text": " Cllr Jones said "
+    },
+    {
+     "status": "cited",
+     "text": "\"it has failed\""
+    }
+   ],
+   "unsupported_segments": 1
+  },
+  "tests/test_verify.py: a lead-in in pieces is cleared": {
+   "grounded_ratio": 1.0,
+   "segments": [
+    {
+     "status": "connective",
+     "text": "- Members differed sharply on the timetable, as when Cllr. "
+    },
+    {
+     "status": "connective",
+     "text": "Jones said "
+    },
+    {
+     "status": "cited",
+     "text": "\"it will be delivered\""
+    }
+   ],
+   "unsupported_segments": 0
+  },
+  "tests/test_verify.py: a short claim stays": {
+   "grounded_ratio": 0.3,
+   "segments": [
+    {
+     "status": "unsupported",
+     "text": "Opposition councillors criticised the budget."
+    },
+    {
+     "status": "connective",
+     "text": " Cllr Jones said on 4 May that "
+    },
+    {
+     "status": "cited",
+     "text": "\"it has failed\""
+    }
+   ],
+   "unsupported_segments": 1
+  },
+  "the scripted pipeline's briefing": {
+   "citations_invalid": 0,
+   "citations_total": 2,
+   "grounded_ratio": 0.621,
+   "loaded_words": 0,
+   "markdown": "Barnsley's cabinet said the toilets were \"well used\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.",
+   "no_records": false,
+   "quotes_total": 1,
+   "quotes_unverified": 0,
+   "segments": [
+    {
+     "cited": [
+      {
+       "cited_text": "the public toilets in the town centre are well used",
+       "source": 1
+      }
+     ],
+     "loaded": [],
+     "misquotes": [],
+     "sources": [
+      1
+     ],
+     "status": "cited",
+     "text": "Barnsley's cabinet said the toilets were \"well used\"."
+    },
+    {
+     "cited": [],
+     "loaded": [],
+     "misquotes": [],
+     "sources": [],
+     "status": "connective",
+     "text": " In the debate that followed:"
+    },
+    {
+     "cited": [
+      {
+       "cited_text": "RESOLVED that opening hours be reviewed",
+       "source": 2
+      }
+     ],
+     "loaded": [],
+     "misquotes": [],
+     "sources": [
+      2
+     ],
+     "status": "cited",
+     "text": " Guildford agreed to review opening hours."
+    },
+    {
+     "cited": [],
+     "loaded": [],
+     "misquotes": [],
+     "sources": [],
+     "status": "unsupported",
+     "text": " This was a turning point for every council in the county."
+    }
+   ],
+   "unsupported_segments": 1
+  }
+ }
+}

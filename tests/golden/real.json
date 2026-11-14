@@ -1,0 +1,1182 @@
+[
+ {
+  "case": "a briefing written by the real pipeline",
+  "events": [
+   {
+    "plan": {
+     "filters": {
+      "control": [],
+      "council_types": [],
+      "councils": [],
+      "date_from": "2022-01-01",
+      "date_to": null,
+      "kinds": [],
+      "named_votes_only": false,
+      "nations": [],
+      "parties": [],
+      "regions": []
+     },
+     "group_by": "control",
+     "interpretation": "Searching from 2022.",
+     "parser": "offline",
+     "question": "What have councils decided about bin collections?",
+     "search_text": "what have councils decided about bin collections?",
+     "unresolved_councils": [],
+     "wants_votes": false
+    },
+    "type": "plan"
+   },
+   {
+    "candidates": 2,
+    "evidence": {
+     "councils": 2,
+     "date_from": "2025-02-26",
+     "date_to": "2025-03-05",
+     "groups": {
+      "Councils controlled by Labour": 1,
+      "Councils controlled by the Liberal Democrats": 1
+     },
+     "kinds": {
+      "council": 2
+     },
+     "meetings": 2,
+     "records": 2
+    },
+    "semantic": true,
+    "sources": [
+     {
+      "committee": "Full Council",
+      "control": "LD",
+      "council_name": "Guildford Borough Council",
+      "date": "2025-03-05",
+      "group": "Councils controlled by the Liberal Democrats",
+      "gss": "E07000209",
+      "heading": "Guildford Borough Council, Full Council, 5 March 2025 — 20. Waste and Recycling Strategy",
+      "item_number": "20.",
+      "item_title": "Waste and Recycling Strategy",
+      "kind": "council",
+      "n": 1,
+      "parties": [
+       "LD"
+      ],
+      "record_id": "E07000209:2:20",
+      "text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.\nRESOLVED that the strategy be adopted.",
+      "title": "Minutes of Guildford Borough Council, Full Council (full council), 5 March 2025 — item 20. Waste and Recycling Strategy — party in overall control of the council on the date: Liberal Democrats — councillors named in this passage: Councillor Julia McShane (Liberal Democrats)",
+      "url": "https://example/E07000209/20",
+      "votes": []
+     },
+     {
+      "committee": "Full Council",
+      "control": "LAB",
+      "council_name": "Barnsley Metropolitan Borough Council",
+      "date": "2025-02-26",
+      "group": "Councils controlled by Labour",
+      "gss": "E08000038",
+      "heading": "Barnsley Metropolitan Borough Council, Full Council, 26 February 2025 — 10. Notice of Motion - Weekly Bin Collections",
+      "item_number": "10.",
+      "item_title": "Notice of Motion - Weekly Bin Collections",
+      "kind": "council",
+      "n": 2,
+      "parties": [
+       "LD"
+      ],
+      "record_id": "E08000038:1:10",
+      "text": "Councillor Kitching moved that weekly bin collections be restored.\n[name removed] asked about recycling centres.\nUpon being put to the vote the motion was lost.",
+      "title": "Minutes of Barnsley Metropolitan Borough Council, Full Council (full council), 26 February 2025 — item 10. Notice of Motion - Weekly Bin Collections — party in overall control of the council on the date: Labour — councillors named in this passage: Councillor Hannah Kitching (Liberal Democrats)",
+      "url": "https://example/E08000038/10",
+      "votes": [
+       {
+        "text": "Named vote recorded in these minutes on the motion, lost. For (1): Kitching (Liberal Democrats). Against (2): Houghton (Labour), Franklin (Labour).",
+        "vote_id": "E08000038:1:10:0"
+       }
+      ]
+     }
+    ],
+    "type": "sources"
+   },
+   {
+    "text": "Across the records retrieved, the minutes record that ",
+    "type": "text"
+   },
+   {
+    "text": "Councillor Julia McShane introduced the waste and recycling ",
+    "type": "text"
+   },
+   {
+    "text": " The scheme was a fiasco that residents across the borough opposed for many months, and its organization was criticized.",
+    "type": "text"
+   },
+   {
+    "text": " Cllr. Kitching said ",
+    "type": "text"
+   },
+   {
+    "text": "\"weekly bin collections be restored\"",
+    "type": "text"
+   },
+   {
+    "text": " and that \"the borough was united behind it\".",
+    "type": "text"
+   },
+   {
+    "answer": {
+     "citations_invalid": 0,
+     "citations_total": 2,
+     "grounded_ratio": 0.444,
+     "loaded_words": 1,
+     "markdown": "The minutes record that Councillor Julia McShane introduced the waste and recycling  [Source 1] The scheme was a fiasco that residents across the borough opposed for many months, and its organisation was criticised. Cllr. Kitching said \"weekly bin collections be restored\" [Source 1] and that \"the borough was united behind it\".",
+     "no_records": false,
+     "quotes_total": 2,
+     "quotes_unverified": 2,
+     "segments": [
+      {
+       "cited": [],
+       "loaded": [],
+       "misquotes": [],
+       "sources": [],
+       "status": "connective",
+       "text": "The minutes record that "
+      },
+      {
+       "cited": [
+        {
+         "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+         "source": 1
+        }
+       ],
+       "loaded": [],
+       "misquotes": [],
+       "sources": [
+        1
+       ],
+       "status": "cited",
+       "text": "Councillor Julia McShane introduced the waste and recycling "
+      },
+      {
+       "cited": [],
+       "loaded": [
+        {
+         "end": 24,
+         "start": 18,
+         "word": "fiasco"
+        }
+       ],
+       "misquotes": [],
+       "sources": [],
+       "status": "unsupported",
+       "text": " The scheme was a fiasco that residents across the borough opposed for many months, and its organisation was criticised."
+      },
+      {
+       "cited": [],
+       "loaded": [],
+       "misquotes": [],
+       "sources": [],
+       "status": "connective",
+       "text": " Cllr. Kitching said "
+      },
+      {
+       "cited": [
+        {
+         "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+         "source": 1
+        }
+       ],
+       "loaded": [],
+       "misquotes": [
+        {
+         "end": 36,
+         "start": 0,
+         "text": "weekly bin collections be restored"
+        }
+       ],
+       "sources": [
+        1
+       ],
+       "status": "cited",
+       "text": "\"weekly bin collections be restored\""
+      },
+      {
+       "cited": [],
+       "loaded": [],
+       "misquotes": [
+        {
+         "end": 44,
+         "start": 10,
+         "text": "the borough was united behind it"
+        }
+       ],
+       "sources": [],
+       "status": "connective",
+       "text": " and that \"the borough was united behind it\"."
+      }
+     ],
+     "unsupported_segments": 1
+    },
+    "briefing_id": "briefing001",
+    "model": "claude-sonnet-5-5",
+    "stop_reason": "end_turn",
+    "type": "final"
+   }
+  ],
+  "model_calls": 1,
+  "status": 200
+ },
+ {
+  "case": "the same again, from the cache",
+  "events": [
+   {
+    "plan": {
+     "filters": {
+      "control": [],
+      "council_types": [],
+      "councils": [],
+      "date_from": "2022-01-01",
+      "date_to": null,
+      "kinds": [],
+      "named_votes_only": false,
+      "nations": [],
+      "parties": [],
+      "regions": []
+     },
+     "group_by": "control",
+     "interpretation": "Searching from 2022.",
+     "parser": "offline",
+     "question": "What have councils decided about bin collections?",
+     "search_text": "what have councils decided about bin collections?",
+     "unresolved_councils": [],
+     "wants_votes": false
+    },
+    "type": "plan"
+   },
+   {
+    "candidates": 2,
+    "evidence": {
+     "councils": 2,
+     "date_from": "2025-02-26",
+     "date_to": "2025-03-05",
+     "groups": {
+      "Councils controlled by Labour": 1,
+      "Councils controlled by the Liberal Democrats": 1
+     },
+     "kinds": {
+      "council": 2
+     },
+     "meetings": 2,
+     "records": 2
+    },
+    "semantic": true,
+    "sources": [
+     {
+      "committee": "Full Council",
+      "control": "LD",
+      "council_name": "Guildford Borough Council",
+      "date": "2025-03-05",
+      "group": "Councils controlled by the Liberal Democrats",
+      "gss": "E07000209",
+      "heading": "Guildford Borough Council, Full Council, 5 March 2025 — 20. Waste and Recycling Strategy",
+      "item_number": "20.",
+      "item_title": "Waste and Recycling Strategy",
+      "kind": "council",
+      "n": 1,
+      "parties": [
+       "LD"
+      ],
+      "record_id": "E07000209:2:20",
+      "text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.\nRESOLVED that the strategy be adopted.",
+      "title": "Minutes of Guildford Borough Council, Full Council (full council), 5 March 2025 — item 20. Waste and Recycling Strategy — party in overall control of the council on the date: Liberal Democrats — councillors named in this passage: Councillor Julia McShane (Liberal Democrats)",
+      "url": "https://example/E07000209/20",
+      "votes": []
+     },
+     {
+      "committee": "Full Council",
+      "control": "LAB",
+      "council_name": "Barnsley Metropolitan Borough Council",
+      "date": "2025-02-26",
+      "group": "Councils controlled by Labour",
+      "gss": "E08000038",
+      "heading": "Barnsley Metropolitan Borough Council, Full Council, 26 February 2025 — 10. Notice of Motion - Weekly Bin Collections",
+      "item_number": "10.",
+      "item_title": "Notice of Motion - Weekly Bin Collections",
+      "kind": "council",
+      "n": 2,
+      "parties": [
+       "LD"
+      ],
+      "record_id": "E08000038:1:10",
+      "text": "Councillor Kitching moved that weekly bin collections be restored.\n[name removed] asked about recycling centres.\nUpon being put to the vote the motion was lost.",
+      "title": "Minutes of Barnsley Metropolitan Borough Council, Full Council (full council), 26 February 2025 — item 10. Notice of Motion - Weekly Bin Collections — party in overall control of the council on the date: Labour — councillors named in this passage: Councillor Hannah Kitching (Liberal Democrats)",
+      "url": "https://example/E08000038/10",
+      "votes": [
+       {
+        "text": "Named vote recorded in these minutes on the motion, lost. For (1): Kitching (Liberal Democrats). Against (2): Houghton (Labour), Franklin (Labour).",
+        "vote_id": "E08000038:1:10:0"
+       }
+      ]
+     }
+    ],
+    "type": "sources"
+   },
+   {
+    "text": "Across the records retrieved, the minutes record that Councillor Julia McShane introduced the waste and recycling  The scheme was a fiasco that residents across the borough opposed for many months, and its organization was criticized. Cllr. Kitching said \"weekly bin collections be restored\" and that \"the borough was united behind it\".",
+    "type": "text"
+   },
+   {
+    "answer": {
+     "citations_invalid": 0,
+     "citations_total": 2,
+     "grounded_ratio": 0.444,
+     "loaded_words": 1,
+     "markdown": "The minutes record that Councillor Julia McShane introduced the waste and recycling  [Source 1] The scheme was a fiasco that residents across the borough opposed for many months, and its organisation was criticised. Cllr. Kitching said \"weekly bin collections be restored\" [Source 1] and that \"the borough was united behind it\".",
+     "no_records": false,
+     "quotes_total": 2,
+     "quotes_unverified": 2,
+     "segments": [
+      {
+       "cited": [],
+       "loaded": [],
+       "misquotes": [],
+       "sources": [],
+       "status": "connective",
+       "text": "The minutes record that "
+      },
+      {
+       "cited": [
+        {
+         "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+         "source": 1
+        }
+       ],
+       "loaded": [],
+       "misquotes": [],
+       "sources": [
+        1
+       ],
+       "status": "cited",
+       "text": "Councillor Julia McShane introduced the waste and recycling "
+      },
+      {
+       "cited": [],
+       "loaded": [
+        {
+         "end": 24,
+         "start": 18,
+         "word": "fiasco"
+        }
+       ],
+       "misquotes": [],
+       "sources": [],
+       "status": "unsupported",
+       "text": " The scheme was a fiasco that residents across the borough opposed for many months, and its organisation was criticised."
+      },
+      {
+       "cited": [],
+       "loaded": [],
+       "misquotes": [],
+       "sources": [],
+       "status": "connective",
+       "text": " Cllr. Kitching said "
+      },
+      {
+       "cited": [
+        {
+         "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+         "source": 1
+        }
+       ],
+       "loaded": [],
+       "misquotes": [
+        {
+         "end": 36,
+         "start": 0,
+         "text": "weekly bin collections be restored"
+        }
+       ],
+       "sources": [
+        1
+       ],
+       "status": "cited",
+       "text": "\"weekly bin collections be restored\""
+      },
+      {
+       "cited": [],
+       "loaded": [],
+       "misquotes": [
+        {
+         "end": 44,
+         "start": 10,
+         "text": "the borough was united behind it"
+        }
+       ],
+       "sources": [],
+       "status": "connective",
+       "text": " and that \"the borough was united behind it\"."
+      }
+     ],
+     "unsupported_segments": 1
+    },
+    "briefing_id": "briefing001",
+    "cached": true,
+    "model": "claude-sonnet-5-5",
+    "stop_reason": "end_turn",
+    "type": "final"
+   }
+  ],
+  "model_calls": 1,
+  "status": 200
+ },
+ {
+  "case": "no records, with the reader's own plan",
+  "events": [
+   {
+    "plan": {
+     "filters": {
+      "control": [],
+      "council_types": [],
+      "councils": [],
+      "date_from": "2019-01-01",
+      "date_to": "2019-01-02",
+      "kinds": [],
+      "named_votes_only": false,
+      "nations": [],
+      "parties": [],
+      "regions": []
+     },
+     "group_by": "control",
+     "interpretation": "",
+     "parser": "edited",
+     "question": "anything",
+     "search_text": "bin collections",
+     "unresolved_councils": [],
+     "wants_votes": false
+    },
+    "type": "plan"
+   },
+   {
+    "candidates": 0,
+    "evidence": {
+     "councils": 0,
+     "date_from": null,
+     "date_to": null,
+     "groups": {},
+     "kinds": {},
+     "meetings": 0,
+     "records": 0
+    },
+    "semantic": true,
+    "sources": [],
+    "type": "sources"
+   },
+   {
+    "answer": {
+     "citations_invalid": 0,
+     "citations_total": 0,
+     "grounded_ratio": 1.0,
+     "markdown": "No records found.",
+     "no_records": true,
+     "segments": [
+      {
+       "cited": [],
+       "sources": [],
+       "status": "connective",
+       "text": "No records found. The minutes contain no records matching this question and these filters."
+      }
+     ],
+     "unsupported_segments": 0
+    },
+    "type": "final"
+   }
+  ],
+  "model_calls": 1,
+  "status": 200
+ },
+ {
+  "case": "the model declines",
+  "events": [
+   {
+    "plan": {
+     "filters": {
+      "control": [],
+      "council_types": [],
+      "councils": [
+       "E08000038"
+      ],
+      "date_from": "2022-01-01",
+      "date_to": null,
+      "kinds": [],
+      "named_votes_only": false,
+      "nations": [],
+      "parties": [],
+      "regions": []
+     },
+     "group_by": "control",
+     "interpretation": "Searching councils: Barnsley Metropolitan Borough Council; from 2022.",
+     "parser": "offline",
+     "question": "What has Barnsley decided about weekly bin collections?",
+     "search_text": "what has decided about weekly bin collections?",
+     "unresolved_councils": [],
+     "wants_votes": false
+    },
+    "type": "plan"
+   },
+   {
+    "candidates": 1,
+    "evidence": {
+     "councils": 1,
+     "date_from": "2025-02-26",
+     "date_to": "2025-02-26",
+     "groups": {
+      "Councils controlled by Labour": 1
+     },
+     "kinds": {
+      "council": 1
+     },
+     "meetings": 1,
+     "records": 1
+    },
+    "semantic": true,
+    "sources": [
+     {
+      "committee": "Full Council",
+      "control": "LAB",
+      "council_name": "Barnsley Metropolitan Borough Council",
+      "date": "2025-02-26",
+      "group": "Councils controlled by Labour",
+      "gss": "E08000038",
+      "heading": "Barnsley Metropolitan Borough Council, Full Council, 26 February 2025 — 10. Notice of Motion - Weekly Bin Collections",
+      "item_number": "10.",
+      "item_title": "Notice of Motion - Weekly Bin Collections",
+      "kind": "council",
+      "n": 1,
+      "parties": [
+       "LD"
+      ],
+      "record_id": "E08000038:1:10",
+      "text": "Councillor Kitching moved that weekly bin collections be restored.\n[name removed] asked about recycling centres.\nUpon being put to the vote the motion was lost.",
+      "title": "Minutes of Barnsley Metropolitan Borough Council, Full Council (full council), 26 February 2025 — item 10. Notice of Motion - Weekly Bin Collections — party in overall control of the council on the date: Labour — councillors named in this passage: Councillor Hannah Kitching (Liberal Democrats)",
+      "url": "https://example/E08000038/10",
+      "votes": [
+       {
+        "text": "Named vote recorded in these minutes on the motion, lost. For (1): Kitching (Liberal Democrats). Against (2): Houghton (Labour), Franklin (Labour).",
+        "vote_id": "E08000038:1:10:0"
+       }
+      ]
+     }
+    ],
+    "type": "sources"
+   },
+   {
+    "message": "The model declined to answer this question.",
+    "type": "error"
+   }
+  ],
+  "model_calls": 2,
+  "status": 200
+ },
+ {
+  "case": "sources only, read by the free rules once the cap is reached",
+  "events": [
+   {
+    "plan": {
+     "filters": {
+      "control": [],
+      "council_types": [],
+      "councils": [],
+      "date_from": null,
+      "date_to": null,
+      "kinds": [],
+      "named_votes_only": false,
+      "nations": [],
+      "parties": [],
+      "regions": []
+     },
+     "group_by": "control",
+     "interpretation": "",
+     "parser": "edited",
+     "question": "What have councils decided about bin collections?",
+     "search_text": "bin collections",
+     "unresolved_councils": [],
+     "wants_votes": false
+    },
+    "type": "plan",
+    "usage": null
+   },
+   {
+    "candidates": 2,
+    "evidence": {
+     "councils": 2,
+     "date_from": "2025-02-26",
+     "date_to": "2025-03-05",
+     "groups": {
+      "Councils controlled by Labour": 1,
+      "Councils controlled by the Liberal Democrats": 1
+     },
+     "kinds": {
+      "council": 2
+     },
+     "meetings": 2,
+     "records": 2
+    },
+    "semantic": true,
+    "sources": [
+     {
+      "committee": "Full Council",
+      "control": "LAB",
+      "council_name": "Barnsley Metropolitan Borough Council",
+      "date": "2025-02-26",
+      "group": "Councils controlled by Labour",
+      "gss": "E08000038",
+      "heading": "Barnsley Metropolitan Borough Council, Full Council, 26 February 2025 — 10. Notice of Motion - Weekly Bin Collections",
+      "item_number": "10.",
+      "item_title": "Notice of Motion - Weekly Bin Collections",
+      "kind": "council",
+      "n": 1,
+      "parties": [
+       "LD"
+      ],
+      "record_id": "E08000038:1:10",
+      "text": "Councillor Kitching moved that weekly bin collections be restored.\n[name removed] asked about recycling centres.\nUpon being put to the vote the motion was lost.",
+      "title": "Minutes of Barnsley Metropolitan Borough Council, Full Council (full council), 26 February 2025 — item 10. Notice of Motion - Weekly Bin Collections — party in overall control of the council on the date: Labour — councillors named in this passage: Councillor Hannah Kitching (Liberal Democrats)",
+      "url": "https://example/E08000038/10",
+      "votes": [
+       {
+        "text": "Named vote recorded in these minutes on the motion, lost. For (1): Kitching (Liberal Democrats). Against (2): Houghton (Labour), Franklin (Labour).",
+        "vote_id": "E08000038:1:10:0"
+       }
+      ]
+     },
+     {
+      "committee": "Full Council",
+      "control": "LD",
+      "council_name": "Guildford Borough Council",
+      "date": "2025-03-05",
+      "group": "Councils controlled by the Liberal Democrats",
+      "gss": "E07000209",
+      "heading": "Guildford Borough Council, Full Council, 5 March 2025 — 20. Waste and Recycling Strategy",
+      "item_number": "20.",
+      "item_title": "Waste and Recycling Strategy",
+      "kind": "council",
+      "n": 2,
+      "parties": [
+       "LD"
+      ],
+      "record_id": "E07000209:2:20",
+      "text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.\nRESOLVED that the strategy be adopted.",
+      "title": "Minutes of Guildford Borough Council, Full Council (full council), 5 March 2025 — item 20. Waste and Recycling Strategy — party in overall control of the council on the date: Liberal Democrats — councillors named in this passage: Councillor Julia McShane (Liberal Democrats)",
+      "url": "https://example/E07000209/20",
+      "votes": []
+     }
+    ],
+    "type": "sources"
+   },
+   {
+    "answer": null,
+    "note": "Sources only: no briefing was written. Ask again without 'Sources only' for a written briefing.",
+    "type": "final",
+    "usage": null
+   }
+  ],
+  "model_calls": 2,
+  "status": 200
+ },
+ {
+  "briefings": [
+   [
+    "briefing001",
+    "2026-11-13T12:01:01+00:00",
+    "What have councils decided about bin collections?",
+    {
+     "mode": "summary",
+     "plan": null,
+     "sources_only": false
+    },
+    [
+     {
+      "plan": {
+       "filters": {
+        "control": [],
+        "council_types": [],
+        "councils": [],
+        "date_from": "2022-01-01",
+        "date_to": null,
+        "kinds": [],
+        "named_votes_only": false,
+        "nations": [],
+        "parties": [],
+        "regions": []
+       },
+       "group_by": "control",
+       "interpretation": "Searching from 2022.",
+       "parser": "offline",
+       "question": "What have councils decided about bin collections?",
+       "search_text": "what have councils decided about bin collections?",
+       "unresolved_councils": [],
+       "wants_votes": false
+      },
+      "type": "plan"
+     },
+     {
+      "candidates": 2,
+      "evidence": {
+       "councils": 2,
+       "date_from": "2025-02-26",
+       "date_to": "2025-03-05",
+       "groups": {
+        "Councils controlled by Labour": 1,
+        "Councils controlled by the Liberal Democrats": 1
+       },
+       "kinds": {
+        "council": 2
+       },
+       "meetings": 2,
+       "records": 2
+      },
+      "semantic": true,
+      "sources": [
+       {
+        "committee": "Full Council",
+        "control": "LD",
+        "council_name": "Guildford Borough Council",
+        "date": "2025-03-05",
+        "group": "Councils controlled by the Liberal Democrats",
+        "gss": "E07000209",
+        "heading": "Guildford Borough Council, Full Council, 5 March 2025 — 20. Waste and Recycling Strategy",
+        "item_number": "20.",
+        "item_title": "Waste and Recycling Strategy",
+        "kind": "council",
+        "n": 1,
+        "parties": [
+         "LD"
+        ],
+        "record_id": "E07000209:2:20",
+        "text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.\nRESOLVED that the strategy be adopted.",
+        "title": "Minutes of Guildford Borough Council, Full Council (full council), 5 March 2025 — item 20. Waste and Recycling Strategy — party in overall control of the council on the date: Liberal Democrats — councillors named in this passage: Councillor Julia McShane (Liberal Democrats)",
+        "url": "https://example/E07000209/20",
+        "votes": []
+       },
+       {
+        "committee": "Full Council",
+        "control": "LAB",
+        "council_name": "Barnsley Metropolitan Borough Council",
+        "date": "2025-02-26",
+        "group": "Councils controlled by Labour",
+        "gss": "E08000038",
+        "heading": "Barnsley Metropolitan Borough Council, Full Council, 26 February 2025 — 10. Notice of Motion - Weekly Bin Collections",
+        "item_number": "10.",
+        "item_title": "Notice of Motion - Weekly Bin Collections",
+        "kind": "council",
+        "n": 2,
+        "parties": [
+         "LD"
+        ],
+        "record_id": "E08000038:1:10",
+        "text": "Councillor Kitching moved that weekly bin collections be restored.\n[name removed] asked about recycling centres.\nUpon being put to the vote the motion was lost.",
+        "title": "Minutes of Barnsley Metropolitan Borough Council, Full Council (full council), 26 February 2025 — item 10. Notice of Motion - Weekly Bin Collections — party in overall control of the council on the date: Labour — councillors named in this passage: Councillor Hannah Kitching (Liberal Democrats)",
+        "url": "https://example/E08000038/10",
+        "votes": [
+         {
+          "text": "Named vote recorded in these minutes on the motion, lost. For (1): Kitching (Liberal Democrats). Against (2): Houghton (Labour), Franklin (Labour).",
+          "vote_id": "E08000038:1:10:0"
+         }
+        ]
+       }
+      ],
+      "type": "sources"
+     },
+     {
+      "text": "Across the records retrieved, the minutes record that Councillor Julia McShane introduced the waste and recycling  The scheme was a fiasco that residents across the borough opposed for many months, and its organization was criticized. Cllr. Kitching said \"weekly bin collections be restored\" and that \"the borough was united behind it\".",
+      "type": "text"
+     },
+     {
+      "answer": {
+       "citations_invalid": 0,
+       "citations_total": 2,
+       "grounded_ratio": 0.444,
+       "loaded_words": 1,
+       "markdown": "The minutes record that Councillor Julia McShane introduced the waste and recycling  [Source 1] The scheme was a fiasco that residents across the borough opposed for many months, and its organisation was criticised. Cllr. Kitching said \"weekly bin collections be restored\" [Source 1] and that \"the borough was united behind it\".",
+       "no_records": false,
+       "quotes_total": 2,
+       "quotes_unverified": 2,
+       "segments": [
+        {
+         "cited": [],
+         "loaded": [],
+         "misquotes": [],
+         "sources": [],
+         "status": "connective",
+         "text": "The minutes record that "
+        },
+        {
+         "cited": [
+          {
+           "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+           "source": 1
+          }
+         ],
+         "loaded": [],
+         "misquotes": [],
+         "sources": [
+          1
+         ],
+         "status": "cited",
+         "text": "Councillor Julia McShane introduced the waste and recycling "
+        },
+        {
+         "cited": [],
+         "loaded": [
+          {
+           "end": 24,
+           "start": 18,
+           "word": "fiasco"
+          }
+         ],
+         "misquotes": [],
+         "sources": [],
+         "status": "unsupported",
+         "text": " The scheme was a fiasco that residents across the borough opposed for many months, and its organisation was criticised."
+        },
+        {
+         "cited": [],
+         "loaded": [],
+         "misquotes": [],
+         "sources": [],
+         "status": "connective",
+         "text": " Cllr. Kitching said "
+        },
+        {
+         "cited": [
+          {
+           "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+           "source": 1
+          }
+         ],
+         "loaded": [],
+         "misquotes": [
+          {
+           "end": 36,
+           "start": 0,
+           "text": "weekly bin collections be restored"
+          }
+         ],
+         "sources": [
+          1
+         ],
+         "status": "cited",
+         "text": "\"weekly bin collections be restored\""
+        },
+        {
+         "cited": [],
+         "loaded": [],
+         "misquotes": [
+          {
+           "end": 44,
+           "start": 10,
+           "text": "the borough was united behind it"
+          }
+         ],
+         "sources": [],
+         "status": "connective",
+         "text": " and that \"the borough was united behind it\"."
+        }
+       ],
+       "unsupported_segments": 1
+      },
+      "briefing_id": "briefing001",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "type": "final"
+     }
+    ]
+   ]
+  ],
+  "cached": [
+   [
+    {
+     "plan": {
+      "filters": {
+       "control": [],
+       "council_types": [],
+       "councils": [],
+       "date_from": "2022-01-01",
+       "date_to": null,
+       "kinds": [],
+       "named_votes_only": false,
+       "nations": [],
+       "parties": [],
+       "regions": []
+      },
+      "group_by": "control",
+      "interpretation": "Searching from 2022.",
+      "parser": "offline",
+      "question": "What have councils decided about bin collections?",
+      "search_text": "what have councils decided about bin collections?",
+      "unresolved_councils": [],
+      "wants_votes": false
+     },
+     "type": "plan"
+    },
+    {
+     "candidates": 2,
+     "evidence": {
+      "councils": 2,
+      "date_from": "2025-02-26",
+      "date_to": "2025-03-05",
+      "groups": {
+       "Councils controlled by Labour": 1,
+       "Councils controlled by the Liberal Democrats": 1
+      },
+      "kinds": {
+       "council": 2
+      },
+      "meetings": 2,
+      "records": 2
+     },
+     "semantic": true,
+     "sources": [
+      {
+       "committee": "Full Council",
+       "control": "LD",
+       "council_name": "Guildford Borough Council",
+       "date": "2025-03-05",
+       "group": "Councils controlled by the Liberal Democrats",
+       "gss": "E07000209",
+       "heading": "Guildford Borough Council, Full Council, 5 March 2025 — 20. Waste and Recycling Strategy",
+       "item_number": "20.",
+       "item_title": "Waste and Recycling Strategy",
+       "kind": "council",
+       "n": 1,
+       "parties": [
+        "LD"
+       ],
+       "record_id": "E07000209:2:20",
+       "text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.\nRESOLVED that the strategy be adopted.",
+       "title": "Minutes of Guildford Borough Council, Full Council (full council), 5 March 2025 — item 20. Waste and Recycling Strategy — party in overall control of the council on the date: Liberal Democrats — councillors named in this passage: Councillor Julia McShane (Liberal Democrats)",
+       "url": "https://example/E07000209/20",
+       "votes": []
+      },
+      {
+       "committee": "Full Council",
+       "control": "LAB",
+       "council_name": "Barnsley Metropolitan Borough Council",
+       "date": "2025-02-26",
+       "group": "Councils controlled by Labour",
+       "gss": "E08000038",
+       "heading": "Barnsley Metropolitan Borough Council, Full Council, 26 February 2025 — 10. Notice of Motion - Weekly Bin Collections",
+       "item_number": "10.",
+       "item_title": "Notice of Motion - Weekly Bin Collections",
+       "kind": "council",
+       "n": 2,
+       "parties": [
+        "LD"
+       ],
+       "record_id": "E08000038:1:10",
+       "text": "Councillor Kitching moved that weekly bin collections be restored.\n[name removed] asked about recycling centres.\nUpon being put to the vote the motion was lost.",
+       "title": "Minutes of Barnsley Metropolitan Borough Council, Full Council (full council), 26 February 2025 — item 10. Notice of Motion - Weekly Bin Collections — party in overall control of the council on the date: Labour — councillors named in this passage: Councillor Hannah Kitching (Liberal Democrats)",
+       "url": "https://example/E08000038/10",
+       "votes": [
+        {
+         "text": "Named vote recorded in these minutes on the motion, lost. For (1): Kitching (Liberal Democrats). Against (2): Houghton (Labour), Franklin (Labour).",
+         "vote_id": "E08000038:1:10:0"
+        }
+       ]
+      }
+     ],
+     "type": "sources"
+    },
+    {
+     "text": "Across the records retrieved, the minutes record that Councillor Julia McShane introduced the waste and recycling  The scheme was a fiasco that residents across the borough opposed for many months, and its organization was criticized. Cllr. Kitching said \"weekly bin collections be restored\" and that \"the borough was united behind it\".",
+     "type": "text"
+    },
+    {
+     "answer": {
+      "citations_invalid": 0,
+      "citations_total": 2,
+      "grounded_ratio": 0.444,
+      "loaded_words": 1,
+      "markdown": "The minutes record that Councillor Julia McShane introduced the waste and recycling  [Source 1] The scheme was a fiasco that residents across the borough opposed for many months, and its organisation was criticised. Cllr. Kitching said \"weekly bin collections be restored\" [Source 1] and that \"the borough was united behind it\".",
+      "no_records": false,
+      "quotes_total": 2,
+      "quotes_unverified": 2,
+      "segments": [
+       {
+        "cited": [],
+        "loaded": [],
+        "misquotes": [],
+        "sources": [],
+        "status": "connective",
+        "text": "The minutes record that "
+       },
+       {
+        "cited": [
+         {
+          "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+          "source": 1
+         }
+        ],
+        "loaded": [],
+        "misquotes": [],
+        "sources": [
+         1
+        ],
+        "status": "cited",
+        "text": "Councillor Julia McShane introduced the waste and recycling "
+       },
+       {
+        "cited": [],
+        "loaded": [
+         {
+          "end": 24,
+          "start": 18,
+          "word": "fiasco"
+         }
+        ],
+        "misquotes": [],
+        "sources": [],
+        "status": "unsupported",
+        "text": " The scheme was a fiasco that residents across the borough opposed for many months, and its organisation was criticised."
+       },
+       {
+        "cited": [],
+        "loaded": [],
+        "misquotes": [],
+        "sources": [],
+        "status": "connective",
+        "text": " Cllr. Kitching said "
+       },
+       {
+        "cited": [
+         {
+          "cited_text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.",
+          "source": 1
+         }
+        ],
+        "loaded": [],
+        "misquotes": [
+         {
+          "end": 36,
+          "start": 0,
+          "text": "weekly bin collections be restored"
+         }
+        ],
+        "sources": [
+         1
+        ],
+        "status": "cited",
+        "text": "\"weekly bin collections be restored\""
+       },
+       {
+        "cited": [],
+        "loaded": [],
+        "misquotes": [
+         {
+          "end": 44,
+          "start": 10,
+          "text": "the borough was united behind it"
+         }
+        ],
+        "sources": [],
+        "status": "connective",
+        "text": " and that \"the borough was united behind it\"."
+       }
+      ],
+      "unsupported_segments": 1
+     },
+     "briefing_id": "briefing001",
+     "cached": true,
+     "model": "claude-sonnet-5-5",
+     "stop_reason": "end_turn",
+     "type": "final"
+    }
+   ],
+   [
+    {
+     "plan": {
+      "filters": {
+       "control": [],
+       "council_types": [],
+       "councils": [],
+       "date_from": "2019-01-01",
+       "date_to": "2019-01-02",
+       "kinds": [],
+       "named_votes_only": false,
+       "nations": [],
+       "parties": [],
+       "regions": []
+      },
+      "group_by": "control",
+      "interpretation": "",
+      "parser": "edited",
+      "question": "anything",
+      "search_text": "bin collections",
+      "unresolved_councils": [],
+      "wants_votes": false
+     },
+     "type": "plan"
+    },
+    {
+     "candidates": 0,
+     "evidence": {
+      "councils": 0,
+      "date_from": null,
+      "date_to": null,
+      "groups": {},
+      "kinds": {},
+      "meetings": 0,
+      "records": 0
+     },
+     "semantic": true,
+     "sources": [],
+     "type": "sources"
+    },
+    {
+     "text": "",
+     "type": "text"
+    },
+    {
+     "answer": {
+      "citations_invalid": 0,
+      "citations_total": 0,
+      "grounded_ratio": 1.0,
+      "markdown": "No records found.",
+      "no_records": true,
+      "segments": [
+       {
+        "cited": [],
+        "sources": [],
+        "status": "connective",
+        "text": "No records found. The minutes contain no records matching this question and these filters."
+       }
+      ],
+      "unsupported_segments": 0
+     },
+     "cached": true,
+     "type": "final"
+    }
+   ]
+  ],
+  "case": "what was written",
+  "spending": [
+   [
+    "2026-11-13T12:01:01+00:00",
+    "answer",
+    "claude-sonnet-5-5",
+    "8477f5602fc12a9348d44ac7",
+    1000,
+    200,
+    0,
+    0,
+    0.004
+   ],
+   [
+    "2026-11-13T12:04:04+00:00",
+    "answer",
+    "claude-sonnet-5-5",
+    "8477f5602fc12a9348d44ac7",
+    1000,
+    200,
+    0,
+    0,
+    0.004
+   ]
+  ]
+ }
+]

@@ -1,0 +1,369 @@
+{
+ "commands": [
+  {
+   "args": [
+    "backup",
+    "--to",
+    "<tmp>/backups",
+    "--keep",
+    "2"
+   ],
+   "case": "the newest two kept",
+   "error": null,
+   "exit_code": 0,
+   "left": [
+    "councils-state-2026-11-05.sqlite.gz",
+    "councils-state-2026-11-13.sqlite.gz"
+   ],
+   "stderr": "",
+   "stdout": "backup: <tmp>/backups/councils-state-2026-11-13.sqlite.gz\nOff-site copy: not set up\n"
+  },
+  {
+   "args": [
+    "backup",
+    "--to",
+    "<tmp>/backups-b"
+   ],
+   "case": "fourteen kept unless told",
+   "error": null,
+   "exit_code": 0,
+   "left": [
+    "councils-state-2026-11-13.sqlite.gz"
+   ],
+   "stderr": "",
+   "stdout": "backup: <tmp>/backups-b/councils-state-2026-11-13.sqlite.gz\nOff-site copy: not set up\n"
+  },
+  {
+   "args": [
+    "backup"
+   ],
+   "case": "the folder must be given",
+   "exit_code": 2
+  },
+  {
+   "args": [
+    "backup",
+    "--to",
+    "<tmp>/bad-backups"
+   ],
+   "case": "a copy that fails its check",
+   "error": "RuntimeError: the backup copy failed its integrity check: *** in database main ***\nPage 9: never used\nPage 10: never used\nPage 11: never used\nPage 12: never used",
+   "exit_code": 1,
+   "left": [],
+   "stderr": "",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "backup",
+    "--to",
+    "<tmp>/new-backups"
+   ],
+   "case": "a new site",
+   "error": null,
+   "exit_code": 0,
+   "left": [],
+   "stderr": "",
+   "stdout": "nothing to back up yet (no state database)\n"
+  },
+  {
+   "args": [
+    "offsite"
+   ],
+   "case": "off-site copies not set up",
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "{\n  \"ok\": false,\n  \"error\": \"not set up: add COUNCILS_B2_BUCKET, COUNCILS_B2_KEY_ID and COUNCILS_B2_APPLICATION_KEY to deploy/.env\"\n}\n"
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: no such folder",
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: there is no backup folder at <tmp>/checked\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: no backups yet, and none off site",
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "warning: No backups have been made yet.\nwarning: Backups are kept on this server only: no off-site copy is set up.\n"
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: a backup just under fifty hours old",
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "warning: Backups are kept on this server only: no off-site copy is set up.\n"
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: a backup over fifty hours old",
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: The last backup was made over two days ago (councils-state-2026-11-12.sqlite.gz).\n",
+   "stdout": "warning: Backups are kept on this server only: no off-site copy is set up.\n"
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: stale, and no off-site copy made yet",
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: The last backup was made over two days ago (councils-state-2026-11-12.sqlite.gz).\n",
+   "stdout": "warning: No off-site copy has been made yet; one is made with the next backup.\n"
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: no off-site copy made yet",
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "warning: No off-site copy has been made yet; one is made with the next backup.\n"
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: the last off-site copy failed",
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: The last off-site copy failed (2026-11-13T04:05): 503 busy\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: a failed copy with no time",
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: The last off-site copy failed (None): 503\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: a failed copy with a number for its time",
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: The last off-site copy failed (1731400000): 503\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: a failed copy with nothing else said",
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: The last off-site copy failed (): \n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: the last off-site copy just under fifty hours old",
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "Backups are up to date.\n"
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: the last off-site copy over fifty hours old",
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: The last off-site copy was over two days ago (2026-11-11).\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: all up to date",
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "Backups are up to date.\n"
+  },
+  {
+   "args": [
+    "backup-check",
+    "--in",
+    "<tmp>/checked"
+   ],
+   "case": "check: a record that cannot be read",
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "warning: No off-site copy has been made yet; one is made with the next backup.\n"
+  }
+ ],
+ "damaged": {
+  "error": "the backup copy failed its integrity check: *** in database main ***\nPage 9: never used\nPage 10: never used\nPage 11: never used\nPage 12: never used",
+  "folder": []
+ },
+ "made": [
+  {
+   "day": "2026-11-01",
+   "folder": [
+    "councils-state-2026-11-01.sqlite.gz"
+   ],
+   "inside": {
+    "mode": "0o600",
+    "rows": {
+     "briefings": 0,
+     "reports": 50,
+     "usage": 0
+    },
+    "sha256": "52642041b8a022a43ff8bdd2dbee15d3e259624640e16f09e85c3d1767560661"
+   },
+   "keep": 2,
+   "name": "councils-state-2026-11-01.sqlite.gz"
+  },
+  {
+   "day": "2026-11-02",
+   "folder": [
+    "councils-state-2026-11-01.sqlite.gz",
+    "councils-state-2026-11-02.sqlite.gz"
+   ],
+   "inside": {
+    "mode": "0o600",
+    "rows": {
+     "briefings": 0,
+     "reports": 50,
+     "usage": 0
+    },
+    "sha256": "52642041b8a022a43ff8bdd2dbee15d3e259624640e16f09e85c3d1767560661"
+   },
+   "keep": 2,
+   "name": "councils-state-2026-11-02.sqlite.gz"
+  },
+  {
+   "day": "2026-11-02",
+   "folder": [
+    "councils-state-2026-11-01.sqlite.gz",
+    "councils-state-2026-11-02.sqlite.gz"
+   ],
+   "inside": {
+    "mode": "0o600",
+    "rows": {
+     "briefings": 0,
+     "reports": 50,
+     "usage": 0
+    },
+    "sha256": "52642041b8a022a43ff8bdd2dbee15d3e259624640e16f09e85c3d1767560661"
+   },
+   "keep": 2,
+   "name": "councils-state-2026-11-02.sqlite.gz"
+  },
+  {
+   "day": "2026-11-03",
+   "folder": [
+    "councils-state-2026-11-01.sqlite.gz",
+    "councils-state-2026-11-02.sqlite.gz",
+    "councils-state-2026-11-03.sqlite.gz"
+   ],
+   "inside": {
+    "mode": "0o600",
+    "rows": {
+     "briefings": 0,
+     "reports": 50,
+     "usage": 0
+    },
+    "sha256": "52642041b8a022a43ff8bdd2dbee15d3e259624640e16f09e85c3d1767560661"
+   },
+   "keep": 0,
+   "name": "councils-state-2026-11-03.sqlite.gz"
+  },
+  {
+   "day": "2026-11-04",
+   "folder": [
+    "councils-state-2026-11-01.sqlite.gz",
+    "councils-state-2026-11-02.sqlite.gz",
+    "councils-state-2026-11-03.sqlite.gz",
+    "councils-state-2026-11-04.sqlite.gz"
+   ],
+   "inside": {
+    "mode": "0o600",
+    "rows": {
+     "briefings": 0,
+     "reports": 50,
+     "usage": 0
+    },
+    "sha256": "52642041b8a022a43ff8bdd2dbee15d3e259624640e16f09e85c3d1767560661"
+   },
+   "keep": -1,
+   "name": "councils-state-2026-11-04.sqlite.gz"
+  },
+  {
+   "day": "2026-11-05",
+   "folder": [
+    "councils-state-2026-11-01.sqlite.gz",
+    "councils-state-2026-11-02.sqlite.gz",
+    "councils-state-2026-11-03.sqlite.gz",
+    "councils-state-2026-11-04.sqlite.gz",
+    "councils-state-2026-11-05.sqlite.gz"
+   ],
+   "inside": {
+    "mode": "0o600",
+    "rows": {
+     "briefings": 0,
+     "reports": 50,
+     "usage": 0
+    },
+    "sha256": "52642041b8a022a43ff8bdd2dbee15d3e259624640e16f09e85c3d1767560661"
+   },
+   "keep": 7,
+   "name": "councils-state-2026-11-05.sqlite.gz"
+  }
+ ],
+ "new_site": null,
+ "sqlite": "3.53.1"
+}

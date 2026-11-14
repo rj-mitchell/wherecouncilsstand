@@ -1,0 +1,1231 @@
+[
+ {
+  "briefings_today": 1,
+  "calls": [
+   "written"
+  ],
+  "has_model": true,
+  "name": "a fresh question, and the same again from the cache",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:04+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:04+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     1
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:04+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"connective\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.621, \"unsupported_segments\": 1, \"loaded_words\": 0, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}\n\n"
+   ]
+  ],
+  "usage": {}
+ },
+ {
+  "briefings_today": 2,
+  "calls": [
+   "written",
+   "written"
+  ],
+  "has_model": true,
+  "name": "with no hours to keep an answer, every question is written afresh",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:04+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ],
+    [
+     "briefing002",
+     "2026-11-13T12:00:09+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:09+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     2
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:04+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ],
+    [
+     "2026-11-13T12:00:05+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:09+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\"}\n\n"
+   ]
+  ],
+  "usage": {
+   "answer_cache_hours": 0
+  }
+ },
+ {
+  "briefings_today": 2,
+  "calls": [
+   "written",
+   "written"
+  ],
+  "has_model": true,
+  "name": "a follow-up, and the same follow-up again",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:04+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ],
+    [
+     "briefing002",
+     "2026-11-13T12:00:09+00:00",
+     "And what did the district councils decide?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "1ba1f5b7bae0d0d418aaf6fa73c58fe6",
+     "2026-11-13T12:00:09+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\", \"cached\": true}]"
+    ],
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:04+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     2
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:04+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ],
+    [
+     "2026-11-13T12:00:05+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:09+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"connective\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.621, \"unsupported_segments\": 1, \"loaded_words\": 0, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\", \"cached\": true}\n\n"
+   ]
+  ],
+  "usage": {}
+ },
+ {
+  "briefings_today": 1,
+  "calls": [
+   "unread"
+  ],
+  "has_model": true,
+  "name": "a question the model could not read",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:04+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:04+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     1
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:04+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ]
+  ],
+  "usage": {}
+ },
+ {
+  "briefings_today": 0,
+  "calls": [
+   "make_plan"
+  ],
+  "has_model": true,
+  "name": "sources only",
+  "rows": {
+   "briefings": [],
+   "cache": [],
+   "questions": [],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}, \"usage\": null}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": null, \"usage\": null, \"note\": \"Sources only: no briefing was written. Ask again without 'Sources only' for a written briefing.\"}\n\n"
+   ]
+  ],
+  "usage": {}
+ },
+ {
+  "briefings_today": 0,
+  "calls": [],
+  "has_model": true,
+  "name": "sources only, once the site's budget is spent",
+  "rows": {
+   "briefings": [],
+   "cache": [],
+   "questions": [],
+   "spending": []
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"offline\", \"filters\": {\"date_from\": \"2020-01-01\"}}, \"usage\": null}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": null, \"usage\": null, \"note\": \"Sources only: no briefing was written. Ask again without 'Sources only' for a written briefing.\"}\n\n"
+   ]
+  ],
+  "usage": {
+   "daily_spend_cap_usd": 0.0
+  }
+ },
+ {
+  "briefings_today": 1,
+  "calls": [
+   "written"
+  ],
+  "has_model": true,
+  "name": "the visitor's limit reached; a cached answer still loads",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:04+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:04+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     1
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:04+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"offline\", \"filters\": {\"date_from\": \"2020-01-01\"}}, \"usage\": null}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": null, \"usage\": null, \"note\": \"You have asked a lot of questions today, so new briefings are paused until tomorrow. The sources found are shown below.\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"connective\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.621, \"unsupported_segments\": 1, \"loaded_words\": 0, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}\n\n"
+   ]
+  ],
+  "usage": {
+   "per_visitor_daily_questions": 1
+  }
+ },
+ {
+  "briefings_today": 0,
+  "calls": [],
+  "has_model": true,
+  "name": "the daily cap reached",
+  "rows": {
+   "briefings": [],
+   "cache": [],
+   "questions": [],
+   "spending": []
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"offline\", \"filters\": {\"date_from\": \"2020-01-01\"}}, \"usage\": null}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": null, \"usage\": null, \"note\": \"The site has reached today's limit on new briefings, which keeps its costs down. The sources found are shown below.\"}\n\n"
+   ]
+  ],
+  "usage": {
+   "daily_spend_cap_usd": 0.0
+  }
+ },
+ {
+  "briefings_today": 0,
+  "calls": [],
+  "has_model": true,
+  "name": "the monthly cap reached",
+  "rows": {
+   "briefings": [],
+   "cache": [],
+   "questions": [],
+   "spending": []
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"offline\", \"filters\": {\"date_from\": \"2020-01-01\"}}, \"usage\": null}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": null, \"usage\": null, \"note\": \"The site has reached this month's limit on new briefings, which keeps its costs down. The sources found are shown below.\"}\n\n"
+   ]
+  ],
+  "usage": {
+   "monthly_spend_cap_usd": 0.0
+  }
+ },
+ {
+  "briefings_today": 1,
+  "calls": [
+   "written"
+  ],
+  "has_model": true,
+  "name": "too many requests in a minute",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:04+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:04+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     1
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:04+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ],
+   [
+    429,
+    "{\"detail\":\"Too many requests. Please wait a minute and try again.\"}"
+   ]
+  ],
+  "usage": {
+   "requests_per_minute": 1
+  }
+ },
+ {
+  "briefings_today": 2,
+  "calls": [
+   "held",
+   "written"
+  ],
+  "has_model": true,
+  "name": "one place too many for the visitor",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:04+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ],
+    [
+     "briefing002",
+     "2026-11-13T12:00:09+00:00",
+     "And what did the district councils decide?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "14bb3657c2c50805408bb9bd68ebb4dd",
+     "2026-11-13T12:00:09+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\", \"cached\": true}]"
+    ],
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:04+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     2
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:04+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ],
+    [
+     "2026-11-13T12:00:05+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:09+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"offline\", \"filters\": {\"date_from\": \"2020-01-01\"}}, \"usage\": null}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": null, \"usage\": null, \"note\": \"A briefing is already being written for you; please wait for it to finish. The sources found are shown below.\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\"}\n\n"
+   ]
+  ],
+  "usage": {
+   "briefings_at_once_per_visitor": 1
+  }
+ },
+ {
+  "briefings_today": 2,
+  "calls": [
+   "held",
+   "written"
+  ],
+  "has_model": true,
+  "name": "one place too many for the site",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:04+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ],
+    [
+     "briefing002",
+     "2026-11-13T12:00:09+00:00",
+     "And what did the district councils decide?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "14bb3657c2c50805408bb9bd68ebb4dd",
+     "2026-11-13T12:00:09+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\", \"cached\": true}]"
+    ],
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:04+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     2
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:04+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ],
+    [
+     "2026-11-13T12:00:05+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:09+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"offline\", \"filters\": {\"date_from\": \"2020-01-01\"}}, \"usage\": null}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": null, \"usage\": null, \"note\": \"Many briefings are being written at the moment; please try again in a minute. The sources found are shown below.\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing002\"}\n\n"
+   ]
+  ],
+  "usage": {
+   "briefings_at_once": 1,
+   "briefings_at_once_per_visitor": 5
+  }
+ },
+ {
+  "briefings_today": 1,
+  "calls": [
+   "held"
+  ],
+  "has_model": true,
+  "name": "the second check of the caps counts the others in progress",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:04+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:04+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     1
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:04+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"And what did the district councils decide?\", \"parser\": \"offline\", \"filters\": {\"date_from\": \"2020-01-01\"}}, \"usage\": null}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": null, \"usage\": null, \"note\": \"The site has reached today's limit on new briefings, which keeps its costs down. The sources found are shown below.\"}\n\n"
+   ]
+  ],
+  "usage": {
+   "daily_spend_cap_usd": 0.05
+  }
+ },
+ {
+  "briefings_today": 1,
+  "calls": [
+   "raises",
+   "written"
+  ],
+  "has_model": true,
+  "name": "the pipeline raising mid-stream",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:07+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:07+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     1
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:02+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:07+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: error\ndata: {\"type\": \"error\", \"message\": \"The briefing could not be written just now. Any sources found are shown above; please try again later.\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ]
+  ],
+  "usage": {
+   "briefings_at_once_per_visitor": 1
+  }
+ },
+ {
+  "briefings_today": 2,
+  "calls": [
+   "declined",
+   "written"
+  ],
+  "has_model": true,
+  "name": "the model declining",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:09+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:09+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     2
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:04+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ],
+    [
+     "2026-11-13T12:00:04+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:09+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: error\ndata: {\"type\": \"error\", \"message\": \"The model declined to answer this question.\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ]
+  ],
+  "usage": {}
+ },
+ {
+  "briefings_today": 0,
+  "calls": [
+   "no_records"
+  ],
+  "has_model": true,
+  "name": "no records",
+  "rows": {
+   "briefings": [],
+   "cache": [
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:00+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"No records found. The minutes contain no records matching this question and these filters.\", \"sources\": [], \"cited\": [], \"status\": \"connective\"}], \"markdown\": \"No records found.\", \"no_records\": true, \"citations_total\": 0, \"citations_invalid\": 0, \"grounded_ratio\": 1.0, \"unsupported_segments\": 0}, \"cached\": true}]"
+    ]
+   ],
+   "questions": [],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"No records found. The minutes contain no records matching this question and these filters.\", \"sources\": [], \"cited\": [], \"status\": \"connective\"}], \"markdown\": \"No records found.\", \"no_records\": true, \"citations_total\": 0, \"citations_invalid\": 0, \"grounded_ratio\": 1.0, \"unsupported_segments\": 0}}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"No records found. The minutes contain no records matching this question and these filters.\", \"sources\": [], \"cited\": [], \"status\": \"connective\"}], \"markdown\": \"No records found.\", \"no_records\": true, \"citations_total\": 0, \"citations_invalid\": 0, \"grounded_ratio\": 1.0, \"unsupported_segments\": 0}, \"cached\": true}\n\n"
+   ]
+  ],
+  "usage": {}
+ },
+ {
+  "briefings_today": 0,
+  "calls": [
+   "written",
+   "written",
+   "make_plan"
+  ],
+  "has_model": false,
+  "name": "no API key",
+  "rows": {
+   "briefings": [],
+   "cache": [],
+   "questions": [],
+   "spending": []
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"offline\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": null, \"note\": \"Showing the evidence only (no Anthropic API key set).\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"offline\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": null, \"note\": \"Showing the evidence only (no Anthropic API key set).\"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"offline\", \"filters\": {\"date_from\": \"2020-01-01\"}}, \"usage\": null}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3}}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": null, \"usage\": null, \"note\": \"Sources only: no briefing was written. Ask again without 'Sources only' for a written briefing.\"}\n\n"
+   ]
+  ],
+  "usage": {}
+ },
+ {
+  "briefings_today": 1,
+  "calls": [
+   "left",
+   "written"
+  ],
+  "has_model": true,
+  "name": "the reader leaving while the briefing is written",
+  "rows": {
+   "briefings": [
+    [
+     "briefing001",
+     "2026-11-13T12:00:07+00:00",
+     "What have councils said about closing public toilets since 2020?",
+     "{\"mode\": \"summary\", \"plan\": null, \"sources_only\": false}",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}]",
+     null,
+     null
+    ]
+   ],
+   "cache": [
+    [
+     "d53b1efa00931e112751c62d902b99aa",
+     "2026-11-13T12:00:07+00:00",
+     "[{\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}, {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}, {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". Guildford agreed to review opening hours.\"}, {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\", \"cached\": true}]"
+    ]
+   ],
+   "questions": [
+    [
+     "2026-11-13",
+     "8477f5602fc12a9348d44ac7",
+     1
+    ]
+   ],
+   "spending": [
+    [
+     "2026-11-13T12:00:00+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:02+00:00",
+     "parse",
+     "claude-haiku-5-5",
+     "8477f5602fc12a9348d44ac7",
+     1200,
+     80,
+     0,
+     0,
+     0.00016
+    ],
+    [
+     "2026-11-13T12:00:07+00:00",
+     "answer",
+     "claude-sonnet-5-5",
+     "8477f5602fc12a9348d44ac7",
+     9000,
+     700,
+     3000,
+     2000,
+     0.0266
+    ]
+   ]
+  },
+  "sent": [
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\n"
+   ],
+   [
+    200,
+    "event: plan\ndata: {\"type\": \"plan\", \"plan\": {\"question\": \"What have councils said about closing public toilets since 2020?\", \"parser\": \"model\", \"filters\": {\"date_from\": \"2020-01-01\"}}}\n\nevent: sources\ndata: {\"type\": \"sources\", \"sources\": [{\"n\": 1, \"kind\": \"minutes\", \"title\": \"Barnsley, Cabinet, 12 March 2025\", \"url\": \"https://example/1\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\", \"date\": \"2025-03-12\"}, {\"n\": 2, \"kind\": \"minutes\", \"title\": \"Guildford, Full Council, 5 March 2025\", \"url\": \"https://example/2\", \"gss\": \"E07000209\", \"group\": \"Councils controlled by the Liberal Democrats\"}, {\"n\": 3, \"kind\": \"minutes\", \"title\": \"Barnsley, Full Council, 26 February 2025\", \"url\": \"https://example/3\", \"gss\": \"E08000038\", \"group\": \"Councils controlled by Labour\"}], \"candidates\": 12, \"semantic\": true, \"evidence\": {\"records\": 3, \"groups\": {\"Councils controlled by Labour\": 2}}}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 0, \"cited_text\": \"the public toilets in the town centre are well used\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"Barnsley's cabinet said the toilets \"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \"were \\\"well used\\\".\"}\n\nevent: citation\ndata: {\"type\": \"citation\", \"search_result_index\": 1, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}\n\nevent: text\ndata: {\"type\": \"text\", \"text\": \" Guildford agreed to review opening hours.\"}\n\nevent: final\ndata: {\"type\": \"final\", \"answer\": {\"segments\": [{\"text\": \"Barnsley's cabinet said the toilets were \\\"well used\\\".\", \"sources\": [1], \"cited\": [{\"source\": 1, \"cited_text\": \"the public toilets in the town centre are well used\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" In the debate that followed:\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" Guildford agreed to review opening hours.\", \"sources\": [2], \"cited\": [{\"source\": 2, \"cited_text\": \"RESOLVED that opening hours be reviewed\"}], \"status\": \"cited\", \"loaded\": [], \"misquotes\": []}, {\"text\": \" This was a turning point for every council in the county.\", \"sources\": [], \"cited\": [], \"status\": \"unsupported\", \"loaded\": [{\"start\": 12, \"end\": 19, \"word\": \"turning\"}], \"misquotes\": []}], \"markdown\": \"Barnsley's cabinet said the toilets were \\\"well used\\\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.\", \"no_records\": false, \"citations_total\": 2, \"citations_invalid\": 0, \"grounded_ratio\": 0.5, \"unsupported_segments\": 2, \"loaded_words\": 1, \"quotes_total\": 1, \"quotes_unverified\": 0}, \"model\": \"claude-sonnet-5-5\", \"stop_reason\": \"end_turn\", \"briefing_id\": \"briefing001\"}\n\n"
+   ]
+  ],
+  "usage": {
+   "briefings_at_once_per_visitor": 1
+  }
+ }
+]

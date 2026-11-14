@@ -1,0 +1,232 @@
+[
+ {
+  "check": {
+   "error": "not set up: add COUNCILS_B2_BUCKET, COUNCILS_B2_KEY_ID and COUNCILS_B2_APPLICATION_KEY to deploy/.env",
+   "ok": false
+  },
+  "name": "not set up",
+  "sent": {
+   "offsite": "not set up"
+  }
+ },
+ {
+  "b2": {
+   "fail_uploads": 1
+  },
+  "check": {
+   "backups": 2,
+   "bucket": "wts-backups",
+   "newest": "councils-state-2026-10-12.sqlite.gz",
+   "ok": true
+  },
+  "days": [
+   "2026-10-10",
+   "2026-10-11",
+   "2026-10-12"
+  ],
+  "in_the_bucket": [
+   "councils-state-2026-10-11.sqlite.gz",
+   "councils-state-2026-10-12.sqlite.gz"
+  ],
+  "keep": 2,
+  "name": "three nights, one upload retried, the newest two kept",
+  "recorded": {
+   "bucket": "wts-backups",
+   "deleted": 1,
+   "file": "councils-state-2026-10-12.sqlite.gz",
+   "ok": true,
+   "stored": 2
+  },
+  "recorded_when": "2026-10-12T04:10:00+00:00",
+  "sent": [
+   {
+    "bucket": "wts-backups",
+    "deleted": 0,
+    "file": "councils-state-2026-10-10.sqlite.gz",
+    "ok": true,
+    "stored": 1
+   },
+   {
+    "bucket": "wts-backups",
+    "deleted": 0,
+    "file": "councils-state-2026-10-11.sqlite.gz",
+    "ok": true,
+    "stored": 2
+   },
+   {
+    "bucket": "wts-backups",
+    "deleted": 1,
+    "file": "councils-state-2026-10-12.sqlite.gz",
+    "ok": true,
+    "stored": 2
+   }
+  ]
+ },
+ {
+  "b2": {
+   "can_delete": false
+  },
+  "check": {
+   "backups": 2,
+   "bucket": "wts-backups",
+   "newest": "councils-state-2026-10-12.sqlite.gz",
+   "ok": true
+  },
+  "days": [
+   "2026-10-11",
+   "2026-10-12"
+  ],
+  "in_the_bucket": [
+   "councils-state-2026-10-11.sqlite.gz",
+   "councils-state-2026-10-12.sqlite.gz"
+  ],
+  "keep": 1,
+  "name": "a key without delete rights still stores",
+  "recorded": {
+   "bucket": "wts-backups",
+   "deleted": 0,
+   "file": "councils-state-2026-10-12.sqlite.gz",
+   "ok": true,
+   "stored": 2
+  },
+  "recorded_when": "2026-10-12T04:10:00+00:00",
+  "sent": [
+   {
+    "bucket": "wts-backups",
+    "deleted": 0,
+    "file": "councils-state-2026-10-11.sqlite.gz",
+    "ok": true,
+    "stored": 1
+   },
+   {
+    "bucket": "wts-backups",
+    "deleted": 0,
+    "file": "councils-state-2026-10-12.sqlite.gz",
+    "ok": true,
+    "stored": 2
+   }
+  ]
+ },
+ {
+  "b2": {},
+  "check": {
+   "raised": "Backblaze did not accept the key: check COUNCILS_B2_KEY_ID and COUNCILS_B2_APPLICATION_KEY"
+  },
+  "days": [
+   "2026-10-12"
+  ],
+  "env": {
+   "COUNCILS_B2_APPLICATION_KEY": "wrong"
+  },
+  "in_the_bucket": [],
+  "keep": 60,
+  "name": "a key Backblaze does not accept",
+  "recorded": {
+   "error": "Backblaze did not accept the key: check COUNCILS_B2_KEY_ID and COUNCILS_B2_APPLICATION_KEY",
+   "ok": false
+  },
+  "recorded_when": "2026-10-12T04:10:00+00:00",
+  "sent": [
+   {
+    "raised": "Backblaze did not accept the key: check COUNCILS_B2_KEY_ID and COUNCILS_B2_APPLICATION_KEY"
+   }
+  ]
+ },
+ {
+  "b2": {
+   "bucket": "someone-else"
+  },
+  "check": {
+   "raised": "the key is for the bucket 'someone-else', not 'wts-backups'"
+  },
+  "days": [
+   "2026-10-12"
+  ],
+  "in_the_bucket": [],
+  "keep": 60,
+  "name": "a key for another bucket",
+  "recorded": {
+   "error": "the key is for the bucket 'someone-else', not 'wts-backups'",
+   "ok": false
+  },
+  "recorded_when": "2026-10-12T04:10:00+00:00",
+  "sent": [
+   {
+    "raised": "the key is for the bucket 'someone-else', not 'wts-backups'"
+   }
+  ]
+ },
+ {
+  "already": [
+   "where-they-stand-2026-10-01.tar.gz"
+  ],
+  "b2": {},
+  "check": {
+   "backups": 1,
+   "bucket": "wts-backups",
+   "newest": "councils-state-2026-10-12.sqlite.gz",
+   "ok": true
+  },
+  "days": [
+   "2026-10-11",
+   "2026-10-12"
+  ],
+  "in_the_bucket": [
+   "councils-state-2026-10-12.sqlite.gz",
+   "where-they-stand-2026-10-01.tar.gz"
+  ],
+  "keep": 1,
+  "name": "another site's backups in the same bucket are left alone",
+  "recorded": {
+   "bucket": "wts-backups",
+   "deleted": 1,
+   "file": "councils-state-2026-10-12.sqlite.gz",
+   "ok": true,
+   "stored": 1
+  },
+  "recorded_when": "2026-10-12T04:10:00+00:00",
+  "sent": [
+   {
+    "bucket": "wts-backups",
+    "deleted": 0,
+    "file": "councils-state-2026-10-11.sqlite.gz",
+    "ok": true,
+    "stored": 1
+   },
+   {
+    "bucket": "wts-backups",
+    "deleted": 1,
+    "file": "councils-state-2026-10-12.sqlite.gz",
+    "ok": true,
+    "stored": 1
+   }
+  ]
+ },
+ {
+  "b2": {
+   "fail_uploads": 3
+  },
+  "check": {
+   "backups": 0,
+   "bucket": "wts-backups",
+   "newest": null,
+   "ok": true
+  },
+  "days": [
+   "2026-10-12"
+  ],
+  "in_the_bucket": [],
+  "keep": 60,
+  "name": "three uploads refused in a row",
+  "recorded": {
+   "error": "upload failed: 503 ",
+   "ok": false
+  },
+  "recorded_when": "2026-10-12T04:10:00+00:00",
+  "sent": [
+   {
+    "raised": "upload failed: 503 "
+   }
+  ]
+ }
+]
