@@ -955,3 +955,29 @@ def test_an_index_the_old_code_built_is_updated_and_keeps_its_vectors(tmp_path):
     index = open_index(fresh, embedder)
     assert index.stats() == golden["stats"]
     assert shared.index_answers(index.search_words, index.search_meaning, embedder.embed_query) == golden["searches"]
+
+
+# ---- ranking, and the balanced choice of evidence (MIGRATION 1.7: no difference) ---------------------------------
+
+
+def test_candidates_are_ranked_and_the_evidence_chosen_as_before():
+    """The blend of the two relevance scores, the recency factor and the round robin across groups are the shared
+    package's now; the weights, the relevance floor, the grouping and the caps are this site's. Two hundred and
+    forty made-up candidates rank the same, score for score, and every selection takes the same records."""
+    import json
+    from datetime import date
+
+    from councils.rank.composite import Candidate, RankParams, rank
+    from councils.rank.evidence import select_evidence
+
+    settings = load_settings()
+
+    def ranked(overrides: dict) -> list:
+        params = RankParams.from_settings(settings.ranking, today=shared.RANKING_TODAY, **overrides)
+        return rank([Candidate(record_id=c["record_id"], date=date.fromisoformat(c["date"]), bm25=c["bm25"],
+                               cosine=c["cosine"], data=dict(c["data"])) for c in shared.candidates()], params)
+
+    now = shared.ranked_and_chosen(ranked, lambda scored, k, **more: select_evidence(scored, k, **more))
+    golden = shared.read("ranking.json")
+    assert json.loads(json.dumps(now)) == golden
+    assert [len(s["chosen"]) for s in golden["selections"]] == [24, 40, 12, 12, 12, 20, 5, 60]

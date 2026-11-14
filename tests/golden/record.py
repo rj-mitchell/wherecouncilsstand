@@ -354,6 +354,23 @@ def old_index(tmp: Path, fixture: Path) -> dict:
     }
 
 
+def ranking() -> dict:
+    """The ranking of a set of made-up candidates, and the balanced choice of evidence from them."""
+    from datetime import date
+
+    from councils.rank.composite import Candidate, RankParams, rank
+    from councils.rank.evidence import select_evidence
+
+    settings = load_settings()
+
+    def ranked(overrides: dict) -> list:
+        params = RankParams.from_settings(settings.ranking, today=shared.RANKING_TODAY, **overrides)
+        return rank([Candidate(record_id=c["record_id"], date=date.fromisoformat(c["date"]), bm25=c["bm25"],
+                               cosine=c["cosine"], data=dict(c["data"])) for c in shared.candidates()], params)
+
+    return shared.ranked_and_chosen(ranked, lambda scored, k, **more: select_evidence(scored, k, **more))
+
+
 def seed_briefings(state: StateDB, clock: shared.Clock) -> None:
     """Three saved briefings: one shown, one withdrawn, and one saved when follow-up questions were kept with it."""
     answer = shared.an_answer()
@@ -659,6 +676,7 @@ def main(out: Path) -> None:
             shared.write(out, f"{name}.json", stored(record(tmp / name), tmp / name))
             shutil.rmtree(tmp / name)
         write_checks(out)
+        shared.write(out, "ranking.json", ranking())
         (tmp / "requests").mkdir()
         shared.write(out, "requests.json", stored(model_requests(tmp / "requests"), tmp / "requests"))
         (tmp / "index").mkdir()

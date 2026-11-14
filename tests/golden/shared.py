@@ -454,6 +454,61 @@ def search_given(result: Any) -> dict[str, Any]:
                                   "semantic": result.semantic_available, "evidence": result.evidence}, default=str))
 
 
+# ---- ranking, and the balanced choice of evidence ------------------------------------------------------------------
+
+RANKING_TODAY = date(2026, 11, 13)
+RANKING_PARAMS: list[dict[str, Any]] = [
+    {},                                                       # the settings file's own
+    {"recency": 0.0}, {"recency": 1.0}, {"recency": 0.7, "bm25_weight": 0.2},
+    {"semantic_floor": 0.0, "semantic_ceiling": 0.6},         # the hashing embedder's range
+]
+SELECTIONS: list[dict[str, Any]] = [
+    {"k": 24, "group_by": "control"}, {"k": 40, "group_by": "control"}, {"k": 12, "group_by": "region"},
+    {"k": 12, "group_by": "type"}, {"k": 12, "group_by": "council"},
+    {"k": 24, "group_by": "control", "max_per_council": 1, "max_per_meeting": 1, "min_relevance_ratio": 0.6},
+    {"k": 5, "group_by": "control", "max_per_council": 3, "max_per_meeting": 2, "min_relevance_ratio": 0.0},
+    {"k": 500, "group_by": "region"},
+]
+
+
+def candidates() -> list[dict[str, Any]]:
+    """Two hundred and forty made-up search candidates, the same every time: some found by words, some by meaning,
+    some by both, across thirty councils of every kind of control, with ties among their scores."""
+    dice = _Dice(20261114)
+    controls = ["LAB", "CON", "LD", "NOC", "GRN", "REF", "MAYOR:LAB", "SA:NONE", None]
+    regions = ["E12000003", "E12000008", "W92000004", None]
+    types = ["metropolitan", "district", "county", "unitary", "strategic_authority"]
+    out = []
+    for n in range(240):
+        council = dice.below(30)
+        gss = f"E0{8000000 + council}"
+        meeting = dice.below(6)
+        kind = dice.below(4)
+        out.append({
+            "record_id": f"{gss}:{meeting}:{n}",
+            "date": date(2018 + dice.below(9), 1 + dice.below(12), 1 + dice.below(28)).isoformat(),
+            "bm25": None if kind == 0 else round(0.25 * (1 + dice.below(40)), 2),
+            "cosine": None if kind == 1 else round(0.3 + dice.below(60) / 100, 2),
+            "data": {"gss": gss, "control": controls[council % len(controls)], "region": regions[council % 4],
+                     "nation": "wales" if council % 4 == 2 else "england", "council_type": types[council % 5]},
+        })
+    return out
+
+
+def ranked_and_chosen(rank: Callable[[dict[str, Any]], list[Any]],
+                      select: Callable[..., list[Any]]) -> dict[str, Any]:
+    """Every ranking of ``candidates()`` under RANKING_PARAMS (``rank(overrides)`` gives the scored candidates, best
+    first), and every selection of SELECTIONS from the first ranking's top 200 (``select(scored, **selection)``)."""
+    def as_stored(scored: list[Any]) -> list[list[Any]]:
+        return [[s.candidate.record_id, s.relevance, s.recency, s.score] for s in scored]
+
+    rankings = [{"params": params, "ranked": as_stored(rank(params))} for params in RANKING_PARAMS]
+    top = rank({})[:200]
+    chosen = [{"selection": selection, "chosen": [s.candidate.record_id for s in select(top, **selection)]}
+              for selection in SELECTIONS]
+    return {"rankings": rankings, "selections": chosen, "none": [as_stored(select([], k=5))]}
+
+
 REAL_ASKS: list[dict[str, Any]] = [
     {"case": "a briefing written by the real pipeline", "json": {
         "question": "What have councils decided about bin collections?"}},
