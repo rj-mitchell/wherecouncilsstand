@@ -1,4 +1,5 @@
-"""Off-site copies of the nightly backup in Backblaze B2 (a simulated B2; no real key is used)."""
+"""Off-site copies of the nightly backup in Backblaze B2 (a simulated B2; no real key is used): wts-core's
+(``wts_core.ops``, ``wts_core.adapters.b2``), with this site's names, what it keeps and its own alert wording."""
 
 from __future__ import annotations
 
@@ -9,8 +10,32 @@ from datetime import UTC, datetime, timedelta
 
 import httpx
 import pytest
+from wts_core import ops
+from wts_core.adapters import b2
+from wts_core.ops import OffsiteError
 
-from councils.offsite import OffsiteError, backup_alerts, check, configured, send
+from councils.config import SITE
+from councils.state import BACKUP_ALERTS, BACKUPS
+
+
+def configured(env, client=None):
+    return b2.configured(SITE, env, client=client)
+
+
+def send(archive, *, keep=None, env, client=None):
+    return ops.send_offsite(archive, configured(env, client), BACKUPS, keep=keep)
+
+
+def check(*, env, client=None):
+    return ops.check_offsite(configured(env, client), BACKUPS, how_to_set_up=b2.how_to_set_up(SITE))
+
+
+def backup_alerts(folder, env=None):
+    """What `councils backup-check` is given to print, as the site's own code returned it."""
+    alerts = ops.backup_alerts(folder, BACKUPS, offsite_set_up=configured(env or {}) is not None,
+                               wording=BACKUP_ALERTS)
+    return [{"level": a.level, "text": a.text} for a in alerts]
+
 
 ENV = {"COUNCILS_B2_BUCKET": "wts-backups", "COUNCILS_B2_KEY_ID": "kid", "COUNCILS_B2_APPLICATION_KEY": "secret"}
 
@@ -59,7 +84,8 @@ def archive(tmp_path, day):
 def test_not_set_up_does_nothing(tmp_path):
     assert configured({}) is None
     assert send(archive(tmp_path, "2026-10-12"), env={}) == {"offsite": "not set up"}
-    assert check(env={})["ok"] is False
+    assert check(env={}) == {"ok": False, "error": "not set up: add COUNCILS_B2_BUCKET, COUNCILS_B2_KEY_ID and "
+                                                   "COUNCILS_B2_APPLICATION_KEY to deploy/.env"}
 
 
 def test_upload_retries_and_keeps_the_newest(tmp_path):

@@ -128,3 +128,77 @@ def test_the_models_own_words_are_made_british_as_before():
     from wts_core.checks import to_british
 
     assert {text: to_british(text) for text in shared.BRITISH_TEXTS} == shared.read("checks.json")["british"]
+
+
+# ---- backups and their off-site copies (MIGRATION 1.11: the name, what it holds and what is kept, unchanged) -------
+
+
+def environment(monkeypatch, data_dir: Path, **more: str) -> None:
+    import os
+
+    for key in [k for k in os.environ if k.startswith("COUNCILS_")]:
+        monkeypatch.delenv(key)
+    monkeypatch.setenv("COUNCILS_DATA_DIR", str(data_dir))
+    for key, value in more.items():
+        monkeypatch.setenv(key, value)
+
+
+def command(args: list[str], tmp: Path) -> dict:
+    """One of the owner's commands: what it printed, where, and how it ended (as the recorder kept it)."""
+    from typer.testing import CliRunner
+
+    from councils.cli import app
+
+    return shared.command_run(CliRunner().invoke(app, args), tmp)
+
+
+def test_backups_are_named_hold_and_keep_what_they_did_and_the_commands_print_the_same_lines(tmp_path, monkeypatch):
+    import sqlite3
+
+    from wts_core import ops
+
+    from councils.state import BACKUPS
+
+    tmp, clock = tmp_path.resolve(), shared.Clock()
+    monkeypatch.setattr("councils.cli.CLOCK", clock)
+
+    def make_backup(db: Path, to: Path, keep: int, day: str) -> Path | None:
+        return ops.make_backup(db, to, BACKUPS, keep=keep, clock=shared.Clock(f"{day}T04:10:00+00:00"))
+
+    golden = shared.read("backups.json")
+    now = stored(shared.backups_scenario(
+        tmp, make_backup=make_backup, run=lambda args: command(args, tmp), clock=clock,
+        environment=lambda data_dir, **more: environment(monkeypatch, data_dir, **more)), tmp)
+    if golden["sqlite"] != sqlite3.sqlite_version:
+        # the database inside a backup is SQLite's own copy, which carries the library's version, and the words of
+        # its integrity check are the library's: both are compared only where the library is the one the goldens
+        # were recorded with
+        for made in (*golden["made"], *now["made"]):
+            del made["inside"]["sha256"]
+        for recorded in (golden, now):
+            recorded["damaged"]["error"] = recorded["damaged"]["error"].split(":")[0]
+            for run in recorded["commands"]:
+                if run["case"] == "a copy that fails its check":
+                    run["error"] = run["error"].split(": ***")[0]
+        golden["sqlite"] = now["sqlite"]
+    assert now == golden
+
+
+def test_off_site_copies_are_sent_pruned_and_recorded_as_before(tmp_path):
+    import json
+
+    from wts_core import ops
+    from wts_core.adapters import b2
+
+    from councils.config import SITE
+    from councils.state import BACKUPS
+
+    clock = shared.Clock("2026-10-12T04:10:00+00:00")
+    now = shared.offsite_scenario(
+        tmp_path, error=ops.OffsiteError,
+        send=lambda archive, keep, env, client: ops.send_offsite(archive, b2.configured(SITE, env, client=client),
+                                                                 BACKUPS, keep=keep, clock=clock),
+        check=lambda env, client: ops.check_offsite(b2.configured(SITE, env, client=client), BACKUPS,
+                                                    how_to_set_up=b2.how_to_set_up(SITE)))
+    assert json.loads(json.dumps(now)) == shared.read("offsite.json")
+    assert BACKUPS.keep_offsite == 60          # how many stay off site when a backup is made by the command

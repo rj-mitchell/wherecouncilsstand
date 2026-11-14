@@ -9,6 +9,7 @@
     councils report                           # the pilot's measurements (docs/PILOT.md)
     councils index && councils embed          # keyword index, then meaning search (slow; resumable)
     councils backup --to /backups             # copy the state database (scheduled)
+    councils restore /backups/councils-state-2026-11-14.sqlite.gz    # put a backup back (stop the site first)
     councils list-reports                     # problems and takedown requests sent through the site
     councils close-report 12                  # mark one dealt with (its contact address is deleted)
     councils withdraw <id> --reason "..."     # withdraw a saved briefing (/b/<id>)
@@ -25,8 +26,11 @@ import logging
 from datetime import date
 
 import typer
+from wts_core.cli import BackupCheckWords, BackupWords, OpsWording, RestoreWords, ops_commands
+from wts_core.ports import SYSTEM_CLOCK, Clock
 
-from councils.config import load_settings
+from councils.config import SITE, load_settings
+from councils.state import BACKUP_ALERTS, BACKUPS
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 
@@ -169,30 +173,6 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
 
 
 @app.command()
-def backup(to: str = typer.Option(..., help="folder for the backups"),
-           keep: int = typer.Option(14, help="how many to keep")) -> None:
-    """Copy the state database (spending, saved briefings, reports): the one thing that cannot be rebuilt. The copy
-    also goes to a Backblaze B2 bucket when one is set up (COUNCILS_B2_* in deploy/.env)."""
-    from pathlib import Path
-
-    from councils.backup import make_backup
-    from councils.offsite import OffsiteError, send
-
-    out = make_backup(load_settings().data_dir / "state.db", Path(to), keep)
-    if not out:
-        typer.echo("nothing to back up yet (no state database)")
-        return
-    typer.echo(f"backup: {out}")
-    try:
-        sent = send(out)
-    except OffsiteError as exc:
-        typer.echo(f"The off-site copy failed: {exc}", err=True)
-        raise typer.Exit(1) from exc
-    typer.echo("Off-site copy: " + (f"stored in {sent['bucket']} ({sent['stored']} kept there)"
-                                    if sent.get("ok") else sent["offsite"]))
-
-
-@app.command()
 def evaluate(with_model: bool = typer.Option(False, help="have the model read each question (needs an API key; a "
                                                          "fraction of a penny each)"),
              only: list[str] = typer.Option(None, help="question ids"),
@@ -212,28 +192,6 @@ def evaluate(with_model: bool = typer.Option(False, help="have the model read ea
         typer.echo(f"  {cat:10} {c['plans_right']}/{c['questions']}")
     if save:
         typer.echo(f"saved {ev.save(results, with_model)}")
-
-
-@app.command("backup-check")
-def backup_check(folder: str = typer.Option("/backups", "--in", help="the folder the backups are written to")) -> None:
-    """Whether the nightly backup and its off-site copy are up to date. Prints any problem, and exits 1 if the last
-    backup or off-site copy is over two days old or failed: run daily by councils-backup-check.timer, so a backup
-    timer that has stopped running is noticed (its own failure alert never fires)."""
-    from pathlib import Path
-
-    from councils.offsite import backup_alerts
-
-    path = Path(folder)
-    if not path.is_dir():
-        typer.echo(f"error: there is no backup folder at {path}", err=True)
-        raise typer.Exit(1)
-    alerts = backup_alerts(path)
-    for a in alerts:
-        typer.echo(f"{a['level']}: {a['text']}", err=a["level"] == "error")
-    if not alerts:
-        typer.echo("Backups are up to date.")
-    if any(a["level"] == "error" for a in alerts):
-        raise typer.Exit(1)
 
 
 def _state():
@@ -364,12 +322,50 @@ def withdraw_statement(statement_id: int, reason: str = typer.Option(
           "no waiting or published statement with that number")
 
 
-@app.command()
-def offsite() -> None:
-    """Check the off-site backup bucket: whether the key works, and how many of this site's backups are there."""
-    from councils.offsite import check
+# ---- backups: the shared package's commands (wts_core.cli), with this site's own lines ----------------------------
 
-    typer.echo(json.dumps(check(), indent=2))
+OPS_WORDING = OpsWording(
+    backup=BackupWords(
+        folder=None,                                  # --to must be given
+        keep=BACKUPS.keep,
+        nothing_to_back_up="nothing to back up yet (no state database)",
+        backed_up="backup: {archive}",
+        failed=None,                                  # a copy that fails its check is an error, shown as it is
+        offsite_stored="Off-site copy: stored in {bucket} ({stored} kept there)",
+        offsite_not_set_up="Off-site copy: not set up",
+        offsite_failed="The off-site copy failed: {error}",
+        help="Copy the state database (spending, saved briefings, reports, statements): the one thing that cannot "
+             "be rebuilt. The copy also goes to a Backblaze B2 bucket when one is set up (COUNCILS_B2_* in "
+             "deploy/.env).",
+        to_help="folder for the backups", keep_help="how many to keep"),
+    restore=RestoreWords(
+        archive_must_exist=False, says_aborted=False,
+        confirm="Replace {state_db} with {archive}? Stop the site first.",
+        restored="restored {state_db} from {archive}",
+        replaced="; the database it replaced is {kept}",
+        not_restored="Not restored: {error}",
+        help="Put a backup of the state database back. Stop the site first (docker compose stop app). The backup "
+             "is checked before anything is replaced, and the database it replaces is kept beside it.",
+        archive_help="a backup: /backups/councils-state-YYYY-MM-DD.sqlite.gz", yes_help="don't ask first"),
+    backup_check=BackupCheckWords(
+        folder="/backups",
+        no_folder="error: there is no backup folder at {folder}",
+        alert="{level}: {text}",
+        up_to_date="Backups are up to date.",
+        alerts=BACKUP_ALERTS,
+        help="Whether the nightly backup and its off-site copy are up to date. Prints any problem, and exits 1 if "
+             "the last backup or off-site copy is over two days old or failed: run daily by "
+             "councils-backup-check.timer, so a backup timer that has stopped running is noticed (its own failure "
+             "alert never fires).",
+        folder_help="the folder the backups are written to"),
+    errors_to_stderr=True,
+    offsite_help="Check the off-site backup bucket: whether the key works, and how many of this site's backups are "
+                 "there.",
+)
+# what the commands read the time from: the system's, unless a test stands another in its place
+CLOCK: Clock = SYSTEM_CLOCK
+
+app.add_typer(ops_commands(SITE, load_settings, BACKUPS, OPS_WORDING, clock=lambda: CLOCK))
 
 
 @app.command()
