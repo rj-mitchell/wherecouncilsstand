@@ -338,12 +338,19 @@ class FakeClient:
 
     def __init__(self) -> None:
         self.calls: list[dict[str, Any]] = []
+        self.parses: list[dict[str, Any]] = []      # each question the model was asked to read, when ``parsed`` is set
+        self.parsed: dict[str, Any] | None = None   # what the model reads a question as; None: it fails to
         self.refuse = False
         self.beta = SimpleNamespace(messages=SimpleNamespace(stream=self._stream))
         self.messages = SimpleNamespace(stream=self._stream, parse=self._parse)
 
     def _parse(self, **kw: Any) -> Any:
-        raise RuntimeError("offline parse in tests")
+        if self.parsed is None:
+            raise RuntimeError("offline parse in tests")
+        self.parses.append(kw)
+        return SimpleNamespace(stop_reason="end_turn", parsed_output=kw["output_format"](**self.parsed),
+                               usage=SimpleNamespace(input_tokens=1000, output_tokens=100, cache_read_input_tokens=0,
+                                                     cache_creation_input_tokens=0))
 
     def _stream(self, **kw: Any) -> FakeStream:
         self.calls.append(kw)
@@ -368,6 +375,83 @@ def without_scores(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     that another computer may round differently in the last place."""
     return [{**e, "sources": [{k: v for k, v in card.items() if k != "ranking"} for card in e["sources"]]}
             if e.get("type") == "sources" else e for e in events]
+
+
+# ---- what the model is sent ---------------------------------------------------------------------------------------
+# Questions through the real pipeline on the made-up record, for the requests themselves: the instructions, the
+# sources as documents, the question as the site words it, the model, the effort, the fallback.
+
+PARSED = {"search_text": "bin collections", "date_from": "2024-01-01", "date_to": None, "councils": ["Barnsley"],
+          "control": [], "parties": [], "nations": [], "council_types": [], "kinds": [], "group_by": "control",
+          "wants_votes": False, "interpretation": "Bin collections in Barnsley, organized since 2024."}
+MODEL_ASKS: list[dict[str, Any]] = [
+    {"case": "a summary", "json": {"question": "What have councils decided about bin collections?"}},
+    {"case": "a comprehensive briefing", "json": {"question": "What have councils decided about recycling?",
+                                                  "mode": "comprehensive"}},
+    {"case": "a follow-up, with what was asked before", "json": {
+        "question": "And what about Barnsley's bin collections?", "history": [
+            {"question": "What have councils decided about bin collections?", "answer": "A" * 700},
+            {"question": "Second?", "answer": "B"}, {"question": "Third?", "answer": "C"},
+            {"question": "Fourth?", "answer": "D"}]}},
+    {"case": "the reader's own plan, grouped by region", "json": {
+        "question": "Bins by region?", "plan": {"search_text": "bin collections", "group_by": "region",
+                                                "filters": {"control": ["LAB", "LD"], "date_from": "2025-01-01"}}}},
+    {"case": "a question the model reads first", "parsed": True, "json": {
+        "question": "What has Barnsley decided about bin collections since 2024?"}},
+    {"case": "sources only, the question read by the model", "parsed": True, "json": {
+        "question": "What has Barnsley decided about bin collections since 2024?", "sources_only": True}},
+]
+
+
+def requests_made(fake: FakeClient) -> dict[str, Any]:
+    """Every request the stand-in for the model's SDK was given, as it is stored: each briefing asked for and each
+    question it was asked to read, argument for argument."""
+    def stored(kwargs: dict[str, Any]) -> dict[str, Any]:
+        return json.loads(json.dumps({k: (v.__name__ if k == "output_format" else v) for k, v in kwargs.items()},
+                                     default=str))
+
+    return {"briefings": [stored(k) for k in fake.calls], "questions_read": [stored(k) for k in fake.parses]}
+
+
+# ---- an index made by the old code -------------------------------------------------------------------------------
+# tests/fixtures/old-index is the search index the old code built from the made-up record (its tables, its
+# state.json), kept as it left it. These are the searches made on it, and what each gave.
+
+INDEX_QUERIES: list[dict[str, Any]] = [
+    {"words": "bin collections", "where": None},
+    {"words": "weekly bin collections restored", "where": f"gss IN ('{BARNSLEY}')"},
+    {"words": "waste and recycling strategy", "where": "control IN ('LD')"},
+    {"words": "motion \"lost\" (vote)", "where": None},
+    {"words": "nothing at all like this zebra", "where": None},
+    {"words": "bins", "where": "date >= DATE '2025-03-01'"},
+    {"meaning": "weekly bin collections", "where": None},
+    {"meaning": "the waste strategy was adopted", "where": f"gss IN ('{GUILDFORD}')"},
+    {"meaning": "councillors voted on the motion", "where": "array_has_any(parties, ['LD'])"},
+]
+
+
+def index_answers(words: Callable[[str, str | None, int], list[dict[str, Any]]],
+                  meaning: Callable[[Any, str | None, int], list[dict[str, Any]]],
+                  embed: Callable[[str], Any]) -> list[dict[str, Any]]:
+    """Each search of INDEX_QUERIES: the passages found, in order, with the score or distance of each."""
+    out = []
+    for query in INDEX_QUERIES:
+        if "words" in query:
+            hits = words(query["words"], query["where"], 10)
+            found = [[h["passage_id"], round(float(h["_score"]), 3)] for h in hits]
+        else:
+            hits = meaning(embed(query["meaning"]), query["where"], 10)
+            found = [[h["passage_id"], round(float(h["_distance"]), 3)] for h in hits]
+        out.append({**query, "found": found})
+    return out
+
+
+def search_given(result: Any) -> dict[str, Any]:
+    """What the engine's search gave, as it is stored: each record chosen (without its ranking figures) and the
+    summary of the evidence."""
+    records = [{k: v for k, v in r.items() if k != "ranking"} for r in result.records]
+    return json.loads(json.dumps({"records": records, "candidates": result.candidates,
+                                  "semantic": result.semantic_available, "evidence": result.evidence}, default=str))
 
 
 REAL_ASKS: list[dict[str, Any]] = [

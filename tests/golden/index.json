@@ -1,0 +1,319 @@
+{
+ "engine": {
+  "by region": {
+   "candidates": 2,
+   "evidence": {
+    "councils": 1,
+    "date_from": "2025-03-05",
+    "date_to": "2025-03-05",
+    "groups": {
+     "South East": 1
+    },
+    "kinds": {
+     "council": 1
+    },
+    "meetings": 1,
+    "records": 1
+   },
+   "records": [
+    {
+     "committee": "Full Council",
+     "control": "LD",
+     "council_name": "Guildford Borough Council",
+     "council_type": "district",
+     "date": "2025-03-05",
+     "gss": "E07000209",
+     "heading": "Guildford Borough Council, Full Council, 5 March 2025 — 20. Waste and Recycling Strategy",
+     "item_number": "20.",
+     "item_title": "Waste and Recycling Strategy",
+     "kind": "council",
+     "members": [
+      "E07000209:7"
+     ],
+     "named_vote": false,
+     "nation": "england",
+     "parties": [
+      "LD"
+     ],
+     "passage_id": "E07000209:2:20#0",
+     "record_id": "E07000209:2:20",
+     "region": "E12000008",
+     "text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.\nRESOLVED that the strategy be adopted.",
+     "url": "https://example/E07000209/20",
+     "year": 2025
+    }
+   ],
+   "semantic": true
+  },
+  "everything": {
+   "candidates": 2,
+   "evidence": {
+    "councils": 2,
+    "date_from": "2025-02-26",
+    "date_to": "2025-03-05",
+    "groups": {
+     "Councils controlled by Labour": 1,
+     "Councils controlled by the Liberal Democrats": 1
+    },
+    "kinds": {
+     "council": 2
+    },
+    "meetings": 2,
+    "records": 2
+   },
+   "records": [
+    {
+     "committee": "Full Council",
+     "control": "LAB",
+     "council_name": "Barnsley Metropolitan Borough Council",
+     "council_type": "metropolitan",
+     "date": "2025-02-26",
+     "gss": "E08000038",
+     "heading": "Barnsley Metropolitan Borough Council, Full Council, 26 February 2025 — 10. Notice of Motion - Weekly Bin Collections",
+     "item_number": "10.",
+     "item_title": "Notice of Motion - Weekly Bin Collections",
+     "kind": "council",
+     "members": [
+      "E08000038:1"
+     ],
+     "named_vote": true,
+     "nation": "england",
+     "parties": [
+      "LD"
+     ],
+     "passage_id": "E08000038:1:10#0",
+     "record_id": "E08000038:1:10",
+     "region": "E12000003",
+     "text": "Councillor Kitching moved that weekly bin collections be restored.\n[name removed] asked about recycling centres.\nUpon being put to the vote the motion was lost.",
+     "url": "https://example/E08000038/10",
+     "year": 2025
+    },
+    {
+     "committee": "Full Council",
+     "control": "LD",
+     "council_name": "Guildford Borough Council",
+     "council_type": "district",
+     "date": "2025-03-05",
+     "gss": "E07000209",
+     "heading": "Guildford Borough Council, Full Council, 5 March 2025 — 20. Waste and Recycling Strategy",
+     "item_number": "20.",
+     "item_title": "Waste and Recycling Strategy",
+     "kind": "council",
+     "members": [
+      "E07000209:7"
+     ],
+     "named_vote": false,
+     "nation": "england",
+     "parties": [
+      "LD"
+     ],
+     "passage_id": "E07000209:2:20#0",
+     "record_id": "E07000209:2:20",
+     "region": "E12000008",
+     "text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.\nRESOLVED that the strategy be adopted.",
+     "url": "https://example/E07000209/20",
+     "year": 2025
+    }
+   ],
+   "semantic": true
+  },
+  "one party's councils": {
+   "candidates": 1,
+   "evidence": {
+    "councils": 1,
+    "date_from": "2025-03-05",
+    "date_to": "2025-03-05",
+    "groups": {
+     "Councils controlled by the Liberal Democrats": 1
+    },
+    "kinds": {
+     "council": 1
+    },
+    "meetings": 1,
+    "records": 1
+   },
+   "records": [
+    {
+     "committee": "Full Council",
+     "control": "LD",
+     "council_name": "Guildford Borough Council",
+     "council_type": "district",
+     "date": "2025-03-05",
+     "gss": "E07000209",
+     "heading": "Guildford Borough Council, Full Council, 5 March 2025 — 20. Waste and Recycling Strategy",
+     "item_number": "20.",
+     "item_title": "Waste and Recycling Strategy",
+     "kind": "council",
+     "members": [
+      "E07000209:7"
+     ],
+     "named_vote": false,
+     "nation": "england",
+     "parties": [
+      "LD"
+     ],
+     "passage_id": "E07000209:2:20#0",
+     "record_id": "E07000209:2:20",
+     "region": "E12000008",
+     "text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.\nRESOLVED that the strategy be adopted.",
+     "url": "https://example/E07000209/20",
+     "year": 2025
+    }
+   ],
+   "semantic": true
+  }
+ },
+ "files_beside_the_tables": [
+  "state.json"
+ ],
+ "has_word_index": true,
+ "rows": [
+  {
+   "control": "LD",
+   "council_type": "district",
+   "date": "2025-03-05",
+   "gss": "E07000209",
+   "heading": "Guildford Borough Council, Full Council, 5 March 2025 — 20. Waste and Recycling Strategy",
+   "kind": "council",
+   "members": [
+    "E07000209:7"
+   ],
+   "named_vote": false,
+   "nation": "england",
+   "parties": [
+    "LD"
+   ],
+   "passage_id": "E07000209:2:20#0",
+   "record_id": "E07000209:2:20",
+   "region": "E12000008",
+   "search_text": "Waste and Recycling Strategy\nGuildford Borough Council\nCouncillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.\nRESOLVED that the strategy be adopted.",
+   "source_key": "E07000209:2025",
+   "year": 2025
+  },
+  {
+   "control": "LAB",
+   "council_type": "metropolitan",
+   "date": "2025-02-26",
+   "gss": "E08000038",
+   "heading": "Barnsley Metropolitan Borough Council, Full Council, 26 February 2025 — 10. Notice of Motion - Weekly Bin Collections",
+   "kind": "council",
+   "members": [
+    "E08000038:1"
+   ],
+   "named_vote": true,
+   "nation": "england",
+   "parties": [
+    "LD"
+   ],
+   "passage_id": "E08000038:1:10#0",
+   "record_id": "E08000038:1:10",
+   "region": "E12000003",
+   "search_text": "Notice of Motion - Weekly Bin Collections\nBarnsley Metropolitan Borough Council\nCouncillor Kitching moved that weekly bin collections be restored.\n[name removed] asked about recycling centres.\nUpon being put to the vote the motion was lost.",
+   "source_key": "E08000038:2025",
+   "year": 2025
+  }
+ ],
+ "searches": [
+  {
+   "found": [
+    [
+     "E08000038:1:10#0",
+     0.484
+    ],
+    [
+     "E07000209:2:20#0",
+     0.385
+    ]
+   ],
+   "where": null,
+   "words": "bin collections"
+  },
+  {
+   "found": [
+    [
+     "E08000038:1:10#0",
+     2.061
+    ]
+   ],
+   "where": "gss IN ('E08000038')",
+   "words": "weekly bin collections restored"
+  },
+  {
+   "found": [
+    [
+     "E07000209:2:20#0",
+     2.37
+    ]
+   ],
+   "where": "control IN ('LD')",
+   "words": "waste and recycling strategy"
+  },
+  {
+   "found": [
+    [
+     "E08000038:1:10#0",
+     2.235
+    ]
+   ],
+   "where": null,
+   "words": "motion \"lost\" (vote)"
+  },
+  {
+   "found": [],
+   "where": null,
+   "words": "nothing at all like this zebra"
+  },
+  {
+   "found": [
+    [
+     "E07000209:2:20#0",
+     0.193
+    ]
+   ],
+   "where": "date >= DATE '2025-03-01'",
+   "words": "bins"
+  },
+  {
+   "found": [
+    [
+     "E08000038:1:10#0",
+     0.471
+    ],
+    [
+     "E07000209:2:20#0",
+     0.952
+    ]
+   ],
+   "meaning": "weekly bin collections",
+   "where": null
+  },
+  {
+   "found": [
+    [
+     "E07000209:2:20#0",
+     0.73
+    ]
+   ],
+   "meaning": "the waste strategy was adopted",
+   "where": "gss IN ('E07000209')"
+  },
+  {
+   "found": [
+    [
+     "E07000209:2:20#0",
+     0.957
+    ],
+    [
+     "E08000038:1:10#0",
+     1.031
+    ]
+   ],
+   "meaning": "councillors voted on the motion",
+   "where": "array_has_any(parties, ['LD'])"
+  }
+ ],
+ "stats": {
+  "passages": 2,
+  "vectors": 2
+ }
+}

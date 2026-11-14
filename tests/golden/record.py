@@ -311,6 +311,49 @@ def real_pipeline(tmp: Path) -> list[dict]:
     return [*out, {"case": "what was written", **written}]
 
 
+def model_requests(tmp: Path) -> dict:
+    """What the model is sent: every request the real pipeline made of the stand-in for its SDK."""
+    clock = shared.Clock()
+    the_time_is(clock)
+    s, state, fake, app = a_site(tmp / "requests")
+    client = TestClient(app)
+    for ask in shared.MODEL_ASKS:
+        fake.parsed = shared.PARSED if ask.get("parsed") else None
+        clock.advance(61)
+        assert client.post("/api/ask", json=ask["json"]).status_code == 200, ask
+    return shared.requests_made(fake)
+
+
+def old_index(tmp: Path, fixture: Path) -> dict:
+    """A search index built by this code from the made-up record, kept whole as a fixture (``fixture``), and what
+    this code's searches gave on it."""
+    from councils.engine import Filters
+    from councils.index.lance import SearchIndex
+
+    clock = shared.Clock()
+    the_time_is(clock)
+    s, _, _, _ = a_site(tmp / "index")
+    if fixture.exists():
+        shutil.rmtree(fixture)
+    shutil.copytree(s.index_dir, fixture)
+    index, embedder = SearchIndex(s.index_dir, 64), HashingEmbedder(64)
+    engine = Engine(s, embedder, shared.TODAY)
+    return {
+        "stats": index.stats(), "has_word_index": index.has_keyword_index(),
+        "files_beside_the_tables": sorted(p.name for p in s.index_dir.iterdir() if p.is_file()),
+        "searches": shared.index_answers(index.bm25, index.vector, embedder.embed_query),
+        "rows": sorted(json.loads(json.dumps(index.rows_for_keys([f"{shared.BARNSLEY}:2025",
+                                                                  f"{shared.GUILDFORD}:2025"]), default=str)),
+                       key=lambda r: r["passage_id"]),
+        "engine": {
+            "everything": shared.search_given(engine.search("bin collections", Filters(), limit=5)),
+            "one party's councils": shared.search_given(engine.search("bin collections", Filters(control=["LD"]),
+                                                                      limit=5)),
+            "by region": shared.search_given(engine.search("waste strategy", Filters(), limit=5, group_by="region")),
+        },
+    }
+
+
 def seed_briefings(state: StateDB, clock: shared.Clock) -> None:
     """Three saved briefings: one shown, one withdrawn, and one saved when follow-up questions were kept with it."""
     answer = shared.an_answer()
@@ -616,6 +659,11 @@ def main(out: Path) -> None:
             shared.write(out, f"{name}.json", stored(record(tmp / name), tmp / name))
             shutil.rmtree(tmp / name)
         write_checks(out)
+        (tmp / "requests").mkdir()
+        shared.write(out, "requests.json", stored(model_requests(tmp / "requests"), tmp / "requests"))
+        (tmp / "index").mkdir()
+        fixture = out.parent / "fixtures" / "old-index"
+        shared.write(out, "index.json", stored(old_index(tmp / "index", fixture), tmp / "index"))
         (tmp / "old").mkdir()
         dump, figures = old_state(tmp / "old")
         (out / "old-state.sql").write_text(dump)

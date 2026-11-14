@@ -1,0 +1,7 @@
+$28443c84-e7e9-43a8-a29b-bc8b9c66bef0²ð#
+passage_id ÿÿÿÿÿÿÿÿÿ*string08$	record_id ÿÿÿÿÿÿÿÿÿ*string08%
+source_key ÿÿÿÿÿÿÿÿÿ*string08gss ÿÿÿÿÿÿÿÿÿ*string08!nation ÿÿÿÿÿÿÿÿÿ*string08'council_type ÿÿÿÿÿÿÿÿÿ*string08!region ÿÿÿÿÿÿÿÿÿ*string08kind ÿÿÿÿÿÿÿÿÿ*string08#date ÿÿÿÿÿÿÿÿÿ*
+date32:day08year	 ÿÿÿÿÿÿÿÿÿ*int3208"control
+ ÿÿÿÿÿÿÿÿÿ*string08 parties ÿÿÿÿÿÿÿÿÿ*list08item *string08 members ÿÿÿÿÿÿÿÿÿ*list08item *string08#
+named_vote ÿÿÿÿÿÿÿÿÿ*bool08chunk ÿÿÿÿÿÿÿÿÿ*int3208'council_name ÿÿÿÿÿÿÿÿÿ*string08$	committee ÿÿÿÿÿÿÿÿÿ*string08%
+item_title ÿÿÿÿÿÿÿÿÿ*string08&item_number ÿÿÿÿÿÿÿÿÿ*string08"heading ÿÿÿÿÿÿÿÿÿ*string08text ÿÿÿÿÿÿÿÿÿ*string08&search_text ÿÿÿÿÿÿÿÿÿ*string08url ÿÿÿÿÿÿÿÿÿ*string08
