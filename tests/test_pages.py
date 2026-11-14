@@ -13,7 +13,7 @@ from test_pipeline import BARNSLEY, GUILDFORD, settings  # noqa: F401 - the fixt
 from councils import store
 from councils.api.app import create_app
 from councils.api.plaintext import page_with_meta, with_text
-from councils.api.state import StateDB
+from councils.state import open_state
 
 SHELL = """<!doctype html>
 <html lang="en-GB">
@@ -48,7 +48,7 @@ def site(settings, tmp_path):  # noqa: F811
          "date": date(2025, 2, 26), "year": 2025, "question": "motion", "outcome": "lost", "member_id": m,
          "name": n, "vote": side, "excerpt": "Upon being put to the vote the motion was <lost>."}
         for m, n, side in (("1", "Kitching", "for"), ("2", "Houghton", "against"), ("3", "Franklin", "against"))])
-    return TestClient(create_app(settings, state=StateDB(settings.data_dir / "state.db")))
+    return TestClient(create_app(settings, state=open_state(settings)))
 
 
 def ld(html: str) -> dict:

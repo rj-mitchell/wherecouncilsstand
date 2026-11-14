@@ -10,11 +10,13 @@
     councils index && councils embed          # keyword index, then meaning search (slow; resumable)
     councils backup --to /backups             # copy the state database (scheduled)
     councils restore /backups/councils-state-2026-11-14.sqlite.gz    # put a backup back (stop the site first)
-    councils list-reports                     # problems and takedown requests sent through the site
-    councils close-report 12                  # mark one dealt with (its contact address is deleted)
+    councils reports list                     # problems and takedown requests sent through the site
+    councils reports close 12                 # mark one dealt with (its contact address is deleted)
     councils withdraw <id> --reason "..."     # withdraw a saved briefing (/b/<id>)
-    councils list-statements                  # statements under the right of reply, waiting and published
-    councils publish-statement 3 --checked "..."   # show it, once its author is confirmed (decision 22)
+    councils statements list                  # statements under the right of reply, waiting and published
+    councils statements publish 3 --checked "..."   # show it, once its author is confirmed (decision 22)
+    councils hide /votes/<id> --note "..."    # hide an item while a concern is decided; unhide shows it again
+    councils waiting                          # what is waiting for a decision, and for how long
     councils search "bin collections" --control NOC
     councils ask "What have Labour-run councils decided about bin collections since 2023?"
 """
@@ -23,14 +25,31 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Mapping
 from datetime import date
+from typing import Any
 
 import typer
-from wts_core.cli import BackupCheckWords, BackupWords, OpsWording, RestoreWords, ops_commands
+from wts_core.cli import (
+    BackupCheckWords,
+    BackupWords,
+    OpsWording,
+    RepliesCommands,
+    RepliesWording,
+    RestoreWords,
+    ops_commands,
+    replies_commands,
+)
 from wts_core.ports import SYSTEM_CLOCK, Clock
+from wts_core.replies import Replies
+from wts_core.state import StateDB
 
 from councils.config import SITE, load_settings
-from councils.state import BACKUP_ALERTS, BACKUPS
+from councils.replies import OWNERS_MESSAGES, open_replies
+from councils.state import BACKUP_ALERTS, BACKUPS, open_archive, open_state
+
+# what the commands read the time from: the system's, unless a test stands another in its place
+CLOCK: Clock = SYSTEM_CLOCK
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 
@@ -164,7 +183,7 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
     # needs attention: many councils failing at once means something on our side, not one council's server
     summary["needs_attention"] = not lines or len(summary["failed"]) > max(5, len(lines) // 10)
     # the site's own retention: confirming addresses of statements that ended three months ago (decision 22)
-    summary["statement_emails_deleted"] = _state().forget_statement_emails()
+    summary["statement_emails_deleted"] = _replies().forget_old_emails()
     with open(s.data_dir / log_file, "a", encoding="utf-8") as fh:
         fh.write(json.dumps(summary) + "\n")
     typer.echo(json.dumps(summary))
@@ -194,132 +213,159 @@ def evaluate(with_model: bool = typer.Option(False, help="have the model read ea
         typer.echo(f"saved {ev.save(results, with_model)}")
 
 
-def _state():
-    from councils.api.state import StateDB
+def _state() -> StateDB:
+    return open_state(load_settings(), CLOCK)
 
-    return StateDB(load_settings().data_dir / "state.db")
+
+def _replies() -> Replies:
+    """Reports and statements, as the owner's commands work on them: with the commands' own words for a name or a
+    role the owner types."""
+    from councils.api.data import Data
+
+    settings, db = load_settings(), _state()
+    record = Data(settings)
+    return open_replies(db, lambda: record, open_archive(db, CLOCK), CLOCK, messages=OWNERS_MESSAGES)
 
 
 def _done(ok: bool, done: str, failed: str) -> None:
-    """Say what a reports or statements command did. One that changed nothing exits 1 (as the sister sites), so the
-    owner, or a script, can tell it from one that worked."""
+    """Say what a command did. One that changed nothing exits 1 (as the sister sites), so the owner, or a script,
+    can tell it from one that worked."""
     typer.echo(done if ok else failed)
     if not ok:
         raise typer.Exit(1)
 
 
-@app.command("list-reports")
-def list_reports(all_: bool = typer.Option(False, "--all", help="include reports already dealt with")) -> None:
-    """Problems and takedown requests sent through the site's form, newest first."""
-    for r in _state().reports(open_only=not all_):
-        typer.echo(f"#{r['id']}  {r['at']}  {r['kind']}  {r['page'] or '-'}{'  (closed)' if r['closed_at'] else ''}")
-        typer.echo(f"    {r['message']}")
-        if r["contact"]:
-            typer.echo(f"    reply to: {r['contact']}")
-
-
-@app.command("close-report")
-def close_report(report_id: int) -> None:
-    """Mark a report dealt with. Its contact address is deleted, as the privacy notice says."""
-    _done(_state().close_report(report_id), "closed", "no open report with that number")
-
-
 @app.command()
 def withdraw(briefing_id: str, reason: str = typer.Option(..., help="shown at its address, e.g. 'It misattributed a "
                                                                    "decision to the wrong council.'")) -> None:
-    """Withdraw a saved briefing (/b/<id>): its address then says it has been withdrawn, and why."""
-    _done(_state().withdraw_briefing(briefing_id, reason), "withdrawn", "no briefing with that id")
+    """Withdraw a saved briefing (/b/<id>): its address then says it has been withdrawn, and why, and the
+    corrections page lists it."""
+    from wts_core.observe import SqliteBriefingLog
+
+    db = _state()
+    ok = open_archive(db, CLOCK).withdraw(briefing_id, reason)
+    if ok:      # what happened next, on that briefing's record: it was corrected
+        SqliteBriefingLog(db, clock=CLOCK).mark(briefing_id, corrected=True)
+    _done(ok, "withdrawn", "no briefing with that id")
 
 
-def _statement_lines(st: dict) -> list[str]:
-    from councils.api.statements import word_count
+# ---- reports, statements and hidden items: the shared package's commands, with this site's own lines -------------
 
-    lines = [f"#{st['id']}  {st['at']}  {st['status']}  {st['page']}"
-             + (f"  (on {st['council']}'s page)" if st["council"] else "  (on no council's page: --council)"),
+
+def _shown_from(st: Mapping[str, Any]) -> str:
+    """The date the words now shown were first shown: a published statement is dated afresh when it is updated."""
+    return max(st["published_at"] or "", st["updated_at"] or "")[:10]
+
+
+def _statement_lines(st: Mapping[str, Any]) -> list[str]:
+    lines = [f"#{st['id']}  {st['at']}  {st['status']}  {st['item']}"
+             + (f"  (on {st['about']}'s page)" if st["about"] else "  (on no council's page: --council)"),
              f"    from: {st['name']}, {st['role']}"]
     if st["email"]:
         lines.append(f"    confirm with: {st['email']}")
     if st["link"]:
         lines.append(f"    record: {st['link']}")
     lines += [f"    {para}" for para in st["text"].splitlines() if para.strip()]
-    lines.append(f"    ({word_count(st['text'])} words"
-                 + (f"; shown from {st['shown_on']}" if st["status"] == "published" else "")
+    lines.append(f"    ({st['words']} words"
+                 + (f"; shown from {_shown_from(st)}" if st["status"] == "published" else "")
                  + (f"; {st['status']}: {st['reason']}" if st["reason"] else "") + ")")
     return lines
 
 
-def _statements_state():
-    state = _state()
-    state.forget_statement_emails()    # the privacy notice: deleted three months after a statement ends
-    return state
+def _report_lines(r: Mapping[str, Any]) -> list[str]:
+    lines = [f"#{r['id']}  {r['at']}  {r['kind']}  {r['page'] or '-'}{'  (closed)' if r['closed_at'] else ''}",
+             f"    {r['message']}"]
+    if r["contact"]:
+        lines.append(f"    reply to: {r['contact']}")
+    if r["public_note"]:
+        lines.append(f"    on the corrections page: {r['public_note']}")
+    return lines
 
 
-@app.command("list-statements")
-def list_statements(all_: bool = typer.Option(False, "--all", help="include declined and withdrawn statements")) -> None:
-    """Statements under the right of reply sent through the site, newest first: those waiting for a decision and
-    those shown. Confirm who sent one (reply to its address, ideally a council address) before publishing it."""
-    for st in _statements_state().statements(open_only=not all_):
-        typer.echo("\n".join(_statement_lines(st)))
+def _waiting(w: Mapping[str, Any]) -> str:
+    said = f"{w['reports']} reports and {w['statements']} statements waiting; {w['hidden']} items hidden"
+    if w["oldest_working_days"] is None:
+        return said
+    return said + f"; the oldest has waited {w['oldest_working_days']} working days (we promise a reply within 5)"
 
 
-@app.command("publish-statement")
-def publish_statement(statement_id: int, checked: str = typer.Option(
-        ..., help="how you confirmed who sent it, for the log (never shown on the site), e.g. 'Reply from the "
-                  "councillor's address on the council's website, 14 November.' Do not put the sender's email "
-                  "address in it: the privacy notice promises that address is deleted"),
-        council: str = typer.Option(
-        None, help="also show it on this council's page (GSS code or name): for a statement about a briefing")) -> None:
-    """Show a waiting statement beside its item and on its council's page, dated today, as written (never edited),
-    once you have confirmed who sent it: --checked says how."""
+def _council(typed: str) -> str:
+    """The council a statement is shown for, as the owner typed it (its GSS code or its name)."""
     from councils.registry import get
 
-    gss = get(council).gss if council else None
     try:
-        ok = _statements_state().publish_statement(statement_id, gss, checked=checked)
-    except ValueError as exc:
-        typer.echo(f"error: {exc}", err=True)
-        raise typer.Exit(1) from exc
-    _done(ok, "published", "no waiting statement with that number")
+        return get(typed).gss
+    except KeyError as exc:
+        raise ValueError(f"no one council is called {typed}: give its GSS code, or more of its name") from exc
 
 
-@app.command("decline-statement")
-def decline_statement(statement_id: int, reason: str = typer.Option(
-        ..., help="for the author and the log, e.g. 'It is about another councillor's conduct.'")) -> None:
-    """Decline a waiting statement, with the reason (tell its author). Its address is deleted three months later."""
-    _done(_statements_state().decline_statement(statement_id, reason), "declined",
-          "no waiting statement with that number")
+# What each command is called. The names are the family's (`councils statements publish 3`); the names the
+# commands had before the shared package (`councils publish-statement 3`) still work for now, and print the same.
+REPLIES_COMMANDS = RepliesCommands(
+    listed=("pending", "published"),
+    about_option="--council",
+    withdraw_note="Withdrawn by its author.",
+    outcome="resolved",
+    tidy=None,              # `councils tidy` does the right of reply's housekeeping with the rest
+    also={"list-reports": "reports_list", "close-report": "reports_close", "list-statements": "statements_list",
+          "publish-statement": "statements_publish", "decline-statement": "statements_decline",
+          "update-statement": "statements_update", "withdraw-statement": "statements_withdraw"},
+    help={
+        "reports": "Problems and takedown requests sent through the site's form.",
+        "reports_list": "Problems and takedown requests sent through the site's form, takedown requests first, "
+                        "then the newest first.",
+        "reports_close": "Mark a report dealt with. Its contact address is deleted, as the privacy notice says. "
+                         "With --public-note, what was put right is listed on the corrections page.",
+        "reports_close.public_note": "what the corrections page says was put right; it must name no one who "
+                                     "reported",
+        "statements": "Statements under the right of reply: list, publish, decline, update, withdraw and remove "
+                      "them.",
+        "statements_list": "Statements under the right of reply sent through the site, newest first: those "
+                           "waiting for a decision and those shown. Confirm who sent one (reply to its address, "
+                           "ideally a council address) before publishing it.",
+        "statements_list.all": "include declined, withdrawn and removed statements",
+        "statements_publish": "Show a waiting statement beside its item and on its council's page, dated today, "
+                              "as written (never edited), once you have confirmed who sent it: --checked says how.",
+        "statements_publish.checked": "how you confirmed who sent it, for the log (never shown on the site), e.g. "
+                                      "'Reply from the councillor's address on the council's website, 14 "
+                                      "November.' Do not put the sender's email address in it: the privacy notice "
+                                      "promises that address is deleted",
+        "statements_publish.about": "also show it on this council's page (GSS code or name): for a statement about "
+                                    "a briefing",
+        "statements_decline": "Decline a waiting statement, with the reason (tell its author). Its address is "
+                              "deleted three months later.",
+        "statements_decline.reason": "for the author and the log, e.g. 'It is about another councillor's conduct.'",
+        "statements_update": "Change a statement at its author's request (confirmed from their address). A "
+                             "published one is dated afresh.",
+        "statements_update.text": "the author's new wording, as sent",
+        "statements_update.text_file": "the new wording, from a file",
+        "statements_update.link": "the link to the record ('' for none)",
+        "statements_withdraw": "Take a statement down, or stop one waiting, at its author's request. Its address "
+                               "is deleted three months later.",
+        "statements_remove": "Take a published statement down because it breaks the rules (policy 7.2: say why). "
+                             "Its address is deleted three months later.",
+        "hide": "Hide a council's page, a named vote or a saved briefing while a concern about it is decided: its "
+                "address (/councils/E08000016, /votes/…, /b/…) then shows the note in its place.",
+        "hide.note": "what is shown in the item's place, e.g. 'Hidden while we look into a concern about it.'",
+    },
+)
 
+REPLIES_WORDING = RepliesWording(
+    report=_report_lines,
+    statement=_statement_lines,
+    log_entry=lambda e: [f"    {e['at']}  {e['action']}" + (f": {e['note']}" if e["note"] else "")],
+    hidden_item=lambda h: [f"{h['item']}  hidden since {h['at'][:10]}", f"    {h['note']}"],
+    waiting=_waiting,
+    published="published", declined="declined", updated="updated", withdrawn="withdrawn", removed="removed",
+    closed="closed",
+    hid="hidden: {item}",
+    unhid="shown again: {item}",
+    tidied="right of reply: {emails} confirming addresses deleted, {lapsed} statements lapsed undecided, {contacts} "
+           "old reports' contact addresses deleted",
+    not_done="error: {message}", refused="error: {message}", errors_to_stderr=True,
+)
 
-@app.command("update-statement")
-def update_statement(statement_id: int, text: str = typer.Option(None, help="the author's new wording, as sent"),
-                     text_file: str = typer.Option(None, help="the new wording, from a file"),
-                     name: str = typer.Option(None), role: str = typer.Option(None),
-                     link: str = typer.Option(None, help="the link to the record ('' for none)")) -> None:
-    """Change a statement at its author's request (confirmed from their address). A published one is dated afresh."""
-    from pathlib import Path
-
-    from councils.api.statements import check_line, check_link, check_text
-
-    try:
-        new_text = check_text(Path(text_file).read_text(encoding="utf-8") if text_file else text) \
-            if (text or text_file) else None
-        new_name = check_line(name, "a name") if name is not None else None
-        new_role = check_line(role, "a role") if role is not None else None
-        new_link = check_link(link) if link is not None else None
-    except ValueError as exc:
-        typer.echo(f"error: {exc}", err=True)
-        raise typer.Exit(1) from exc
-    ok = _statements_state().update_statement(statement_id, text=new_text, name=new_name, role=new_role, link=new_link)
-    _done(ok, "updated", "nothing changed: no waiting or published statement with that number, or no change")
-
-
-@app.command("withdraw-statement")
-def withdraw_statement(statement_id: int, reason: str = typer.Option(
-        "Withdrawn by its author.", help="if the site removes it, why (policy 7.2: say why)")) -> None:
-    """Take a statement down, at its author's request or because it breaks the rules. Its address is deleted three
-    months later."""
-    _done(_statements_state().withdraw_statement(statement_id, reason), "withdrawn",
-          "no waiting or published statement with that number")
+app.add_typer(replies_commands(_replies, REPLIES_COMMANDS, REPLIES_WORDING, about=_council))
 
 
 # ---- backups: the shared package's commands (wts_core.cli), with this site's own lines ----------------------------
@@ -362,9 +408,6 @@ OPS_WORDING = OpsWording(
     offsite_help="Check the off-site backup bucket: whether the key works, and how many of this site's backups are "
                  "there.",
 )
-# what the commands read the time from: the system's, unless a test stands another in its place
-CLOCK: Clock = SYSTEM_CLOCK
-
 app.add_typer(ops_commands(SITE, load_settings, BACKUPS, OPS_WORDING, clock=lambda: CLOCK))
 
 

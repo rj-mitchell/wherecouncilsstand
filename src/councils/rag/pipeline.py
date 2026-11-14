@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
+from wts_core.briefing import current_stages
 from wts_core.checks import check_briefing, to_british
 
 from councils.config import Settings
@@ -117,6 +118,12 @@ class Pipeline:
             ev["parse_error"] = plan.parse_error
         yield ev
         result, sources = self.find(plan, req)
+        # The briefing desk sees for itself when the question was read, the sources sent and the first words
+        # written; the search and the model finishing happen in here, so the pipeline marks them for the
+        # briefing's record (the engine searches and ranks in one step, so the two are marked together).
+        stages = current_stages()
+        stages.mark("searched")
+        stages.mark("ranked")
         yield {"type": "sources", "sources": [s.card() for s in sources], "candidates": result.candidates,
                "semantic": result.semantic_available, "evidence": result.evidence}
         if not result.records:
@@ -141,6 +148,7 @@ class Pipeline:
                 yield event
         if final is None:
             raise RuntimeError("the model returned no answer")
+        stages.mark("written")
         if final.get("stop_reason") == "refusal":
             # The model declined (as Where MPs Stand): an error for the reader, never an empty briefing saved and
             # shown as fully grounded. The call was still paid for, so its token counts go with the event.

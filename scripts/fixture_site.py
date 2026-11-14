@@ -164,15 +164,21 @@ def build(folder: Path) -> None:
     embed_pending(settings, idx.index, idx.state, HashingEmbedder(64))
     # a statement under the right of reply (decision 22), published beside Barnsley's named vote and so on its page
     # too: plainly made up, from no real person, so the pages can be checked with one shown
-    from councils.api.state import StateDB
+    from wts_core.replies import Item
 
-    state = StateDB(settings.data_dir / "state.db")
-    sid = state.add_statement(
-        f"/votes/{BARNSLEY}:1:10:0", BARNSLEY, "An Example Councillor", "A made-up statement, for testing the site",
-        "This is a made-up statement, to show how one is set beside the record. A real one would be up to 150 words, "
-        "in its author's own name, about this vote.\n\nIt would point to the record where it could.",
-        "https://example.org/minutes", "")
-    state.publish_statement(sid, checked="A made-up statement, for testing the site: nobody sent it.")
+    from councils.api.data import Data
+    from councils.replies import open_replies
+    from councils.state import open_archive, open_state
+
+    db, record = open_state(settings), Data(settings)
+    replies = open_replies(db, lambda: record, open_archive(db))
+    sid = replies.submit(
+        item=Item(address=f"/votes/{BARNSLEY}:1:10:0", about=BARNSLEY), name="An Example Councillor",
+        role="A made-up statement, for testing the site",
+        text="This is a made-up statement, to show how one is set beside the record. A real one would be up to 150 "
+             "words, in its author's own name, about this vote.\n\nIt would point to the record where it could.",
+        link="https://example.org/minutes", email="nobody@example.org")
+    replies.publish(sid, checked="A made-up statement, for testing the site: nobody sent it.")
     (folder / "updates.jsonl").write_text(json.dumps(
         {"finished": "2025-10-16T03:41:00", "minutes": 21.5, "councils": 3, "changed": 1, "new_meetings": 1,
          "failed": [], "needs_attention": False}) + "\n")

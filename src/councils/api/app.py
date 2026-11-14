@@ -1,19 +1,22 @@
 """The web service: questions answered as streamed briefings, search, council and vote pages, saved briefings, problem
 reports and statements under the right of reply. Serves the built web pages (web/dist) too. Run with ``councils serve``.
 
-Adapted from Where MPs Stand's service, without accounts: the site is public, so new briefings are limited per
-visitor and overall (api/usage.py). Over a limit, the sources are still shown, which costs nothing.
+The routes, the request bodies and the pages are this site's own. The flow of a briefing (the per-minute limit, the
+answer cache, the daily limit and the spending caps, the briefings in progress, saving, the record of each
+briefing) is the Where They Stand sites' shared package's (wts-core, ``wts_core.briefing``: its briefing desk), and
+so are the rules of reports and the right of reply (``wts_core.replies``; src/councils/replies.py). The site is
+public, so new briefings are limited per visitor and overall. Over a limit, the sources are still shown, which
+costs nothing.
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
-import queue
-import sqlite3
+import re
 import threading
 from collections.abc import Iterator
+from dataclasses import dataclass
 from datetime import date
 from html import escape
 from pathlib import Path
@@ -24,20 +27,29 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
-
-from councils.api import plaintext, statements
-from councils.api.data import Data
-from councils.api.state import StateDB
-from councils.api.usage import (
-    InFlight,
-    RateLimiter,
-    blocked,
-    count_question,
-    record_usage,
-    site_paused,
-    visitor_key,
+from wts_core.briefing import (
+    Ask,
+    BriefingDesk,
+    DeskParts,
+    Event,
+    Hooks,
+    TooManyRequests,
+    current_stages,
+    desk_parts,
+    sse,
 )
-from councils.config import Settings, load_settings
+from wts_core.observe import SqliteBriefingLog, briefing_config
+from wts_core.ports import SYSTEM_CLOCK, SYSTEM_RANDOM, Clock, Random
+from wts_core.replies import Refused, Replies
+from wts_core.settings import Messages
+from wts_core.state import StateDB
+from wts_core.usage import cache_key, visitor_code
+
+from councils import replies as right_of_reply
+from councils import state as state_database
+from councils.api import plaintext
+from councils.api.data import Data
+from councils.config import INSTRUCTIONS_VERSION, REPO_ROOT, SITE, Settings, load_settings
 from councils.rag.checks import rechecked
 from councils.rag.pipeline import AskRequest, Pipeline
 from councils.rag.query_parse import QueryPlan, parse_model, parse_offline
@@ -45,10 +57,25 @@ from councils.registry import REGION_NAMES, TYPE_NAMES
 
 log = logging.getLogger(__name__)
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-KEEP_ALIVE_SECONDS = 15
-# Bump when the briefing instructions or the answer's shape change, so cached answers aren't reused.
-INSTRUCTIONS_VERSION = "2"
+# so that a proxy passes each event on as it is written
+STREAM_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+# How many visitors the per-minute limiter holds before it forgets the idle ones
+FORGET_IDLE_VISITORS_OVER = 10_000
+
+# Every word of the briefing flow that a reader can be shown (the shared package has none of its own)
+MESSAGES = Messages(
+    too_many_requests="Too many requests. Please wait a minute and try again.",
+    visitor_daily_limit="You have asked a lot of questions today, so new briefings are paused until tomorrow.",
+    daily_cap="The site has reached today's limit on new briefings, which keeps its costs down.",
+    monthly_cap="The site has reached this month's limit on new briefings, which keeps its costs down.",
+    busy_visitor="A briefing is already being written for you; please wait for it to finish.",
+    busy_site="Many briefings are being written at the moment; please try again in a minute.",
+    sources_follow="{reason} The sources found are shown below.",
+    sources_only="Sources only: no briefing was written. Ask again without 'Sources only' for a written briefing.",
+    briefing_failed="The briefing could not be written just now. Any sources found are shown above; please try "
+                    "again later.",
+    model_declined="The model declined to answer this question.",     # said by the pipeline (rag/pipeline.py)
+)
 EXAMPLES = [
     "What have councils decided about weekly bin collections since 2023?",
     "How have Reform UK councillors voted on council budgets?",
@@ -74,6 +101,7 @@ class HistoryItem(BaseModel):
 
 
 HISTORY_LIMITS = {"question": 500, "answer": 1000}
+BRIEFING_PAGE = re.compile(r"/b/([A-Za-z0-9_-]{6,40})/?(?:[?#].*)?$")   # a saved briefing's address, in a report
 PLAN_MAX_CHARS = 20_000  # an edited plan is a few hundred characters; this is far more than any reader needs
 
 
@@ -106,54 +134,15 @@ class ReportBody(BaseModel):
 
 
 class StatementBody(BaseModel):
-    """A statement under the right of reply (api/statements.py): checked again in the handler, with words for the
-    reader."""
+    """A statement under the right of reply (src/councils/replies.py): checked again by the shared package, with
+    this site's words for the reader."""
     page: str = Field(max_length=500)
     name: str = Field(min_length=2, max_length=200)
     role: str = Field(min_length=2, max_length=200)
-    text: str = Field(max_length=statements.MAX_CHARS + 100)
+    text: str = Field(max_length=right_of_reply.MAX_CHARS + 100)
     link: str = Field(default="", max_length=500)
     email: str = Field(max_length=300)
     acting: bool = False
-
-
-def sse(events: Iterator[dict[str, Any]], keep_alive: float = KEEP_ALIVE_SECONDS) -> Iterator[bytes]:
-    """Server-sent events, with a comment line after a few seconds of silence (while the model is thinking): proxies
-    close a response that sends nothing for too long. The events are worked out in a thread of their own, which stops
-    at the next event once the reader has gone, and closes them, so a briefing nobody is reading stops being written
-    (and paid for)."""
-    q: queue.Queue = queue.Queue()
-    gone = threading.Event()
-    end = object()
-
-    def work() -> None:
-        try:
-            for ev in events:
-                q.put(ev)
-                if gone.is_set():
-                    break
-        except Exception as exc:  # passed on, to be raised where the response is being sent
-            q.put(exc)
-        finally:
-            if hasattr(events, "close"):
-                events.close()  # here, in the thread that ran it: the model's stream is closed with it
-            q.put(end)
-
-    threading.Thread(target=work, name="sse", daemon=True).start()
-    try:
-        while True:
-            try:
-                ev = q.get(timeout=keep_alive)
-            except queue.Empty:
-                yield b": still working\n\n"
-                continue
-            if ev is end:
-                return
-            if isinstance(ev, Exception):
-                raise ev
-            yield f"event: {ev['type']}\ndata: {json.dumps(ev, default=str)}\n\n".encode()
-    finally:
-        gone.set()
 
 
 class HeadAsGet:
@@ -176,20 +165,88 @@ class HeadAsGet:
         await self.app({**scope, "method": "GET"}, receive, without_body)
 
 
-def cache_key(parts: dict[str, Any]) -> str:
-    return hashlib.sha256(json.dumps(parts, sort_keys=True, default=str).encode()).hexdigest()[:32]
+class CouncilsHooks(Hooks):
+    """This site's own steps in the flow of a briefing (``wts_core.briefing.Hooks``)."""
+
+    def on_cached(self, ask: Ask, events: list[Event]) -> list[Event]:
+        """A cached briefing's marks are judged again by the current checks before it is shown."""
+        return rechecked(events)
+
+    def on_event(self, ask: Ask, event: Event) -> Event | None:
+        """Token counts are for the spending record, which has them by now: this site sends none to the reader,
+        and none is in the saved or cached copy. Nor is why the model could not read a question."""
+        if event["type"] in ("plan", "final"):
+            return {k: v for k, v in event.items() if k not in ("usage", "parse_error")}
+        return event
+
+
+def answer_key(body: AskBody, data_stamp: float, model: str | None) -> str:
+    """The answer cache's key for a question: everything that would make an old answer wrong. The question (its
+    case and spacing aside), what the reader chose, the earlier questions a follow-up carries, the model, the
+    version of the instructions, and when the record last changed. 32 characters, as this site has always kept."""
+    return cache_key({"q": " ".join(body.question.lower().split()), **body.model_dump(exclude={"question"}),
+                      "data": data_stamp, "model": model, "v": INSTRUCTIONS_VERSION}, length=32)
+
+
+@dataclass(frozen=True)
+class Councils:
+    """Everything the routes work with, made once by ``build``: the state database, what the briefing desk is made
+    of (the spending record, the caps, the answer cache, saved briefings), the desk, the record of each briefing,
+    and reports and statements."""
+
+    settings: Settings
+    db: StateDB
+    data: Data
+    parts: DeskParts
+    log: SqliteBriefingLog
+    desk: BriefingDesk
+    replies: Replies
+    clock: Clock
+    random: Random
+
+
+def new_briefing_id(chance: Random) -> str:
+    return state_database.new_briefing_id(chance)
+
+
+def build(settings: Settings, state: StateDB | None = None, *, clock: Clock = SYSTEM_CLOCK,
+          random: Random = SYSTEM_RANDOM) -> Councils:
+    """The site's working parts, from its settings. This is also the start-up check: every limit, price and
+    message the flow of a briefing needs, and a price for each model the settings name, with whatever is missing
+    named together in one error."""
+    db = state or state_database.open_state(settings, clock)
+    data = Data(settings)
+    parts = desk_parts(
+        settings, db, MESSAGES,
+        new_id=lambda chance: new_briefing_id(chance),
+        at_once_per_visitor="briefings_at_once_per_visitor", forget_over=FORGET_IDLE_VISITORS_OVER,
+        keep_failures=False,     # a failed briefing is logged, never kept: the privacy notice promises nothing else
+        # each model named must have prices of its own, so a new model is never costed at another's
+        require_prices_for=(settings.answer.get("model"), parse_model(settings)),
+        clock=clock, random=random)
+    log = SqliteBriefingLog(db, clock=clock)
+    config = briefing_config(
+        log=log, model=str(settings.answer.get("model")), parse_model=parse_model(settings),
+        instructions=INSTRUCTIONS_VERSION, site_version=SITE.version,
+        # everything else that could change a briefing: how the question is read and written, and how the
+        # evidence is found and chosen. Never a key, and nothing about a reader.
+        also={"answer": {k: v for k, v in settings.answer.items() if k not in ("model", "query_parse_model")},
+              "embedding": dict(settings.embedding), "ranking": dict(settings.ranking)})
+    desk = parts.desk(config, log=log, hooks=CouncilsHooks(),
+                      # the record counts each briefing's sources by the group the evidence was balanced across
+                      group_of=lambda card: card.get("group"))
+    replies = right_of_reply.open_replies(db, lambda: data, parts.archive, clock)
+    return Councils(settings=settings, db=db, data=data, parts=parts, log=log, desk=desk, replies=replies,
+                    clock=clock, random=random)
 
 
 def create_app(settings: Settings | None = None, pipeline: Pipeline | None = None,
-               state: StateDB | None = None) -> FastAPI:
+               state: StateDB | None = None, *, clock: Clock = SYSTEM_CLOCK,
+               random: Random = SYSTEM_RANDOM) -> FastAPI:
     settings = settings or load_settings()
-    state = state or StateDB(settings.data_dir / "state.db")
-    data = Data(settings)
-    usage_cfg = settings.usage
-    limiter = RateLimiter(int(usage_cfg.get("requests_per_minute", 20)))
-    inflight = InFlight(int(usage_cfg.get("briefings_at_once_per_visitor", 2)),
-                        int(usage_cfg.get("briefings_at_once", 8)), float(usage_cfg.get("briefing_estimate_usd", 0.15)))
-    cache_hours = float(usage_cfg.get("answer_cache_hours", 168))
+    site_parts = build(settings, state, clock=clock, random=random)
+    data, parts, desk, replies = site_parts.data, site_parts.parts, site_parts.desk, site_parts.replies
+    archive, items = parts.archive, replies.items
     site = settings.section("site")
     dist = Path(settings.section("paths").get("web_dist", REPO_ROOT / "web" / "dist"))
     holder: dict[str, Pipeline] = {"p": pipeline} if pipeline is not None else {}
@@ -197,6 +254,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     # No interactive API pages: FastAPI's Swagger and ReDoc pages load their scripts from a CDN, which the site's
     # content security policy blocks, so they showed a blank page. The machine-readable description stays.
     app = FastAPI(title="Where Councils Stand", docs_url=None, redoc_url=None, openapi_url="/api/openapi.json")
+    app.state.councils = site_parts
 
     def get_pipeline() -> Pipeline:
         with lock:
@@ -214,9 +272,11 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         """The visitor's daily code; 429 when over the per-minute limit."""
         # behind the proxy, uvicorn takes the address from X-Forwarded-For, which Caddy overwrites (deploy/Caddyfile);
         # a header the visitor could set themselves is never trusted
-        v = visitor_key(state, request.client.host if request.client else None)
-        if not limiter.allow(v):
-            raise HTTPException(429, "Too many requests. Please wait a minute and try again.")
+        v = visitor_code(site_parts.db, request.client.host if request.client else None, clock=clock, random=random)
+        try:
+            desk.allow(v)
+        except TooManyRequests as exc:
+            raise HTTPException(429, exc.message) from None
         return v
 
     app.add_middleware(HeadAsGet)
@@ -252,7 +312,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         p = get_pipeline()
         totals = data.totals()
         model_on = p.has_model()
-        paused = site_paused(state, usage_cfg) if model_on else None
+        refusal = parts.caps.site_paused() if model_on else None
+        paused = refusal.message if refusal else None
         last = data.last_update()
         return {
             "councils": totals.get("councils", 0), "loaded": totals.get("loaded", 0),
@@ -273,109 +334,32 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         v = visitor(request)
         p = get_pipeline()
         req = AskRequest(question=body.question, mode=body.mode, plan=body.plan, history=body.history_dicts())
-        # A follow-up's answer depends on the earlier questions it was given, so they are part of the cache key. They
-        # are not kept with the saved briefing: a shared page should not carry an earlier conversation.
-        key = cache_key({"q": " ".join(body.question.lower().split()), **body.model_dump(exclude={"question"}),
-                         "data": data.stamp(), "model": settings.answer.get("model"), "v": INSTRUCTIONS_VERSION})
-        options = body.model_dump(exclude={"question", "history"})
-        hit = state.cached(key, cache_hours) if p.has_model() and not body.sources_only else None
-        why_not = None if hit is not None or body.sources_only or not p.has_model() else blocked(state, v, usage_cfg)
 
-        def sources_only(note: str, free: bool) -> Iterator[dict[str, Any]]:
+        def sources_only(note: str, free: bool) -> Iterator[Event]:
             if free:      # over a limit, or the site's spending cap is reached: the question is read by the free rules
                 plan = offline_plan(body)
             else:         # the model reads the question better, for a fraction of a penny
                 plan, used = p.make_plan(req)
-                record_usage(state, v, "parse", parse_model(settings), used, usage_cfg)
+                # these events carry no token counts, so the desk cannot see this call: the site records the
+                # spending itself, and tells the briefing's record what it cost
+                cost = parts.spending.add("parse", parse_model(settings), used, visitor=v)
+                current_stages().spent(used, cost)
             result, sources = p.find(plan, req)
             yield {"type": "plan", "plan": plan.to_dict(), "usage": None}
             yield {"type": "sources", "sources": [s.card() for s in sources], "candidates": result.candidates,
                    "semantic": result.semantic_available, "evidence": result.evidence}
             yield {"type": "final", "answer": None, "usage": None, "note": note}
 
-        def events() -> Iterator[dict[str, Any]]:
-            if hit is not None:
-                yield from rechecked(hit)
-                return
-            if body.sources_only:
-                # the model reads the question only while the site's spending caps allow it (as Where MPs Stand)
-                yield from sources_only("Sources only: no briefing was written. Ask again without 'Sources only' "
-                                        "for a written briefing.", free=site_paused(state, usage_cfg) is not None)
-                return
-            if why_not:
-                yield from sources_only(f"{why_not} The sources found are shown below.", free=True)
-                return
-            kept: list[dict[str, Any]] = []
-            text: list[str] = []
-            try:
-                for ev in p.run(req):
-                    if ev["type"] == "plan":
-                        record_usage(state, v, "parse", parse_model(settings), ev.get("usage"),
-                                     usage_cfg)
-                        ev = {k: val for k, val in ev.items() if k not in ("usage", "parse_error")}
-                    if ev["type"] == "final":
-                        if ev.get("usage"):
-                            record_usage(state, v, "answer", ev.get("model"), ev["usage"], usage_cfg)
-                            count_question(state, v)
-                        ev = {k: val for k, val in ev.items() if k != "usage"}
-                        if ev.get("answer") and not ev["answer"].get("no_records"):
-                            replay = [e for e in kept if e["type"] in ("plan", "sources")]
-                            replay.append({"type": "text", "text": "".join(text)})
-                            for attempt in range(5):
-                                ev["briefing_id"] = state.new_briefing_id()
-                                try:
-                                    state.save_briefing(ev["briefing_id"], body.question, options, replay + [ev])
-                                    break
-                                except sqlite3.IntegrityError:
-                                    # an id already in use is astronomically unlikely; try another (as Where MPs
-                                    # Stand), rather than lose a briefing that has been paid for
-                                    if attempt == 4:
-                                        raise RuntimeError("could not allocate a briefing id") from None
-                    if ev["type"] == "error":
-                        # the model declined to answer (rag/pipeline.py): nothing is saved or cached, but the call
-                        # was paid for, so it is counted as before
-                        if ev.get("usage"):
-                            record_usage(state, v, "answer", ev.get("model"), ev["usage"], usage_cfg)
-                            count_question(state, v)
-                        ev = {k: val for k, val in ev.items() if k not in ("usage", "model")}
-                    if ev["type"] == "text":
-                        text.append(ev["text"])
-                    else:
-                        kept.append(ev)
-                    yield ev
-            except Exception:  # never leave the reader hanging
-                log.exception("ask failed")
-                yield {"type": "error", "message": "The briefing could not be written just now. Any sources found "
-                                                   "are shown above; please try again later."}
-                return
-            final = kept[-1] if kept else {}
-            if final.get("type") == "final" and final.get("answer"):
-                replay = [e for e in kept if e["type"] in ("plan", "sources")]
-                replay += [{"type": "text", "text": "".join(text)}, {**final, "cached": True}]
-                state.store_cached(key, replay, cache_hours)
-
-        def guarded() -> Iterator[dict[str, Any]]:
-            """A briefing about to be written is reserved at its estimated cost while it runs, and the limits are
-            checked again counting the others in progress, so many questions at once can't all slip past the caps
-            (as Where MPs Stand)."""
-            if hit is not None or body.sources_only or why_not or not p.has_model():
-                yield from events()
-                return
-            refused = inflight.start(v)
-            if refused:
-                yield from sources_only(f"{refused} The sources found are shown below.", free=True)
-                return
-            try:
-                late = blocked(state, v, usage_cfg, inflight.pending_usd(besides=1))
-                if late:
-                    yield from sources_only(f"{late} The sources found are shown below.", free=True)
-                    return
-                yield from events()
-            finally:
-                inflight.finish(v)
-
-        return StreamingResponse(sse(guarded()), media_type="text/event-stream",
-                                 headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+        # A follow-up's answer depends on the earlier questions it was given, so they are part of the cache key. They
+        # are not kept with the saved briefing: a shared page should not carry an earlier conversation.
+        events = desk.handle(Ask(
+            question=body.question, visitor=v, write=lambda: p.run(req), sources_only=sources_only,
+            cache_key=answer_key(body, data.stamp(), settings.answer.get("model")),
+            only_sources=body.sources_only, model_available=p.has_model(), follow_up=bool(body.history),
+            mode=body.mode,
+            filters_set=tuple(sorted(k for k, val in ((body.plan or {}).get("filters") or {}).items() if val)),
+            options=body.model_dump(exclude={"question", "history"})))
+        return StreamingResponse(sse(events), media_type="text/event-stream", headers=STREAM_HEADERS)
 
     @app.post("/api/search")
     def search(body: AskBody, request: Request):
@@ -389,16 +373,16 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
 
     @app.get("/api/briefings/{bid}")
     def briefing(bid: str):
-        b = state.briefing(bid)
+        b = archive.get(bid)
         if b is None:
             raise HTTPException(404, "There is no briefing at this address.")
-        if b["withdrawn_at"]:
-            why = (b["withdrawn_reason"] or "").strip()
+        if b.withdrawn_at:
+            why = (b.withdrawn_reason or "").strip()
             raise HTTPException(410, "This briefing has been withdrawn" + (f": {why}" if why else "."))
         # a briefing saved before follow-up questions were left out of its options is served without them
-        return {"id": b["id"], "at": b["at"], "question": b["question"],
-                "options": {k: val for k, val in b["options"].items() if k != "history"},
-                "events": rechecked(b["events"])}
+        return {"id": b.id, "at": b.created_at, "question": b.question,
+                "options": {k: val for k, val in b.options.items() if k != "history"},
+                "events": rechecked(b.events)}
 
     # ---- councils and votes --------------------------------------------------------------------------
     @app.get("/api/councils")
@@ -422,23 +406,21 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     # ---- problems and takedown requests --------------------------------------------------------------
     @app.post("/api/report")
     def report(body: ReportBody, request: Request):
-        visitor(request)
-        rid = state.add_report(body.kind, body.page, body.message, body.contact)
+        visitor(request)      # the per-minute limit only: nobody's reports are counted, and no code is kept with one
+        about = BRIEFING_PAGE.search(body.page)
+        try:
+            rid = replies.report(kind=body.kind, page=body.page, message=body.message, contact=body.contact,
+                                 briefing_id=about.group(1) if about else None)
+        except Refused as exc:
+            raise HTTPException(422, str(exc)) from None
+        if about:
+            site_parts.log.mark(about.group(1), reported=True)      # what happened next, on that briefing's record
         return {"ok": True, "id": rid}
 
     # ---- statements under the right of reply (decision 22) -------------------------------------------
     def site_hosts(request: Request) -> tuple[str, ...]:
         own = urlsplit(site.get("url") or "").hostname
-        return (*statements.SITE_HOSTS, *([own, f"www.{own}"] if own else []), request.url.hostname or "")
-
-    def item_exists(page: str) -> bool:
-        kind, key = page.split("/")[1:3]
-        if kind == "councils":
-            return data.council(key) is not None
-        if kind == "votes":
-            return data.vote(key) is not None
-        b = state.briefing(key)
-        return b is not None and not b["withdrawn_at"]   # a withdrawn briefing has no page to stand beside
+        return (*SITE.hosts, *([own, f"www.{own}"] if own else []), request.url.hostname or "")
 
     def with_about(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Each statement with the name of the item it is about, for a council's page, which gathers them all."""
@@ -452,7 +434,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                 elif kind == "councils":
                     about = (data.council(key) or {}).get("name")
                 else:
-                    about = f"Briefing: {(state.briefing(key) or {}).get('question', '')}"
+                    saved = archive.get(key)
+                    about = f"Briefing: {saved.question if saved else ''}"
             except Exception:  # noqa: BLE001 - a name is a courtesy; the link still works without it
                 about = None
             out.append({**r, "about": about or r["page"]})
@@ -461,24 +444,19 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     @app.post("/api/statements")
     def add_statement(body: StatementBody, request: Request):
         """A statement as sent: held until the owner has confirmed who sent it, then published or declined."""
-        visitor(request)
+        visitor(request)      # the per-minute limit only, as for a report
         if not body.acting:
             raise HTTPException(422, "Please confirm that you are the person or organisation the item is about, or "
                                      "act for them.")
         try:
-            page, council = statements.item_address(body.page, site_hosts(request))
-            name = statements.check_line(body.name, "your name, as it should be shown")
-            role = statements.check_line(body.role, "your role, such as Councillor, Barnsley Metropolitan Borough "
-                                                    "Council")
-            text = statements.check_text(body.text)
-            link = statements.check_link(body.link)
-            email = statements.check_email(body.email)
-        except ValueError as exc:
+            # the address first, read with the host the request came to among the site's own; then the package's
+            # checks, in its order: the words, the name, the role, the link, the email address, and that the item
+            # is on the site and shown
+            item = items.resolve(body.page, site_hosts(request))
+            sid = replies.submit(name=body.name, role=body.role, item=item, text=body.text, link=body.link,
+                                 email=body.email)
+        except Refused as exc:
             raise HTTPException(422, str(exc)) from None
-        if not item_exists(page):
-            raise HTTPException(422, "There's no page at that address on this site. Copy the address from the page "
-                                     "the statement is about.")
-        sid = state.add_statement(page, council, name, role, text, link, email)
         return {"ok": True, "id": sid}
 
     @app.get("/api/statements")
@@ -486,13 +464,12 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         """The published statements beside one item (``page``, its path) or on one council's page (``council``)."""
         if not page and not council:
             raise HTTPException(422, "Give a page or a council.")
-        if page:
-            try:
-                page, _ = statements.item_address(page)
-            except ValueError as exc:
-                raise HTTPException(422, str(exc)) from None
-        rows = state.published_statements(page or None, council.upper() or None)
-        return {"statements": with_about(rows) if council else rows, "note": statements.NOT_ENDORSED}
+        try:
+            item = items.resolve(page) if page else None
+        except Refused as exc:
+            raise HTTPException(422, str(exc)) from None
+        rows = right_of_reply.published(replies, item, council.upper() or None)
+        return {"statements": with_about(rows) if council else rows, "note": right_of_reply.NOT_ENDORSED}
 
     # ---- pages ---------------------------------------------------------------------------------------
     def page(name: str) -> FileResponse:
@@ -576,7 +553,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             # statements are shown after the record, never in its description or structured data (decision 22)
             return (200, f"{c['name']} — Where Councils Stand", plaintext.council_description(c), url,
                     plaintext.council_data(c, url, base), plaintext.council_text(c) + plaintext.statements_text(
-                        with_about(state.published_statements(council=c["gss"])), here=plaintext.council_path(c["gss"])))
+                        with_about(right_of_reply.published(replies, council=c["gss"])),
+                        here=plaintext.council_path(c["gss"])))
 
         return readable("council", build)
 
@@ -592,7 +570,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                         "<h1>Named vote not found</h1><p>There is no named vote at this address. Each council's "
                         'named votes are listed on its page: see the <a href="/councils">list of councils</a>.</p>')
             url = base + plaintext.vote_path(vote_id)
-            mine = state.published_statements(page=statements.item_address(plaintext.vote_path(vote_id))[0])
+            mine = right_of_reply.published(replies, items.resolve(plaintext.vote_path(vote_id)))
             return (200, f"{plaintext.vote_title(v)} — Where Councils Stand", plaintext.vote_description(v), url,
                     plaintext.vote_data(v, url, base),
                     plaintext.vote_text(v) + plaintext.statements_text(mine, here=plaintext.vote_path(vote_id)))

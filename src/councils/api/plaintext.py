@@ -12,7 +12,7 @@ from html import escape as e
 from typing import Any
 from urllib.parse import quote
 
-from councils.api.statements import safe_link
+from wts_core.replies import safe_link
 
 SITE = "Where Councils Stand"
 MAX_ITEMS = 60
