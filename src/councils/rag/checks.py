@@ -26,7 +26,13 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from wts_core.checks import COMMON_HONORIFICS, COMMON_LOADED_WORDS, EVIDENCE_NOTES_STRICT, LoadedWords, Verifier
+from wts_core.checks import (
+    COMMON_HONORIFICS,
+    COMMON_LOADED_WORDS,
+    EVIDENCE_NOTES_STRICT,
+    LoadedWords,
+    Verifier,
+)
 
 from councils.rag.prompts import NO_RECORDS
 
