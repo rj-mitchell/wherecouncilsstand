@@ -20,6 +20,7 @@
     councils stats --since 7d                 # how briefings went: speed, cost, what the checks found
     councils weekly-report                    # the week's figures saved, and what is over its threshold (scheduled)
     councils tidy                             # the nightly housekeeping (scheduled, after the backup)
+    councils eval run                         # the test questions, each briefing written (costs money; has a limit)
     councils search "bin collections" --control NOC
     councils ask "What have Labour-run councils decided about bin collections since 2023?"
 """
@@ -40,11 +41,13 @@ from wts_core.cli import (
     RepliesCommands,
     RepliesWording,
     RestoreWords,
+    eval_commands,
     ops_commands,
     replies_commands,
     replies_tidy,
     stats_commands,
 )
+from wts_core.observe import config_id
 from wts_core.ports import SYSTEM_CLOCK, Clock
 from wts_core.replies import Replies
 from wts_core.state import StateDB
@@ -460,6 +463,51 @@ app.add_typer(stats_commands(
     pricing=_prices,
     backup_days=BACKUPS_KEPT_DAYS,
     also_tidy=[replies_tidy(_replies, REPLIES_WORDING), lambda: forget_old_secret(_state(), CLOCK)],
+    clock=lambda: CLOCK))
+
+
+# ---- the briefing test set with each briefing written: the shared package's commands ------------------------------
+
+
+def _eval_site() -> Any:
+    from councils.evaluate import CouncilsEval
+
+    return CouncilsEval(load_settings())
+
+
+def _configuration() -> Mapping[str, Any]:
+    """What an evaluation run is a run of: the configuration the settings give as they stand, with the same id
+    the record of briefings gives it. Nothing is kept by asking (a run is not a reader's briefing)."""
+    from councils.rag.pipeline import configuration
+
+    return configuration(load_settings()).settings
+
+
+def _checks(name: str) -> Any:
+    from councils.rag import checks
+
+    return getattr(checks, name)
+
+
+def _runs() -> Any:
+    from councils.evaluate import RUNS
+
+    return RUNS
+
+
+# `councils eval run` asks every question in eval/questions.toml of the real pipeline, each briefing written (it
+# spends money: no more than [eval] max_cost_usd unless --max-cost says otherwise), saves the run under eval/runs/
+# and holds it to [eval.thresholds]; `councils eval compare` sets two saved runs side by side; `councils eval
+# replay` runs the checks again over briefings a run recorded (--record-fixtures), free and with no model.
+# `councils evaluate`, above, stays: it scores how questions are read and what evidence is found, with no briefing.
+app.add_typer(eval_commands(
+    lambda: _eval_site(),        # looked up when a command runs, so a test can stand another in its place
+    config=_configuration, config_id=config_id,      # the id the record of briefings gives the same parts
+    pricing=_prices,
+    thresholds=lambda: load_settings().section("eval")["thresholds"],
+    runs=_runs,
+    max_cost_usd=lambda: float(load_settings().section("eval")["max_cost_usd"]),   # no run starts without a limit
+    verifier=lambda: _checks("VERIFIER"), loaded_words=lambda: _checks("LOADED_WORDS"),
     clock=lambda: CLOCK))
 
 

@@ -1,10 +1,14 @@
 """The briefing test set (``eval/questions.toml``, roadmap X8) and how the site is scored against it (adapted from
 Where Countries Stand's).
 
+Two ways of running it.
+
+**Free, with no briefing written** (this module's ``run``):
+
     councils evaluate                     # the built-in rules read each question (free)
     councils evaluate --with-model        # the model reads each question (a fraction of a penny each)
 
-Two scores per question, both without writing a briefing:
+Two scores per question:
 
 1. **Reading the question:** each filter chosen (councils, nations, kinds of council and meeting, the party in
    control, councillors' parties, dates, whether votes are wanted) compared with the filters a careful reader would
@@ -12,7 +16,16 @@ Two scores per question, both without writing a briefing:
 2. **The evidence:** for questions where "No records found" is right, whether nothing was found; for questions that
    name councils in ``include``, whether a source from each was found.
 
-Results are printed and saved under ``eval/runs/`` (docs/EVALUATION.md).
+**With each briefing written** (``CouncilsEval``, for the shared package's harness, ``wts_core.eval``):
+
+    councils eval run                     # asks every question of the real pipeline; spends up to [eval] max_cost_usd
+    councils eval compare A.json B.json   # two saved runs side by side
+    councils eval replay eval/fixtures    # the checks run again over recorded briefings: free, no model
+
+A run reports, for each question and overall, what the checks on briefings found, the spread of sources, the time
+and the cost, with the two scores above beside them, and is held to ``[eval.thresholds]`` in the settings.
+
+Results are saved under ``eval/runs/`` (docs/EVALUATION.md).
 """
 
 from __future__ import annotations
@@ -20,16 +33,21 @@ from __future__ import annotations
 import json
 import tomllib
 from collections import defaultdict
+from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
+
+from wts_core.eval import Case, Recording, load_cases, read_as_if
+from wts_core.events import Event
 
 from councils.config import REPO_ROOT, Settings
 from councils.rag.pipeline import AskRequest, Pipeline
 from councils.rag.query_parse import QueryPlan, parse_offline
 
 QUESTIONS = REPO_ROOT / "eval" / "questions.toml"
+RUNS = REPO_ROOT / "eval" / "runs"      # where runs are saved, and the note of each run that passed (passed.jsonl)
 LISTS = ("councils", "nations", "council_types", "kinds", "control", "parties")
 FIELDS = (*LISTS, "date_from", "date_to", "wants_votes")
 
@@ -133,3 +151,60 @@ def save(results: list[Result], with_model: bool, folder: Path = REPO_ROOT / "ev
     path.write_text(json.dumps({"summary": summary(results), "results": [asdict(r) for r in results]}, indent=1,
                                default=str), encoding="utf-8")
     return path
+
+
+class CouncilsEval:
+    """This site as the shared package's evaluation harness sees it (``wts_core.eval.EvalSite``): its questions, a
+    way to ask one of the real pipeline, and the group a source belongs to. It also gives the harness the site's own
+    two scores for each question (``score``) and what the model was given and wrote (``recording``), so a briefing
+    written in a run can be kept and the checks run over it again later."""
+
+    def __init__(self, settings: Settings, pipeline: Pipeline | None = None, path: Path = QUESTIONS) -> None:
+        self.settings = settings
+        self.path = path
+        self.today = read_as_if(path)       # the date the questions are read as if it were
+        self._pipeline = pipeline
+        self._kept: dict[str, Recording] = {}
+
+    @property
+    def pipeline(self) -> Pipeline:
+        if self._pipeline is None:
+            self._pipeline = Pipeline(self.settings, today=self.today)
+        return self._pipeline
+
+    def cases(self) -> Sequence[Case]:
+        return load_cases(self.path)
+
+    def ask(self, case: Case, config: Mapping[str, Any]) -> Iterator[Event]:
+        """Ask one question of the pipeline itself: never through the briefing desk, so never from the answer
+        cache, never counted against a reader's limits and never saved as a briefing. ``config`` is the
+        configuration the settings give (``councils.rag.pipeline.configuration``), which is what the pipeline
+        runs with."""
+        self._kept.pop(case.id, None)
+
+        def keep(documents: Any, blocks: Any, headings: Any) -> None:
+            self._kept[case.id] = Recording(documents, blocks, headings)
+
+        return self.pipeline.run(AskRequest(question=case.question), keep=keep)
+
+    def group_of(self, source: Mapping[str, Any]) -> str:
+        """The group the evidence was balanced across (the party in control, the nation or the kind of council)."""
+        return str(source.get("group") or "")
+
+    def score(self, case: Case, plan: Mapping[str, Any] | None,
+              sources: Sequence[Mapping[str, Any]]) -> Mapping[str, bool]:
+        """The site's own expectations of a question, each met or not: every filter the question was read into
+        (as ``compare``), and whether the evidence holds a source from each council its ``include`` names."""
+        if plan is None:
+            return {}
+        years = int(self.settings.archive.get("default_years", 4))
+        today = self.today or date.today()
+        met, _ = compare(QueryPlan.from_dict({"question": case.question, **plan}), dict(case.expect), today, years,
+                         self.settings.start_date)
+        if case.expect.get("include"):
+            met["include"] = set(case.expect["include"]) <= {s.get("gss") for s in sources}
+        return met
+
+    def recording(self, case: Case) -> Recording | None:
+        """What the model was given and what it wrote for the question just asked, where a briefing was written."""
+        return self._kept.get(case.id)

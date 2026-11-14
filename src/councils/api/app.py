@@ -38,7 +38,7 @@ from wts_core.briefing import (
     desk_parts,
     sse,
 )
-from wts_core.observe import LOGGER, SqliteBriefingLog, briefing_config, json_logging
+from wts_core.observe import LOGGER, SqliteBriefingLog, json_logging
 from wts_core.ports import SYSTEM_CLOCK, SYSTEM_RANDOM, Clock, Random
 from wts_core.replies import Refused, Replies
 from wts_core.settings import Messages, require
@@ -51,7 +51,7 @@ from councils.api import plaintext
 from councils.api.data import Data
 from councils.config import INSTRUCTIONS_VERSION, REPO_ROOT, SITE, Settings, load_settings
 from councils.rag.checks import rechecked
-from councils.rag.pipeline import AskRequest, Pipeline
+from councils.rag.pipeline import AskRequest, Pipeline, configuration
 from councils.rag.query_parse import QueryPlan, parse_model, parse_offline
 from councils.registry import REGION_NAMES, TYPE_NAMES
 
@@ -225,13 +225,7 @@ def build(settings: Settings, state: StateDB | None = None, *, clock: Clock = SY
         require_prices_for=(settings.answer.get("model"), parse_model(settings)),
         clock=clock, random=random)
     log = SqliteBriefingLog(db, clock=clock)
-    config = briefing_config(
-        log=log, model=str(settings.answer.get("model")), parse_model=parse_model(settings),
-        instructions=INSTRUCTIONS_VERSION, site_version=SITE.version,
-        # everything else that could change a briefing: how the question is read and written, and how the
-        # evidence is found and chosen. Never a key, and nothing about a reader.
-        also={"answer": {k: v for k, v in settings.answer.items() if k not in ("model", "query_parse_model")},
-              "embedding": dict(settings.embedding), "ranking": dict(settings.ranking)})
+    config = configuration(settings, log)       # its id worked out, and the parts behind it kept
     desk = parts.desk(config, log=log, hooks=CouncilsHooks(),
                       # the record counts each briefing's sources by the group the evidence was balanced across
                       group_of=lambda card: card.get("group"))

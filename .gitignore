@@ -9,4 +9,7 @@ web/node_modules/
 web/tsconfig.tsbuildinfo
 deploy/.env
 deploy/backups/
-eval/runs/
+# evaluation runs stay on the machine that made them, but for the note of each run that passed: it is what
+# the guard on experiments reads (docs/EVALUATION.md), so it is committed
+eval/runs/*
+!eval/runs/passed.jsonl

@@ -7,7 +7,7 @@ so a web page can show each step; ``answer_once`` collects them into one result 
 from __future__ import annotations
 
 import logging
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
@@ -15,19 +15,37 @@ from typing import Any
 from wts_core.adapters import has_model, model_client
 from wts_core.briefing import current_stages
 from wts_core.checks import check_briefing, to_british
-from wts_core.events import Completed, blocks_as_today, to_reader
-from wts_core.ports import ModelClient
+from wts_core.events import Block, Completed, blocks_as_today, to_reader
+from wts_core.observe import SqliteBriefingLog, briefing_config
+from wts_core.ports import BriefingConfig, Document, ModelClient
 
-from councils.config import SITE, Settings
+from councils.config import INSTRUCTIONS_VERSION, SITE, Settings
 from councils.engine import Engine
 from councils.rag.answer import briefing_request
 from councils.rag.checks import LOADED_WORDS, VERIFIER
 from councils.rag.prompts import NO_RECORDS
-from councils.rag.query_parse import QueryPlan, parse_offline, parse_with_model
+from councils.rag.query_parse import QueryPlan, parse_model, parse_offline, parse_with_model
 from councils.rag.sources import build_sources
 from councils.registry import councils
 
 log = logging.getLogger(__name__)
+
+# what an evaluation run keeps of a briefing, to check again later: the documents the model was given, the blocks
+# it wrote, and each document's heading (a quotation is looked for there too)
+Keep = Callable[[tuple[Document, ...], tuple[Block, ...], tuple[str, ...]], None]
+
+
+def configuration(settings: Settings, log: SqliteBriefingLog | None = None) -> BriefingConfig:
+    """What this site's briefings run with, and the short id the record of briefings and an evaluation run both
+    know it by: the two models, the version of the instructions, and everything else that could change a
+    briefing (how the question is read and written, and how the evidence is found and chosen). Never a key, and
+    nothing about a reader. With ``log`` the parts behind the id are kept there (the web app does); without, as
+    for an evaluation run, nothing is written."""
+    return briefing_config(
+        log=log, model=str(settings.answer.get("model")), parse_model=parse_model(settings),
+        instructions=INSTRUCTIONS_VERSION, site_version=SITE.version,
+        also={"answer": {k: v for k, v in settings.answer.items() if k not in ("model", "query_parse_model")},
+              "embedding": dict(settings.embedding), "ranking": dict(settings.ranking)})
 
 
 @dataclass
@@ -109,7 +127,9 @@ class Pipeline:
                                     group_by=plan.group_by)
         return result, build_sources(self.settings, result.records, plan.group_by)
 
-    def run(self, req: AskRequest) -> Iterator[dict[str, Any]]:
+    def run(self, req: AskRequest, keep: Keep | None = None) -> Iterator[dict[str, Any]]:
+        """``keep``, where given, is handed what the model was given and what it wrote, before the checks: an
+        evaluation run keeps them as a fixture. Nothing a reader asks is ever kept this way."""
         plan, parse_usage = self.make_plan(req)
         ev: dict[str, Any] = {"type": "plan", "plan": plan.to_dict(), "usage": parse_usage}
         if plan.parse_error:
@@ -156,6 +176,8 @@ class Pipeline:
             yield {"type": "error", "message": "The model declined to answer this question.",
                    "usage": usage, "model": done.model}
             return
+        if keep is not None:
+            keep(tuple(request.documents), tuple(done.blocks), tuple(str(x.meta.get("heading") or "") for x in sources))
         # every check, in the family's one order: citations, openers about the records, spelling, loaded words,
         # quotations (wts_core.checks; what is this site's own is in rag/checks.py)
         answer = check_briefing(blocks_as_today(done), sources, VERIFIER, LOADED_WORDS)
