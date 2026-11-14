@@ -204,3 +204,34 @@ def test_if_youre_named_uses_the_familys_words():
 def test_the_corrections_page_gives_the_response_times_and_links_to_if_youre_named():
     page = (WEB / "corrections.html").read_text()
     assert TIMES in page and '<a href="/named">If you\'re named on this site</a>' in page
+
+
+def test_the_privacy_notice_says_what_is_kept_in_the_sentences_the_owner_accepted():
+    """The sentences of the shared package's decisions (wts-core docs/adr/0012 and 0008, accepted by the owner on
+    13 November 2026), word for word, for what this site has turned on; and what the notice says is deleted is
+    what the code deletes (tests/test_observe.py, tests/test_statements.py)."""
+    from wts_core.observe import OWNER_ACCEPTED
+
+    from councils.replies import RULES
+    from councils.state import BACKUPS, BACKUPS_KEPT_DAYS
+
+    notice = (WEB / "privacy.html").read_text()
+    # the record of each briefing (ADR 0012)
+    assert ("For each briefing the site also notes how long each step took, what it cost and what the automatic "
+            "checks found, so that slow or poorly checked briefings can be found and fixed. These notes hold "
+            "nothing that identifies you; they are kept for 13 months, and the question of a briefing that could "
+            "not be written is removed from them after 90 days.") in notice
+    assert (OWNER_ACCEPTED.months, OWNER_ACCEPTED.failed_question_days) == (13, 90)
+    # the confirming address of a statement, and backups (ADR 0008, questions 3 and 4)
+    kept = ("kept while the statement is waiting or shown, and deleted three months after it is withdrawn, "
+            "declined or removed")
+    assert kept in notice and kept.replace("the statement", "your statement") in (WEB / "named.html").read_text()
+    assert RULES.email_kept_months == 3
+    assert ("Backups of the site's database are kept for up to two months, so a deleted address can remain in a "
+            "backup until then.") in notice
+    assert BACKUPS.keep_offsite == BACKUPS_KEPT_DAYS == 60 and BACKUPS.keep <= 60       # one a night: two months
+    # nothing the site has not turned on: it keeps no note of failed questions apart from the record, counts no
+    # reader's reports or statements, and has no "useful or not" buttons
+    for not_here in ("not useful", "failed questions", "per day for reports"):
+        assert not_here not in notice
+    assert "Requests aren't logged." in notice      # still true: the log of briefings holds nothing from a request
