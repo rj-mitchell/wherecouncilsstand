@@ -916,6 +916,19 @@ def old_index(tmp: Path):
     return s
 
 
+def test_the_old_codes_index_is_whole_in_the_repository():
+    """Every file of tests/fixtures/old-index is tracked by git, its tables' ``data`` folders too (the repository
+    ignores folders called ``data``, and an index without its data files opens on the machine that made it and
+    nowhere else)."""
+    import subprocess
+
+    fixture = Path(__file__).parent / "fixtures" / "old-index"
+    on_disk = {p.relative_to(fixture).as_posix() for p in fixture.rglob("*") if p.is_file()}
+    tracked = subprocess.run(["git", "ls-files", "."], cwd=fixture, capture_output=True, text=True, check=True)
+    assert on_disk == set(tracked.stdout.split()) and any("/data/" in name for name in on_disk)
+    assert {name.split("/")[0] for name in on_disk} == {"passages.lance", "vectors.lance", "state.json"}
+
+
 def test_an_index_the_old_code_built_opens_and_searches_the_same(tmp_path):
     """tests/fixtures/old-index: an index made before the shared package, with no note of what it was built with.
     It opens as it is, takes the note the first time it is opened with its embedder, and every search by words and

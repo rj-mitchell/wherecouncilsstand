@@ -1,6 +1,0 @@
-$2902103d-bbfc-4ab3-9f33-f89a32c30f30²Ù#
-passage_id ÿÿÿÿÿÿÿÿÿ*string08$	record_id ÿÿÿÿÿÿÿÿÿ*string08%
-source_key ÿÿÿÿÿÿÿÿÿ*string08gss ÿÿÿÿÿÿÿÿÿ*string08!nation ÿÿÿÿÿÿÿÿÿ*string08'council_type ÿÿÿÿÿÿÿÿÿ*string08!region ÿÿÿÿÿÿÿÿÿ*string08kind ÿÿÿÿÿÿÿÿÿ*string08#date ÿÿÿÿÿÿÿÿÿ*
-date32:day08year	 ÿÿÿÿÿÿÿÿÿ*int3208"control
- ÿÿÿÿÿÿÿÿÿ*string08 parties ÿÿÿÿÿÿÿÿÿ*list08item *string08 members ÿÿÿÿÿÿÿÿÿ*list08item *string08#
-named_vote ÿÿÿÿÿÿÿÿÿ*bool083vector ÿÿÿÿÿÿÿÿÿ*fixed_size_list:float:6408

@@ -4,6 +4,8 @@
 .venv/
 __pycache__/
 data/
+# but not the data files of the search index kept for the tests (an index built by the code before wts-core)
+!tests/fixtures/**/data/
 web/dist/
 web/node_modules/
 web/tsconfig.tsbuildinfo
