@@ -55,6 +55,10 @@ class AskRequest:
     plan: dict[str, Any] | None = None          # an edited plan from the reader, used instead of parsing
     recency: float | None = None
     history: list[dict[str, str]] = field(default_factory=list)
+    # what is hidden while a concern about it is decided (the impartiality policy, 7.3), as the web app says it:
+    # councils whose minutes are left out of the search, and named votes not given with their item's minutes
+    without_councils: tuple[str, ...] = ()
+    without_votes: tuple[str, ...] = ()
 
 
 def plan_note(plan: QueryPlan) -> str:
@@ -124,8 +128,8 @@ class Pipeline:
         limit = int(self.settings.answer.get(
             "comprehensive_sources" if req.mode == "comprehensive" else "summary_sources", 24))
         result = self.engine.search(plan.search_text, plan.filters, req.recency, limit, diversify=True,
-                                    group_by=plan.group_by)
-        return result, build_sources(self.settings, result.records, plan.group_by)
+                                    group_by=plan.group_by, without_councils=req.without_councils)
+        return result, build_sources(self.settings, result.records, plan.group_by, without_votes=req.without_votes)
 
     def run(self, req: AskRequest, keep: Keep | None = None) -> Iterator[dict[str, Any]]:
         """``keep``, where given, is handed what the model was given and what it wrote, before the checks: an

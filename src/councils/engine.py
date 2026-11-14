@@ -9,6 +9,7 @@ and its output is shown to the reader as editable filters.
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from datetime import date
@@ -132,12 +133,15 @@ class Engine:
         return self._meaning
 
     def search(self, query: str, filters: Filters | None = None, recency: float | None = None, limit: int = 12,
-               diversify: bool = True, group_by: str = "control") -> SearchResult:
+               diversify: bool = True, group_by: str = "control",
+               without_councils: Sequence[str] = ()) -> SearchResult:
         f = filters or Filters()
         r = self.settings.ranking
         where = build_where(f)
-        held = withheld_codes()
-        if held:   # passages of a council withheld since it was indexed (decision 21), until the update removes them
+        # passages of a council withheld since it was indexed (decision 21), until the update removes them; and of
+        # a council the caller says to leave out (its page is hidden while a concern is decided: the web app says)
+        held = sorted({*withheld_codes(), *without_councils})
+        if held:
             where = " AND ".join(w for w in (where, f"gss NOT IN ({', '.join(sql_str(g) for g in held)})") if w)
 
         def keyword() -> list[dict[str, Any]]:

@@ -12,6 +12,9 @@ in time, reports and how each ended, and what is hidden. This file is what the s
 * ``RULES``: this site's limits (a statement of up to 150 words and 1,500 characters, a report of 5 to 5,000), and
   the kinds of report its form sends.
 * ``MESSAGES``: every word a sender can be shown.
+* ``SiteReplies``: hiding by the address the owner pastes, filed under the item's own address, so that what is
+  hidden in the database is what the pages ask about; and ``Hidden``, what is hidden now, as the pages, the lists
+  and the search are told it.
 
 How a statement looks on the pages, and where it is placed, is in src/councils/api/plaintext.py and the web pages.
 A statement is never part of the record: nothing here is read by the search index, the briefing engine or the AI
@@ -23,13 +26,13 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable, Mapping
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from typing import Any, Protocol
 from urllib.parse import unquote, urlsplit
 
 from wts_core import replies as core
 from wts_core.ports import SYSTEM_CLOCK, Clock
-from wts_core.replies import Item, Refused, Replies, ReplyMessages, ReplyRules
+from wts_core.replies import Item, NotDone, Refused, Replies, ReplyMessages, ReplyRules
 from wts_core.state import StateDB
 from wts_core.usage import SavedBriefings
 
@@ -140,10 +143,122 @@ class Items:
         return saved is not None and saved.withdrawn_at is None
 
 
+# What a reader is shown in a hidden item's place: this sentence, then the note the owner gave when hiding it
+# (the impartiality policy, 7.3: "the item can be hidden meanwhile, with a note").
+HIDDEN_LEAD = "This page is hidden while a concern about it is decided."
+# The corrections log's heading for each kind of entry: a briefing withdrawn, or a report closed with a public note.
+LOG_WITHDRAWN, LOG_CORRECTION = "Briefing withdrawn", "Correction"
+
+
+class SiteReplies(Replies):
+    """The package's reports and statements, with one thing made this site's: an item is hidden, and shown again,
+    by its address as the owner pastes it (a full address or a path, in any case), and filed under the item's own
+    address, which is what the pages ask about. Only what has an address of its own can be hidden: a council's (or
+    strategic authority's) page, a named vote, or a saved briefing."""
+
+    def _filed(self, pasted: str) -> Item:
+        try:
+            return self.items.resolve(pasted)
+        except Refused:
+            raise NotDone("only a council's page, a named vote or a briefing can be hidden: give its address on "
+                          "this site, such as /votes/… or /councils/…") from None
+
+    def hide(self, item: str, note: str) -> None:
+        found = self._filed(item)
+        if not self.items.shown(found):
+            raise NotDone(f"there is no page at {found.address} on this site")
+        super().hide(found.address, note)
+
+    def unhide(self, item: str) -> None:
+        super().unhide(self._filed(item).address)
+
+    def hidden(self, item: str) -> dict[str, Any] | None:
+        try:
+            return super().hidden(self.items.resolve(item).address)
+        except Refused:
+            return None
+
+
+@dataclass(frozen=True)
+class Hidden:
+    """What is hidden now, while a concern is decided: each item's address and the note to show in its place.
+
+    * A council's page hidden: the note stands in place of its page and of each of its named votes' pages; it is
+      left out of the list of councils and the sitemap, and its minutes are left out of search, so of the sources
+      of every briefing written meanwhile.
+    * A named vote hidden: the note stands in place of its page; it is left out of its council's list of votes
+      and the sitemap, and is not given with its agenda item's minutes as a source (the minutes themselves, which
+      are the council's words, still are).
+    * A briefing hidden: the note stands in place of the briefing, and it is not replayed to a reader who asks
+      the same question.
+
+    Statements beside a hidden item are hidden with it. A briefing saved before an item was hidden still shows
+    the sources it was written from."""
+
+    notes: Mapping[str, str]
+
+    def _of(self, kind: str) -> frozenset[str]:
+        return frozenset(a.split("/")[2] for a in self.notes if a.startswith(f"/{kind}/"))
+
+    @property
+    def councils(self) -> frozenset[str]:
+        return self._of("councils")
+
+    @property
+    def votes(self) -> frozenset[str]:
+        return self._of("votes")
+
+    def note(self, address: str) -> str | None:
+        """The note to show in place of the page at ``address``: its own, or, for a named vote, its council's."""
+        own = self.notes.get(address)
+        if own is None and address.startswith("/votes/"):
+            own = self.notes.get(f"/councils/{address.split('/')[2].split(':')[0]}")
+        return own
+
+    def instead(self, address: str) -> str | None:
+        """What a reader is shown in place of the page at ``address``, or None if it is not hidden."""
+        note = self.note(address)
+        return None if note is None else f"{HIDDEN_LEAD} {note}"
+
+    def vote_hidden(self, vote_id: str) -> bool:
+        return self.note(f"/votes/{vote_id}") is not None
+
+
+def hidden_now(replies: Replies) -> Hidden:
+    return Hidden({h["item"]: h["note"] for h in replies.all_hidden()})
+
+
+def corrections(replies: Replies, briefings: SavedBriefings, limit: int = 100) -> list[dict[str, Any]]:
+    """The public corrections log (the impartiality policy, 7.1: "a public note saying what changed and when"),
+    newest first: each briefing that was withdrawn, with the reason given, and each report closed with a note for
+    this log. Each entry is a ``date``, a ``heading``, the ``note`` and, for a correction to a page that is still
+    on the site, its ``page``.
+
+    Left out on purpose. A withdrawn briefing's question: on this site a briefing may be withdrawn because its
+    question names someone who is not a councillor, and the log must not repeat it. Whatever a reporter wrote, or
+    pasted as the page, unless it is the address of a page of this site. The reason a statement was removed: that
+    is said to its author."""
+    withdrawn = [{"date": b.withdrawn_at, "note": (b.withdrawn_reason or "").strip() or None}
+                 for b in briefings.withdrawn()]
+    out = []
+    for entry in replies.corrections(limit, withdrawn=withdrawn):
+        page = None
+        if entry["kind"] != "withdrawn" and entry["page"]:
+            try:
+                found = replies.items.resolve(entry["page"])
+                page = found.address if replies.items.shown(found) else None
+            except Refused:
+                page = None
+        out.append({"date": entry["date"],
+                    "heading": LOG_WITHDRAWN if entry["kind"] == "withdrawn" else LOG_CORRECTION,
+                    "note": entry["note"] or "", "page": page})
+    return out
+
+
 def open_replies(db: StateDB, record: Callable[[], Record], briefings: SavedBriefings, clock: Clock = SYSTEM_CLOCK, *,
-                 messages: ReplyMessages = MESSAGES) -> Replies:
+                 messages: ReplyMessages = MESSAGES) -> SiteReplies:
     """Reports and statements, for the site's endpoints, its pages and the owner's commands alike."""
-    return Replies(db, items=Items(record, briefings), rules=RULES, messages=messages, clock=clock)
+    return SiteReplies(db, items=Items(record, briefings), rules=RULES, messages=messages, clock=clock)
 
 
 def as_shown(statement: Mapping[str, Any]) -> dict[str, Any]:

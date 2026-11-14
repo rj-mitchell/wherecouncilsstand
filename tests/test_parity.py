@@ -8,6 +8,7 @@ docs/AS-BUILT.md (or docs/MIGRATION.md, or its CHANGELOG.md) that lists it: noth
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -763,7 +764,8 @@ def test_the_owners_commands_print_what_they_did(owner):
             if entry[0] == "updated":
                 entry[1] = ", ".join(part for part in entry[1].split(", ") if part != "shown_on")
     assert now_kept == then
-    assert [shared.send(client, {"get": path}) for path in shared.OWNER_READS] == golden["reads"]
+    reads = [shared.send(client, {"get": path}) for path in shared.OWNER_READS]
+    assert statements_marked(reads, golden["reads"], at_least=1) == golden["reads"]
 
 
 def test_the_owners_commands_under_their_new_names_do_the_same(owner):
@@ -787,6 +789,19 @@ def test_the_owners_commands_under_their_new_names_do_the_same(owner):
     assert [s["status"] for s in sorted(replies.statements(), key=lambda s: s["id"])] == [
         "published", "published", "declined", "withdrawn", "pending"]
     assert replies.statement(2)["about"] == shared.BARNSLEY and replies.statement(4)["reason"] == "Withdrawn by its author."
+
+
+def statements_marked(now, golden, at_least: int):
+    """One difference in the pages, asserted and then set aside (wts-core's ADR 0008, "The four questions,
+    decided", 1: a statement is shown where it is shown today, but "is never part of what a search engine quotes
+    as the site's own words": its markup carries ``data-nosnippet``). Every statement the pages showed is shown,
+    each now marked so and none unmarked; ``now`` is returned as it would be without the mark, to compare the
+    rest exactly."""
+    marked, plain = (json.dumps(tag)[1:-1] for tag in ('<article class="statement" data-nosnippet>',
+                                                       '<article class="statement">'))
+    was, is_now = json.dumps(golden), json.dumps(now)
+    assert was.count(plain) >= at_least and is_now.count(marked) == was.count(plain) and plain not in is_now
+    return json.loads(is_now.replace(marked, plain))
 
 
 def test_the_pages_and_the_other_endpoints_give_what_they_gave(tmp_path):
@@ -816,6 +831,7 @@ def test_the_pages_and_the_other_endpoints_give_what_they_gave(tmp_path):
         now[f"/api/status {limits}"] = {**shared.send(TestClient(again), {"get": "/api/status"}),
                                         "case": f"/api/status {limits}"}
     assert list(now) == list(golden)
+    now = statements_marked(now, golden, at_least=2)
     for case, was in golden.items():
         if now[case] != was:
             print("PAGE", case, "\n   was", str(was)[:3000], "\n   now", str(now[case])[:3000])

@@ -335,6 +335,42 @@ def vote_data(v: dict[str, Any], url: str, base: str) -> dict[str, Any]:
                        **({"url": v["url"]} if v.get("url") else {})}]}
 
 
+CORRECTIONS_LOG = '<div id="corrections-log">'
+NOTHING_CORRECTED = "Nothing has been corrected or withdrawn so far."
+
+
+def corrections_text(entries: list[dict[str, Any]]) -> str:
+    """The corrections log (the impartiality policy, 7.1), newest first: for each entry its date, what it was (a
+    briefing withdrawn, or a correction), the public note and, for a correction to a page still on the site, a
+    link to that page."""
+    if not entries:
+        return f"<p>{e(NOTHING_CORRECTED)}</p>"
+    items = []
+    for c in entries:
+        note = f"<p>{e(c['note'])}</p>" if c.get("note") else ""
+        page = f'<p class="small">{_link(c["page"], "The page this is about")}</p>' if c.get("page") else ""
+        items.append(f'<li><p class="corrections-when"><time datetime="{e(c["date"])}">{e(long_date(c["date"]))}'
+                     f'</time> · <strong>{e(c["heading"])}</strong></p>{note}{page}</li>')
+    return f'<ol class="corrections-log">{"".join(items)}</ol>'
+
+
+def with_corrections(page: str, entries: list[dict[str, Any]]) -> str:
+    """The corrections page with its log in place (web/corrections.html keeps a line there that says the log
+    could not be shown, for when it can't)."""
+    start = page.find(CORRECTIONS_LOG)
+    end = page.find("</div>", start)
+    if start < 0 or end < 0:
+        return page
+    return page[:start] + CORRECTIONS_LOG + corrections_text(entries) + page[end:]
+
+
+def hidden_text(heading: str, instead: str) -> str:
+    """What stands in place of a page that is hidden while a concern about it is decided (the impartiality policy,
+    7.3): the kind of page it is, and the note. Nothing of the record."""
+    return (f'<p class="meta"><a href="/councils">Councils</a></p><h1>{e(heading)}</h1>'
+            f'<p class="notice">{e(instead)}</p>')
+
+
 def statements_text(rows: list[dict[str, Any]], here: str) -> str:
     """Statements under the right of reply (decision 22), after the record: each headed "Statement from [name], [date]"
     and followed by the words that say it is the author's own, not the site's. On a council's page they are gathered
@@ -348,7 +384,8 @@ def statements_text(rows: list[dict[str, Any]], here: str) -> str:
         about = "" if r["page"] == here else f"<p>About: {_link(r['page'], r.get('about') or r['page'])}</p>"
         words = "".join(f"<p>{e(p.strip())}</p>" for p in re.split(r"\n\s*\n", r["text"]) if p.strip())
         link = f"<p>{_link(r['link'], 'The record they point to')}</p>" if safe_link(r.get("link")) else ""
-        parts.append(f'<article class="statement"><h{level}>Statement from {e(r["name"])}, {e(long_date(r["shown_on"]))}'
+        # data-nosnippet: a search engine may show the page, but never quotes a statement as the site's own words
+        parts.append(f'<article class="statement" data-nosnippet><h{level}>Statement from {e(r["name"])}, {e(long_date(r["shown_on"]))}'
                      f"</h{level}><p>{e(r['role'])}</p>{about if gathered else ''}{words}{link}"
                      f"<p><em>In their own words. Not checked or endorsed by {SITE}.</em></p></article>")
     return "".join(parts)

@@ -15,7 +15,7 @@ import json
 import logging
 import re
 import threading
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from datetime import date
 from html import escape
@@ -180,12 +180,16 @@ class CouncilsHooks(Hooks):
         return event
 
 
-def answer_key(body: AskBody, data_stamp: float, model: str | None) -> str:
+def answer_key(body: AskBody, data_stamp: float, model: str | None, hidden: Iterable[str] = ()) -> str:
     """The answer cache's key for a question: everything that would make an old answer wrong. The question (its
     case and spacing aside), what the reader chose, the earlier questions a follow-up carries, the model, the
-    version of the instructions, and when the record last changed. 32 characters, as this site has always kept."""
+    version of the instructions, when the record last changed, and what is hidden while a concern is decided (so
+    an answer written before an item was hidden is not replayed while it is; with nothing hidden the key is the
+    one it always was). 32 characters, as this site has always kept."""
+    now_hidden = sorted(hidden)
     return cache_key({"q": " ".join(body.question.lower().split()), **body.model_dump(exclude={"question"}),
-                      "data": data_stamp, "model": model, "v": INSTRUCTIONS_VERSION}, length=32)
+                      "data": data_stamp, "model": model, "v": INSTRUCTIONS_VERSION,
+                      **({"hidden": now_hidden} if now_hidden else {})}, length=32)
 
 
 @dataclass(frozen=True)
@@ -271,6 +275,17 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                 holder["p"] = Pipeline(settings)
             return holder["p"]
 
+    def hidden() -> right_of_reply.Hidden:
+        """What is hidden now while a concern is decided (the impartiality policy, 7.3): asked on each request,
+        so hiding and showing again take effect at once."""
+        return right_of_reply.hidden_now(replies)
+
+    def not_hidden(address: str, now: right_of_reply.Hidden | None = None) -> None:
+        """Stop with the note that stands in a hidden page's place (403: it is there, and not shown for now)."""
+        instead = (now or hidden()).instead(address)
+        if instead is not None:
+            raise HTTPException(403, instead)
+
     def offline_plan(body: AskBody) -> QueryPlan:
         if body.plan:
             return QueryPlan.from_dict({"question": body.question, **body.plan})
@@ -342,7 +357,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     def ask(body: AskBody, request: Request):
         v = visitor(request)
         p = get_pipeline()
-        req = AskRequest(question=body.question, mode=body.mode, plan=body.plan, history=body.history_dicts())
+        now = hidden()
+        req = AskRequest(question=body.question, mode=body.mode, plan=body.plan, history=body.history_dicts(),
+                         without_councils=tuple(sorted(now.councils)), without_votes=tuple(sorted(now.votes)))
 
         def sources_only(note: str, free: bool) -> Iterator[Event]:
             if free:      # over a limit, or the site's spending cap is reached: the question is read by the free rules
@@ -363,7 +380,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         # are not kept with the saved briefing: a shared page should not carry an earlier conversation.
         events = desk.handle(Ask(
             question=body.question, visitor=v, write=lambda: p.run(req), sources_only=sources_only,
-            cache_key=answer_key(body, data.stamp(), settings.answer.get("model")),
+            cache_key=answer_key(body, data.stamp(), settings.answer.get("model"), now.notes),
             only_sources=body.sources_only, model_available=p.has_model(), follow_up=bool(body.history),
             mode=body.mode,
             filters_set=tuple(sorted(k for k, val in ((body.plan or {}).get("filters") or {}).items() if val)),
@@ -376,7 +393,10 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         visitor(request)
         p = get_pipeline()
         plan = offline_plan(body)
-        result, sources = p.find(plan, AskRequest(question=body.question, mode=body.mode))
+        now = hidden()
+        result, sources = p.find(plan, AskRequest(
+            question=body.question, mode=body.mode,
+            without_councils=tuple(sorted(now.councils)), without_votes=tuple(sorted(now.votes))))
         return {"plan": plan.to_dict(), "sources": [s.card() for s in sources], "candidates": result.candidates,
                 "semantic": result.semantic_available, "evidence": result.evidence}
 
@@ -388,29 +408,51 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         if b.withdrawn_at:
             why = (b.withdrawn_reason or "").strip()
             raise HTTPException(410, "This briefing has been withdrawn" + (f": {why}" if why else "."))
+        not_hidden(f"/b/{b.id}")
         # a briefing saved before follow-up questions were left out of its options is served without them
         return {"id": b.id, "at": b.created_at, "question": b.question,
                 "options": {k: val for k, val in b.options.items() if k != "history"},
                 "events": rechecked(b.events)}
 
     # ---- councils and votes --------------------------------------------------------------------------
+    def shown_directory(now: right_of_reply.Hidden) -> dict[str, Any]:
+        """The list of councils, without any whose page is hidden while a concern is decided."""
+        directory = data.directory()
+        if not now.councils:
+            return directory
+        return {**directory, "councils": [r for r in directory["councils"] if r["gss"] not in now.councils]}
+
+    def shown_council(c: dict[str, Any], now: right_of_reply.Hidden) -> dict[str, Any]:
+        """A council's page, without any of its named votes that is hidden."""
+        if not now.votes:
+            return c
+        return {**c, "votes": [v for v in c.get("votes") or [] if v["vote_id"] not in now.votes]}
+
     @app.get("/api/councils")
     def council_list():
-        return data.directory()
+        return shown_directory(hidden())
 
     @app.get("/api/councils/{gss}")
     def council(gss: str):
         c = data.council(gss.upper())
         if c is None:
             raise HTTPException(404, "There is no council with this code.")
-        return c
+        now = hidden()
+        not_hidden(plaintext.council_path(c["gss"]), now)
+        return shown_council(c, now)
 
     @app.get("/api/votes/{vote_id}")
     def vote(vote_id: str):
         v = data.vote(vote_id)
         if v is None:
             raise HTTPException(404, "There is no named vote at this address.")
+        not_hidden(plaintext.vote_path(vote_id))
         return v
+
+    @app.get("/api/corrections")
+    def corrections_log():
+        """The public corrections log: what was corrected or withdrawn, and when (the impartiality policy, 7.1)."""
+        return {"corrections": right_of_reply.corrections(replies, archive)}
 
     # ---- problems and takedown requests --------------------------------------------------------------
     @app.post("/api/report")
@@ -478,6 +520,10 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         except Refused as exc:
             raise HTTPException(422, str(exc)) from None
         rows = right_of_reply.published(replies, item, council.upper() or None)
+        # a statement beside a hidden item is hidden with it (the package sees to that); so is one beside a named
+        # vote of a council whose page is hidden, and every statement gathered on that council's page
+        now = hidden()
+        rows = [r for r in rows if now.note(r["page"]) is None and r["council"] not in now.councils]
         return {"statements": with_about(rows) if council else rows, "note": right_of_reply.NOT_ENDORSED}
 
     # ---- pages ---------------------------------------------------------------------------------------
@@ -536,7 +582,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         base = site_url(request)
 
         def build():
-            directory = data.directory()
+            directory = shown_directory(hidden())
             t = directory["totals"]
             return (200, "Councils — Where Councils Stand",
                     f"The {t['councils']:,} principal councils in the UK and England's {t.get('authorities', 0):,} "
@@ -559,6 +605,12 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                         "<h1>Council not found</h1><p>There is no council at this address. See the "
                         '<a href="/councils">list of councils</a>.</p>')
             url = base + plaintext.council_path(c["gss"])
+            now = hidden()
+            instead = now.instead(plaintext.council_path(c["gss"]))
+            if instead is not None:     # hidden while a concern is decided: the note, and nothing of the record
+                return (403, "Council — Where Councils Stand", right_of_reply.HIDDEN_LEAD, url, None,
+                        plaintext.hidden_text("Council", instead))
+            c = shown_council(c, now)
             # statements are shown after the record, never in its description or structured data (decision 22)
             return (200, f"{c['name']} — Where Councils Stand", plaintext.council_description(c), url,
                     plaintext.council_data(c, url, base), plaintext.council_text(c) + plaintext.statements_text(
@@ -579,12 +631,30 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                         "<h1>Named vote not found</h1><p>There is no named vote at this address. Each council's "
                         'named votes are listed on its page: see the <a href="/councils">list of councils</a>.</p>')
             url = base + plaintext.vote_path(vote_id)
+            instead = hidden().instead(plaintext.vote_path(vote_id))
+            if instead is not None:     # hidden while a concern is decided: the note, and nothing of the record
+                return (403, "Named vote — Where Councils Stand", right_of_reply.HIDDEN_LEAD, url, None,
+                        plaintext.hidden_text("Named vote", instead))
             mine = right_of_reply.published(replies, items.resolve(plaintext.vote_path(vote_id)))
             return (200, f"{plaintext.vote_title(v)} — Where Councils Stand", plaintext.vote_description(v), url,
                     plaintext.vote_data(v, url, base),
                     plaintext.vote_text(v) + plaintext.statements_text(mine, here=plaintext.vote_path(vote_id)))
 
         return readable("vote", build)
+
+    @app.get("/corrections", include_in_schema=False)
+    def corrections_page():
+        """The corrections page, with the corrections log written into it: what was corrected or withdrawn, and
+        when. It needs no scripts. If the log can't be read, the page is sent with the line it keeps for that."""
+        path = dist / "corrections.html"
+        if not path.exists():
+            raise HTTPException(404, "Not found.")
+        html = path.read_text(encoding="utf-8")
+        try:
+            html = plaintext.with_corrections(html, right_of_reply.corrections(replies, archive))
+        except Exception:  # noqa: BLE001 - the form on the page must still work
+            log.exception("the corrections log was not written into its page")
+        return HTMLResponse(html)
 
     @app.get("/sitemap.xml", include_in_schema=False)
     def sitemap(request: Request):
@@ -593,8 +663,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         fixed = ["/", "/councils"] + [f"/{p.stem}" for p in sorted(dist.glob("*.html"))
                                       if p.stem not in ("index", "councils", "council", "vote", "404")]
         urls = [base + p for p in fixed]
-        urls += [base + plaintext.council_path(r["gss"]) for r in data.directory()["councils"]]
-        urls += [base + plaintext.vote_path(v) for v in data.vote_ids()]
+        now = hidden()          # nothing hidden while a concern is decided is offered to a search engine
+        urls += [base + plaintext.council_path(r["gss"]) for r in shown_directory(now)["councils"]]
+        urls += [base + plaintext.vote_path(v) for v in data.vote_ids() if not now.vote_hidden(v)]
         body = "".join(f"<url><loc>{escape(u)}</loc></url>" for u in urls[:50000])
         return Response('<?xml version="1.0" encoding="UTF-8"?>'
                         f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{body}</urlset>',
