@@ -305,11 +305,9 @@ name = "councils"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "anthropic" },
     { name = "duckdb" },
     { name = "fastapi" },
     { name = "httpx" },
-    { name = "lancedb" },
     { name = "lxml" },
     { name = "numpy" },
     { name = "pdfminer-six" },
@@ -320,11 +318,6 @@ dependencies = [
     { name = "wts-core", extra = ["ai", "cli", "offsite"] },
 ]
 
-[package.optional-dependencies]
-embed = [
-    { name = "fastembed" },
-]
-
 [package.dev-dependencies]
 dev = [
     { name = "pytest" },
@@ -333,12 +326,9 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anthropic", specifier = ">=0.69" },
     { name = "duckdb", specifier = ">=1.1" },
     { name = "fastapi", specifier = ">=0.115" },
-    { name = "fastembed", marker = "extra == 'embed'", specifier = ">=0.4" },
     { name = "httpx", specifier = ">=0.27" },
-    { name = "lancedb", specifier = ">=0.17" },
     { name = "lxml", specifier = ">=5.3" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "pdfminer-six", specifier = ">=20240706" },
@@ -348,7 +338,6 @@ requires-dist = [
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
     { name = "wts-core", extras = ["cli", "offsite", "ai"], url = "https://github.com/rj-mitchell/wts-core/releases/download/v0.2.0/wts_core-0.2.0-py3-none-any.whl" },
 ]
-provides-extras = ["embed"]
 
 [package.metadata.requires-dev]
 dev = [

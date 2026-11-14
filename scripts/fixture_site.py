@@ -117,9 +117,10 @@ ITEMS = {
 
 
 def build(folder: Path) -> None:
+    from wts_core.adapters.hashing import HashingEmbedder
+
     from councils import store
     from councils.config import load_settings
-    from councils.embed.base import HashingEmbedder
     from councils.index.build import Indexer, embed_pending
 
     if folder.exists() and any(folder.iterdir()):

@@ -6,11 +6,11 @@ from datetime import date
 
 import pytest
 from fastapi.testclient import TestClient
-from test_pipeline import BARNSLEY, TODAY, FakeClient, settings  # noqa: F401 - the fixture
+from test_pipeline import BARNSLEY, TODAY, FakeClient, as_model, settings  # noqa: F401 - the fixture
+from wts_core.adapters.hashing import HashingEmbedder
 
 from councils import store
 from councils.api.app import create_app
-from councils.embed.base import HashingEmbedder
 from councils.engine import Engine
 from councils.rag.pipeline import Pipeline
 from councils.state import open_state
@@ -31,7 +31,7 @@ def site_with(settings, fake=None, **limits):  # noqa: F811
     statements) and its settings. ``limits`` are laid over [usage]: the limits are read when the site starts."""
     cfg = replace(settings, raw={**settings.raw, "usage": {**settings.raw["usage"], **limits}})
     fake = fake or FakeClient()
-    pipe = Pipeline(cfg, Engine(cfg, HashingEmbedder(64), TODAY), client=fake, today=TODAY)
+    pipe = Pipeline(cfg, Engine(cfg, HashingEmbedder(64), TODAY), model=as_model(fake), today=TODAY)
     app = create_app(cfg, pipeline=pipe)
     return TestClient(app), fake, app.state.councils, cfg
 
@@ -401,23 +401,20 @@ def test_status(client, settings):  # noqa: F811
 
 
 def test_cost_counts_cache_writes_once_whichever_names_the_usage_uses():
-    """The SDK's input_tokens leaves out cache writes and reads; the site's own counts (rag/answer.usage_dict) put
-    the writes into input_tokens. Either way each token is priced once: before, the SDK's names were undercounted."""
-    from types import SimpleNamespace as NS
-
+    """The SDK's input_tokens leaves out cache writes and reads; the site's own counts put the writes into
+    input_tokens. Either way each token is priced once: before, the SDK's names were undercounted."""
     from wts_core.ports import Usage
     from wts_core.usage import PriceTable
 
-    from councils.rag.answer import usage_dict
-
     prices = PriceTable.from_settings({"price_input_per_mtok": 3.0, "price_output_per_mtok": 15.0,
                                        "price_cache_read_per_mtok": 0.3, "cache_write_multiplier": 1.25})
-    sdk = NS(input_tokens=1_200, output_tokens=800, cache_creation_input_tokens=20_000, cache_read_input_tokens=5_000)
     expected = round(1_200 / 1e6 * 3.0 + 20_000 / 1e6 * 3.0 * 1.25 + 800 / 1e6 * 15.0 + 5_000 / 1e6 * 0.3, 6)
     raw = {"input_tokens": 1_200, "output_tokens": 800, "cache_creation_input_tokens": 20_000,
            "cache_read_input_tokens": 5_000}
+    ours = {"input_tokens": 21_200, "output_tokens": 800, "cache_write_tokens": 20_000, "cache_read_tokens": 5_000}
     assert prices.cost(Usage.from_mapping(raw), None) == expected == 0.0921
-    assert prices.cost(Usage.from_mapping(usage_dict(sdk)), None) == expected
+    assert prices.cost(Usage.from_mapping(ours), None) == expected
+    assert Usage.from_mapping(raw).as_stored() == ours
 
 
 def test_token_counts_are_stored_the_same_whichever_names_the_usage_uses(client):

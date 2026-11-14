@@ -523,9 +523,11 @@ def test_a_cached_answer_is_given_and_dropped_as_before(parts_of):
 
 def a_site(folder: Path, clock: shared.Clock, limits: dict | None = None, state=None, model=None):
     """The site on the made-up record: its settings, the model's stand-in and the app, on the scenario's clock."""
+    from wts_core.adapters.anthropic import BASE_URL, AnthropicClient
+    from wts_core.adapters.hashing import HashingEmbedder
+
     from councils import store
     from councils.api.app import create_app
-    from councils.embed.base import HashingEmbedder
     from councils.engine import Engine
     from councils.index.build import Indexer, embed_pending
     from councils.rag.pipeline import Pipeline
@@ -537,7 +539,8 @@ def a_site(folder: Path, clock: shared.Clock, limits: dict | None = None, state=
         index.index_all()
         embed_pending(s, index.index, index.state, HashingEmbedder(64))
     fake = model or shared.FakeClient()
-    pipeline = Pipeline(s, Engine(s, HashingEmbedder(64), shared.TODAY), client=fake, today=shared.TODAY)
+    pipeline = Pipeline(s, Engine(s, HashingEmbedder(64), shared.TODAY), today=shared.TODAY,
+                        model=AnthropicClient(None, base_url=BASE_URL, client=fake))
     app = create_app(s, pipeline=pipeline, state=state or new_state(s, clock), clock=clock)
     return s, fake, app
 
@@ -855,3 +858,100 @@ def test_the_real_pipeline_sends_and_writes_what_it_did(tmp_path, monkeypatch):
     now[-1]["cached"] = [unstamped(events) for events in now[-1]["cached"]]
     for got, was in zip(now, golden, strict=True):
         assert got == was, was["case"]
+
+
+# ---- what the model is sent, and an index the old code built (MIGRATION 1.5 and 1.6) -------------------------------
+
+
+def test_the_model_is_sent_what_it_was_sent(tmp_path):
+    """Every request the real pipeline makes of the model's SDK, argument for argument, through the shared
+    package's model client: the instructions (as one cacheable block), the sources as documents, the question as
+    this site words it, the model, the effort, the fallback; and each question the model is asked to read."""
+    from fastapi.testclient import TestClient
+
+    clock = shared.Clock()
+    s, fake, app = a_site(tmp_path / "requests", clock)
+    client = TestClient(app)
+    for ask in shared.MODEL_ASKS:
+        fake.parsed = shared.PARSED if ask.get("parsed") else None
+        clock.advance(61)
+        assert client.post("/api/ask", json=ask["json"]).status_code == 200, ask
+    golden, now = shared.read("requests.json"), shared.requests_made(fake)
+    assert len(now["briefings"]) == len(golden["briefings"]) == 5
+    for got, was in zip(now["briefings"], golden["briefings"], strict=True):
+        assert got == was
+    assert now["questions_read"] == golden["questions_read"] and len(now["questions_read"]) == 2
+
+
+def old_index(tmp: Path):
+    """The made-up record with the search index the old code built from it, as the old code left it."""
+    import shutil
+
+    from councils import store
+
+    s = site_settings(tmp)
+    shared.store_record(lambda table, gss, rows: store.parquet.write(s.parquet_dir, table, gss, rows))
+    shutil.copytree(Path(__file__).parent / "fixtures" / "old-index", s.index_dir)
+    return s
+
+
+def test_an_index_the_old_code_built_opens_and_searches_the_same(tmp_path):
+    """tests/fixtures/old-index: an index made before the shared package, with no note of what it was built with.
+    It opens as it is, takes the note the first time it is opened with its embedder, and every search by words and
+    by meaning, and the engine's choice of evidence, gives what the old code gave on it."""
+    import json
+
+    from wts_core.adapters.hashing import HashingEmbedder
+    from wts_core.adapters.lancedb import stored_meta
+
+    from councils.engine import Engine, Filters
+    from councils.index.lance import open_index
+
+    golden = shared.read("index.json")
+    s = old_index(tmp_path / "old")
+    assert golden["files_beside_the_tables"] == ["state.json"] and stored_meta(s.index_dir) is None
+    index, embedder = open_index(s), HashingEmbedder(64)
+    assert index.stats() == golden["stats"] and index.has_word_index() is golden["has_word_index"]
+    assert stored_meta(s.index_dir) is None          # opened as it stands, nothing is written
+    index = open_index(s, embedder)                  # AS-BUILT, adapters: "The first opening ... writes wts_index.json"
+    assert stored_meta(s.index_dir).embedder_id == "hashing-64" and stored_meta(s.index_dir).dimension == 64
+    assert shared.index_answers(index.search_words, index.search_meaning, embedder.embed_query) == golden["searches"]
+    rows = index.rows_for_keys([f"{shared.BARNSLEY}:2025", f"{shared.GUILDFORD}:2025"])
+    assert sorted(json.loads(json.dumps(rows, default=str)), key=lambda r: r["passage_id"]) == golden["rows"]
+    engine = Engine(s, embedder, shared.TODAY)
+    assert {
+        "everything": shared.search_given(engine.search("bin collections", Filters(), limit=5)),
+        "one party's councils": shared.search_given(engine.search("bin collections", Filters(control=["LD"]),
+                                                                  limit=5)),
+        "by region": shared.search_given(engine.search("waste strategy", Filters(), limit=5, group_by="region")),
+    } == golden["engine"]
+
+
+def test_an_index_the_old_code_built_is_updated_and_keeps_its_vectors(tmp_path):
+    """The nightly update on an index the old code built: a council indexed again keeps the vectors of its
+    unchanged passages (none is embedded twice), the indexes are merged, and the searches still give the same."""
+    from wts_core.adapters.hashing import HashingEmbedder
+
+    from councils.index.build import Indexer, update_index
+    from councils.index.lance import open_index
+
+    golden = shared.read("index.json")
+    s = old_index(tmp_path / "old")
+    embedder = HashingEmbedder(64)
+    out = update_index(s, [shared.GUILDFORD], embedder)
+    assert out == {"passages_embedded": 0, "still_to_embed": 0, "index": "merged"}
+    index = open_index(s, embedder)
+    assert index.stats() == golden["stats"] and not index.unmerged()
+    assert shared.index_answers(index.search_words, index.search_meaning, embedder.embed_query) == golden["searches"]
+    # and the whole index built again from the store, with no embedder loaded: its vectors are still kept
+    indexer = Indexer(s)
+    assert indexer.index_all() == 2 and all(v["embedded"] for v in indexer.state.data.values())
+    assert open_index(s, embedder).stats() == golden["stats"]
+    # the same on an index nobody has opened with its embedder yet (`councils index` straight after the move): the
+    # embedder the settings name is loaded once, the index takes its note, and the vectors are kept
+    fresh = old_index(tmp_path / "fresh")
+    indexer = Indexer(fresh)
+    assert indexer.index_all() == 2 and all(v["embedded"] for v in indexer.state.data.values())
+    index = open_index(fresh, embedder)
+    assert index.stats() == golden["stats"]
+    assert shared.index_answers(index.search_words, index.search_meaning, embedder.embed_query) == golden["searches"]

@@ -90,6 +90,6 @@ Commands are run in `/opt/wherecouncilsstand/deploy`. Any `councils` command run
 
 ```bash
 cd web && npm ci && npm run build && cd ..
-uv sync --extra embed
+uv sync
 COUNCILS_ANTHROPIC_API_KEY=... uv run councils serve   # http://127.0.0.1:8000
 ```

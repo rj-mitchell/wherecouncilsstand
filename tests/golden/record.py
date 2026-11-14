@@ -27,6 +27,8 @@ from types import SimpleNamespace
 sys.path.insert(0, str(Path(__file__).parent))
 
 import shared  # noqa: E402
+from councils.api.state import StateDB  # noqa: E402
+from councils.embed.base import HashingEmbedder  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from typer.testing import CliRunner  # noqa: E402
 
@@ -34,9 +36,7 @@ from councils import backup, cli, offsite, store  # noqa: E402
 from councils.api import app as web  # noqa: E402
 from councils.api import state as state_module  # noqa: E402
 from councils.api import usage  # noqa: E402
-from councils.api.state import StateDB  # noqa: E402
 from councils.config import REPO_ROOT, load_settings  # noqa: E402
-from councils.embed.base import HashingEmbedder  # noqa: E402
 from councils.engine import Engine  # noqa: E402
 from councils.index.build import Indexer, embed_pending  # noqa: E402
 from councils.rag import british, neutral, verify  # noqa: E402

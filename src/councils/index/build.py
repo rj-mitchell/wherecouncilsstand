@@ -18,11 +18,11 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+from wts_core.ports import Embedder
 
 from councils import authority, store
 from councils.config import Settings
-from councils.embed.base import Embedder
-from councils.index.lance import SearchIndex
+from councils.index.lance import IndexOutOfDate, LanceIndex, get_embedder, open_as_built, open_index
 from councils.parse import redact
 from councils.parse.votes import Matcher, Member, split_names
 from councils.reference import people
@@ -176,10 +176,27 @@ class State:
 
 
 class Indexer:
-    def __init__(self, settings: Settings, index: SearchIndex | None = None):
+    def __init__(self, settings: Settings, index: LanceIndex | None = None, embedder: Embedder | None = None):
+        """``embedder`` is the embedder the vectors are made with, where the caller has it loaded. Without one the
+        index is opened with what it says it was built with, which is enough to keep the vectors it has."""
         self.settings = settings
-        self.index = index or SearchIndex(settings.index_dir, int(settings.embedding.get("dim", 384)))
+        self._embedder = embedder
+        self.index = index or (open_index(settings, embedder) if embedder is not None else open_as_built(settings))
         self.state = State(settings.index_dir / "state.json")
+
+    def _keep(self, rows: list[dict[str, Any]], vectors: list) -> bool:
+        """Put back the vectors of passages that have not changed. An index made before it recorded what it was
+        built with says nothing until it is opened with its embedder: the embedder the settings name is loaded
+        then, once. False if the vectors could not be kept (they are made again by the next embedding run)."""
+        try:
+            if self.index.meta.embedder_id == "unknown" and self.index.stats()["vectors"]:
+                self._embedder = self._embedder or get_embedder(self.settings)
+                self.index = open_index(self.settings, self._embedder)
+            self.index.add_vectors([], rows, np.asarray(vectors, dtype=np.float32))
+            return True
+        except (IndexOutOfDate, RuntimeError) as exc:
+            log.warning("vectors of unchanged passages not kept (%s): they will be embedded again", exc)
+            return False
 
     def index_council(self, gss: str) -> int:
         """Replace a council's passages. A council-year whose passages are all unchanged keeps its embeddings, with its
@@ -201,13 +218,12 @@ class Indexer:
                 if len(new) == len(stored[k]) and all(stored[k].get(r["passage_id"]) == r["search_text"]
                                                       and r["passage_id"] in vectors for r in new):
                     kept[k] = [vectors[r["passage_id"]] for r in new]
-        self.index.replace_keys(sorted(set(old) | set(by_key)), rows)
+        self.index.replace(sorted(set(old) | set(by_key)), rows)
         for k in old:
             self.state.data.pop(k, None)
         for k, v in by_key.items():
             self.state.indexed(k, len(v))
-            if k in kept:
-                self.index.add_vectors([], v, np.asarray(kept[k], dtype=np.float32))
+            if k in kept and self._keep(v, kept[k]):
                 self.state.data[k]["embedded"] = True
         self.state.save()
         return len(rows)
@@ -225,18 +241,27 @@ class Indexer:
             n = self.index_council(gss)
             log.info("indexed %s: %d passages", gss, n)
             total += n
-        self.index.build_indices()
-        self.index.optimize()     # building leaves the previous indices behind
+        self.index.build_indexes()
+        self.index.tidy()         # building leaves the previous indices behind
         return total
 
 
 def update_index(settings: Settings, changed: list[str], embedder: Embedder,
                  max_seconds: float | None = None) -> dict[str, Any]:
     """The search index after the daily update: the councils whose stored meetings changed are indexed again, new
-    passages are embedded for up to ``max_seconds``, and the new rows are merged into the indices (built from scratch
-    only the first time, or once meaning search has grown by a fifth: SearchIndex.refresh). Nothing is written when
-    nothing changed."""
-    indexer = Indexer(settings)
+    passages are embedded for up to ``max_seconds``, and the new rows are merged into the indices (the word index
+    is built from scratch only the first time; meaning search is trained again once it has grown by more than a
+    fifth). Nothing is written when nothing changed.
+
+    If the index was built with another embedding model than ``embedder``, no vector is added to it (vectors from
+    two models are never mixed): passages are still indexed for search by words, and the summary says so
+    (``meaning_search``) until ``councils embed --again`` has embedded everything afresh."""
+    out_of_date = None
+    try:
+        indexer = Indexer(settings, embedder=embedder)
+    except IndexOutOfDate as exc:
+        out_of_date = str(exc)
+        indexer = Indexer(settings, index=open_index(settings))
     idx = indexer.index
     # councils whose record is withheld (decision 21) but still in the index: their passages are removed
     held = set(withheld_codes())
@@ -251,16 +276,24 @@ def update_index(settings: Settings, changed: list[str], embedder: Embedder,
     done = []
     if changed or idx.unmerged():    # unmerged: rows an earlier, stopped update added
         done.append(idx.refresh())
-    embedded = embed_pending(settings, idx, indexer.state, embedder, max_seconds=max_seconds)
-    if embedded:
-        done.append(idx.refresh())
-    return {"passages_embedded": embedded, "still_to_embed": len(indexer.state.unembedded()),
-            "index": "built" if "built" in done else "merged" if done else "unchanged"}
+    embedded = 0
+    if out_of_date is None:
+        embedded = embed_pending(settings, idx, indexer.state, embedder, max_seconds=max_seconds)
+        if embedded:
+            done.append(indexer.index.refresh())
+    summary = {"passages_embedded": embedded, "still_to_embed": len(indexer.state.unembedded()),
+               "index": "built" if "built" in done else "merged" if done else "unchanged"}
+    if out_of_date is not None:
+        summary["meaning_search"] = f"off: {out_of_date}. Run `councils embed --again`."
+    return summary
 
 
-def embed_pending(settings: Settings, index: SearchIndex, state: State, embedder: Embedder, *,
+def embed_pending(settings: Settings, index: LanceIndex, state: State, embedder: Embedder, *,
                   max_seconds: float | None = None, batch: int = 2000) -> int:
-    """Embed the passages of indexed-but-unembedded council-years, newest first. Returns passages embedded."""
+    """Embed the passages of indexed-but-unembedded council-years, newest first. Returns passages embedded. The
+    vectors go into the index as opened with ``embedder``: an index built with another raises ``IndexOutOfDate``
+    here, before anything is written."""
+    index = open_index(settings, embedder)
     started = time.time()
     total = 0
     for key in state.unembedded():
@@ -279,3 +312,16 @@ def embed_pending(settings: Settings, index: SearchIndex, state: State, embedder
         if max_seconds is not None and time.time() - started > max_seconds:
             break
     return total
+
+
+def embed_again(settings: Settings, embedder: Embedder) -> int:
+    """Start search by meaning again with ``embedder``: every vector is thrown away, the index records the new
+    embedder, and every council-year is marked as still to embed. For after the embedding model has changed.
+    Returns how many council-years are to embed (``embed_pending``, or the nightly update, then does the work)."""
+    index = open_index(settings)
+    index.start_again(embedder)
+    state = State(settings.index_dir / "state.json")
+    for entry in state.data.values():
+        entry["embedded"] = False
+    state.save()
+    return len(state.unembedded())

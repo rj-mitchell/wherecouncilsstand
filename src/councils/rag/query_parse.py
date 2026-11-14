@@ -14,6 +14,7 @@ from datetime import date
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
+from wts_core.ports import ModelClient, ModelRequest, Usage
 
 from councils.engine import Filters
 from councils.rank.evidence import GROUP_BY
@@ -248,22 +249,16 @@ def parse_model(settings) -> str:
     return settings.answer.get("query_parse_model") or settings.answer.get("model", "claude-sonnet-5-5")
 
 
-def parse_with_model(client, settings, question: str, today: date | None = None) -> tuple[QueryPlan, Any]:
-    from councils.rag.answer import cached_system
-
+def parse_with_model(model: ModelClient, settings, question: str,
+                     today: date | None = None) -> tuple[QueryPlan, Usage]:
+    """The question read by the model into this site's filters, and what the reading cost."""
     today = today or date.today()
     default_years = int(settings.archive.get("default_years", 4))
-    resp = client.messages.parse(
-        model=parse_model(settings),
-        max_tokens=2000,
-        system=cached_system(system_prompt(today, settings.start_date, default_years)),
-        messages=[{"role": "user", "content": f"Question: {question}"}],
-        output_config={"effort": settings.answer.get("query_parse_effort", "low")},
-        output_format=ParsedQuery,
-    )
-    if resp.stop_reason == "refusal" or resp.parsed_output is None:
-        raise RuntimeError(f"query parser returned no output (stop_reason={resp.stop_reason})")
-    p: ParsedQuery = resp.parsed_output
+    p, usage = model.structured(ModelRequest(
+        model=parse_model(settings), instructions=system_prompt(today, settings.start_date, default_years),
+        question=f"Question: {question}", max_tokens=2000,
+        effort=settings.answer.get("query_parse_effort", "low"),
+        cache_instructions=settings.answer.get("cache_instructions", "short")), ParsedQuery)
     codes, unresolved = [], []
     for name in p.councils:
         hits = councils_in(name) or councils_in(name.title())
@@ -276,7 +271,7 @@ def parse_with_model(client, settings, question: str, today: date | None = None)
                         kinds=list(p.kinds), control=list(p.control), parties=list(p.parties)),
         wants_votes=p.wants_votes, interpretation=p.interpretation, parser="model", group_by=p.group_by,
         unresolved_councils=unresolved)
-    return plan, resp.usage
+    return plan, usage
 
 
 def plan_json(plan: QueryPlan) -> str:

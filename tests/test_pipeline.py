@@ -5,16 +5,23 @@ from datetime import date
 from types import SimpleNamespace as NS
 
 import pytest
+from wts_core.adapters.anthropic import BASE_URL, AnthropicClient
+from wts_core.adapters.hashing import HashingEmbedder
 
 from councils import store
 from councils.config import load_settings
-from councils.embed.base import HashingEmbedder
 from councils.engine import Engine, Filters
 from councils.index.build import Indexer, embed_pending
 from councils.rag.pipeline import AskRequest, Pipeline, answer_once
 from councils.rag.query_parse import parse_offline
 
 TODAY = date(2026, 10, 24)
+
+
+def as_model(fake) -> AnthropicClient:
+    """The shared package's model client over a stand-in for the provider's SDK (``FakeClient`` below): the
+    pipeline is given the client it runs with, and every request reaches the stand-in as the SDK would be sent it."""
+    return AnthropicClient(None, base_url=BASE_URL, client=fake)
 BARNSLEY, GUILDFORD = "E08000038", "E07000209"
 
 
@@ -149,7 +156,7 @@ def test_offline_plan():
 
 def test_pipeline_end_to_end_is_grounded(settings):
     client = FakeClient()
-    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), client=client, today=TODAY)
+    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), model=as_model(client), today=TODAY)
     out = answer_once(pipe, AskRequest("What have councils decided about bin collections?"))
     srcs = out["sources"]["sources"]
     assert srcs and all("party in overall control of the council on the date" in s["title"] for s in srcs)
@@ -164,7 +171,7 @@ def test_pipeline_end_to_end_is_grounded(settings):
 
 def test_pipeline_returns_no_records_without_calling_the_model(settings):
     client = FakeClient()
-    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), client=client, today=TODAY)
+    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), model=as_model(client), today=TODAY)
     req = AskRequest("anything", plan={"search_text": "bin collections", "filters": {
         "date_from": "2019-01-01", "date_to": "2019-01-02"}})
     answer = answer_once(pipe, req)["final"]["answer"]
@@ -176,7 +183,7 @@ def test_pipeline_returns_no_records_without_calling_the_model(settings):
 def test_pipeline_reports_refusals_instead_of_answering(settings):
     """The model declining to answer is an error for the reader (as Where MPs Stand). Before, its empty answer was
     checked and sent as a briefing with nothing unsupported and a grounded ratio of 1.0."""
-    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), client=FakeClient(refuse=True),
+    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), model=as_model(FakeClient(refuse=True)),
                     today=TODAY)
     out = answer_once(pipe, AskRequest("What have councils decided about bin collections?"))
     assert "final" not in out and out["sources"]["sources"]
@@ -232,71 +239,127 @@ def test_councils_stored_under_replaced_codes_can_be_moved(tmp_path):
     assert not (raw / "modgov" / "E08000016").exists() and not (pq / "items" / "E08000016.parquet").exists()
 
 
-def test_the_claude_client_gives_up_after_five_minutes(monkeypatch):
-    from councils.rag.answer import make_client
+def test_the_claude_client_gives_up_after_five_minutes(settings):
+    from wts_core.adapters import has_model, model_client
 
-    monkeypatch.setenv("COUNCILS_ANTHROPIC_API_KEY", "test-key")
-    client = make_client()
+    from councils.config import SITE
+
+    env = {"COUNCILS_ANTHROPIC_API_KEY": "test-key"}
+    model = model_client(settings, SITE, env)
+    client = model.client
     assert client.timeout.read == 300.0 and client.timeout.connect == 10.0 and client.max_retries == 2
+    assert client.api_key == "test-key" and str(client.base_url).startswith("https://api.anthropic.com")
+    # the site's own name for the key, then the SDK's, then the key file in the data folder; with none, no model
+    assert has_model(settings, SITE, env) and has_model(settings, SITE, {"ANTHROPIC_API_KEY": "k"})
+    assert not has_model(settings, SITE, {})
+    (settings.data_dir / "anthropic_api_key").write_text("from-the-file\n")
+    assert has_model(settings, SITE, {}) and model_client(settings, SITE, {}).api_key == "from-the-file"
+    # never an ANTHROPIC_BASE_URL inherited from another tool
+    assert model_client(settings, SITE, {"ANTHROPIC_BASE_URL": "https://elsewhere.example"}).base_url == \
+        "https://api.anthropic.com"
 
 
 def test_an_update_with_no_changes_writes_nothing_to_the_index(settings):
     """Every write to a LanceDB table makes a new version, and each rebuild of the indices leaves the old one on
     disk, so an update with nothing new must write nothing; one with changes merges them and cleans up."""
     from councils.index.build import update_index
-    from councils.index.lance import SearchIndex
+    from councils.index.lance import open_index
 
-    idx = SearchIndex(settings.index_dir, 64)
+    idx = open_index(settings)
 
     def versions():
-        return idx.passages().version, idx.vectors().version
+        return idx.versions()
 
     before = versions()
+    assert set(before) == {"passages", "vectors"}
     out = update_index(settings, [], HashingEmbedder(64))
     assert out == {"passages_embedded": 0, "still_to_embed": 0, "index": "unchanged"} and versions() == before
 
     # a council whose stored meetings changed: its rows are merged into the indices, not built again
     out = update_index(settings, [GUILDFORD], HashingEmbedder(64))
     assert out["index"] == "merged" and versions() != before
-    assert not idx.unmerged() and not idx.needs_build()
+    assert not idx.unmerged() and idx.has_word_index()
     eng = Engine(settings, HashingEmbedder(64), TODAY)
     assert {r["gss"] for r in eng.search("bin collections", Filters(), limit=5).records} == {BARNSLEY, GUILDFORD}
 
 
-def test_meaning_search_is_trained_again_once_it_has_grown_by_a_fifth(tmp_path, monkeypatch):
-    from councils.index import lance
+def test_meaning_search_is_trained_again_once_it_has_grown_by_more_than_a_fifth(settings, tmp_path):
+    """The rule is the shared package's (wts-core docs/AS-BUILT.md, adapters: "the rule is Where Countries Stand's
+    (more than 1.2 times the rows it was trained on; an unknown count retrains once). Where Councils Stand used 'at
+    least', and rebuilt its word index at the same time"). The count it was trained on is kept where this site kept
+    it (vector_index.json in the index folder), so it carries over."""
+    from wts_core.adapters.lancedb import TRAINED_FILE, vector_index_due
 
-    monkeypatch.setattr(lance, "MIN_VECTORS_FOR_INDEX", 1)
-    idx = lance.SearchIndex(tmp_path, 4)
-    assert not idx.needs_build()                     # nothing indexed yet
-    (tmp_path / lance.TRAINED).write_text('{"vectors": 100}')
-    monkeypatch.setattr(idx, "has_data", lambda: True)
-    monkeypatch.setattr(idx, "has_keyword_index", lambda: True)
-    monkeypatch.setattr(idx, "_names", lambda: {lance.PASSAGES, lance.VECTORS})
+    from councils.index.lance import open_index
 
-    class Table:
-        def __init__(self, n):
-            self.n = n
-
-        def count_rows(self):
-            return self.n
-
-        def list_indices(self):
-            return [NS(columns=["vector"])]
-
-    for n, rebuild in ((119, False), (120, True)):
-        monkeypatch.setattr(idx, "vectors", lambda n=n: Table(n))
-        assert idx.needs_build() is rebuild
+    assert TRAINED_FILE == "vector_index.json"
+    idx = open_index(settings)
+    assert idx.min_vector_index_rows == 10_000 and idx.vector_index_growth == 1.2
+    assert idx.trained_on() is None                  # two vectors: too few for an index to have been trained
+    (settings.index_dir / TRAINED_FILE).write_text('{"vectors": 10000}')
+    assert open_index(settings).trained_on() == 10_000
+    for n, again in ((11_999, False), (12_000, False), (12_001, True)):
+        assert vector_index_due(n, 10_000, True, minimum=10_000, growth=1.2) is again, n
+    assert not vector_index_due(9_999, None, False, minimum=10_000)      # too few to index at all
+    assert vector_index_due(10_000, None, False, minimum=10_000)         # the first time there are enough
 
 
-def test_lancedb_logs_only_errors_unless_told_otherwise():
+def test_the_index_records_its_embedder_and_never_mixes_another_models_vectors(settings):
+    """New with the shared package: the index says what it was built with (wts_index.json beside its tables). An
+    index built with one embedding model takes no vectors from another, and is not searched by meaning with
+    another's: search by words carries on, the update says so, and `councils embed --again` starts it afresh."""
+    import json
+
+    from typer.testing import CliRunner
+    from wts_core.ports import IndexOutOfDate
+
+    from councils.cli import app
+    from councils.index.build import Indexer, embed_again, embed_pending, update_index
+    from councils.index.lance import open_index
+
+    meta = json.loads((settings.index_dir / "wts_index.json").read_text())
+    assert (meta["embedder_id"], meta["dimension"], meta["schema_version"]) == ("hashing-64", 64, 1)
+    other = HashingEmbedder(32)                                        # another model, of another dimension
+    with pytest.raises(IndexOutOfDate):
+        open_index(settings, other)
+    with pytest.raises(IndexOutOfDate):
+        embed_pending(settings, None, Indexer(settings).state, other)
+    eng = Engine(settings, other, TODAY)
+    found = eng.search("bin collections", Filters(), limit=5)
+    assert {r["gss"] for r in found.records} == {BARNSLEY, GUILDFORD} and found.semantic_available is False
+    out = update_index(settings, [GUILDFORD], other)
+    assert out["index"] == "merged" and out["passages_embedded"] == 0 and out["meaning_search"].startswith("off: ")
+    assert "councils embed --again" in out["meaning_search"]
+    assert open_index(settings).stats() == {"passages": 2, "vectors": 1}       # Guildford's are to embed again
+    # embedded afresh with the new model: every vector is the new model's
+    assert embed_again(settings, other) == 2
+    assert open_index(settings).stats()["vectors"] == 0
+    assert embed_pending(settings, None, Indexer(settings).state, other) == 2
+    assert open_index(settings, other).stats() == {"passages": 2, "vectors": 2}
+    assert Engine(settings, other, TODAY).search("bin collections", Filters(), limit=5).semantic_available is True
+    # and from the command line, back to the model the settings name
+    import os
+
+    os.environ["COUNCILS_DATA_DIR"] = str(settings.data_dir)
+    try:
+        config = settings.data_dir / "settings.local.toml"
+        config.write_text('[embedding]\nbackend = "hashing"\ndim = 64\n')
+        r = CliRunner().invoke(app, ["embed", "--again"])
+    finally:
+        del os.environ["COUNCILS_DATA_DIR"]
+    assert r.exit_code == 0 and r.output.splitlines() == ["2 council-years to embed again", "2 passages embedded"]
+    assert open_index(settings, HashingEmbedder(64)).stats() == {"passages": 2, "vectors": 2}
+
+
+def test_lancedb_logs_only_errors_unless_told_otherwise(tmp_path):
     """LanceDB warns once per cluster while the vector index is small, which filled the update logs."""
     import os
     import subprocess
     import sys
 
-    code = "import os, councils.index.lance; print(os.environ['LANCEDB_LOG'])"
-    env = {k: v for k, v in os.environ.items() if k != "LANCEDB_LOG"}
+    code = ("import os, councils.config, councils.index.lance as l; "
+            "l.open_index(councils.config.load_settings()); print(os.environ['LANCEDB_LOG'])")
+    env = {k: v for k, v in os.environ.items() if k != "LANCEDB_LOG"} | {"COUNCILS_DATA_DIR": str(tmp_path)}
     out = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True, check=True)
     assert out.stdout.strip() == "error"
     out = subprocess.run([sys.executable, "-c", code], env={**env, "LANCEDB_LOG": "debug"}, capture_output=True,

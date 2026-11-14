@@ -163,7 +163,7 @@ uv run councils parties                   # map stored party labels again after 
 uv run councils update                    # the daily update: new and changed meetings, votes, index (docs/OPERATIONS.md)
 uv run councils report                    # the pilot's measurements
 uv run councils index                     # keyword index of everything loaded
-uv sync --extra embed && uv run councils embed --max-minutes 30   # meaning search (local model; resumable)
+uv run councils embed --max-minutes 30   # meaning search (local model; resumable)
 uv run councils search "bin collections" --control NOC
 uv run councils ask "What have Labour-run councils decided about bin collections since 2023?"
 uv run councils evaluate                  # score question reading and evidence against eval/questions.toml (free)

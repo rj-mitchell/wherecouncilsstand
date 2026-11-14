@@ -159,8 +159,8 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
     import time
 
     from councils import load as load_
-    from councils.embed.base import get_embedder
     from councils.index.build import update_index
+    from councils.index.lance import get_embedder
     from councils.registry import councils, get
     from councils.sources.modgov import ROBOTS_ERROR
 
@@ -474,15 +474,20 @@ def index(council: list[str] = typer.Argument(None, help="GSS codes or names; al
 
 
 @app.command()
-def embed(max_minutes: float = typer.Option(None, help="stop after this long; run again to continue")) -> None:
-    """Embed indexed passages for meaning search, newest first (needs the 'embed' extra)."""
-    from councils.embed.base import get_embedder
-    from councils.index.build import State, embed_pending
-    from councils.index.lance import SearchIndex
+def embed(max_minutes: float = typer.Option(None, help="stop after this long; run again to continue"),
+          again: bool = typer.Option(False, "--again", help="throw every vector away and embed everything afresh "
+                                                            "with the model the settings name: for after the "
+                                                            "embedding model has changed")) -> None:
+    """Embed indexed passages for meaning search, newest first."""
+    from councils.index.build import State, embed_again, embed_pending
+    from councils.index.lance import get_embedder, open_index
 
     s = load_settings()
-    idx = SearchIndex(s.index_dir, int(s.embedding.get("dim", 384)))
-    n = embed_pending(s, idx, State(s.index_dir / "state.json"), get_embedder(s),
+    embedder = get_embedder(s)
+    if again:
+        typer.echo(f"{embed_again(s, embedder)} council-years to embed again")
+    idx = open_index(s, embedder)
+    n = embed_pending(s, idx, State(s.index_dir / "state.json"), embedder,
                       max_seconds=max_minutes * 60 if max_minutes else None)
     if n:
         idx.refresh()
@@ -493,10 +498,9 @@ def embed(max_minutes: float = typer.Option(None, help="stop after this long; ru
 def optimize() -> None:
     """Merge rows waiting to join the search indices, compact the index files and delete versions over an hour old.
     The daily update does this itself; this is for a one-off clean-up. The site keeps serving meanwhile."""
-    from councils.index.lance import SearchIndex
+    from councils.index.lance import open_index
 
-    s = load_settings()
-    SearchIndex(s.index_dir, int(s.embedding.get("dim", 384))).optimize()
+    open_index(load_settings()).tidy()
     typer.echo("search index optimised")
 
 

@@ -12,11 +12,15 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
+from wts_core.adapters import has_model, model_client
 from wts_core.briefing import current_stages
 from wts_core.checks import check_briefing, to_british
+from wts_core.events import Completed, blocks_as_today, to_reader
+from wts_core.ports import ModelClient
 
-from councils.config import Settings
+from councils.config import SITE, Settings
 from councils.engine import Engine
+from councils.rag.answer import briefing_request
 from councils.rag.checks import LOADED_WORDS, VERIFIER
 from councils.rag.prompts import NO_RECORDS
 from councils.rag.query_parse import QueryPlan, parse_offline, parse_with_model
@@ -61,28 +65,24 @@ def plan_note(plan: QueryPlan) -> str:
 
 
 class Pipeline:
-    def __init__(self, settings: Settings, engine: Engine | None = None, client=None, today: date | None = None):
+    def __init__(self, settings: Settings, engine: Engine | None = None, model: ModelClient | None = None,
+                 today: date | None = None):
         self.settings = settings
         self.engine = engine or Engine(settings, today=today)
-        self._client = client
+        self._model = model
         self.today = today
 
     @property
-    def client(self):
-        if self._client is None:
-            from councils.rag.answer import make_client
-
-            self._client = make_client()
-        return self._client
+    def model(self) -> ModelClient:
+        """The model client, made once and kept for the life of the process (it remembers what the provider
+        refused)."""
+        if self._model is None:
+            self._model = model_client(self.settings, SITE)
+        return self._model
 
     def has_model(self) -> bool:
-        if self._client is not None:
-            return True
-        import os
-
-        from councils.rag.answer import api_key
-
-        return bool(api_key() or os.environ.get("ANTHROPIC_AUTH_TOKEN"))
+        """Whether there is a model to ask. Without a key the site shows the evidence only."""
+        return self._model is not None or has_model(self.settings, SITE)
 
     def make_plan(self, req: AskRequest) -> tuple[QueryPlan, dict[str, int] | None]:
         if req.plan:
@@ -93,11 +93,9 @@ class Pipeline:
         if not self.has_model():
             return offline, None
         try:
-            from councils.rag.answer import usage_dict
-
-            plan, usage = parse_with_model(self.client, self.settings, req.question, today)
+            plan, usage = parse_with_model(self.model, self.settings, req.question, today)
             plan.interpretation = to_british(plan.interpretation)
-            return plan, usage_dict(usage)
+            return plan, usage.as_stored()
         except Exception as exc:
             log.warning("model query parsing failed (%s); using offline rules", exc)
             offline.parse_error = f"{type(exc).__name__}: {exc}"
@@ -136,30 +134,33 @@ class Pipeline:
             yield {"type": "final", "answer": None, "usage": None,
                    "note": "Showing the evidence only (no Anthropic API key set)."}
             return
-        from councils.rag.answer import Answerer
-
-        final = None
-        for event in Answerer(self.settings, self.client).stream(
-                plan.question, sources, req.mode, plan_note(plan), req.history, self.today or date.today(),
-                plan.group_by):
-            if event["type"] == "final":
-                final = event
-            else:
-                yield event
-        if final is None:
+        request = briefing_request(self.settings, plan.question, sources, req.mode, plan_note(plan), req.history,
+                                   self.today or date.today(), plan.group_by)
+        done: Completed | None = None
+        stream = self.model.stream(request)
+        try:
+            for event in stream:
+                if isinstance(event, Completed):
+                    done = event
+                else:
+                    yield to_reader(event)          # text and citations, as the reader is sent them
+        finally:
+            stream.close()                          # the reader has gone, or the model has finished: stop it
+        if done is None:
             raise RuntimeError("the model returned no answer")
         stages.mark("written")
-        if final.get("stop_reason") == "refusal":
+        usage = done.usage.as_stored()              # the site's own form: input_tokens includes the cache writes
+        if done.stop_reason == "refusal":
             # The model declined (as Where MPs Stand): an error for the reader, never an empty briefing saved and
             # shown as fully grounded. The call was still paid for, so its token counts go with the event.
             yield {"type": "error", "message": "The model declined to answer this question.",
-                   "usage": final["usage"], "model": final.get("model")}
+                   "usage": usage, "model": done.model}
             return
         # every check, in the family's one order: citations, openers about the records, spelling, loaded words,
         # quotations (wts_core.checks; what is this site's own is in rag/checks.py)
-        answer = check_briefing(final["blocks"], sources, VERIFIER, LOADED_WORDS)
-        yield {"type": "final", "answer": answer, "usage": final["usage"],
-               "model": final.get("model"), "stop_reason": final.get("stop_reason")}
+        answer = check_briefing(blocks_as_today(done), sources, VERIFIER, LOADED_WORDS)
+        yield {"type": "final", "answer": answer, "usage": usage, "model": done.model,
+               "stop_reason": done.stop_reason}
 
 
 def answer_once(pipeline: Pipeline, req: AskRequest) -> dict[str, Any]:

@@ -217,7 +217,7 @@ spending, the answer cache, saved briefings, problem reports and statements unde
 
 ```bash
 cd web && npm ci && npm run build && cd ..          # the pages (Vite, TypeScript, React)
-uv sync --extra embed                               # the service, with the local model for meaning search
+uv sync                            # the service, with the local model for meaning search
 COUNCILS_ANTHROPIC_API_KEY=... uv run councils serve   # http://127.0.0.1:8000
 ```
 
