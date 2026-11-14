@@ -17,6 +17,9 @@
     councils statements publish 3 --checked "..."   # show it, once its author is confirmed (decision 22)
     councils hide /votes/<id> --note "..."    # hide an item while a concern is decided; unhide shows it again
     councils waiting                          # what is waiting for a decision, and for how long
+    councils stats --since 7d                 # how briefings went: speed, cost, what the checks found
+    councils weekly-report                    # the week's figures saved, and what is over its threshold (scheduled)
+    councils tidy                             # the nightly housekeeping (scheduled, after the backup)
     councils search "bin collections" --control NOC
     councils ask "What have Labour-run councils decided about bin collections since 2023?"
 """
@@ -39,14 +42,24 @@ from wts_core.cli import (
     RestoreWords,
     ops_commands,
     replies_commands,
+    replies_tidy,
+    stats_commands,
 )
 from wts_core.ports import SYSTEM_CLOCK, Clock
 from wts_core.replies import Replies
 from wts_core.state import StateDB
+from wts_core.usage import PriceTable
 
 from councils.config import SITE, load_settings
 from councils.replies import OWNERS_MESSAGES, open_replies
-from councils.state import BACKUP_ALERTS, BACKUPS, open_archive, open_state
+from councils.state import (
+    BACKUP_ALERTS,
+    BACKUPS,
+    BACKUPS_KEPT_DAYS,
+    forget_old_secret,
+    open_archive,
+    open_state,
+)
 
 # what the commands read the time from: the system's, unless a test stands another in its place
 CLOCK: Clock = SYSTEM_CLOCK
@@ -365,7 +378,16 @@ REPLIES_WORDING = RepliesWording(
     not_done="error: {message}", refused="error: {message}", errors_to_stderr=True,
 )
 
-app.add_typer(replies_commands(_replies, REPLIES_COMMANDS, REPLIES_WORDING, about=_council))
+def _changed(row: Mapping[str, Any]) -> None:
+    """After a change a page may show. A report closed with a note for the corrections page, about a saved
+    briefing: that briefing's record is marked as corrected (what happened next, for the statistics)."""
+    if row.get("public_note") and row.get("briefing_id") and row.get("closed_at"):
+        from wts_core.observe import SqliteBriefingLog
+
+        SqliteBriefingLog(_state(), clock=CLOCK).mark(row["briefing_id"], corrected=True)
+
+
+app.add_typer(replies_commands(_replies, REPLIES_COMMANDS, REPLIES_WORDING, about=_council, changed=_changed))
 
 
 # ---- backups: the shared package's commands (wts_core.cli), with this site's own lines ----------------------------
@@ -410,6 +432,36 @@ OPS_WORDING = OpsWording(
 )
 app.add_typer(ops_commands(SITE, load_settings, BACKUPS, OPS_WORDING, clock=lambda: CLOCK))
 
+# ---- statistics, the weekly report and the nightly tidy: the shared package's commands ----------------------------
+
+
+def _embedder() -> Any:
+    from councils.index.lance import get_embedder
+
+    return get_embedder(load_settings())      # the site's own, so no question leaves the server to be grouped
+
+
+def _prices() -> PriceTable:
+    settings = load_settings()
+    return PriceTable.from_settings(settings.usage, file=settings.config_path)
+
+
+# `councils stats` (how briefings went, for any period), `councils weekly-report` (the week's figures saved under
+# data/reports, with what is over its threshold; run by deploy/councils-weekly-report.timer) and `councils tidy`
+# (the nightly housekeeping, after each night's backup: the record of briefings older than it is kept, visitors'
+# codes after their day, old weekly reports, the copy of the database made before the one-off import, and the
+# right of reply's: confirming addresses three months after a statement ends, and what nobody decided in three).
+app.add_typer(stats_commands(
+    SITE, _state,
+    thresholds=lambda: load_settings().section("alerts"),      # empty until the owner sets them
+    folder=lambda: load_settings().reports_dir,
+    embedder=_embedder,
+    similarity=lambda: float(load_settings().embedding["theme_similarity"]),
+    pricing=_prices,
+    backup_days=BACKUPS_KEPT_DAYS,
+    also_tidy=[replies_tidy(_replies, REPLIES_WORDING), lambda: forget_old_secret(_state(), CLOCK)],
+    clock=lambda: CLOCK))
+
 
 @app.command()
 def serve(host: str = "127.0.0.1", port: int = 8000,
@@ -417,9 +469,10 @@ def serve(host: str = "127.0.0.1", port: int = 8000,
     """Run the website and its API (build the pages first: cd web && npm run build)."""
     import uvicorn
 
-    from councils.api.app import create_app
+    from councils.api.app import create_app, start_logging
 
     s = load_settings()
+    start_logging(s)      # the structured log of briefings, under the data folder (config/settings.toml, [logs])
     # Behind the front door (Where MPs Stand's web server, in another container), the visitor's address comes in
     # X-Forwarded-For, set by the front door from Cloudflare's header. The container's port is reachable only over the
     # server's Docker networks, never from outside, so any sender of the header can be trusted.

@@ -84,9 +84,13 @@ def build_where(f: Filters) -> str:
 
 
 class Engine:
-    def __init__(self, settings: Settings, embedder: Embedder | None = None, today: date | None = None):
+    def __init__(self, settings: Settings, embedder: Embedder | None = None, today: date | None = None,
+                 index: Any = None):
+        """``index`` is for a caller with an index of its own (a test's, in memory); left out, it is the site's,
+        opened as it stands: search by words needs no embedding model."""
         self.settings = settings
-        self.index = open_index(settings)      # as it stands: search by words needs no embedding model
+        self._own_index = index is None
+        self.index = open_index(settings) if index is None else index
         self._embedder = embedder
         self.today = today
         self._has_vectors = False
@@ -113,6 +117,10 @@ class Engine:
         search carries on by words alone, until everything has been embedded again (``councils embed --again``)."""
         if not self.has_vectors() or self.embedder is None:
             return False
+        if self._meaning is None and not self._own_index:
+            # an index the caller gave: it says what it was built with, and that must be this embedder
+            built = self.index.meta
+            self._meaning = (built.embedder_id, built.dimension) == (self.embedder.id, self.embedder.dimension)
         if self._meaning is None:
             try:
                 self.index = open_index(self.settings, self.embedder)
@@ -141,9 +149,10 @@ class Engine:
             semantic = self.searches_by_meaning()
             if semantic:
                 vec = self.embedder.embed_query(query)
-                vec_hits = self.index.search_meaning(vec, where, int(r.get("candidates_vector", 300)),
-                                                     nprobes=r.get("vector_nprobes"),
-                                                     refine_factor=r.get("vector_refine_factor"))
+                # how hard the store looks, where the settings say (the store's own defaults otherwise)
+                tuning = {name: r[key] for name, key in (("nprobes", "vector_nprobes"),
+                                                         ("refine_factor", "vector_refine_factor")) if r.get(key)}
+                vec_hits = self.index.search_meaning(vec, where, int(r.get("candidates_vector", 300)), **tuning)
             bm = by_keyword.result()
 
         cands: dict[str, Candidate] = {}

@@ -67,6 +67,11 @@ def added_to_the_settings_file(now: dict, golden: dict) -> None:
     for section in NEW_SECTIONS:
         assert section not in golden["raw"]
         now["raw"].pop(section, None)
+    # MIGRATION 1.5: "prompt caching becomes a setting ([answer] cache_instructions, on as today)"; and how alike two
+    # questions must be to be one theme in the weekly report, which is new with the record of briefings
+    for section, key, value in (("answer", "cache_instructions", "short"), ("embedding", "theme_similarity", 0.8)):
+        for given in (now[section], now["raw"][section]):
+            assert key not in golden[section] and given.pop(key) == value
 
 
 def test_the_settings_are_read_from_the_real_environment_too(monkeypatch, tmp_path):

@@ -59,6 +59,9 @@ comprehensive_effort = "high"
 query_parse_effort = "low"
 max_tokens = 16000
 use_fallbacks = true
+# The instructions are the same for every request (but for the date), so the provider may cache them: "short" is
+# its ordinary cache (five minutes), "long" an hour's, "off" none. The record of each briefing shows whether it pays.
+cache_instructions = "short"
 
 [embedding]
 # "fastembed" (local ONNX model; weights fetched once from Hugging Face and pinned)
@@ -68,6 +71,10 @@ model = "snowflake/snowflake-arctic-embed-xs"
 dim = 384
 passage_words = 250
 batch_size = 8
+# How alike two questions must be to count as one theme in the weekly report (cosine similarity, for this model,
+# which scores unrelated text around 0.5 and a strong match around 0.85). A first figure, to be looked at again
+# once there is a few weeks' worth of questions.
+theme_similarity = 0.8
 
 [usage]
 # The site is public; each new model-written briefing costs money. As Where MPs Stand.
@@ -105,3 +112,29 @@ name = "Where Councils Stand"
 url = "https://wherecouncilsstand.com"
 # the donation page, once the charity is registered; nothing is shown while it is empty
 donate_url = ""
+
+[logs]
+# The structured log of briefings (data/logs/briefings.jsonl): one line for each stage a briefing reached and one
+# for how it ended, with the record's id, a stage's name, a time in milliseconds and an error's class name. Never a
+# question, an address or a visitor's code. A new file each day or at max_bytes; keep files, and none older than
+# days: at most 14 days and about 48 MB.
+max_bytes = 3000000
+keep = 15
+days = 14
+
+[alerts]
+# What the weekly report and `councils stats --check` warn about. Thresholds start unset: the first weekly report
+# proposes them from that week's figures, and the owner writes them here (or in data/settings.local.toml). The
+# names are p95_full_briefing_ms, error_rate, check_failure_rate, not_useful_rate, daily_cost_usd.
+
+[eval]
+# The most a run of the briefing test set may spend on the model, in US dollars (`councils eval run`): no run
+# starts without a limit, and it stops cleanly once spending reaches it.
+max_cost_usd = 2.0
+
+[eval.thresholds]
+# What a run is held to (a threshold is min_ or max_ and the name of a figure). Citations and quotations must all
+# check; the rest are loose until the first run on the server's record gives a baseline to set them from.
+max_invalid_citations = 0
+max_unverified_quotations = 0
+max_errors = 0

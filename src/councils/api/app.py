@@ -38,10 +38,10 @@ from wts_core.briefing import (
     desk_parts,
     sse,
 )
-from wts_core.observe import SqliteBriefingLog, briefing_config
+from wts_core.observe import LOGGER, SqliteBriefingLog, briefing_config, json_logging
 from wts_core.ports import SYSTEM_CLOCK, SYSTEM_RANDOM, Clock, Random
 from wts_core.replies import Refused, Replies
-from wts_core.settings import Messages
+from wts_core.settings import Messages, require
 from wts_core.state import StateDB
 from wts_core.usage import cache_key, visitor_code
 
@@ -238,6 +238,21 @@ def build(settings: Settings, state: StateDB | None = None, *, clock: Clock = SY
     replies = right_of_reply.open_replies(db, lambda: data, parts.archive, clock)
     return Councils(settings=settings, db=db, data=data, parts=parts, log=log, desk=desk, replies=replies,
                     clock=clock, random=random)
+
+
+def start_logging(settings: Settings, clock: Clock = SYSTEM_CLOCK) -> logging.Handler:
+    """Turn the structured log on for this process (``councils serve`` does): one line of JSON for each stage a
+    briefing reached and one for how it ended, in ``<data>/logs/briefings.jsonl``, within the limits in ``[logs]``.
+    A line holds the record's id, a stage's name, a time and an error's class name, and nothing else: never a
+    question, an address or a visitor's code. The handler is returned so that whoever started it can take it off."""
+    logs = require(settings, "logs", ("max_bytes", "keep", "days"))
+    handler = json_logging(settings.logs_dir / "briefings.jsonl", site=SITE, max_bytes=int(logs["max_bytes"]),
+                           keep=int(logs["keep"]), days=int(logs["days"]), clock=clock)
+    lines = logging.getLogger(LOGGER)
+    lines.addHandler(handler)
+    lines.setLevel(logging.INFO)
+    lines.propagate = False
+    return handler
 
 
 def create_app(settings: Settings | None = None, pipeline: Pipeline | None = None,

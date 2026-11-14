@@ -288,12 +288,14 @@ def update_index(settings: Settings, changed: list[str], embedder: Embedder,
     return summary
 
 
-def embed_pending(settings: Settings, index: LanceIndex, state: State, embedder: Embedder, *,
+def embed_pending(settings: Settings, index: Any, state: State, embedder: Embedder, *,
                   max_seconds: float | None = None, batch: int = 2000) -> int:
     """Embed the passages of indexed-but-unembedded council-years, newest first. Returns passages embedded. The
-    vectors go into the index as opened with ``embedder``: an index built with another raises ``IndexOutOfDate``
-    here, before anything is written."""
-    index = open_index(settings, embedder)
+    vectors go into an index opened with ``embedder``: ``index`` itself if it says it was built with it, and
+    otherwise the site's, opened again with it, where one built with another raises ``IndexOutOfDate`` before
+    anything is written."""
+    if index is None or (index.meta.embedder_id, index.meta.dimension) != (embedder.id, embedder.dimension):
+        index = open_index(settings, embedder)
     started = time.time()
     total = 0
     for key in state.unembedded():

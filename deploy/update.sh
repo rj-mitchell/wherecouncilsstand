@@ -19,11 +19,13 @@ fi
 cd "$DIR/deploy"
 [[ -f .env ]] || { echo "No settings yet: cp .env.example .env, fill it in, and run this again (docs/DEPLOY.md)."; exit 1; }
 
-echo "==> Refreshing the update and backup timers"
+echo "==> Refreshing the update, backup and weekly report timers"
 cp councils-update.service councils-update.timer councils-backup.service councils-backup.timer \
-  councils-backup-check.service councils-backup-check.timer /etc/systemd/system/
+  councils-backup-check.service councils-backup-check.timer \
+  councils-weekly-report.service councils-weekly-report.timer /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable --now councils-update.timer councils-backup.timer councils-backup-check.timer >/dev/null
+systemctl enable --now councils-update.timer councils-backup.timer councils-backup-check.timer \
+  councils-weekly-report.timer >/dev/null
 
 echo "==> Rebuilding the site"
 mkdir -p backups

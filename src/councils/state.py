@@ -138,3 +138,18 @@ def open_archive(db: StateDB, clock: Clock = SYSTEM_CLOCK) -> BriefingArchive:
     """Saved briefings, for the parts of the site that only read or withdraw them (the web app's come with its
     briefing desk)."""
     return BriefingArchive(db, new_id=new_briefing_id, clock=clock)
+
+
+def forget_old_secret(db: StateDB, clock: Clock = SYSTEM_CLOCK) -> list[str]:
+    """Delete, from the table the site kept before the shared package (``kv``), the secret visitors' codes were
+    made with on any day before today, and say so if one was deleted. The old code deleted yesterday's secret
+    itself when the next day's first visitor came; nothing reads that table now, so the nightly ``councils tidy``
+    does it, and the secret of the day of the move does not outlive its day there. (The package deletes its own,
+    in ``wts_kv``.) Without its secret a visitor's code cannot be tried against addresses."""
+    if "kv" not in db.tables():
+        return []
+    with db.connect() as con:
+        gone = con.execute("DELETE FROM kv WHERE key LIKE 'visitor_salt:%' AND key != ?",
+                           (f"visitor_salt:{clock.now():%Y-%m-%d}",)).rowcount
+    return ["Deleted an earlier day's secret for visitors' codes from the table kept before the shared package."] \
+        if gone else []
