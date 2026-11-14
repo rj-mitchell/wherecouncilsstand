@@ -56,7 +56,11 @@ jobs:
       - name: Start the site on the made-up record
         run: |
           uv run python scripts/fixture_site.py "$RUNNER_TEMP/fixture"
-          COUNCILS_DATA_DIR="$RUNNER_TEMP/fixture" nohup uv run councils serve --port 8000 > "$RUNNER_TEMP/serve.log" 2>&1 &
+          # Started with the environment's own program, not through `uv run`: a `uv run` left in the background
+          # holds uv's cache, and the toolchain step's tidying of that cache at the end of the job then waits
+          # five minutes for it and fails the job (the accessibility check itself having passed).
+          COUNCILS_DATA_DIR="$RUNNER_TEMP/fixture" nohup .venv/bin/councils serve --port 8000 > "$RUNNER_TEMP/serve.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/site.pid"
           for i in $(seq 1 60); do
             curl -fsS http://127.0.0.1:8000/api/health && break
             sleep 1
@@ -74,3 +78,6 @@ jobs:
       - name: Show the site's log if anything failed
         if: failure()
         run: cat "$RUNNER_TEMP/serve.log" || true
+      - name: Stop the site
+        if: always()
+        run: kill "$(cat "$RUNNER_TEMP/site.pid")" 2>/dev/null || true

@@ -66,12 +66,16 @@ def test_ci_still_makes_every_check_it_made():
     for kept in ("workflows/python.yml@",                     # uv sync --frozen, ruff check, pytest
                  "workflows/web.yml@", "working-directory: web",      # npm ci, npm test, npm run build
                  "uv sync --frozen --python 3.12", "npm ci && npm run build",
-                 "scripts/fixture_site.py", "councils serve --port 8000",
+                 "scripts/fixture_site.py", ".venv/bin/councils serve --port 8000",
                  'grep -q "Members by party"', 'grep -q "Constituent councils"',
                  'grep -q "/votes/E08000038:1:10:0"',
                  "actions/a11y@", "url: http://127.0.0.1:8000", 'cat "$RUNNER_TEMP/serve.log"'):
         assert kept in ci, kept
     assert "pull_request:" in ci and "branches: [main]" in ci and "contents: read" in ci
+    # the site is started with the environment's own program and stopped at the end, whatever happened: a
+    # `uv run` left in the background holds uv's cache, and the job then fails five minutes after its checks pass
+    assert not re.search(r"uv run [^\n]*&\s*$", ci, re.M) and 'kill "$(cat "$RUNNER_TEMP/site.pid")"' in ci
+    assert ci.index("if: always()") > ci.index("actions/a11y@")
 
 
 def test_the_site_uses_only_what_the_shared_package_makes_public():

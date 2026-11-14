@@ -228,7 +228,9 @@ def build(settings: Settings, state: StateDB | None = None, *, clock: Clock = SY
         settings, db, MESSAGES,
         new_id=lambda chance: new_briefing_id(chance),
         at_once_per_visitor="briefings_at_once_per_visitor", forget_over=FORGET_IDLE_VISITORS_OVER,
-        keep_failures=False,     # a failed briefing is logged, never kept: the privacy notice promises nothing else
+        # no separate note of failed questions: the record of each briefing has the question, and removes a
+        # failed one's after 90 days, which is all the privacy notice says is kept
+        keep_failures=False,
         # each model named must have prices of its own, so a new model is never costed at another's
         require_prices_for=(settings.answer.get("model"), parse_model(settings)),
         clock=clock, random=random)
