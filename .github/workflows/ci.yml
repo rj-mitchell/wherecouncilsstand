@@ -4,6 +4,12 @@ name: CI
 # The family kit in web/public/family is checked by tests/test_family.py against the hash in its own VERSION file
 # (no copy edited by hand, no file missing). Whether it is the latest kit needs the charity's private repository, so
 # that is a step before merging, not here: README, "In the family".
+#
+# The jobs that are the same on every Where They Stand site are the family's shared workflows and actions, in the
+# repository of the shared package (wts-core), called at the same tag as the package this site installs
+# (pyproject.toml): one number to raise, and CI can't change under the site (tests/test_dependencies.py keeps the
+# two the same; docs/OPERATIONS.md, "A newer wts-core"). What is this site's own stays here: how it is started on
+# the made-up record for the accessibility check.
 
 on:
   push:
@@ -14,33 +20,23 @@ permissions:
   contents: read
 
 jobs:
+  # The family's toolchain (Python 3.12, uv 0.11.32): uv sync --frozen, ruff check, pytest.
   python:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
-        with:
-          version: "0.11.32"
-      - run: uv python install 3.12
-      - run: uv sync --frozen --python 3.12
-      - run: uv run ruff check
-      - run: uv run pytest
+    uses: rj-mitchell/wts-core/.github/workflows/python.yml@v0.2.0
 
+  # Node 22: npm ci, the type check, the tests, the build.
   web:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - run: npm ci
-      - run: npm test
-      - run: npm run build
+    uses: rj-mitchell/wts-core/.github/workflows/web.yml@v0.2.0
+    with:
+      working-directory: web
+
+  # The image the server runs, built as the server builds it, and one command run in it: a broken image is found
+  # here, before the server finds it.
+  docker:
+    uses: rj-mitchell/wts-core/.github/workflows/docker.yml@v0.2.0
+    with:
+      tag: wherecouncilsstand:ci
+      run: councils --help
 
   # The built site, served on a small made-up record (scripts/fixture_site.py), checked with axe in Chromium: light
   # and dark, desktop and phone, and the pages the server sends with readable text with their scripts blocked. Fails
@@ -49,16 +45,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: rj-mitchell/wts-core/.github/actions/setup@v0.2.0
         with:
-          version: "0.11.32"
-      - run: uv python install 3.12
+          node: "22"
+          node-cache-path: web/package-lock.json
       - run: uv sync --frozen --python 3.12
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: web/package-lock.json
       - name: Build the pages
         working-directory: web
         run: npm ci && npm run build
@@ -73,14 +64,13 @@ jobs:
           curl -fsS http://127.0.0.1:8000/councils/E08000038 | grep -q "Members by party"
           curl -fsS http://127.0.0.1:8000/councils/E47000002 | grep -q "Constituent councils"
           curl -fsS http://127.0.0.1:8000/sitemap.xml | grep -q "/votes/E08000038:1:10:0"
-      - name: Accessibility check (axe, WCAG 2.2 AA, light and dark, desktop and phone)
-        run: |
-          mkdir -p "$RUNNER_TEMP/a11y" && cp scripts/a11y.mjs "$RUNNER_TEMP/a11y/"
-          cd "$RUNNER_TEMP/a11y"
-          npm init -y > /dev/null
-          npm install --no-audit --no-fund playwright@1.63.0 axe-core@4.14.0
-          npx playwright install --with-deps chromium
-          node a11y.mjs http://127.0.0.1:8000
+          curl -fsS http://127.0.0.1:8000/corrections | grep -q "Briefing withdrawn"
+      # axe, WCAG 2.2 AA, light and dark, desktop and phone: this site's scripts/a11y.mjs, with Playwright and
+      # axe-core at the family's versions
+      - name: Accessibility check
+        uses: rj-mitchell/wts-core/.github/actions/a11y@v0.2.0
+        with:
+          url: http://127.0.0.1:8000
       - name: Show the site's log if anything failed
         if: failure()
         run: cat "$RUNNER_TEMP/serve.log" || true

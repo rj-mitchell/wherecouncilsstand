@@ -180,6 +180,18 @@ def build(folder: Path) -> None:
              "words, in its author's own name, about this vote.\n\nIt would point to the record where it could.",
         link="https://example.org/minutes", email="nobody@example.org")
     replies.publish(sid, checked="A made-up statement, for testing the site: nobody sent it.")
+    # the corrections log with two entries (a report closed with a public note, and a briefing withdrawn), and one
+    # page hidden while a concern is decided (Cardiff's named vote), so those pages can be checked as a reader
+    # would meet them: all plainly made up
+    rid = replies.report(kind="error", page=f"/votes/{BARNSLEY}:1:10:0", contact=None,
+                         message="A made-up report, for testing the site: nobody sent it.")
+    replies.close(rid, outcome="resolved", public_note="A made-up correction, for testing the site: a councillor's "
+                                                       "vote was shown on the wrong side, and is now shown as against.")
+    archive = open_archive(db)
+    archive.save("A made-up question, for testing the site", {}, [], id="madeupbrief")
+    archive.withdraw("madeupbrief", "A made-up withdrawal, for testing the site.")
+    replies.hide(f"/votes/{CARDIFF}:3:30:0", "A made-up note, for testing the site: we are checking a report that "
+                                             "the sides of this vote were read the wrong way round.")
     (folder / "updates.jsonl").write_text(json.dumps(
         {"finished": "2025-10-16T03:41:00", "minutes": 21.5, "councils": 3, "changed": 1, "new_meetings": 1,
          "failed": [], "needs_attention": False}) + "\n")
