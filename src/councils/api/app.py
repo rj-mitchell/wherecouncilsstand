@@ -38,10 +38,9 @@ from councils.api.usage import (
     visitor_key,
 )
 from councils.config import Settings, load_settings
-from councils.rag.neutral import still_loaded
+from councils.rag.checks import rechecked
 from councils.rag.pipeline import AskRequest, Pipeline
 from councils.rag.query_parse import QueryPlan, parse_model, parse_offline
-from councils.rag.verify import recheck_flags
 from councils.registry import REGION_NAMES, TYPE_NAMES
 
 log = logging.getLogger(__name__)
@@ -175,14 +174,6 @@ class HeadAsGet:
             await send(message)
 
         await self.app({**scope, "method": "GET"}, receive, without_body)
-
-
-def rechecked(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """A saved or cached briefing's marks, judged again by the current checks (as Where MPs Stand): text since
-    recognised as a date, a join or a note about the evidence is no longer marked unsupported, and a word since taken
-    off the loaded-words list is no longer flagged. Nothing is ever newly marked."""
-    return [{**e, "answer": still_loaded(recheck_flags(e["answer"]))}
-            if e.get("type") == "final" and e.get("answer") else e for e in events]
 
 
 def cache_key(parts: dict[str, Any]) -> str:

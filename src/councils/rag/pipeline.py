@@ -12,14 +12,14 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
+from wts_core.checks import check_briefing, to_british
+
 from councils.config import Settings
 from councils.engine import Engine
-from councils.rag.british import britishise_segments, to_british
-from councils.rag.neutral import flag_loaded
+from councils.rag.checks import LOADED_WORDS, VERIFIER
 from councils.rag.prompts import NO_RECORDS
 from councils.rag.query_parse import QueryPlan, parse_offline, parse_with_model
 from councils.rag.sources import build_sources
-from councils.rag.verify import check_quotes, drop_preambles, verify
 from councils.registry import councils
 
 log = logging.getLogger(__name__)
@@ -147,12 +147,10 @@ class Pipeline:
             yield {"type": "error", "message": "The model declined to answer this question.",
                    "usage": final["usage"], "model": final.get("model")}
             return
-        report = verify(final["blocks"], sources)
-        drop_preambles(report.segments)
-        britishise_segments(report.segments)
-        loaded = flag_loaded(report.segments)
-        check_quotes(report, sources)
-        yield {"type": "final", "answer": {**report.to_dict(), "loaded_words": loaded}, "usage": final["usage"],
+        # every check, in the family's one order: citations, openers about the records, spelling, loaded words,
+        # quotations (wts_core.checks; what is this site's own is in rag/checks.py)
+        answer = check_briefing(final["blocks"], sources, VERIFIER, LOADED_WORDS)
+        yield {"type": "final", "answer": answer, "usage": final["usage"],
                "model": final.get("model"), "stop_reason": final.get("stop_reason")}
 
 
