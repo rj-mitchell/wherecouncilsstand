@@ -17,7 +17,8 @@ export function StatementCard({ s, level = 2, here }: { s: Statement; level?: 2 
   const id = `statement-${s.id}`;
   const link = safeLink(s.link);
   return (
-    <article className="statement" aria-labelledby={id}>
+    // data-nosnippet: a search engine may show the page, but never quotes a statement as the site's own words
+    <article className="statement" aria-labelledby={id} data-nosnippet="">
       <H id={id} className="statement-head">
         Statement from {s.name}, {longDate(s.shown_on)}
       </H>

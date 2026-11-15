@@ -952,6 +952,30 @@ input[type="checkbox"] {
   border-block-start: 1px solid var(--rule);
 }
 
+/* the corrections log (the impartiality policy, 7.1), on the corrections page: an entry to a rule, as the minute
+   book's entries are, with the date and what it was in the sans face of the site's own labels */
+.corrections-log {
+  list-style: none;
+  padding: 0;
+  max-width: var(--measure);
+}
+
+.corrections-log li {
+  padding-block: var(--space-s);
+  border-block-start: 1px solid var(--rule);
+}
+
+.corrections-log p {
+  margin-block: var(--space-xs) 0;
+}
+
+.corrections-log .corrections-when {
+  font-family: var(--sans);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+  margin-block: 0;
+}
+
 /* "How a statement is shown", on the page for people who are named */
 .statement-example {
   margin: var(--space-m) 0;

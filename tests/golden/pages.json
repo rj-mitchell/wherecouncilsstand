@@ -1,0 +1,760 @@
+[
+ {
+  "case": "/api/health",
+  "json": {
+   "ok": true
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/councils",
+  "json": {
+   "loaded": [
+    {
+     "cabinet_meetings": 0,
+     "control": {
+      "as_of": "2025-02-26",
+      "code": "LAB",
+      "name": "Labour"
+     },
+     "council_meetings": 1,
+     "coverage": "partial",
+     "from": "2025-02-26",
+     "gss": "E08000038",
+     "loaded": true,
+     "meetings": 1,
+     "name": "Barnsley Metropolitan Borough Council",
+     "named_votes": 1,
+     "nation": "england",
+     "policy_meetings": 0,
+     "reasons": [
+      "No meeting since February 2025.",
+      "Records start in February 2025, not May 2018."
+     ],
+     "region": "E12000003",
+     "region_name": "Yorkshire and the Humber",
+     "site": "https://barnsleymbc.moderngov.co.uk",
+     "status": "ok",
+     "to": "2025-02-26",
+     "type": "metropolitan",
+     "type_name": "Metropolitan borough council",
+     "with_minutes": 1.0
+    },
+    {
+     "cabinet_meetings": 0,
+     "control": {
+      "as_of": "2025-03-05",
+      "code": "LD",
+      "name": "Liberal Democrats"
+     },
+     "council_meetings": 1,
+     "coverage": "partial",
+     "from": "2025-03-05",
+     "gss": "E07000209",
+     "loaded": true,
+     "meetings": 1,
+     "name": "Guildford Borough Council",
+     "named_votes": 0,
+     "nation": "england",
+     "policy_meetings": 0,
+     "reasons": [
+      "No meeting since March 2025.",
+      "Records start in March 2025, not May 2018."
+     ],
+     "region": "E12000008",
+     "region_name": "South East",
+     "site": "https://democracy.guildford.gov.uk",
+     "status": "ok",
+     "to": "2025-03-05",
+     "type": "district",
+     "type_name": "District council",
+     "with_minutes": 1.0
+    }
+   ],
+   "rows": 402,
+   "totals": {
+    "authorities": 20,
+    "authorities_loaded": 0,
+    "councils": 382,
+    "coverage": {
+     "not_yet": 380,
+     "partial": 2
+    },
+    "from": "2025-02-26",
+    "loaded": 2,
+    "meetings": 2,
+    "named_votes": 1,
+    "to": "2025-03-05"
+   }
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/councils/E08000038",
+  "json": {
+   "authorities": [
+    {
+     "from": null,
+     "gss": "E47000002",
+     "name": "South Yorkshire Mayoral Combined Authority",
+     "role": "constituent",
+     "role_name": "Constituent council",
+     "to": null
+    }
+   ],
+   "by_year": [
+    {
+     "board": 0,
+     "cabinet": 0,
+     "council": 1,
+     "mayor": 0,
+     "policy": 0,
+     "scrutiny": 0,
+     "with_minutes": 1,
+     "year": 2025
+    }
+   ],
+   "cabinet_meetings": 0,
+   "control": {
+    "as_of": "2025-02-26",
+    "code": "LAB",
+    "name": "Labour"
+   },
+   "control_timeline": [
+    {
+     "code": "LAB",
+     "from": "2025-02-26",
+     "name": "Labour"
+    }
+   ],
+   "council_meetings": 1,
+   "coverage": "partial",
+   "from": "2025-02-26",
+   "gss": "E08000038",
+   "landlords": {
+    "area": {
+     "landlords": 18,
+     "name": "Barnsley",
+     "url": "https://wherelandlordsstand.com/areas/barnsley/"
+    },
+    "council": {
+     "name": "Barnsley Metropolitan Borough Council",
+     "url": "https://wherelandlordsstand.com/landlords/barnsley-metropolitan-borough-council/"
+    }
+   },
+   "loaded": true,
+   "meetings": 1,
+   "members": null,
+   "name": "Barnsley Metropolitan Borough Council",
+   "named_votes": 1,
+   "nation": "england",
+   "policy_meetings": 0,
+   "reasons": [
+    "No meeting since February 2025.",
+    "Records start in February 2025, not May 2018."
+   ],
+   "recent": [
+    {
+     "committee": "Full Council",
+     "date": "2025-02-26",
+     "items_with_minutes": 1,
+     "kind": "council",
+     "url": "u"
+    }
+   ],
+   "region": "E12000003",
+   "region_name": "Yorkshire and the Humber",
+   "seats": {
+    "date": "2025-02-26",
+    "parties": [
+     {
+      "code": "LAB",
+      "members": 2,
+      "name": "Labour"
+     },
+     {
+      "code": "LD",
+      "members": 1,
+      "name": "Liberal Democrats"
+     }
+    ],
+    "total": 3
+   },
+   "site": "https://barnsleymbc.moderngov.co.uk",
+   "status": "ok",
+   "to": "2025-02-26",
+   "type": "metropolitan",
+   "type_name": "Metropolitan borough council",
+   "votes": [
+    {
+     "by_party": {
+      "abstain": [],
+      "against": [
+       {
+        "n": 2,
+        "party": "Labour"
+       }
+      ],
+      "for": [
+       {
+        "n": 1,
+        "party": "Liberal Democrats"
+       }
+      ]
+     },
+     "committee": "Full Council",
+     "counts": {
+      "abstain": 0,
+      "against": 2,
+      "for": 1
+     },
+     "date": "2025-02-26",
+     "item": "Notice of Motion - Weekly Bin Collections",
+     "kind": "council",
+     "number": "10.",
+     "outcome": "lost",
+     "partial": false,
+     "question": "motion",
+     "url": "https://example/E08000038/10",
+     "vote_id": "E08000038:1:10:0"
+    }
+   ],
+   "with_minutes": 1.0
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/councils/e07000209",
+  "json": {
+   "authorities": [],
+   "by_year": [
+    {
+     "board": 0,
+     "cabinet": 0,
+     "council": 1,
+     "mayor": 0,
+     "policy": 0,
+     "scrutiny": 0,
+     "with_minutes": 1,
+     "year": 2025
+    }
+   ],
+   "cabinet_meetings": 0,
+   "control": {
+    "as_of": "2025-03-05",
+    "code": "LD",
+    "name": "Liberal Democrats"
+   },
+   "control_timeline": [
+    {
+     "code": "LD",
+     "from": "2025-03-05",
+     "name": "Liberal Democrats"
+    }
+   ],
+   "council_meetings": 1,
+   "coverage": "partial",
+   "from": "2025-03-05",
+   "gss": "E07000209",
+   "landlords": {
+    "area": {
+     "landlords": 19,
+     "name": "Guildford",
+     "url": "https://wherelandlordsstand.com/areas/guildford/"
+    },
+    "council": {
+     "name": "Guildford Borough Council",
+     "url": "https://wherelandlordsstand.com/landlords/guildford-borough-council/"
+    }
+   },
+   "loaded": true,
+   "meetings": 1,
+   "members": null,
+   "name": "Guildford Borough Council",
+   "named_votes": 0,
+   "nation": "england",
+   "policy_meetings": 0,
+   "reasons": [
+    "No meeting since March 2025.",
+    "Records start in March 2025, not May 2018."
+   ],
+   "recent": [
+    {
+     "committee": "Full Council",
+     "date": "2025-03-05",
+     "items_with_minutes": 1,
+     "kind": "council",
+     "url": "u"
+    }
+   ],
+   "region": "E12000008",
+   "region_name": "South East",
+   "seats": {
+    "date": "2025-03-05",
+    "parties": [
+     {
+      "code": "LD",
+      "members": 2,
+      "name": "Liberal Democrats"
+     },
+     {
+      "code": "CON",
+      "members": 1,
+      "name": "Conservative"
+     }
+    ],
+    "total": 3
+   },
+   "site": "https://democracy.guildford.gov.uk",
+   "status": "ok",
+   "to": "2025-03-05",
+   "type": "district",
+   "type_name": "District council",
+   "votes": [],
+   "with_minutes": 1.0
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/councils/E99999999",
+  "json": {
+   "detail": "There is no council with this code."
+  },
+  "status": 404,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/votes/E08000038:1:10:0",
+  "json": {
+   "by_party": {
+    "abstain": [],
+    "against": [
+     {
+      "n": 2,
+      "party": "Labour"
+     }
+    ],
+    "for": [
+     {
+      "n": 1,
+      "party": "Liberal Democrats"
+     }
+    ]
+   },
+   "committee": "Full Council",
+   "control": "Labour",
+   "council": "Barnsley Metropolitan Borough Council",
+   "counts": {
+    "abstain": 0,
+    "against": 2,
+    "for": 1
+   },
+   "date": "2025-02-26",
+   "excerpt": "Upon being put to the vote the motion was lost.",
+   "from_table": false,
+   "gss": "E08000038",
+   "is_authority": false,
+   "item": "Notice of Motion - Weekly Bin Collections",
+   "kind": "council",
+   "members": [
+    {
+     "matched": true,
+     "name": "Hannah Kitching",
+     "party": "Liberal Democrats",
+     "side": "for",
+     "written": "Kitching"
+    },
+    {
+     "matched": true,
+     "name": "Robin Franklin",
+     "party": "Labour",
+     "side": "against",
+     "written": "Franklin"
+    },
+    {
+     "matched": true,
+     "name": "Sir Steve Houghton",
+     "party": "Labour",
+     "side": "against",
+     "written": "Houghton"
+    }
+   ],
+   "number": "10.",
+   "outcome": "lost",
+   "partial": false,
+   "question": "motion",
+   "url": "https://example/E08000038/10",
+   "vote_id": "E08000038:1:10:0"
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/votes/E07000209:9:9:0",
+  "json": {
+   "detail": "There is no named vote at this address."
+  },
+  "status": 404,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/sitemap.xml",
+  "json": null,
+  "status": 200,
+  "text": {
+   "length_over_10000": true,
+   "of_the_record": [
+    "/councils/E07000209",
+    "/councils/E08000038",
+    "/votes/E08000038:1:10:0"
+   ]
+  },
+  "type": "application/xml"
+ },
+ {
+  "case": "/councils/E08000038",
+  "json": null,
+  "status": 200,
+  "text": "<!doctype html><html><head>\n    <title>Barnsley Metropolitan Borough Council — Where Councils Stand</title>\n    <meta name=\"description\" content=\"Barnsley Metropolitan Borough Council: full council and cabinet meetings from February 2025 to February 2025, from the council&#x27;s own minutes. In overall control: Labour. 1 meeting and 1 named vote, with each councillor&#x27;s party on the date.\" />\n    <link rel=\"canonical\" href=\"https://wherecouncilsstand.com/councils/E08000038\" />\n    <meta property=\"og:site_name\" content=\"Where Councils Stand\" />\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:locale\" content=\"en_GB\" />\n    <meta property=\"og:title\" content=\"Barnsley Metropolitan Borough Council — Where Councils Stand\" />\n    <meta property=\"og:description\" content=\"Barnsley Metropolitan Borough Council: full council and cabinet meetings from February 2025 to February 2025, from the council&#x27;s own minutes. In overall control: Labour. 1 meeting and 1 named vote, with each councillor&#x27;s party on the date.\" />\n    <meta property=\"og:url\" content=\"https://wherecouncilsstand.com/councils/E08000038\" />\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <script type=\"application/ld+json\">{\"@context\": \"https://schema.org\", \"@type\": \"WebPage\", \"name\": \"Barnsley Metropolitan Borough Council\", \"url\": \"https://wherecouncilsstand.com/councils/E08000038\", \"description\": \"Barnsley Metropolitan Borough Council: full council and cabinet meetings from February 2025 to February 2025, from the council's own minutes. In overall control: Labour. 1 meeting and 1 named vote, with each councillor's party on the date.\", \"inLanguage\": \"en-GB\", \"isPartOf\": {\"@type\": \"WebSite\", \"name\": \"Where Councils Stand\", \"url\": \"https://wherecouncilsstand.com/\"}, \"about\": {\"@type\": \"GovernmentOrganization\", \"name\": \"Barnsley Metropolitan Borough Council\", \"identifier\": {\"@type\": \"PropertyValue\", \"propertyID\": \"GSS code\", \"value\": \"E08000038\"}, \"areaServed\": \"Yorkshire and the Humber\", \"memberOf\": [{\"@type\": \"GovernmentOrganization\", \"name\": \"South Yorkshire Mayoral Combined Authority\", \"url\": \"https://wherecouncilsstand.com/councils/E47000002\"}]}}</script>\n  </head><body><main id=\"main\"><div id=\"app\"><p class=\"meta\"><a href=\"/councils\">Councils</a> · Metropolitan borough council · Yorkshire and the Humber</p><h1>Barnsley Metropolitan Borough Council</h1><p>Part of: <a href=\"/councils/E47000002\">South Yorkshire Mayoral Combined Authority</a>.</p><p>Full council and cabinet meetings from February 2025 to February 2025, read from the council's <a href=\"https://barnsleymbc.moderngov.co.uk\">own record</a>.</p><ul><li>In overall control: Labour, as listed on 26 February 2025</li><li>1 meeting: 1 full council, 0 cabinet</li><li>1 named vote recorded in the minutes</li></ul><h2>On Where Landlords Stand</h2><ul><li><a href=\"https://wherelandlordsstand.com/landlords/barnsley-metropolitan-borough-council/\">Barnsley Metropolitan Borough Council as a landlord</a></li><li><a href=\"https://wherelandlordsstand.com/areas/barnsley/\">The 18 social landlords with homes in Barnsley</a></li></ul><h2>Members by party</h2><p>The 3 councillors listed at the full council meeting of 26 February 2025, with their party as the council recorded it.</p><ul><li>Labour: 2</li><li>Liberal Democrats: 1</li></ul><h2>Party in overall control</h2><ul><li>From February 2025: Labour</li></ul><h2>Named votes (1)</h2><ol><li><a href=\"/votes/E08000038:1:10:0\">Notice of Motion - Weekly Bin Collections</a>: Full council, 26 February 2025, a named vote on the motion, lost. For 1, Against 2, Abstained 0.</li></ol><h2>Latest meetings</h2><ul><li>26 February 2025: <a href=\"u\">Full Council</a></li></ul><h2>Statements in their own words</h2><article class=\"statement\"><h3>Statement from Steve Houghton, 14 November 2026</h3><p>Councillor, Barnsley Metropolitan Borough Council</p><p>About: <a href=\"/votes/E08000038:1:10:0\">Notice of Motion - Weekly Bin Collections, 26 February 2025</a></p><p>I voted against this motion because the council had already agreed a review of collections, and the minutes of that meeting set it out.</p><p><a href=\"https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1\">The record they point to</a></p><p><em>In their own words. Not checked or endorsed by Where Councils Stand.</em></p></article></div></main></body></html>",
+  "type": "text/html; charset=utf-8"
+ },
+ {
+  "case": "/votes/E08000038:1:10:0",
+  "json": null,
+  "status": 200,
+  "text": "<!doctype html><html><head>\n    <title>Notice of Motion - Weekly Bin Collections, Barnsley Metropolitan Borough Council — Where Councils Stand</title>\n    <meta name=\"description\" content=\"Barnsley Metropolitan Borough Council, full council, 26 February 2025: a named vote on the motion, lost. For 1, Against 2, Abstained 0, with each councillor&#x27;s party on the date.\" />\n    <link rel=\"canonical\" href=\"https://wherecouncilsstand.com/votes/E08000038:1:10:0\" />\n    <meta property=\"og:site_name\" content=\"Where Councils Stand\" />\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:locale\" content=\"en_GB\" />\n    <meta property=\"og:title\" content=\"Notice of Motion - Weekly Bin Collections, Barnsley Metropolitan Borough Council — Where Councils Stand\" />\n    <meta property=\"og:description\" content=\"Barnsley Metropolitan Borough Council, full council, 26 February 2025: a named vote on the motion, lost. For 1, Against 2, Abstained 0, with each councillor&#x27;s party on the date.\" />\n    <meta property=\"og:url\" content=\"https://wherecouncilsstand.com/votes/E08000038:1:10:0\" />\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <script type=\"application/ld+json\">{\"@context\": \"https://schema.org\", \"@type\": \"WebPage\", \"name\": \"Notice of Motion - Weekly Bin Collections, Barnsley Metropolitan Borough Council\", \"url\": \"https://wherecouncilsstand.com/votes/E08000038:1:10:0\", \"description\": \"Barnsley Metropolitan Borough Council, full council, 26 February 2025: a named vote on the motion, lost. For 1, Against 2, Abstained 0, with each councillor's party on the date.\", \"inLanguage\": \"en-GB\", \"isPartOf\": {\"@type\": \"WebSite\", \"name\": \"Where Councils Stand\", \"url\": \"https://wherecouncilsstand.com/\"}, \"about\": [{\"@type\": \"GovernmentOrganization\", \"name\": \"Barnsley Metropolitan Borough Council\", \"url\": \"https://wherecouncilsstand.com/councils/E08000038\"}, {\"@type\": \"Event\", \"name\": \"Barnsley Metropolitan Borough Council: Full council, 26 February 2025\", \"startDate\": \"2025-02-26\", \"url\": \"https://example/E08000038/10\"}]}</script>\n  </head><body><main id=\"main\"><div id=\"app\"><p class=\"meta\"><a href=\"/councils\">Councils</a> · <a href=\"/councils/E08000038\">Barnsley Metropolitan Borough Council</a></p><h1>Notice of Motion - Weekly Bin Collections</h1><p>Full council, 26 February 2025: a named vote on the motion, lost.</p><p>For 1, Against 2, Abstained 0.</p><p>Party in overall control of the council on the date: Labour. Each councillor's party is the one the council recorded for them at the time.</p><h2>For (1)</h2><ul><li>Hannah Kitching (Liberal Democrats)</li></ul><h2>Against (2)</h2><ul><li>Robin Franklin (Labour)</li><li>Sir Steve Houghton (Labour)</li></ul><h2>From the minutes</h2><blockquote><p>Upon being put to the vote the motion was lost.</p></blockquote><p><a href=\"https://example/E08000038/10\">The item in the council&#x27;s own minutes</a>. Names are matched to the councillors listed at the meeting. The names of people who aren't councillors are removed.</p><article class=\"statement\"><h2>Statement from Steve Houghton, 14 November 2026</h2><p>Councillor, Barnsley Metropolitan Borough Council</p><p>I voted against this motion because the council had already agreed a review of collections, and the minutes of that meeting set it out.</p><p><a href=\"https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1\">The record they point to</a></p><p><em>In their own words. Not checked or endorsed by Where Councils Stand.</em></p></article></div></main></body></html>",
+  "type": "text/html; charset=utf-8"
+ },
+ {
+  "case": "/votes/E07000209:9:9:0",
+  "json": null,
+  "status": 404,
+  "text": "<!doctype html><html><head>\n    <title>Named vote not found — Where Councils Stand</title>\n    <meta name=\"description\" content=\"There is no named vote at this address.\" />\n    <link rel=\"canonical\" href=\"https://wherecouncilsstand.com/votes/E07000209:9:9:0\" />\n    <meta property=\"og:site_name\" content=\"Where Councils Stand\" />\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:locale\" content=\"en_GB\" />\n    <meta property=\"og:title\" content=\"Named vote not found — Where Councils Stand\" />\n    <meta property=\"og:description\" content=\"There is no named vote at this address.\" />\n    <meta property=\"og:url\" content=\"https://wherecouncilsstand.com/votes/E07000209:9:9:0\" />\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <meta name=\"robots\" content=\"noindex\" />\n  </head><body><main id=\"main\"><div id=\"app\"><h1>Named vote not found</h1><p>There is no named vote at this address. Each council's named votes are listed on its page: see the <a href=\"/councils\">list of councils</a>.</p></div></main></body></html>",
+  "type": "text/html; charset=utf-8"
+ },
+ {
+  "case": "/councils/E99999999",
+  "json": null,
+  "status": 404,
+  "text": "<!doctype html><html><head>\n    <title>Council not found — Where Councils Stand</title>\n    <meta name=\"description\" content=\"There is no council at this address.\" />\n    <link rel=\"canonical\" href=\"https://wherecouncilsstand.com/councils/E99999999\" />\n    <meta property=\"og:site_name\" content=\"Where Councils Stand\" />\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:locale\" content=\"en_GB\" />\n    <meta property=\"og:title\" content=\"Council not found — Where Councils Stand\" />\n    <meta property=\"og:description\" content=\"There is no council at this address.\" />\n    <meta property=\"og:url\" content=\"https://wherecouncilsstand.com/councils/E99999999\" />\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <meta name=\"robots\" content=\"noindex\" />\n  </head><body><main id=\"main\"><div id=\"app\"><h1>Council not found</h1><p>There is no council at this address. See the <a href=\"/councils\">list of councils</a>.</p></div></main></body></html>",
+  "type": "text/html; charset=utf-8"
+ },
+ {
+  "case": "/",
+  "json": null,
+  "status": 200,
+  "text": "<!doctype html><html><head>\n    <title>Where Councils Stand</title>\n    <meta name=\"description\" content=\"Sourced briefings on what councils across the UK have discussed, decided and voted on. Every point cites the council&#x27;s own minutes.\" />\n    <link rel=\"canonical\" href=\"https://wherecouncilsstand.com/\" />\n    <meta property=\"og:site_name\" content=\"Where Councils Stand\" />\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:locale\" content=\"en_GB\" />\n    <meta property=\"og:title\" content=\"Where Councils Stand\" />\n    <meta property=\"og:description\" content=\"Sourced briefings on what councils across the UK have discussed, decided and voted on. Every point cites the council&#x27;s own minutes.\" />\n    <meta property=\"og:url\" content=\"https://wherecouncilsstand.com/\" />\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <script type=\"application/ld+json\">{\"@context\": \"https://schema.org\", \"@type\": \"WebSite\", \"name\": \"Where Councils Stand\", \"url\": \"https://wherecouncilsstand.com/\", \"inLanguage\": \"en-GB\", \"description\": \"Sourced briefings on what councils across the UK have discussed, decided and voted on, from their own minutes.\", \"publisher\": {\"@type\": \"Organization\", \"name\": \"Where They Stand\", \"url\": \"https://wheretheystand.uk\"}}</script>\n  </head><body><main id=\"main\"><div id=\"app\"><h1>What has your council decided?</h1><p>Ask about anything councils across the UK have discussed, decided or voted on at full council and cabinet. Answers only from the official record, every point linked and checked. <a href=\"/methodology#why\">Why use this rather than a chatbot?</a></p><p>The record holds 2 meetings and 1 named votes from 2 of the 382 councils in the UK, since May 2018. Asking a question needs JavaScript; every council's page, with its named votes, can be read without it, from the <a href=\"/councils\">list of councils</a>.</p><h2>For example</h2><ul><li>What have councils decided about weekly bin collections since 2023?</li><li>How have Reform UK councillors voted on council budgets?</li><li>What have councils said about closing public toilets?</li><li>What have councils in Wales decided about second homes and council tax?</li><li>How did councillors vote on declaring a climate emergency?</li><li>What has Barnsley&#x27;s full council decided about libraries?</li></ul><p><a href=\"/methodology\">How it works</a></p></div></main></body></html>",
+  "type": "text/html; charset=utf-8"
+ },
+ {
+  "case": "/councils",
+  "json": null,
+  "status": 200,
+  "text": {
+   "length_over_10000": true,
+   "of_the_record": [
+    "/councils/E07000209",
+    "/councils/E08000038"
+   ]
+  },
+  "type": "text/html; charset=utf-8"
+ },
+ {
+  "case": "/b/abc123",
+  "json": null,
+  "status": 200,
+  "text": "<!doctype html><html><head><title>x</title></head><body><main id=\"main\"><div id=\"app\"></div></main></body></html>",
+  "type": "text/html; charset=utf-8"
+ },
+ {
+  "case": "/corrections",
+  "json": null,
+  "status": 200,
+  "text": "<!doctype html><html><head><title>x</title></head><body><main id=\"main\"><div id=\"app\"></div></main></body></html>",
+  "type": "text/html; charset=utf-8"
+ },
+ {
+  "case": "/about",
+  "json": null,
+  "status": 200,
+  "text": "<!doctype html><html><head><title>x</title></head><body><main id=\"main\"><div id=\"app\"></div></main></body></html>",
+  "type": "text/html; charset=utf-8"
+ },
+ {
+  "case": "/no-such-page",
+  "json": null,
+  "status": 404,
+  "text": "<!doctype html><html><head><title>x</title></head><body><main id=\"main\"><div id=\"app\"></div></main></body></html>",
+  "type": "text/html; charset=utf-8"
+ },
+ {
+  "case": "/api/statements?page=/votes/E08000038:1:10:0",
+  "json": {
+   "note": "In their own words. Not checked or endorsed by Where Councils Stand.",
+   "statements": [
+    {
+     "council": "E08000038",
+     "id": 1,
+     "link": "https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1",
+     "name": "Steve Houghton",
+     "page": "/votes/E08000038:1:10:0",
+     "role": "Councillor, Barnsley Metropolitan Borough Council",
+     "shown_on": "2026-11-14",
+     "text": "I voted against this motion because the council had already agreed a review of collections, and the minutes of that meeting set it out."
+    }
+   ]
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/statements?council=e08000038",
+  "json": {
+   "note": "In their own words. Not checked or endorsed by Where Councils Stand.",
+   "statements": [
+    {
+     "about": "Notice of Motion - Weekly Bin Collections, 26 February 2025",
+     "council": "E08000038",
+     "id": 1,
+     "link": "https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1",
+     "name": "Steve Houghton",
+     "page": "/votes/E08000038:1:10:0",
+     "role": "Councillor, Barnsley Metropolitan Borough Council",
+     "shown_on": "2026-11-14",
+     "text": "I voted against this motion because the council had already agreed a review of collections, and the minutes of that meeting set it out."
+    }
+   ]
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/statements?page=https://wherecouncilsstand.com/councils/E08000038",
+  "json": {
+   "note": "In their own words. Not checked or endorsed by Where Councils Stand.",
+   "statements": []
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/statements",
+  "json": {
+   "detail": "Give a page or a council."
+  },
+  "status": 422,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/statements?page=/about",
+  "json": {
+   "detail": "The address must be a council's page, a named vote or a briefing on this site, such as https://wherecouncilsstand.com/votes/…"
+  },
+  "status": 422,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/briefings/abc123",
+  "json": {
+   "at": "2026-11-13T12:00:00+00:00",
+   "events": [
+    {
+     "plan": {
+      "question": "Bins?"
+     },
+     "type": "plan"
+    },
+    {
+     "text": "Barnsley's cabinet said the toilets were \"well used\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.",
+     "type": "text"
+    },
+    {
+     "answer": {
+      "citations_invalid": 0,
+      "citations_total": 2,
+      "grounded_ratio": 0.621,
+      "loaded_words": 0,
+      "markdown": "Barnsley's cabinet said the toilets were \"well used\". In the debate that followed: Guildford agreed to review opening hours. This was a turning point for every council in the county.",
+      "no_records": false,
+      "quotes_total": 1,
+      "quotes_unverified": 0,
+      "segments": [
+       {
+        "cited": [
+         {
+          "cited_text": "the public toilets in the town centre are well used",
+          "source": 1
+         }
+        ],
+        "loaded": [],
+        "misquotes": [],
+        "sources": [
+         1
+        ],
+        "status": "cited",
+        "text": "Barnsley's cabinet said the toilets were \"well used\"."
+       },
+       {
+        "cited": [],
+        "loaded": [],
+        "misquotes": [],
+        "sources": [],
+        "status": "connective",
+        "text": " In the debate that followed:"
+       },
+       {
+        "cited": [
+         {
+          "cited_text": "RESOLVED that opening hours be reviewed",
+          "source": 2
+         }
+        ],
+        "loaded": [],
+        "misquotes": [],
+        "sources": [
+         2
+        ],
+        "status": "cited",
+        "text": " Guildford agreed to review opening hours."
+       },
+       {
+        "cited": [],
+        "loaded": [],
+        "misquotes": [],
+        "sources": [],
+        "status": "unsupported",
+        "text": " This was a turning point for every council in the county."
+       }
+      ],
+      "unsupported_segments": 1
+     },
+     "briefing_id": "abc123",
+     "type": "final"
+    }
+   ],
+   "id": "abc123",
+   "options": {
+    "mode": "summary",
+    "plan": null,
+    "sources_only": false
+   },
+   "question": "What has Barnsley decided about public toilets?"
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/briefings/gone456",
+  "json": {
+   "detail": "This briefing has been withdrawn: It misattributed a decision to the wrong council."
+  },
+  "status": 410,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/briefings/nosuch",
+  "json": {
+   "detail": "There is no briefing at this address."
+  },
+  "status": 404,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/briefings/old789",
+  "json": {
+   "at": "2026-11-13T12:01:00+00:00",
+   "events": [
+    {
+     "answer": null,
+     "type": "final"
+    }
+   ],
+   "id": "old789",
+   "options": {
+    "mode": "summary",
+    "plan": null,
+    "sources_only": false
+   },
+   "question": "And libraries?"
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/status {}",
+  "json": {
+   "authorities": 20,
+   "authorities_loaded": 0,
+   "briefings": "available",
+   "briefings_note": null,
+   "councils": 382,
+   "last_update": null,
+   "latest_meeting": "2025-03-05",
+   "loaded": 2,
+   "meetings": 2,
+   "named_votes": 1,
+   "start": "2018-05-01"
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/status {'daily_spend_cap_usd': 0.0}",
+  "json": {
+   "authorities": 20,
+   "authorities_loaded": 0,
+   "briefings": "paused",
+   "briefings_note": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "councils": 382,
+   "last_update": null,
+   "latest_meeting": "2025-03-05",
+   "loaded": 2,
+   "meetings": 2,
+   "named_votes": 1,
+   "start": "2018-05-01"
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ },
+ {
+  "case": "/api/status {'monthly_spend_cap_usd': 0.0}",
+  "json": {
+   "authorities": 20,
+   "authorities_loaded": 0,
+   "briefings": "paused",
+   "briefings_note": "The site has reached this month's limit on new briefings, which keeps its costs down.",
+   "councils": 382,
+   "last_update": null,
+   "latest_meeting": "2025-03-05",
+   "loaded": 2,
+   "meetings": 2,
+   "named_votes": 1,
+   "start": "2018-05-01"
+  },
+  "status": 200,
+  "text": null,
+  "type": "application/json"
+ }
+]

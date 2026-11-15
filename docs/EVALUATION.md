@@ -35,12 +35,12 @@ uv run councils evaluate --only kent-asylum --only tory-councils
 ```
 
 It prints a line per question (`ok` or `--`, the number of sources, and what was wrong), then the totals by
-category, and saves the full results under `eval/runs/` (not committed). On the server, the evidence is scored
-against the full record:
+category, and saves the full results under the data folder, in `data/eval/runs/` (`/data/eval/runs/` on the
+server; not committed). On the server, the evidence is scored against the full record:
 
 ```bash
 cd /opt/wherecouncilsstand/deploy
-docker compose run --rm -T app councils evaluate --no-save
+docker compose run --rm -T app councils evaluate
 ```
 
 The evidence checks mean something only on the full record. On your own computer, `scripts/fixture_site.py` makes a
@@ -49,6 +49,70 @@ mostly not in it.
 
 `--with-model` makes one call per question to the model that reads questions (the `query_parse_model` in
 `config/settings.toml`), about 31 small calls. It is never run in CI.
+
+## With each briefing written: `councils eval`
+
+`councils evaluate` writes no briefing, so it cannot say whether a change made briefings better or worse. The
+shared package's harness (`wts_core.eval`, with this site's questions and scoring: `CouncilsEval` in
+`src/councils/evaluate.py`) asks every question of the real pipeline, has the model write each briefing, and
+reports for each question and overall: what the checks found (citations that do not hold, sentences with no
+citation, quotations not found word for word, loaded words), the spread of sources across the groups, the time to
+the first word and to the end, and the cost. The two scores above (how the question was read, and the evidence) are
+given beside them. A question is asked of the pipeline itself: never from the answer cache, never counted against
+a reader's limits and never saved as a briefing.
+
+```bash
+uv run councils eval run                          # every question; saved under the data folder, data/eval/runs/
+uv run councils eval run --only bins-weekly --only kent-asylum
+uv run councils eval run --record-fixtures eval/fixtures     # also keep each briefing, for replay
+uv run councils eval compare data/eval/runs/A.json data/eval/runs/B.json
+uv run councils eval replay eval/fixtures         # the checks again over kept briefings: free, no model
+```
+
+Runs are saved under the data folder because on the server nothing else can be written to: saved beside the
+code, a run would spend its money and then fail to save.
+
+**It costs money.** A run makes two calls to the model for each question (one to read it, one to write the
+briefing): 31 questions is roughly the cost of 31 briefings. No run starts without a limit: `[eval] max_cost_usd`
+in `config/settings.toml` (2 US dollars), or `--max-cost`. Once the spending reaches the limit no further question
+is asked, the rest are marked as not asked, and the run does not pass. It is never run in CI.
+
+**What a run is held to** is `[eval.thresholds]` in `config/settings.toml`: no citation that does not hold, no
+quotation that is not in its source word for word, and no question that ends in an error. The other figures
+(grounded ratio, unsupported sentences, loaded words, the time taken) have no threshold yet: set them from the
+first run on the full record. A run of the whole set that meets every threshold is noted in `passed.jsonl`
+beside the runs, with the id of the configuration it ran with (the same id the record of briefings gives those
+settings: `councils stats` shows it). Copy that file into the repository as `eval/runs/passed.jsonl` and commit
+it: it is the only file under `eval/runs/` that git keeps, and an experiment (two configurations tried side by
+side on readers) may only start with a configuration whose pass is noted there.
+
+**Replay.** `--record-fixtures` keeps, for each briefing written, what the model was given and what it wrote, with
+the checks' report. `councils eval replay` runs the checks over those again and names every difference, each as
+stricter, weaker or other; it ends with status 1 if anything that was flagged is no longer flagged. It is how a
+change to the checks (in this site's `rag/checks.py`, or a new version of the shared package) is measured before it
+ships, at no cost. Only briefings written from the test set are ever kept this way: never a reader's.
+
+### The first run, on the server
+
+A run needs the full record's search index and the API key, so it is made on the server, where it is saved on the
+data volume:
+
+```bash
+cd /opt/wherecouncilsstand/deploy
+docker compose run --rm -T app councils eval run --record-fixtures /data/eval/fixtures
+```
+
+The run is then in `/data/eval/runs/` and the kept briefings in `/data/eval/fixtures/`. To bring them out of the
+volume, into a folder on the server:
+
+```bash
+mkdir -p eval-out && docker compose exec -T app tar -C /data/eval -c runs fixtures | tar -x -C eval-out
+```
+
+Then, on your own computer, copy `eval-out/runs/passed.jsonl` (if the run passed) into the repository's
+`eval/runs/` and `eval-out/fixtures/` into `eval/fixtures/`, and commit both. Record the run in the table below.
+Until that first run there are no kept briefings to replay: `councils eval replay` has been run only in the
+tests, on briefings a stand-in for the model wrote from the made-up record.
 
 ## Results
 

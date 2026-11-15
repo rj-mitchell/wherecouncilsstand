@@ -19,8 +19,10 @@ How items are grouped (``group_by``), always by facts recorded on the date and t
 
 from __future__ import annotations
 
-from collections import Counter, defaultdict
+from collections import Counter
 from typing import Any
+
+from wts_core.checks import round_robin
 
 from councils.rank.composite import Scored
 from councils.reference.people import party_name
@@ -70,48 +72,20 @@ def group_label(key: str, group_by: str, rec: dict[str, Any] | None = None) -> s
 
 def select_evidence(scored: list[Scored], k: int, *, group_by: str = "control", max_per_council: int = 2,
                     max_per_meeting: int = 1, min_relevance_ratio: float = 0.25) -> list[Scored]:
+    """The balanced choice: what is far weaker than the best match is dropped, and the groups then take turns (the
+    Where They Stand sites' shared round robin, ``wts_core.checks.round_robin``), with this site's caps: so many
+    items from one council, and so many from one meeting."""
     if not scored:
         return []
     best_rel = max(s.relevance for s in scored)
-    pool = [s for s in scored if s.relevance >= best_rel * min_relevance_ratio]
-    groups: dict[str, list[Scored]] = defaultdict(list)
-    for s in pool:  # already in score order
-        groups[evidence_group(s.candidate.data, group_by)].append(s)
-    order = sorted(groups, key=lambda g: -groups[g][0].score)
-    chosen: list[Scored] = []
-    taken: set[str] = set()
-    per_council: Counter[str] = Counter()
-    per_meeting: Counter[str] = Counter()
-
-    def take(s: Scored) -> bool:
-        d = s.candidate.data
-        council = d.get("gss") or ""
-        meeting = s.candidate.record_id.rsplit(":", 1)[0]
-        if s.candidate.record_id in taken or per_council[council] >= max_per_council or \
-                per_meeting[meeting] >= max_per_meeting:
-            return False
-        chosen.append(s)
-        taken.add(s.candidate.record_id)
-        per_council[council] += 1
-        per_meeting[meeting] += 1
-        return True
-
-    progress = True
-    while len(chosen) < k and progress:
-        progress = False
-        for g in order:
-            for s in groups[g]:
-                if take(s):
-                    progress = True
-                    break
-            if len(chosen) >= k:
-                break
-    for s in pool:  # fill by score if the groups ran dry
-        if len(chosen) >= k:
-            break
-        take(s)
-    chosen.sort(key=lambda s: (-s.score, s.candidate.record_id))
-    return chosen
+    pool = [s for s in scored if s.relevance >= best_rel * min_relevance_ratio]      # already in score order
+    return round_robin(
+        pool, k,
+        group_of=lambda s: evidence_group(s.candidate.data, group_by),
+        key_of=lambda s: s.candidate.record_id,
+        score_of=lambda s: s.score,
+        caps=((lambda s: s.candidate.data.get("gss") or "", max_per_council),
+              (lambda s: s.candidate.record_id.rsplit(":", 1)[0], max_per_meeting)))
 
 
 def evidence_summary(records: list[dict[str, Any]], group_by: str = "control") -> dict[str, Any]:

@@ -1,0 +1,1040 @@
+{
+ "answers": [
+  {
+   "case": "a statement beside a named vote, its page a full address",
+   "json": {
+    "id": 1,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "beside a council's page, the address without https and the code in small letters",
+   "json": {
+    "id": 2,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "beside a briefing, a path alone",
+   "json": {
+    "id": 3,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "the www address, with a query and a fragment",
+   "json": {
+    "id": 4,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "an address on the host the request came to",
+   "json": {
+    "id": 5,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "line endings and blank lines as they were typed",
+   "json": {
+    "id": 6,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "spaces around and inside the name and role",
+   "json": {
+    "id": 7,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "exactly 150 words, and no link",
+   "json": {
+    "id": 8,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "one word",
+   "json": {
+    "id": 9,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "just within every limit",
+   "json": {
+    "id": 10,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "151 words",
+   "json": {
+    "detail": "A statement can be up to 150 words; this one is 151."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "no words, only spaces",
+   "json": {
+    "detail": "Write the statement."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "within 150 words but more than 1,500 characters",
+   "json": {
+    "detail": "A statement can be up to 150 words (1,500 characters)."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "one long word of 1,550 characters",
+   "json": {
+    "detail": "A statement can be up to 150 words (1,500 characters)."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "more than the form can take",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "text"
+      ],
+      "string_too_long"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "not an email address",
+   "json": {
+    "detail": "Give an email address we can use to confirm who you are."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "no email address",
+   "json": {
+    "detail": "Give an email address we can use to confirm who you are."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "an email address too long",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "email"
+      ],
+      "string_too_long"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "the box not ticked",
+   "json": {
+    "detail": "Please confirm that you are the person or organisation the item is about, or act for them."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a page on another site",
+   "json": {
+    "detail": "The address must be a page on wherecouncilsstand.com."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a page a statement cannot sit beside",
+   "json": {
+    "detail": "The address must be a council's page, a named vote or a briefing on this site, such as https://wherecouncilsstand.com/votes/…"
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "no page",
+   "json": {
+    "detail": "Give the address of the page the statement is about."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "an ftp address",
+   "json": {
+    "detail": "The address must be a page on wherecouncilsstand.com."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a vote that is not on the site",
+   "json": {
+    "detail": "There's no page at that address on this site. Copy the address from the page the statement is about."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a council that is not on the site",
+   "json": {
+    "detail": "There's no page at that address on this site. Copy the address from the page the statement is about."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a briefing that is not on the site",
+   "json": {
+    "detail": "There's no page at that address on this site. Copy the address from the page the statement is about."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a briefing that has been withdrawn",
+   "json": {
+    "detail": "There's no page at that address on this site. Copy the address from the page the statement is about."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a link that is no web address",
+   "json": {
+    "detail": "The link to the record must be a web address starting https:// (or leave it empty)."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a link with a quotation mark",
+   "json": {
+    "detail": "The link to the record must be a web address starting https:// (or leave it empty)."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a link with angle brackets",
+   "json": {
+    "detail": "The link to the record must be a web address starting https:// (or leave it empty)."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a link with an apostrophe",
+   "json": {
+    "detail": "The link to the record must be a web address starting https:// (or leave it empty)."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a link with a space",
+   "json": {
+    "detail": "The link to the record must be a web address starting https:// (or leave it empty)."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a link with no host",
+   "json": {
+    "detail": "The link to the record must be a web address starting https:// (or leave it empty)."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a link too long",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "link"
+      ],
+      "string_too_long"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a name of spaces",
+   "json": {
+    "detail": "Give your name, as it should be shown."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a name of one letter",
+   "json": {
+    "detail": "Give your name, as it should be shown."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a name too long",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "name"
+      ],
+      "string_too_long"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a role of spaces that do not break",
+   "json": {
+    "detail": "Give your role, such as Councillor, Barnsley Metropolitan Borough Council."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a role too long",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "role"
+      ],
+      "string_too_long"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "no name sent",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "name"
+      ],
+      "missing"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "no role sent",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "role"
+      ],
+      "missing"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "no page sent",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "page"
+      ],
+      "missing"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "no words sent",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "text"
+      ],
+      "missing"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "no email address sent",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "email"
+      ],
+      "missing"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "two faults: no words and a page that is not an item's",
+   "json": {
+    "detail": "The address must be a council's page, a named vote or a briefing on this site, such as https://wherecouncilsstand.com/votes/…"
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "two faults: a name of spaces and no words",
+   "json": {
+    "detail": "Give your name, as it should be shown."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "two faults: a role of spaces and 151 words",
+   "json": {
+    "detail": "Give your role, such as Councillor, Barnsley Metropolitan Borough Council."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "two faults: a bad link and a bad email address",
+   "json": {
+    "detail": "The link to the record must be a web address starting https:// (or leave it empty)."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "two faults: a bad email address and a vote that is not on the site",
+   "json": {
+    "detail": "Give an email address we can use to confirm who you are."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "two faults: the box not ticked and no words",
+   "json": {
+    "detail": "Please confirm that you are the person or organisation the item is about, or act for them."
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a statement cut short",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       1
+      ],
+      "json_invalid"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a report with its kind, page and contact",
+   "json": {
+    "id": 1,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a request to take a name down",
+   "json": {
+    "id": 2,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "characterised unfairly",
+   "json": {
+    "id": 3,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "another kind",
+   "json": {
+    "id": 4,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a report with no kind is an error report",
+   "json": {
+    "id": 5,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a kind that is none of them",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "kind"
+      ],
+      "literal_error"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a message too short",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "message"
+      ],
+      "string_too_short"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a message of spaces",
+   "json": {
+    "id": 6,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a message at its longest",
+   "json": {
+    "id": 7,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a message too long",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "message"
+      ],
+      "string_too_long"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a page too long",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "page"
+      ],
+      "string_too_long"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a contact at its longest",
+   "json": {
+    "id": 8,
+    "ok": true
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a contact too long",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "contact"
+      ],
+      "string_too_long"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "no message",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       "message"
+      ],
+      "missing"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "a report cut short",
+   "json": {
+    "detail": [
+     [
+      [
+       "body",
+       1
+      ],
+      "json_invalid"
+     ]
+    ]
+   },
+   "status": 422,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "nothing is shown until it is published: beside the vote",
+   "json": {
+    "note": "In their own words. Not checked or endorsed by Where Councils Stand.",
+    "statements": []
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "nothing is shown until it is published: on the council's page",
+   "json": {
+    "note": "In their own words. Not checked or endorsed by Where Councils Stand.",
+    "statements": []
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  }
+ ],
+ "kept": {
+  "reports": [
+   {
+    "closed": false,
+    "contact": "reader@example.org",
+    "id": 1,
+    "kind": "error",
+    "message": "The vote is shown on the wrong side.",
+    "page": "/votes/E08000038:1:10:0"
+   },
+   {
+    "closed": false,
+    "contact": "",
+    "id": 2,
+    "kind": "takedown",
+    "message": "Please remove my name.",
+    "page": "/councils/E08000038"
+   },
+   {
+    "closed": false,
+    "contact": "  c@d.org  ",
+    "id": 3,
+    "kind": "unfair",
+    "message": "A loaded word in a briefing.",
+    "page": ""
+   },
+   {
+    "closed": false,
+    "contact": "",
+    "id": 4,
+    "kind": "other",
+    "message": "Something else entirely",
+    "page": ""
+   },
+   {
+    "closed": false,
+    "contact": "",
+    "id": 5,
+    "kind": "error",
+    "message": "Wrong party",
+    "page": ""
+   },
+   {
+    "closed": false,
+    "contact": "",
+    "id": 6,
+    "kind": "error",
+    "message": "       ",
+    "page": ""
+   },
+   {
+    "closed": false,
+    "contact": "",
+    "id": 7,
+    "kind": "error",
+    "message": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+    "page": ""
+   },
+   {
+    "closed": false,
+    "contact": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "id": 8,
+    "kind": "error",
+    "message": "A long contact",
+    "page": ""
+   }
+  ],
+  "statements": [
+   {
+    "council": "E08000038",
+    "email": "cllr@barnsley.gov.uk",
+    "id": 1,
+    "link": "https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1",
+    "log": [
+     [
+      "received",
+      null
+     ]
+    ],
+    "name": "Steve Houghton",
+    "page": "/votes/E08000038:1:10:0",
+    "reason": null,
+    "role": "Councillor, Barnsley Metropolitan Borough Council",
+    "shown_on": null,
+    "status": "pending",
+    "text": "I voted against this motion because the council had already agreed a review of collections, and the minutes of that meeting set it out."
+   },
+   {
+    "council": "E08000038",
+    "email": "cllr@barnsley.gov.uk",
+    "id": 2,
+    "link": "https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1",
+    "log": [
+     [
+      "received",
+      null
+     ]
+    ],
+    "name": "Steve Houghton",
+    "page": "/councils/E08000038",
+    "reason": null,
+    "role": "Councillor, Barnsley Metropolitan Borough Council",
+    "shown_on": null,
+    "status": "pending",
+    "text": "I voted against this motion because the council had already agreed a review of collections, and the minutes of that meeting set it out."
+   },
+   {
+    "council": null,
+    "email": "cllr@barnsley.gov.uk",
+    "id": 3,
+    "link": "",
+    "log": [
+     [
+      "received",
+      null
+     ]
+    ],
+    "name": "Steve Houghton",
+    "page": "/b/abc123",
+    "reason": null,
+    "role": "Councillor, Barnsley Metropolitan Borough Council",
+    "shown_on": null,
+    "status": "pending",
+    "text": "I voted against this motion because the council had already agreed a review of collections, and the minutes of that meeting set it out."
+   },
+   {
+    "council": "E08000038",
+    "email": "cllr@barnsley.gov.uk",
+    "id": 4,
+    "link": "https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1",
+    "log": [
+     [
+      "received",
+      null
+     ]
+    ],
+    "name": "Steve Houghton",
+    "page": "/votes/E08000038:1:10:0",
+    "reason": null,
+    "role": "Councillor, Barnsley Metropolitan Borough Council",
+    "shown_on": null,
+    "status": "pending",
+    "text": "I voted against this motion because the council had already agreed a review of collections, and the minutes of that meeting set it out."
+   },
+   {
+    "council": "E08000038",
+    "email": "cllr@barnsley.gov.uk",
+    "id": 5,
+    "link": "https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1",
+    "log": [
+     [
+      "received",
+      null
+     ]
+    ],
+    "name": "Steve Houghton",
+    "page": "/councils/E08000038",
+    "reason": null,
+    "role": "Councillor, Barnsley Metropolitan Borough Council",
+    "shown_on": null,
+    "status": "pending",
+    "text": "I voted against this motion because the council had already agreed a review of collections, and the minutes of that meeting set it out."
+   },
+   {
+    "council": "E08000038",
+    "email": "cllr@barnsley.gov.uk",
+    "id": 6,
+    "link": "",
+    "log": [
+     [
+      "received",
+      null
+     ]
+    ],
+    "name": "Steve Houghton",
+    "page": "/votes/E08000038:1:10:0",
+    "reason": null,
+    "role": "Councillor, Barnsley Metropolitan Borough Council",
+    "shown_on": null,
+    "status": "pending",
+    "text": "Line one <b>bold</b>\r\nline two\r\n\r\n\r\n\r\npara two & more"
+   },
+   {
+    "council": "E08000038",
+    "email": "cllr@barnsley.gov.uk",
+    "id": 7,
+    "link": "https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1",
+    "log": [
+     [
+      "received",
+      null
+     ]
+    ],
+    "name": "Steve Houghton",
+    "page": "/votes/E08000038:1:10:0",
+    "reason": null,
+    "role": "Leader of the council",
+    "shown_on": null,
+    "status": "pending",
+    "text": "I voted against this motion because the council had already agreed a review of collections, and the minutes of that meeting set it out."
+   },
+   {
+    "council": "E08000038",
+    "email": "cllr@barnsley.gov.uk",
+    "id": 8,
+    "link": "",
+    "log": [
+     [
+      "received",
+      null
+     ]
+    ],
+    "name": "Steve Houghton",
+    "page": "/votes/E08000038:1:10:0",
+    "reason": null,
+    "role": "Councillor, Barnsley Metropolitan Borough Council",
+    "shown_on": null,
+    "status": "pending",
+    "text": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word"
+   },
+   {
+    "council": "E08000038",
+    "email": "cllr@barnsley.gov.uk",
+    "id": 9,
+    "link": "https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1",
+    "log": [
+     [
+      "received",
+      null
+     ]
+    ],
+    "name": "Steve Houghton",
+    "page": "/votes/E08000038:1:10:0",
+    "reason": null,
+    "role": "Councillor, Barnsley Metropolitan Borough Council",
+    "shown_on": null,
+    "status": "pending",
+    "text": "No."
+   },
+   {
+    "council": "E08000038",
+    "email": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.org",
+    "id": 10,
+    "link": "https://example.org/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "log": [
+     [
+      "received",
+      null
+     ]
+    ],
+    "name": "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN",
+    "page": "/votes/E08000038:1:10:0",
+    "reason": null,
+    "role": "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "shown_on": null,
+    "status": "pending",
+    "text": "aaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb bbbbbbbbbbbbb"
+   }
+  ]
+ }
+}

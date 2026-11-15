@@ -23,6 +23,8 @@ describe("StatementCard", () => {
     const heading = article.querySelector("h2")!;
     expect(heading.textContent).toBe("Statement from An Example Councillor, 12 November 2026");
     expect(article.getAttribute("aria-labelledby")).toBe(heading.id);
+    // a search engine may show the page, but never quotes a statement as the site's own words
+    expect(article.hasAttribute("data-nosnippet")).toBe(true);
     expect([...article.querySelectorAll(".statement-text p")].map((p) => p.textContent)).toEqual([
       "First paragraph.",
       "Second paragraph.",

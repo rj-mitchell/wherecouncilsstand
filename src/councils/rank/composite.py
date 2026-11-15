@@ -17,6 +17,8 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
+from wts_core.checks import balance
+
 
 @dataclass
 class RankParams:
@@ -68,25 +70,20 @@ class Scored:
 
 
 def recency_factor(d: date, p: RankParams) -> float:
-    if p.recency <= 0:
-        return 1.0
-    half_life = p.min_half_life_years / p.recency
-    age_years = max((p.today - d).days, 0) / 365.25
-    return p.recency_floor + (1 - p.recency_floor) * 0.5 ** (age_years / half_life)
+    return balance.recency_factor(d, p.today, recency=p.recency, floor=p.recency_floor,
+                                  min_half_life_years=p.min_half_life_years)
 
 
 def rank(candidates: list[Candidate], p: RankParams) -> list[Scored]:
+    """Every candidate scored, best first. The blend of the two relevance scores and the recency factor are the
+    Where They Stand sites' shared ones (wts-core, ``wts_core.checks.balance``); the weights are this site's."""
     if not candidates:
         return []
-    bm_max = max((c.bm25 for c in candidates if c.bm25), default=0.0)
-    has_sem = any(c.cosine is not None for c in candidates)
-    w = p.bm25_weight if (bm_max and has_sem) else (1.0 if bm_max else 0.0)
-    span = max(p.semantic_ceiling - p.semantic_floor, 1e-6)
+    relevance = balance.blend([c.bm25 for c in candidates], [c.cosine for c in candidates],
+                              word_weight=p.bm25_weight, meaning_floor=p.semantic_floor,
+                              meaning_ceiling=p.semantic_ceiling)
     out: list[Scored] = []
-    for c in candidates:
-        kw = (c.bm25 or 0.0) / bm_max if bm_max else 0.0
-        sem = 0.0 if c.cosine is None else min(max((c.cosine - p.semantic_floor) / span, 0.0), 1.0)
-        rel = w * kw + (1 - w) * sem
+    for c, rel in zip(candidates, relevance, strict=True):
         rec = recency_factor(c.date, p)
         out.append(Scored(c, rel, rec, rel * rec))
     out.sort(key=lambda s: (-s.score, -s.relevance, s.candidate.record_id))

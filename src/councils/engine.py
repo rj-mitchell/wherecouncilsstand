@@ -9,14 +9,23 @@ and its output is shown to the reader as editable filters.
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from datetime import date
 from typing import Any
 
+from wts_core.ports import Embedder
+
 from councils.config import Settings
-from councils.embed.base import Embedder, get_embedder
-from councils.index.lance import SearchIndex, date_lit, sql_list, sql_str
+from councils.index.lance import (
+    IndexOutOfDate,
+    date_lit,
+    get_embedder,
+    open_index,
+    sql_list,
+    sql_str,
+)
 from councils.rank.composite import Candidate, RankParams, Scored, rank
 from councils.rank.evidence import GROUP_BY, evidence_summary, select_evidence
 from councils.registry import withheld_codes
@@ -76,12 +85,17 @@ def build_where(f: Filters) -> str:
 
 
 class Engine:
-    def __init__(self, settings: Settings, embedder: Embedder | None = None, today: date | None = None):
+    def __init__(self, settings: Settings, embedder: Embedder | None = None, today: date | None = None,
+                 index: Any = None):
+        """``index`` is for a caller with an index of its own (a test's, in memory); left out, it is the site's,
+        opened as it stands: search by words needs no embedding model."""
         self.settings = settings
-        self.index = SearchIndex(settings.index_dir, int(settings.embedding.get("dim", 384)))
+        self._own_index = index is None
+        self.index = open_index(settings) if index is None else index
         self._embedder = embedder
         self.today = today
         self._has_vectors = False
+        self._meaning: bool | None = None      # whether the index was built with this embedder; None: not yet asked
 
     def has_vectors(self) -> bool:
         if not self._has_vectors:
@@ -98,27 +112,51 @@ class Engine:
                 return None
         return self._embedder
 
+    def searches_by_meaning(self) -> bool:
+        """Whether search by meaning can be used: there are vectors, there is an embedder, and the vectors were
+        made with it. An index built with another embedding model is never searched with this one's vectors: the
+        search carries on by words alone, until everything has been embedded again (``councils embed --again``)."""
+        if not self.has_vectors() or self.embedder is None:
+            return False
+        if self._meaning is None and not self._own_index:
+            # an index the caller gave: it says what it was built with, and that must be this embedder
+            built = self.index.meta
+            self._meaning = (built.embedder_id, built.dimension) == (self.embedder.id, self.embedder.dimension)
+        if self._meaning is None:
+            try:
+                self.index = open_index(self.settings, self.embedder)
+                self._meaning = True
+            except IndexOutOfDate as exc:
+                log.error("search by meaning is off: %s. Search by words carries on; run `councils embed --again`",
+                          exc)
+                self._meaning = False
+        return self._meaning
+
     def search(self, query: str, filters: Filters | None = None, recency: float | None = None, limit: int = 12,
-               diversify: bool = True, group_by: str = "control") -> SearchResult:
+               diversify: bool = True, group_by: str = "control",
+               without_councils: Sequence[str] = ()) -> SearchResult:
         f = filters or Filters()
         r = self.settings.ranking
         where = build_where(f)
-        held = withheld_codes()
-        if held:   # passages of a council withheld since it was indexed (decision 21), until the update removes them
+        # passages of a council withheld since it was indexed (decision 21), until the update removes them; and of
+        # a council the caller says to leave out (its page is hidden while a concern is decided: the web app says)
+        held = sorted({*withheld_codes(), *without_councils})
+        if held:
             where = " AND ".join(w for w in (where, f"gss NOT IN ({', '.join(sql_str(g) for g in held)})") if w)
 
         def keyword() -> list[dict[str, Any]]:
-            return self.index.bm25(query, where, int(r.get("candidates_bm25", 300)))
+            return self.index.search_words(query, where, int(r.get("candidates_bm25", 300)))
 
         with ThreadPoolExecutor(max_workers=1) as pool:
             by_keyword = pool.submit(keyword)
             vec_hits: list[dict[str, Any]] = []
-            semantic = self.has_vectors() and self.embedder is not None
+            semantic = self.searches_by_meaning()
             if semantic:
                 vec = self.embedder.embed_query(query)
-                vec_hits = self.index.vector(vec, where, int(r.get("candidates_vector", 300)),
-                                             nprobes=r.get("vector_nprobes"),
-                                             refine_factor=r.get("vector_refine_factor"))
+                # how hard the store looks, where the settings say (the store's own defaults otherwise)
+                tuning = {name: r[key] for name, key in (("nprobes", "vector_nprobes"),
+                                                         ("refine_factor", "vector_refine_factor")) if r.get(key)}
+                vec_hits = self.index.search_meaning(vec, where, int(r.get("candidates_vector", 300)), **tuning)
             bm = by_keyword.result()
 
         cands: dict[str, Candidate] = {}

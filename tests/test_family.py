@@ -43,14 +43,14 @@ def test_the_kit_asks_for_nothing_from_another_site():
 
 
 def test_the_kit_and_favicon_are_served(client, tmp_path):  # noqa: F811
-    _, _, state, cfg = client
+    _, _, site, cfg = client
     dist = tmp_path / "dist"
     (dist / "family" / "fonts").mkdir(parents=True)
     (dist / "index.html").write_text("<!doctype html><title>Where Councils Stand</title>")
     for name in ("favicon.ico", "family.css", "fonts/OFL.txt"):
         (dist / "family" / name).write_bytes((FAMILY / name).read_bytes())
     cfg.raw.setdefault("paths", {})["web_dist"] = str(dist)
-    t = TestClient(create_app(cfg, state=state))
+    t = TestClient(create_app(cfg, state=site.db))
     icon = t.get("/favicon.ico")
     assert icon.status_code == 200 and icon.content == (FAMILY / "favicon.ico").read_bytes()
     assert t.get("/family/family.css").headers["content-type"].startswith("text/css")

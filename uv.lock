@@ -305,11 +305,9 @@ name = "councils"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "anthropic" },
     { name = "duckdb" },
     { name = "fastapi" },
     { name = "httpx" },
-    { name = "lancedb" },
     { name = "lxml" },
     { name = "numpy" },
     { name = "pdfminer-six" },
@@ -317,11 +315,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "typer" },
     { name = "uvicorn", extra = ["standard"] },
-]
-
-[package.optional-dependencies]
-embed = [
-    { name = "fastembed" },
+    { name = "wts-core", extra = ["ai", "cli", "offsite"] },
 ]
 
 [package.dev-dependencies]
@@ -332,12 +326,9 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anthropic", specifier = ">=0.69" },
     { name = "duckdb", specifier = ">=1.1" },
     { name = "fastapi", specifier = ">=0.115" },
-    { name = "fastembed", marker = "extra == 'embed'", specifier = ">=0.4" },
     { name = "httpx", specifier = ">=0.27" },
-    { name = "lancedb", specifier = ">=0.17" },
     { name = "lxml", specifier = ">=5.3" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "pdfminer-six", specifier = ">=20240706" },
@@ -345,8 +336,8 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.8" },
     { name = "typer", specifier = ">=0.12" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
+    { name = "wts-core", extras = ["cli", "offsite", "ai"], url = "https://github.com/rj-mitchell/wts-core/releases/download/v0.2.1/wts_core-0.2.1-py3-none-any.whl" },
 ]
-provides-extras = ["embed"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -2159,3 +2150,39 @@ sdist = { url = "https://files.pythonhosted.org/packages/b3/8f/705086c9d734d3b66
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e1/07/c6fe3ad3e685340704d314d765b7912993bcb8dc198f0e7a89382d37974b/win32_setctime-1.2.0-py3-none-any.whl", hash = "sha256:95d644c4e708aba81dc3704a116d8cbc974d70b3bdb8be1d150e36be6e9d1390", size = 4083, upload-time = "2024-12-07T15:28:26.465Z" },
 ]
+
+[[package]]
+name = "wts-core"
+version = "0.2.1"
+source = { url = "https://github.com/rj-mitchell/wts-core/releases/download/v0.2.1/wts_core-0.2.1-py3-none-any.whl" }
+wheels = [
+    { url = "https://github.com/rj-mitchell/wts-core/releases/download/v0.2.1/wts_core-0.2.1-py3-none-any.whl", hash = "sha256:638c5e22125ba347e18db0ce6fb9c973cb0680a4e20aa30f89413cbabc770d2b" },
+]
+
+[package.optional-dependencies]
+ai = [
+    { name = "anthropic" },
+    { name = "fastembed" },
+    { name = "lancedb" },
+    { name = "numpy" },
+    { name = "pyarrow" },
+]
+cli = [
+    { name = "typer" },
+]
+offsite = [
+    { name = "httpx" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", marker = "extra == 'ai'", specifier = ">=2.3,<3" },
+    { name = "duckdb", marker = "extra == 'duckdb'", specifier = ">=2.0,<3" },
+    { name = "fastembed", marker = "extra == 'ai'", specifier = ">=0.9,<1" },
+    { name = "httpx", marker = "extra == 'offsite'", specifier = ">=0.28" },
+    { name = "lancedb", marker = "extra == 'ai'", specifier = ">=0.40,<1" },
+    { name = "numpy", marker = "extra == 'ai'", specifier = ">=2.5" },
+    { name = "pyarrow", marker = "extra == 'ai'", specifier = ">=26" },
+    { name = "typer", marker = "extra == 'cli'", specifier = ">=0.27" },
+]
+provides-extras = ["ai", "cli", "duckdb", "offsite"]

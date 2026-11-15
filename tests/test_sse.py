@@ -6,8 +6,7 @@ import threading
 import time
 
 import pytest
-
-from councils.api.app import sse
+from wts_core.briefing import sse
 
 
 def test_a_silence_is_filled_with_comment_lines_and_events_arrive_in_order():

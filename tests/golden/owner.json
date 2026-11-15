@@ -1,0 +1,714 @@
+{
+ "kept": {
+  "reports": [
+   {
+    "closed": true,
+    "contact": "",
+    "id": 1,
+    "kind": "error",
+    "message": "The vote is shown on the wrong side.",
+    "page": "/votes/E08000038:1:10:0"
+   },
+   {
+    "closed": false,
+    "contact": "",
+    "id": 2,
+    "kind": "takedown",
+    "message": "Please remove my name.",
+    "page": "/councils/E08000038"
+   },
+   {
+    "closed": false,
+    "contact": "",
+    "id": 3,
+    "kind": "unfair",
+    "message": "A loaded word in a briefing.",
+    "page": ""
+   },
+   {
+    "closed": false,
+    "contact": "me@example.org",
+    "id": 4,
+    "kind": "error",
+    "message": "Wrong party",
+    "page": ""
+   }
+  ],
+  "statements": [
+   {
+    "council": "E08000038",
+    "email": "cllr@barnsley.gov.uk",
+    "id": 1,
+    "link": "",
+    "log": [
+     [
+      "received",
+      null
+     ],
+     [
+      "published",
+      "Reply from the address on the council's website, 12 November."
+     ],
+     [
+      "updated",
+      "role, shown_on, text"
+     ],
+     [
+      "updated",
+      "link, shown_on"
+     ],
+     [
+      "withdrawn",
+      "It names an officer."
+     ]
+    ],
+    "name": "Steve Houghton",
+    "page": "/votes/E08000038:1:10:0",
+    "reason": "It names an officer.",
+    "role": "Leader",
+    "shown_on": "2026-11-13",
+    "status": "withdrawn",
+    "text": "New words."
+   },
+   {
+    "council": "E08000038",
+    "email": "dem@barnsley.gov.uk",
+    "id": 2,
+    "link": "",
+    "log": [
+     [
+      "received",
+      null
+     ],
+     [
+      "published",
+      "Reply from the address on the council's website, 12 November."
+     ],
+     [
+      "updated",
+      "shown_on, text"
+     ]
+    ],
+    "name": "Barnsley Council",
+    "page": "/b/abc123",
+    "reason": null,
+    "role": "Democratic services",
+    "shown_on": "2026-11-13",
+    "status": "published",
+    "text": "Our newer view, as the council sent it."
+   },
+   {
+    "council": "E08000038",
+    "email": "x@y.org",
+    "id": 3,
+    "link": "",
+    "log": [
+     [
+      "received",
+      null
+     ],
+     [
+      "declined",
+      "It appeals for votes."
+     ]
+    ],
+    "name": "X Y",
+    "page": "/councils/E08000038",
+    "reason": "It appeals for votes.",
+    "role": "Z W",
+    "shown_on": null,
+    "status": "declined",
+    "text": "Vote for me."
+   },
+   {
+    "council": "E07000209",
+    "email": "leader@guildford.gov.uk",
+    "id": 4,
+    "link": "https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1",
+    "log": [
+     [
+      "received",
+      null
+     ],
+     [
+      "withdrawn",
+      "Withdrawn by its author."
+     ]
+    ],
+    "name": "Julia McShane",
+    "page": "/councils/E07000209",
+    "reason": "Withdrawn by its author.",
+    "role": "Leader, Guildford Borough Council",
+    "shown_on": null,
+    "status": "withdrawn",
+    "text": "First para.\n\nSecond."
+   },
+   {
+    "council": "E08000038",
+    "email": "hk@barnsley.gov.uk",
+    "id": 5,
+    "link": "",
+    "log": [
+     [
+      "received",
+      null
+     ],
+     [
+      "updated",
+      "name"
+     ]
+    ],
+    "name": "Cllr Hannah Kitching",
+    "page": "/votes/E08000038:1:10:0",
+    "reason": null,
+    "role": "Councillor",
+    "shown_on": null,
+    "status": "pending",
+    "text": "I moved this motion."
+   }
+  ]
+ },
+ "reads": [
+  {
+   "case": "/api/statements?page=/votes/E08000038:1:10:0",
+   "json": {
+    "note": "In their own words. Not checked or endorsed by Where Councils Stand.",
+    "statements": []
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "/api/statements?council=E08000038",
+   "json": {
+    "note": "In their own words. Not checked or endorsed by Where Councils Stand.",
+    "statements": [
+     {
+      "about": "Briefing: What has Barnsley decided about public toilets?",
+      "council": "E08000038",
+      "id": 2,
+      "link": "",
+      "name": "Barnsley Council",
+      "page": "/b/abc123",
+      "role": "Democratic services",
+      "shown_on": "2026-11-13",
+      "text": "Our newer view, as the council sent it."
+     }
+    ]
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "/api/statements?page=/b/abc123",
+   "json": {
+    "note": "In their own words. Not checked or endorsed by Where Councils Stand.",
+    "statements": [
+     {
+      "council": "E08000038",
+      "id": 2,
+      "link": "",
+      "name": "Barnsley Council",
+      "page": "/b/abc123",
+      "role": "Democratic services",
+      "shown_on": "2026-11-13",
+      "text": "Our newer view, as the council sent it."
+     }
+    ]
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "/api/statements?council=E07000209",
+   "json": {
+    "note": "In their own words. Not checked or endorsed by Where Councils Stand.",
+    "statements": []
+   },
+   "status": 200,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "/api/briefings/abc123",
+   "json": {
+    "detail": "This briefing has been withdrawn: It named the wrong council."
+   },
+   "status": 410,
+   "text": null,
+   "type": "application/json"
+  },
+  {
+   "case": "/councils/E08000038",
+   "json": null,
+   "status": 200,
+   "text": "<!doctype html><html><head>\n    <title>Barnsley Metropolitan Borough Council — Where Councils Stand</title>\n    <meta name=\"description\" content=\"Barnsley Metropolitan Borough Council: full council and cabinet meetings from February 2025 to February 2025, from the council&#x27;s own minutes. In overall control: Labour. 1 meeting and 1 named vote, with each councillor&#x27;s party on the date.\" />\n    <link rel=\"canonical\" href=\"https://wherecouncilsstand.com/councils/E08000038\" />\n    <meta property=\"og:site_name\" content=\"Where Councils Stand\" />\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:locale\" content=\"en_GB\" />\n    <meta property=\"og:title\" content=\"Barnsley Metropolitan Borough Council — Where Councils Stand\" />\n    <meta property=\"og:description\" content=\"Barnsley Metropolitan Borough Council: full council and cabinet meetings from February 2025 to February 2025, from the council&#x27;s own minutes. In overall control: Labour. 1 meeting and 1 named vote, with each councillor&#x27;s party on the date.\" />\n    <meta property=\"og:url\" content=\"https://wherecouncilsstand.com/councils/E08000038\" />\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <script type=\"application/ld+json\">{\"@context\": \"https://schema.org\", \"@type\": \"WebPage\", \"name\": \"Barnsley Metropolitan Borough Council\", \"url\": \"https://wherecouncilsstand.com/councils/E08000038\", \"description\": \"Barnsley Metropolitan Borough Council: full council and cabinet meetings from February 2025 to February 2025, from the council's own minutes. In overall control: Labour. 1 meeting and 1 named vote, with each councillor's party on the date.\", \"inLanguage\": \"en-GB\", \"isPartOf\": {\"@type\": \"WebSite\", \"name\": \"Where Councils Stand\", \"url\": \"https://wherecouncilsstand.com/\"}, \"about\": {\"@type\": \"GovernmentOrganization\", \"name\": \"Barnsley Metropolitan Borough Council\", \"identifier\": {\"@type\": \"PropertyValue\", \"propertyID\": \"GSS code\", \"value\": \"E08000038\"}, \"areaServed\": \"Yorkshire and the Humber\", \"memberOf\": [{\"@type\": \"GovernmentOrganization\", \"name\": \"South Yorkshire Mayoral Combined Authority\", \"url\": \"https://wherecouncilsstand.com/councils/E47000002\"}]}}</script>\n  </head><body><main id=\"main\"><div id=\"app\"><p class=\"meta\"><a href=\"/councils\">Councils</a> · Metropolitan borough council · Yorkshire and the Humber</p><h1>Barnsley Metropolitan Borough Council</h1><p>Part of: <a href=\"/councils/E47000002\">South Yorkshire Mayoral Combined Authority</a>.</p><p>Full council and cabinet meetings from February 2025 to February 2025, read from the council's <a href=\"https://barnsleymbc.moderngov.co.uk\">own record</a>.</p><ul><li>In overall control: Labour, as listed on 26 February 2025</li><li>1 meeting: 1 full council, 0 cabinet</li><li>1 named vote recorded in the minutes</li></ul><h2>On Where Landlords Stand</h2><ul><li><a href=\"https://wherelandlordsstand.com/landlords/barnsley-metropolitan-borough-council/\">Barnsley Metropolitan Borough Council as a landlord</a></li><li><a href=\"https://wherelandlordsstand.com/areas/barnsley/\">The 18 social landlords with homes in Barnsley</a></li></ul><h2>Members by party</h2><p>The 3 councillors listed at the full council meeting of 26 February 2025, with their party as the council recorded it.</p><ul><li>Labour: 2</li><li>Liberal Democrats: 1</li></ul><h2>Party in overall control</h2><ul><li>From February 2025: Labour</li></ul><h2>Named votes (1)</h2><ol><li><a href=\"/votes/E08000038:1:10:0\">Notice of Motion - Weekly Bin Collections</a>: Full council, 26 February 2025, a named vote on the motion, lost. For 1, Against 2, Abstained 0.</li></ol><h2>Latest meetings</h2><ul><li>26 February 2025: <a href=\"u\">Full Council</a></li></ul><h2>Statements in their own words</h2><article class=\"statement\"><h3>Statement from Barnsley Council, 13 November 2026</h3><p>Democratic services</p><p>About: <a href=\"/b/abc123\">Briefing: What has Barnsley decided about public toilets?</a></p><p>Our newer view, as the council sent it.</p><p><em>In their own words. Not checked or endorsed by Where Councils Stand.</em></p></article></div></main></body></html>",
+   "type": "text/html; charset=utf-8"
+  },
+  {
+   "case": "/votes/E08000038:1:10:0",
+   "json": null,
+   "status": 200,
+   "text": "<!doctype html><html><head>\n    <title>Notice of Motion - Weekly Bin Collections, Barnsley Metropolitan Borough Council — Where Councils Stand</title>\n    <meta name=\"description\" content=\"Barnsley Metropolitan Borough Council, full council, 26 February 2025: a named vote on the motion, lost. For 1, Against 2, Abstained 0, with each councillor&#x27;s party on the date.\" />\n    <link rel=\"canonical\" href=\"https://wherecouncilsstand.com/votes/E08000038:1:10:0\" />\n    <meta property=\"og:site_name\" content=\"Where Councils Stand\" />\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:locale\" content=\"en_GB\" />\n    <meta property=\"og:title\" content=\"Notice of Motion - Weekly Bin Collections, Barnsley Metropolitan Borough Council — Where Councils Stand\" />\n    <meta property=\"og:description\" content=\"Barnsley Metropolitan Borough Council, full council, 26 February 2025: a named vote on the motion, lost. For 1, Against 2, Abstained 0, with each councillor&#x27;s party on the date.\" />\n    <meta property=\"og:url\" content=\"https://wherecouncilsstand.com/votes/E08000038:1:10:0\" />\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <script type=\"application/ld+json\">{\"@context\": \"https://schema.org\", \"@type\": \"WebPage\", \"name\": \"Notice of Motion - Weekly Bin Collections, Barnsley Metropolitan Borough Council\", \"url\": \"https://wherecouncilsstand.com/votes/E08000038:1:10:0\", \"description\": \"Barnsley Metropolitan Borough Council, full council, 26 February 2025: a named vote on the motion, lost. For 1, Against 2, Abstained 0, with each councillor's party on the date.\", \"inLanguage\": \"en-GB\", \"isPartOf\": {\"@type\": \"WebSite\", \"name\": \"Where Councils Stand\", \"url\": \"https://wherecouncilsstand.com/\"}, \"about\": [{\"@type\": \"GovernmentOrganization\", \"name\": \"Barnsley Metropolitan Borough Council\", \"url\": \"https://wherecouncilsstand.com/councils/E08000038\"}, {\"@type\": \"Event\", \"name\": \"Barnsley Metropolitan Borough Council: Full council, 26 February 2025\", \"startDate\": \"2025-02-26\", \"url\": \"https://example/E08000038/10\"}]}</script>\n  </head><body><main id=\"main\"><div id=\"app\"><p class=\"meta\"><a href=\"/councils\">Councils</a> · <a href=\"/councils/E08000038\">Barnsley Metropolitan Borough Council</a></p><h1>Notice of Motion - Weekly Bin Collections</h1><p>Full council, 26 February 2025: a named vote on the motion, lost.</p><p>For 1, Against 2, Abstained 0.</p><p>Party in overall control of the council on the date: Labour. Each councillor's party is the one the council recorded for them at the time.</p><h2>For (1)</h2><ul><li>Hannah Kitching (Liberal Democrats)</li></ul><h2>Against (2)</h2><ul><li>Robin Franklin (Labour)</li><li>Sir Steve Houghton (Labour)</li></ul><h2>From the minutes</h2><blockquote><p>Upon being put to the vote the motion was lost.</p></blockquote><p><a href=\"https://example/E08000038/10\">The item in the council&#x27;s own minutes</a>. Names are matched to the councillors listed at the meeting. The names of people who aren't councillors are removed.</p></div></main></body></html>",
+   "type": "text/html; charset=utf-8"
+  }
+ ],
+ "runs": [
+  {
+   "args": [
+    "list-statements"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "#5  2026-11-13T12:07:05+00:00  pending  /votes/E08000038:1:10:0  (on E08000038's page)\n    from: Hannah Kitching, Councillor\n    confirm with: hk@barnsley.gov.uk\n    I moved this motion.\n    (4 words)\n#4  2026-11-13T12:06:04+00:00  pending  /councils/E07000209  (on E07000209's page)\n    from: Julia McShane, Leader, Guildford Borough Council\n    confirm with: leader@guildford.gov.uk\n    record: https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1\n    First para.\n    Second.\n    (3 words)\n#3  2026-11-13T12:05:03+00:00  pending  /councils/E08000038  (on E08000038's page)\n    from: X Y, Z W\n    confirm with: x@y.org\n    Vote for me.\n    (3 words)\n#2  2026-11-13T12:04:02+00:00  pending  /b/abc123  (on no council's page: --council)\n    from: Barnsley Council, Democratic services\n    confirm with: dem@barnsley.gov.uk\n    Our view.\n    (2 words)\n#1  2026-11-13T12:03:01+00:00  pending  /votes/E08000038:1:10:0  (on E08000038's page)\n    from: Steve Houghton, Councillor, Barnsley Metropolitan Borough Council\n    confirm with: cllr@barnsley.gov.uk\n    record: https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1\n    I voted against this motion because the council had already agreed a review of collections, and the minutes of that meeting set it out.\n    (24 words)\n"
+  },
+  {
+   "args": [
+    "list-reports"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "#4  2026-11-13T12:11:09+00:00  error  -\n    Wrong party\n    reply to: me@example.org\n#3  2026-11-13T12:10:08+00:00  unfair  -\n    A loaded word in a briefing.\n#2  2026-11-13T12:09:07+00:00  takedown  /councils/E08000038\n    Please remove my name.\n#1  2026-11-13T12:08:06+00:00  error  /votes/E08000038:1:10:0\n    The vote is shown on the wrong side.\n    reply to: reader@example.org\n"
+  },
+  {
+   "args": [
+    "publish-statement",
+    "1"
+   ],
+   "exit_code": 2
+  },
+  {
+   "args": [
+    "publish-statement",
+    "1",
+    "--checked",
+    "   "
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: Say how you confirmed who sent it (--checked), for the log.\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "publish-statement",
+    "1",
+    "--checked",
+    "Reply from the address on the council's website, 12 November."
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "published\n"
+  },
+  {
+   "args": [
+    "publish-statement",
+    "1",
+    "--checked",
+    "Reply from the address on the council's website, 12 November."
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "no waiting statement with that number\n"
+  },
+  {
+   "args": [
+    "publish-statement",
+    "9",
+    "--checked",
+    "Reply from the address on the council's website, 12 November."
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "no waiting statement with that number\n"
+  },
+  {
+   "args": [
+    "publish-statement",
+    "2",
+    "--checked",
+    "Reply from the address on the council's website, 12 November.",
+    "--council",
+    "barnsley"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "published\n"
+  },
+  {
+   "args": [
+    "publish-statement",
+    "5",
+    "--checked",
+    "Reply from the address on the council's website, 12 November.",
+    "--council",
+    "no such council anywhere"
+   ],
+   "error": "KeyError: \"'no such council anywhere' matches 0 councils\"",
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "update-statement",
+    "1",
+    "--text",
+    "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: A statement can be up to 150 words; this one is 151.\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "update-statement",
+    "1",
+    "--text",
+    "New words.",
+    "--role",
+    "Leader"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "updated\n"
+  },
+  {
+   "args": [
+    "update-statement",
+    "1",
+    "--name",
+    "   "
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: Give a name.\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "update-statement",
+    "1",
+    "--role",
+    "   "
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: Give a role.\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "update-statement",
+    "1",
+    "--name",
+    "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: A name can be up to 200 characters.\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "update-statement",
+    "1",
+    "--link",
+    "javascript:alert(1)"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: The link to the record must be a web address starting https:// (or leave it empty).\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "update-statement",
+    "1",
+    "--link",
+    ""
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "updated\n"
+  },
+  {
+   "args": [
+    "update-statement",
+    "1"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "nothing changed: no waiting or published statement with that number, or no change\n"
+  },
+  {
+   "args": [
+    "update-statement",
+    "2",
+    "--text-file",
+    "<tmp>/new.txt"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "updated\n"
+  },
+  {
+   "args": [
+    "update-statement",
+    "2",
+    "--text-file",
+    "<tmp>/long.txt"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "error: A statement can be up to 150 words; this one is 151.\n",
+   "stdout": ""
+  },
+  {
+   "args": [
+    "update-statement",
+    "5",
+    "--name",
+    "Cllr  Hannah\nKitching"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "updated\n"
+  },
+  {
+   "args": [
+    "update-statement",
+    "9",
+    "--role",
+    "Mayor"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "nothing changed: no waiting or published statement with that number, or no change\n"
+  },
+  {
+   "args": [
+    "decline-statement",
+    "3"
+   ],
+   "exit_code": 2
+  },
+  {
+   "args": [
+    "decline-statement",
+    "3",
+    "--reason",
+    "It appeals for votes."
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "declined\n"
+  },
+  {
+   "args": [
+    "decline-statement",
+    "3",
+    "--reason",
+    "again"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "no waiting statement with that number\n"
+  },
+  {
+   "args": [
+    "decline-statement",
+    "1",
+    "--reason",
+    "it is published"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "no waiting statement with that number\n"
+  },
+  {
+   "args": [
+    "decline-statement",
+    "999",
+    "--reason",
+    "x"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "no waiting statement with that number\n"
+  },
+  {
+   "args": [
+    "withdraw-statement",
+    "4"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "withdrawn\n"
+  },
+  {
+   "args": [
+    "withdraw-statement",
+    "4"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "no waiting or published statement with that number\n"
+  },
+  {
+   "args": [
+    "withdraw-statement",
+    "1",
+    "--reason",
+    "It names an officer."
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "withdrawn\n"
+  },
+  {
+   "args": [
+    "withdraw-statement",
+    "9"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "no waiting or published statement with that number\n"
+  },
+  {
+   "args": [
+    "update-statement",
+    "1",
+    "--role",
+    "Mayor"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "nothing changed: no waiting or published statement with that number, or no change\n"
+  },
+  {
+   "args": [
+    "list-statements"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "#5  2026-11-13T12:07:05+00:00  pending  /votes/E08000038:1:10:0  (on E08000038's page)\n    from: Cllr Hannah Kitching, Councillor\n    confirm with: hk@barnsley.gov.uk\n    I moved this motion.\n    (4 words)\n#2  2026-11-13T12:04:02+00:00  published  /b/abc123  (on E08000038's page)\n    from: Barnsley Council, Democratic services\n    confirm with: dem@barnsley.gov.uk\n    Our newer view, as the council sent it.\n    (8 words; shown from 2026-11-13)\n"
+  },
+  {
+   "args": [
+    "list-statements",
+    "--all"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "#5  2026-11-13T12:07:05+00:00  pending  /votes/E08000038:1:10:0  (on E08000038's page)\n    from: Cllr Hannah Kitching, Councillor\n    confirm with: hk@barnsley.gov.uk\n    I moved this motion.\n    (4 words)\n#4  2026-11-13T12:06:04+00:00  withdrawn  /councils/E07000209  (on E07000209's page)\n    from: Julia McShane, Leader, Guildford Borough Council\n    confirm with: leader@guildford.gov.uk\n    record: https://barnsley.moderngov.co.uk/ieListDocuments.aspx?MId=1\n    First para.\n    Second.\n    (3 words; withdrawn: Withdrawn by its author.)\n#3  2026-11-13T12:05:03+00:00  declined  /councils/E08000038  (on E08000038's page)\n    from: X Y, Z W\n    confirm with: x@y.org\n    Vote for me.\n    (3 words; declined: It appeals for votes.)\n#2  2026-11-13T12:04:02+00:00  published  /b/abc123  (on E08000038's page)\n    from: Barnsley Council, Democratic services\n    confirm with: dem@barnsley.gov.uk\n    Our newer view, as the council sent it.\n    (8 words; shown from 2026-11-13)\n#1  2026-11-13T12:03:01+00:00  withdrawn  /votes/E08000038:1:10:0  (on E08000038's page)\n    from: Steve Houghton, Leader\n    confirm with: cllr@barnsley.gov.uk\n    New words.\n    (2 words; withdrawn: It names an officer.)\n"
+  },
+  {
+   "args": [
+    "close-report",
+    "1"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "closed\n"
+  },
+  {
+   "args": [
+    "close-report",
+    "1"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "no open report with that number\n"
+  },
+  {
+   "args": [
+    "close-report",
+    "999"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "no open report with that number\n"
+  },
+  {
+   "args": [
+    "list-reports"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "#4  2026-11-13T12:11:09+00:00  error  -\n    Wrong party\n    reply to: me@example.org\n#3  2026-11-13T12:10:08+00:00  unfair  -\n    A loaded word in a briefing.\n#2  2026-11-13T12:09:07+00:00  takedown  /councils/E08000038\n    Please remove my name.\n"
+  },
+  {
+   "args": [
+    "list-reports",
+    "--all"
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "#4  2026-11-13T12:11:09+00:00  error  -\n    Wrong party\n    reply to: me@example.org\n#3  2026-11-13T12:10:08+00:00  unfair  -\n    A loaded word in a briefing.\n#2  2026-11-13T12:09:07+00:00  takedown  /councils/E08000038\n    Please remove my name.\n#1  2026-11-13T12:08:06+00:00  error  /votes/E08000038:1:10:0  (closed)\n    The vote is shown on the wrong side.\n"
+  },
+  {
+   "args": [
+    "withdraw",
+    "abc123",
+    "--reason",
+    "It named the wrong council."
+   ],
+   "error": null,
+   "exit_code": 0,
+   "stderr": "",
+   "stdout": "withdrawn\n"
+  },
+  {
+   "args": [
+    "withdraw",
+    "nope",
+    "--reason",
+    "x"
+   ],
+   "error": null,
+   "exit_code": 1,
+   "stderr": "",
+   "stdout": "no briefing with that id\n"
+  },
+  {
+   "args": [
+    "withdraw",
+    "abc123"
+   ],
+   "exit_code": 2
+  }
+ ]
+}

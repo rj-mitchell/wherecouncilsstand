@@ -112,7 +112,7 @@ function StatementFields({ page, setPage }: { page: string; setPage: (p: string)
           required autoComplete="email" aria-describedby="st-email-hint" />
         <span className="muted" id="st-email-hint">
           An address at your council is quickest. Never shown. Used only to confirm who you are and to let you update or
-          withdraw the statement; deleted three months after it is withdrawn or declined.
+          withdraw the statement; deleted three months after it is withdrawn, declined or removed.
         </span>
       </div>
       <div className="ask-options">

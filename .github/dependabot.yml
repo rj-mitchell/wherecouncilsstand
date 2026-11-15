@@ -7,7 +7,10 @@
 # the Docker section below takes newer releases of Python 3.12 and Node 22 only.
 version: 2
 updates:
-  # Python packages (pyproject.toml and uv.lock)
+  # Python packages (pyproject.toml and uv.lock). wts-core, the sites' shared package, is named by the address of
+  # its release's wheel, which Dependabot doesn't raise: to take a newer release, change the version in
+  # pyproject.toml (in both places in the address) and in .github/workflows/ci.yml, and run `uv lock`
+  # (docs/OPERATIONS.md, "A newer wts-core").
   - package-ecosystem: "uv"
     directory: "/"
     schedule:
@@ -17,7 +20,8 @@ updates:
     groups:
       # The libraries that decide what a briefing says and which passages it is built from. A pull request in this
       # group must come with an evaluation run (docs/EVALUATION.md) before it is merged. This group is listed
-      # first: a package goes in the first group it matches.
+      # first: a package goes in the first group it matches. (The three come with wts-core's "ai" extra, within
+      # the ranges it allows, and are held in uv.lock like any other package.)
       ai-sensitive:
         patterns:
           - "anthropic"
@@ -55,6 +59,10 @@ updates:
       actions:
         patterns:
           - "*"
+    # The family's shared workflows and actions are called at the tag of the wts-core release this site installs
+    # (pyproject.toml), and raised by hand with it, in one change: tests/test_dependencies.py keeps the two the same.
+    ignore:
+      - dependency-name: "rj-mitchell/wts-core*"
 
   # The base images in the Dockerfile: newer releases of Python 3.12 and Node 22 only (see the note at the top)
   - package-ecosystem: "docker"

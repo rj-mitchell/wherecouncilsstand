@@ -256,9 +256,9 @@ def test_the_nightly_update_indexes_an_authority_loaded_by_the_backfill(tmp_path
     """`councils load --type strategic_authority` writes the store without indexing; the next update indexes what
     was loaded but never indexed, tagged with the mayor's party."""
     from test_pipeline import item, meeting
+    from wts_core.adapters.hashing import HashingEmbedder
 
     from councils import store
-    from councils.embed.base import HashingEmbedder
     from councils.index.build import Indexer, update_index
 
     s = replace(load_settings(**{"embedding.backend": "hashing", "embedding.dim": 64}), data_dir=tmp_path)

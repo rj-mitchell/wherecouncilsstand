@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import re
 from collections import defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
@@ -79,8 +80,9 @@ def blocks_for(text: str, words: int = BLOCK_WORDS) -> list[str]:
 class Lookup:
     """Councillors' names and parties, and named votes, for the councils in a set of records (read once)."""
 
-    def __init__(self, settings: Settings, gss_codes: set[str]):
+    def __init__(self, settings: Settings, gss_codes: set[str], without_votes: Sequence[str] = ()):
         root = settings.parquet_dir
+        left_out = set(without_votes)
         self.people: dict[str, people.Council] = {}
         self.votes: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for gss in gss_codes:
@@ -88,7 +90,8 @@ class Lookup:
             meetings = store.parquet.read(root, "meetings", gss)
             self.people[gss] = people.build(att, meetings).get(gss) or people.Council(gss)
             for v in store.parquet.read(root, "votes", gss):
-                self.votes[v["item_id"]].append(v)
+                if v["vote_id"] not in left_out:
+                    self.votes[v["item_id"]].append(v)
 
     def member(self, key: str, d: date) -> str:
         gss, _, mid = key.partition(":")
@@ -158,6 +161,9 @@ def record_source(n: int, r: dict[str, Any], lookup: Lookup, group_by: str = "co
     return Source(n, "minutes", title, r["url"], blocks, meta)
 
 
-def build_sources(settings: Settings, records: list[dict[str, Any]], group_by: str = "control") -> list[Source]:
-    lookup = Lookup(settings, {r["gss"] for r in records})
+def build_sources(settings: Settings, records: list[dict[str, Any]], group_by: str = "control",
+                  without_votes: Sequence[str] = ()) -> list[Source]:
+    """``without_votes``: named votes to leave out (hidden while a concern about them is decided): the item's
+    minutes are still a source, without the site's reading of who voted which way."""
+    lookup = Lookup(settings, {r["gss"] for r in records}, without_votes)
     return [record_source(i, r, lookup, group_by) for i, r in enumerate(records, 1)]
