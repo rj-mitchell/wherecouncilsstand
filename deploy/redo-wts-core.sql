@@ -2,7 +2,8 @@
 -- the move has written to the database since it was moved. docs/OPERATIONS.md, "Going back, and coming forward
 -- again", says when and how to run this.
 --
--- VALID ONLY UNTIL 1 FEBRUARY 2027, like deploy/undo-wts-core.sql: after that day the old tables are gone.
+-- VALID ONLY UNTIL 1 FEBRUARY 2027, like deploy/undo-wts-core.sql: after that day the old tables are gone, and
+-- this stops at its first step ("no such table") and changes nothing.
 --
 -- When it is needed. The move is made once, and marked. If the old code is then started on the database without
 -- deploy/undo-wts-core.sql having been run first, what it takes in goes to the old tables only. The new code,
@@ -26,6 +27,19 @@
 -- Kept as they are: the old tables, the record of each briefing, the weekly figures, and the list of hidden items
 -- (an item hidden on the new code is hidden again when it starts).
 BEGIN IMMEDIATE;
+
+-- Only while the old tables are there. From 1 February 2027 the nightly `councils tidy` drops them, and then there
+-- is nothing to make the move again from: the move forgotten would leave the site with no spending, no saved
+-- briefings, no reports and no statements at all. Without any one of them the SELECT below fails ("no such
+-- table"), and nothing is changed. These are the tables the import needs (ALWAYS_THERE in src/councils/state.py).
+-- `statements` is not among them: a database from before 12 November 2026 never had it, and the import does
+-- without it.
+SELECT count(*) FROM kv;
+SELECT count(*) FROM usage;
+SELECT count(*) FROM questions;
+SELECT count(*) FROM answer_cache;
+SELECT count(*) FROM briefings;
+SELECT count(*) FROM reports;
 
 -- Only on a database that has been moved, and only once. Without the move's mark there is no move to forget: the
 -- INSERT below then fails ("CHECK constraint failed"), and nothing is changed.

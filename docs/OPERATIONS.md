@@ -602,7 +602,8 @@ something:
 
 Do not run `undo-wts-core.sql` to keep what the old code wrote: it writes the old tables afresh from the new ones,
 and discards exactly those rows. Either script is run as the undo script is, above (with the site stopped, and
-`redo-wts-core.sql` in place of `undo-wts-core.sql`); then `docker compose up -d`.
+`redo-wts-core.sql` in place of `undo-wts-core.sql`); then `docker compose up -d`. After 1 February 2027, when the
+old tables are gone, each script refuses ("no such table") and changes nothing.
 
 **What the new code cannot see,** and so cannot refuse on: a row the old code wrote in the very second the move
 was made; a row with no time (the old `kv` and `questions` tables keep none); and what the old code changed in a

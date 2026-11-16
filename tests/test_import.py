@@ -756,3 +756,49 @@ def test_a_database_from_before_the_right_of_reply_is_brought_across_without_sta
     clock.set("2027-02-01T04:00:00+00:00")
     assert command(["tidy"], tmp)["exit_code"] == 0
     assert not set(OLD_TABLE_NAMES) & open_state(s, clock).tables()
+
+
+def test_after_the_old_tables_go_neither_script_changes_anything(moved):
+    """From 1 February 2027 the nightly tidy drops the old tables. deploy/redo-wts-core.sql would then forget a
+    move it could not make again, and the site would be left with no spending, no saved briefings, no reports and
+    no statements. So it first asks for each old table the import needs, and stops ("no such table") before it
+    deletes anything. deploy/undo-wts-core.sql writes the old tables before it forgets the move, so it stops at its
+    first write. Either way the package's tables and the move's mark are as they were."""
+    tmp, clock, path, app = moved
+    clock.set("2027-02-01T04:00:00+00:00")
+    assert command(["tidy"], tmp)["exit_code"] == 0
+    assert not set(OLD_TABLE_NAMES) & open_state(site_settings(tmp / "old"), clock).tables()
+    assert min(count(path, t) for t in ("wts_spending", "wts_briefings", "wts_reports", "wts_statements")) > 0
+    before = everything_in(path)
+    for script in (redo, undo):
+        with pytest.raises(sqlite3.OperationalError, match="no such table"):
+            script(path)
+        assert everything_in(path) == before, script.__name__
+        assert count(path, "wts_schema", "name = 'import:councils-state'") == 1
+
+
+def test_the_redo_script_asks_for_the_tables_the_import_needs_and_no_others(tmp_path):
+    """The redo script's first step asks for exactly the old tables the import needs (``ALWAYS_THERE``), before
+    anything is deleted. It does not ask for `statements`: a database from before 12 November 2026 never had it,
+    and the move is made again on one all the same."""
+    from councils.state import ALWAYS_THERE, IMPORTS
+
+    text = (ROOT / "deploy" / "redo-wts-core.sql").read_text()
+    asked = [line.removeprefix("SELECT count(*) FROM ").rstrip(";") for line in text.splitlines()
+             if line.startswith("SELECT count(*) FROM ")]
+    assert asked == list(ALWAYS_THERE) == list(IMPORTS[0].needs)
+    assert text.index("\nSELECT count(*) FROM ") < text.index("\nDELETE FROM ")
+    clock = shared.Clock()
+    path = old_database(tmp_path / "old")
+    con = sqlite3.connect(path)
+    con.execute("DROP TABLE statements")
+    con.commit()
+    con.close()
+    open_state(site_settings(tmp_path / "old"), clock)
+    redo(path)
+    assert count(path, "wts_spending") == count(path, "wts_briefings") == 0
+    assert count(path, "wts_schema", "name = 'import:councils-state'") == 0
+    open_state(site_settings(tmp_path / "old"), clock)             # the next start makes the move again
+    assert count(path, "wts_spending") == count(path, "usage") > 0
+    assert count(path, "wts_briefings") == count(path, "briefings") > 0
+    assert count(path, "wts_schema", "name = 'import:councils-state'") == 1
