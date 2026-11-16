@@ -76,9 +76,10 @@ MESSAGES = ReplyMessages(
     # never shown: no visitor is counted (see RULES)
     daily_statements="We have several statements from you today. Email us if there is more to add.",
     daily_reports="We have several reports from you today. Email us if there is more to add.",
-    # the form sends a kind and stops at these lengths, so only a post made some other way meets these
-    report_kind="Say what kind of problem it is.",
-    report_too_short="Say what is wrong, in a few words.",
+    # the form sends a kind and stops at these lengths, so only a post made some other way meets these; the first
+    # two are the family's words, the same on every Where They Stand site (owner, 16 November 2026)
+    report_kind="Please choose what the report is about.",
+    report_too_short="Please say what is wrong, in a few words.",
     report_too_long="A report can be up to {max:,} characters; this one is {n:,}.",
     contact_too_long="The contact address can be up to {max} characters.",
     # the reason recorded for a statement nobody decided in three months; its sender is told if they ask

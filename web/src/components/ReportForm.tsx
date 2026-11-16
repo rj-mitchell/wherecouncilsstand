@@ -20,7 +20,7 @@ const HINT: Record<string, string> = {
 };
 
 const QUESTION: Record<string, string> = {
-  error: "What's wrong?",
+  error: "What is wrong?", // the family's words, as on every Where They Stand site (owner, 16 November 2026)
   unfair: "What's unfair, and why?",
   takedown: "What would you like removed, and why?",
   other: "What's the problem?",

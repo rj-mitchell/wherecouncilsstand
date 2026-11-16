@@ -654,10 +654,12 @@ def test_every_answer_to_a_report_or_a_statement_is_as_before(tmp_path):
     # 2. A report of nothing but spaces was kept (the form's own check counts characters, and seven spaces are
     #    seven); the package reads a report with the spaces around it taken off, finds nothing, and refuses it, in
     #    words that are new (AS-BUILT, replies: "Wording the sites have no words for today ... the report
-    #    refusals"). One report fewer is kept, so each later one's number is one lower.
+    #    refusals"). One report fewer is kept, so each later one's number is one lower. The words are the family's,
+    #    the same on every Where They Stand site: the owner asked for the family's wording to be the same
+    #    (16 November 2026), where they were "Say what is wrong, in a few words."
     case = "a message of spaces"
     assert (before[case]["status"], before.pop(case)["json"]) == (200, {"ok": True, "id": 6})
-    assert said(answers.pop(case)) == (422, "Say what is wrong, in a few words.")
+    assert said(answers.pop(case)) == (422, "Please say what is wrong, in a few words.")
     for case, number in (("a message at its longest", 7), ("a contact at its longest", 8)):
         assert before.pop(case)["json"] == {"ok": True, "id": number}
         assert answers.pop(case)["json"] == {"ok": True, "id": number - 1}
