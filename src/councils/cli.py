@@ -17,6 +17,7 @@
     councils statements publish 3 --checked "..."   # show it, once its author is confirmed (decision 22)
     councils hide /votes/<id> --note "..."    # hide an item while a concern is decided; unhide shows it again
     councils waiting                          # what is waiting for a decision, and for how long
+    councils would-lapse                      # what the next tidy would decline or delete as undecided (changes nothing)
     councils stats --since 7d                 # how briefings went: speed, cost, what the checks found
     councils weekly-report                    # the week's figures saved, and what is over its threshold (scheduled)
     councils tidy                             # the nightly housekeeping (scheduled, after the backup)
@@ -37,6 +38,7 @@ import typer
 from wts_core.cli import (
     BackupCheckWords,
     BackupWords,
+    Change,
     OpsWording,
     RepliesCommands,
     RepliesWording,
@@ -54,7 +56,7 @@ from wts_core.state import StateDB
 from wts_core.usage import PriceTable
 
 from councils.config import SITE, load_settings
-from councils.replies import OWNERS_MESSAGES, open_replies
+from councils.replies import OWNERS_MESSAGES, hidden_now, open_replies
 from councils.state import (
     BACKUP_ALERTS,
     BACKUPS,
@@ -63,7 +65,6 @@ from councils.state import (
     forget_replays,
     open_archive,
     open_state,
-    write_afresh,
 )
 
 # what the commands read the time from: the system's, unless a test stands another in its place
@@ -322,8 +323,26 @@ def _council(typed: str) -> str:
         raise ValueError(f"no one council is called {typed}: give its GSS code, or more of its name") from exc
 
 
+def _lapsing(w: Mapping[str, Any]) -> str:
+    """What `councils would-lapse` says: each statement and report the next tidy would reach, by its number, the
+    day it was sent and its age. Never an address, a name or a word of what was sent. The sentences are those
+    deploy/before-wts-core.py says of the old tables before the move."""
+    if not w["entries"]:
+        return ("Nothing would lapse: no statement has waited, and no report with a contact address has been open, "
+                "for more than three months.")
+    said = [f"Statement {e['id']}, sent {e['at'][:10]} ({e['days']} days ago), would be declined as undecided."
+            if e["what"] == "statement" else
+            f"Report {e['id']}, sent {e['at'][:10]} ({e['days']} days ago), would lose its contact address."
+            for e in w["entries"]]
+    return "\n".join([*said, "They lapse at the next tidy: tonight's, or sooner, when a report or a statement is "
+                              "next sent or a reports or statements command is next run."])
+
+
 # What each command is called. The names are the family's (`councils statements publish 3`); the names the
-# commands had before the shared package (`councils publish-statement 3`) still work for now, and print the same.
+# commands had before the shared package (`councils publish-statement 3`) still work for now, and print the same
+# on standard output. From wts-core 0.3.0 each also says, on standard error, that it is an older name and what
+# the command is called now (the package's own sentence; nothing of the site's reads those commands' standard
+# error).
 REPLIES_COMMANDS = RepliesCommands(
     listed=("pending", "published"),
     about_option="--council",
@@ -384,22 +403,24 @@ REPLIES_WORDING = RepliesWording(
     closed="closed",
     hid="hidden: {item}",
     unhid="shown again: {item}",
+    lapsing=_lapsing,
     tidied="right of reply: {emails} confirming addresses deleted, {lapsed} statements lapsed undecided, {contacts} "
            "old reports' contact addresses deleted",
     not_done="error: {message}", refused="error: {message}", errors_to_stderr=True,
 )
 
-def _changed(row: Mapping[str, Any]) -> None:
-    """After a change a page may show. A report closed with a note for the corrections page, about a saved
-    briefing: that briefing's record is marked as corrected (what happened next, for the statistics). A saved
-    briefing hidden: it is no longer replayed from the answer cache."""
-    if row.get("public_note") and row.get("briefing_id") and row.get("closed_at"):
+def _changed(row: Mapping[str, Any], kind: Change) -> None:
+    """After a change a page may show (``kind`` says which: one of ``wts_core.cli.CHANGES``). A report closed
+    with a note for the corrections page, about a saved briefing: that briefing's record is marked as corrected
+    (what happened next, for the statistics). A saved briefing hidden: it is no longer replayed from the answer
+    cache."""
+    if kind == "report_closed" and row.get("public_note") and row.get("briefing_id"):
         from wts_core.observe import SqliteBriefingLog
 
         SqliteBriefingLog(_state(), clock=CLOCK).mark(row["briefing_id"], corrected=True)
     # A saved briefing just hidden (the row is what is hidden: its address and the note): its copies in the
     # answer cache go, so that it is not replayed to the next reader who asks the same question.
-    if str(row.get("item") or "").startswith("/b/") and row.get("note"):
+    if kind == "hidden" and str(row.get("item") or "").startswith("/b/"):
         forget_replays(_state(), row["item"].split("/")[2], CLOCK)
 
 
@@ -462,11 +483,31 @@ def _prices() -> PriceTable:
     return PriceTable.from_settings(settings.usage, file=settings.files)      # an error names the local file too
 
 
+def _never_proposed(briefing: str) -> bool:
+    """Whether a saved briefing's question is never to be proposed as a test question (`councils
+    propose-questions`): what its own page asks, and more. A briefing that is no longer there or has been
+    withdrawn; one hidden while a concern about it is decided, by its own address or because a council or a named
+    vote it was written from is hidden (``Hidden.instead_of_briefing``, as /api/briefings/<id> asks); and one a
+    report that is still open names. (The record's own marks leave out a briefing withdrawn, corrected or ever
+    reported in any case; this does not lean on them.)"""
+    db = _state()
+    saved = open_archive(db, CLOCK).get(briefing)
+    if saved is None or saved.withdrawn_at:
+        return True
+    replies = _replies()
+    if hidden_now(replies).instead_of_briefing(saved.id, saved.events) is not None:
+        return True
+    return any(report.get("briefing_id") == briefing for report in replies.reports(open_only=True))
+
+
 # `councils stats` (how briefings went, for any period), `councils weekly-report` (the week's figures saved under
-# data/reports, with what is over its threshold; run by deploy/councils-weekly-report.timer) and `councils tidy`
-# (the nightly housekeeping, after each night's backup: the record of briefings older than it is kept, visitors'
-# codes after their day, old weekly reports, the copy of the database made before the one-off import, and the
-# right of reply's: confirming addresses three months after a statement ends, and what nobody decided in three).
+# data/reports, with what is over its threshold; run by deploy/councils-weekly-report.timer), `councils
+# propose-questions` (test questions proposed from readers' real ones, in a file for the owner to approve) and
+# `councils tidy` (the nightly housekeeping, after each night's backup: the record of briefings older than it is
+# kept, visitors' codes and the time of day on spending rows after their day, earlier days' visitor secrets,
+# cached answers past their week, old weekly reports, the copy of the database made before the one-off import,
+# and the right of reply's: confirming addresses three months after a statement ends, and what nobody decided in
+# three; then the site's old tables, and last the file written out afresh).
 app.add_typer(stats_commands(
     SITE, _state,
     thresholds=lambda: load_settings().section("alerts"),      # empty until the owner sets them
@@ -475,11 +516,14 @@ app.add_typer(stats_commands(
     similarity=lambda: float(load_settings().embedding["theme_similarity"]),
     pricing=_prices,
     backup_days=BACKUPS_KEPT_DAYS,
-    # the right of reply's deletions, and then the old tables once more: the package looks to the old tables before
-    # these have run, and an address deleted tonight must not stay in an old row until tomorrow night. Last, the
-    # file is written out afresh, so that what was deleted is not left in its unused space (state.write_afresh)
-    also_tidy=[replies_tidy(_replies, REPLIES_WORDING), lambda: _state().retire_old() and (),
-               lambda: write_afresh(_state())],
+    # the right of reply's deletions. The command itself then sees to the site's old tables, after these (so an
+    # address deleted tonight is gone from the old row tonight), and last writes the file out afresh, so that
+    # nothing deleted is left in its unused space (wts-core 0.3.0; the site had steps of its own for both)
+    also_tidy=[replies_tidy(_replies, REPLIES_WORDING)],
+    # how long a cached answer is kept: the tidy deletes the older ones on a night when no new answer is stored
+    cache_hours=lambda: float(load_settings().usage["answer_cache_hours"]),
+    # the briefings whose questions `councils propose-questions` never proposes
+    proposals_leave_out=_never_proposed,
     clock=lambda: CLOCK))
 
 

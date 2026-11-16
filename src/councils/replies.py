@@ -148,8 +148,6 @@ class Items:
 HIDDEN_LEAD = "This page is hidden while a concern about it is decided."
 # The corrections log's heading for each kind of entry: a briefing withdrawn, or a report closed with a public note.
 LOG_WITHDRAWN, LOG_CORRECTION = "Briefing withdrawn", "Correction"
-# the log is the whole log, however long it comes to be: no limit that can bite (the package's own is 100)
-EVERY_ENTRY = 1_000_000
 
 
 def hideable(items: Items) -> Callable[[str], str]:
@@ -258,14 +256,33 @@ def corrections(replies: Replies, briefings: SavedBriefings) -> list[dict[str, A
     return [{"date": entry["date"],
              "heading": LOG_WITHDRAWN if entry["kind"] == "withdrawn" else LOG_CORRECTION,
              "note": entry["note"] or ""}
-            for entry in replies.corrections(EVERY_ENTRY, withdrawn=withdrawn)]
+            for entry in replies.corrections(withdrawn=withdrawn)]      # the whole log: no limit is given
 
 
 def open_replies(db: StateDB, record: Callable[[], Record], briefings: SavedBriefings, clock: Clock = SYSTEM_CLOCK, *,
                  messages: ReplyMessages = MESSAGES) -> Replies:
     """Reports and statements, for the site's endpoints, its pages and the owner's commands alike."""
     items = Items(record, briefings)
-    return Replies(db, items=items, rules=RULES, messages=messages, clock=clock, hideable=hideable(items))
+
+    def hidden_with(item: Item) -> bool:
+        """Whether an item a statement sits beside is hidden now because another is (``Replies(hidden_with=…)``,
+        asked by ``Replies.published`` of each item once): a named vote of a council whose page is hidden, and a
+        saved briefing shown as hidden because of a council or a named vote it was written from. A statement
+        beside such an item is hidden with it, as one beside an item hidden by its own address always is."""
+        now = hidden_now(replies)
+        if not now.notes:
+            return False
+        kind, key = item.address.split("/")[1:3]
+        if kind == "votes":
+            return now.vote_hidden(key)
+        if kind == "b":
+            saved = briefings.get(key)
+            return saved is not None and now.instead_of_briefing(saved.id, saved.events) is not None
+        return False
+
+    replies = Replies(db, items=items, rules=RULES, messages=messages, clock=clock, hideable=hideable(items),
+                      hidden_with=hidden_with)
+    return replies
 
 
 def as_shown(statement: Mapping[str, Any]) -> dict[str, Any]:
@@ -279,7 +296,8 @@ def as_shown(statement: Mapping[str, Any]) -> dict[str, Any]:
 def published(replies: Replies, page: Item | None = None, council: str | None = None) -> list[dict[str, Any]]:
     """What the public sees: the published statements beside one item, or all of one council's (on its page), by
     the date shown and then in the order they came. A statement beside an item that is hidden while a concern is
-    decided is hidden with it."""
+    decided is hidden with it, and so is one beside an item hidden because another is (``open_replies``,
+    ``hidden_with``): the package leaves both out."""
     rows = replies.published(items=[page]) if page else replies.published(about=council)
     if page and council:
         rows = [r for r in rows if r["about"] == council]

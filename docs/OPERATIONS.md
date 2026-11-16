@@ -206,11 +206,12 @@ It can be stopped and run again: files already compressed are skipped.
 | `councils index` | Rebuild the search index for all councils (keeps vectors of unchanged passages), then delete the superseded files |
 | `councils embed` | Embed passages not yet embedded |
 | `councils embed --again` | Start meaning search afresh after the embedding model has changed ("The search index and its embedding model", below) |
-| `councils reports list`, `reports show`, `reports close`, `withdraw` | Reports and takedown requests, and withdrawn briefings ("Running the website", below). The names these had before still work: `list-reports`, `close-report` |
-| `councils statements list`, `show`, `publish`, `decline`, `update`, `withdraw`, `remove`, `log` | Statements under the right of reply (decision 22; "Running the website", below). The names these had before still work: `list-statements`, `publish-statement`, `decline-statement`, `update-statement`, `withdraw-statement` |
+| `councils reports list`, `reports show`, `reports close`, `withdraw` | Reports and takedown requests, and withdrawn briefings ("Running the website", below). The names these had before still work, and say first what they are called now: `list-reports`, `close-report` |
+| `councils statements list`, `show`, `publish`, `decline`, `update`, `withdraw`, `remove`, `log` | Statements under the right of reply (decision 22; "Running the website", below). The names these had before still work, and say first what they are called now: `list-statements`, `publish-statement`, `decline-statement`, `update-statement`, `withdraw-statement` |
 | `councils hide`, `unhide`, `hidden` | Hide a page, with a note in its place, while a concern about it is decided ("Hiding a page", below) |
 | `councils waiting` | How many reports and statements are waiting for a decision, how many pages are hidden, and how long the oldest has waited |
-| `councils stats`, `weekly-report` | How briefings went: speed, cost, what the checks found ("How briefings went", below) |
+| `councils would-lapse` | Which statements and reports the next tidy would decline or lapse as undecided, by number, with the day each was sent. It changes nothing |
+| `councils stats`, `weekly-report`, `propose-questions` | How briefings went: speed, cost, what the checks found; and test questions proposed from readers' own ("How briefings went", below) |
 | `councils tidy` | The nightly housekeeping, after each backup ("What is deleted, and when", below) |
 | `councils backup`, `backup-check`, `offsite`, `restore` | The state database's backups ([`DEPLOY.md`](DEPLOY.md), "Backups"; "The state database", below) |
 | `councils evaluate`, `councils eval run`, `eval compare`, `eval replay` | The briefing test set ([`EVALUATION.md`](EVALUATION.md)) |
@@ -234,7 +235,9 @@ On the server it runs in a container behind the charity's shared front door (`do
 takes each visitor's address from `X-Forwarded-For`, which the front door sets from Cloudflare's header; the
 container's port is reachable only over the server's Docker networks, never from outside. The address is turned into
 a daily visitor code at once and never stored, and requests are not logged (privacy notice). The code is kept on
-the day's spending rows only, to count a visitor's briefings, and is forgotten from them after its day.
+the day's spending rows only, to count a visitor's briefings, and is forgotten from them after its day, with the
+time of day each row was made: a spending row of a day gone by keeps its day, its model, its token counts and its
+cost, and nothing that says who it was for or when in the day (wts-core 0.3.0; its decision record 0012).
 
 **Costs and limits** are in `config/settings.toml`, `[usage]`. Each new briefing is counted against a visitor's daily
 allowance (`per_visitor_daily_questions`) and the site's daily and monthly caps (`daily_spend_cap_usd`,
@@ -284,6 +287,15 @@ docker compose run --rm -T app councils waiting                # what is waiting
 Closing a report deletes the reporter's email address (privacy notice). Withdrawing a saved briefing (the `<id>` in
 its address, `/b/<id>`) keeps it in the database, but its address then says it has been withdrawn, with the reason.
 
+**An id that begins with "-".** A command line reads a word that begins with "-" as an option, so `councils
+withdraw -vPeHLp1u54 --reason "…"` stops with "No such option" and withdraws nothing. About one briefing in 64
+saved before 16 November 2026 (wts-core 0.3.0) has such an id; none saved since has. Write `--` before the id,
+after the options:
+
+```bash
+docker compose run --rm -T app councils withdraw --reason "It named the wrong council." -- -vPeHLp1u54
+```
+
 **The corrections log** is public, on the corrections page (`/corrections#log`) and at `/api/corrections`: every
 withdrawn briefing, with the reason given, and every report closed with `--public-note`, newest first (the
 impartiality policy, 7.1: "a public note saying what changed and when"). So write a reason or a public note for
@@ -295,7 +307,8 @@ report that needed no change needs no public note. The log is the whole log, how
 
 A report or a statement that nobody decides is not kept for ever: after three months of waiting, a report's contact
 address is deleted and a statement is declined with the reason "No decision was made in time; please send it
-again." (`councils waiting`, and the family's nightly check, say how long the oldest has waited).
+again." (`councils waiting`, and the family's nightly check, say how long the oldest has waited; `councils
+would-lapse` says which would go at the next tidy, and changes nothing).
 
 ### Hiding a page
 
@@ -356,7 +369,8 @@ docker compose run --rm -T app councils statements log 3         # everything de
 ```
 
 The names these commands had before still work (`list-statements`, `publish-statement`, `decline-statement`,
-`update-statement`, `withdraw-statement`). A reports or statements command that changes nothing (no report,
+`update-statement`, `withdraw-statement`), and print what they printed; since wts-core 0.3.0 each also says first,
+on standard error, what it is called now. A reports or statements command that changes nothing (no report,
 briefing or statement with that number, or one already dealt with) says so and exits 1.
 
 `statements publish` needs `--checked`: a few words on how the sender was confirmed. It is kept in the statement's
@@ -380,10 +394,12 @@ For every question the site keeps one row in **the record of briefings** (the sh
 record 0012): how the question ended (a briefing written, replayed from the cache, no records, sources only, a
 limit or a cap reached, an error), how long each step took, what it cost, what the checks found, how the sources
 were spread across the groups, and which settings it ran with (a short id; the settings behind each id are kept
-once). No row says who asked. The question is kept in the row only where a briefing was written, replayed, found
-no records or failed: a request that got no briefing (sources only, or over a limit or a cap) was stored nowhere
-before the record, and its row has no question. A failed briefing's question is removed after 90 days and the
-whole row after 13 months, as the privacy notice says.
+once). No row says who asked. A row keeps the hour the question was asked in, and no finer: since wts-core 0.3.0,
+which took the minutes and seconds off the rows already written the first time the site started on it, so a
+period in `councils stats` is whole hours. The question is kept in the row only where a briefing was written,
+replayed, found no records or failed: a request that got no briefing (sources only, or over a limit or a cap) was
+stored nowhere before the record, and its row has no question. A failed briefing's question is removed after 90
+days and the whole row after 13 months, as the privacy notice says.
 
 ```bash
 docker compose run --rm -T app councils stats --since 7d       # or 24h, 4w, a date; --json for the figures
@@ -414,6 +430,15 @@ the weekly report fails when a figure is over its threshold, after saving the re
 sent (`OnFailure=alert@…`, as for the update and the backup). A name in `[alerts]` that isn't one of these stops
 the report with a message, rather than being ignored.
 
+**Test questions proposed from readers' own.** `councils propose-questions --since 7d` writes a file in
+`/data/proposed-questions/` of questions from the period that found no records, or whose briefings the checks
+flagged most, in the shape of `eval/questions.toml`. It adds nothing to the test set: read it, take out anything
+personal, and copy what is worth keeping into `eval/questions.toml` by hand ([`EVALUATION.md`](EVALUATION.md)).
+It never proposes the question of a briefing that has been withdrawn or corrected, that a reader has reported, that
+a report still open names, or that is hidden while a concern is decided, by its own address or because a council or
+a named vote it was written from is hidden. The file quotes readers' questions: delete it once read. The nightly
+tidy deletes it in any case once the oldest question it could hold is 13 months old.
+
 **The structured log** of briefings is `/data/logs/briefings.jsonl`: one line for each step a briefing reached and
 one for how it ended, with the record's id, the step's name, a time in milliseconds and, for a failure, the kind of
 error. Never a question, an address or a visitor's code, so the privacy notice's "requests aren't logged" stays
@@ -423,26 +448,43 @@ true. It is kept for 14 days and about 48 MB at most (`[logs]`). To follow one f
 ## What is deleted, and when
 
 `councils tidy` runs every night after the backup (`councils-backup.service`, whether or not the backup worked).
-It prints a line for each thing it did:
+It prints a line for each thing it did, in the order it does them (wts-core 0.3.0):
 
-- rows of the record of briefings older than 13 months, and the question of failed briefings older than 90 days;
-- weekly report files older than 13 months;
-- visitors' codes on spending rows from before today (the spending itself is kept; the first briefing of each
-  day does this too);
-- the copy of the database made before the one-off import ("The state database", below), once it is older than
-  any backup (60 days);
-- statements' confirming addresses three months after a statement was withdrawn, declined or removed, and
-  reports and statements nobody decided in three months (above);
-- in the tables the site kept before the shared package, while they are there ("The state database", below):
-  a statement's address and a report's contact wherever the new tables no longer have one, visitors' codes of
-  days gone by, every secret for visitors' codes but today's, and cached answers older than a week. From
-  **1 February 2027** the same command drops those tables;
-- last, it writes the database out afresh. SQLite does not wipe what it deletes: a deleted address stays in the
-  file's unused space until something is written over it, and a backup copies that space too. Written out afresh,
-  the file, and every backup made after, holds only what is kept.
+1. rows of the record of briefings older than 13 months, and the question of failed briefings older than 90
+   days; weekly report files older than 13 months, and any file of proposed test questions that could hold a
+   question that old;
+2. visitors' codes on spending rows from before today, with the time of day each row was made (the spending
+   itself is kept, by its day; the first briefing of each day does this too);
+3. notes of failed briefings older than 90 days (this site keeps none, so the line says 0), every secret for
+   visitors' codes but today's, and cached answers older than the site keeps one (`[usage] answer_cache_hours`, a
+   week), even on a night when no new answer was stored;
+4. the copy of the database made before the one-off import ("The state database", below), once it is older than
+   any backup (60 days), and any copy left unfinished more than a day before;
+5. statements' confirming addresses three months after a statement was withdrawn, declined or removed, and
+   reports and statements nobody decided in three months (above);
+6. in the tables the site kept before the shared package, while they are there ("The state database", below):
+   a statement's address and a report's contact wherever the new tables no longer have one, visitors' codes of
+   days gone by, every secret for visitors' codes but today's, and cached answers older than a week. This comes
+   after step 5, so an address deleted tonight is gone from the old tables tonight. On **1 February 2027** the
+   same command drops those tables, and says which;
+7. last, it writes the database out afresh: "Wrote the database out afresh: nothing deleted is left in the file."
+   SQLite does not wipe what it deletes: a deleted address stays in the file's unused space until something is
+   written over it, and a backup copies that space too. Written out afresh, the file, and every backup made
+   after, holds only what is kept.
 
-If it fails, the backup's unit fails and the usual alert email is sent. It also fails, after doing everything
-else, if the old tables were due to go and could not (it says why).
+If the site was using the file at that moment, the last line says instead that the database was NOT written out
+afresh tonight, and it is tried again the next night. On the second night running the command adds "That is 2
+nights running." and fails, so the alert email is sent. If anything else fails, the backup's unit fails and the
+alert email is sent too. It also fails, after doing everything else, if the old tables were due to go and could
+not (it says why).
+
+**The backup forgets first.** Since wts-core 0.3.0 `councils backup` does, in the database, the forgetting of
+step 2 and the deletion of earlier days' secrets before it copies it, so a night's backup holds nothing of the day
+before that the live file does not. It does hold the day's own rows so far (from midnight to the backup at 04:30),
+with their visitors' codes and times, for as long as that backup is kept. If it finds spending that the new code
+has never opened (a backup run on a new image before the site has started on it, which the order of
+`deploy/update.sh` prevents), it still makes the backup, says on standard error what the copy holds, and fails, so
+the alert email is sent.
 
 ## The state database
 
@@ -495,7 +537,8 @@ Nothing needs running by hand: `deploy/update.sh` brings the new site up, and th
 5. **Check** that `councils reports list --all`, `councils statements list --all` and the spending query above show
    what they showed before.
 
-**If the new site does not start**, `docker compose logs app` says why. If it is a row the new tables could not
+**If the new site does not start**, `docker compose logs app` says why. If it says the old tables hold rows newer
+than the import, see "Going back, and coming forward again", below. If it is a row the new tables could not
 take (`malformed JSON`, or a `NOT NULL constraint failed`: the look in step 2 names it beforehand), then nothing
 was half copied: the import is one transaction. The old tables are as they were, the copy of step 1 above was
 made, and the site stays down until the row is mended or the old code is put back. To mend it, run the statement
@@ -516,22 +559,62 @@ after its three months, a closed report's contact, visitors' codes, the day's se
 backup. So each night `councils tidy` takes out of the old tables whatever the new ones no longer hold ("What is
 deleted, and when", above), and from 1 February 2027 it drops them. Nothing reads them in between.
 
-**Going back** to the code as it was before the move, without losing what has come in since, **until 1 February
-2027**: stop the site, write the old tables again from the new ones, then deploy the old code.
+### Going back, and coming forward again
+
+**The rule for going back** to the code as it was before the move, **until 1 February 2027**: run the undo
+script first, then check out the old code. Never the old code alone.
 
 ```bash
 cd /opt/wherecouncilsstand/deploy
 docker compose stop app
-docker compose run --rm -T app python -c "import sqlite3, sys; con = sqlite3.connect('/data/state.db'); con.executescript(sys.stdin.read())" < undo-wts-core.sql
+docker compose run --rm --no-deps -T app python -c "import sqlite3, sys; con = sqlite3.connect('/data/state.db'); con.executescript(sys.stdin.read())" < undo-wts-core.sql
+git -C /opt/wherecouncilsstand checkout <the commit before the move>
+docker compose up -d --build
+# the old code has no `tidy` and no weekly report: its own backup unit, and no weekly report timer
+cp councils-backup.service /etc/systemd/system/ && systemctl daemon-reload
+systemctl disable --now councils-weekly-report.timer
 ```
 
-`deploy/undo-wts-core.sql` says at its top what the old tables can't hold (a hidden page is shown again; how a
-report ended is not kept). It works only while the old tables are there: run after 1 February 2027 it stops at
-once and changes nothing. The copy made in step 1 is the other way back, to the day of the move exactly; it is
-deleted 60 days after the move. After both dates, going back means putting back a backup made before the move,
-while one is still kept (60 are, so about two months).
+`deploy/undo-wts-core.sql` writes the old tables again from the new ones, in one transaction, and then forgets the
+move: it empties the new tables' copies of those rows (with `wts_account_months` and the monthly counts of
+visitors in `wts_visitor_days`, which summarise them) and removes the move's mark. The old tables are then the
+whole truth, and the old code can run for as long as need be. What it gives the old code back is said at its top:
+a hidden page is shown again, how a report ended is not kept, and what the new code has forgotten stays forgotten.
+A spending row of a day gone by comes back with its day, its model, its counts and its cost, all exact (so every
+day's and month's total, and both caps, are as they were), but with no visitor's code and with its day's midnight
+as its time; today's rows come back whole. It runs once, and only on a database that has been moved: run again,
+or after 1 February 2027, it stops at once and changes nothing.
 
-**Putting a backup back.** With the site stopped:
+**Coming forward again:** check out `main` and run `deploy/update.sh` as for any deploy. The new code makes the
+move afresh from the old tables, with whatever the old code took in meanwhile, and counts nothing twice.
+
+**If the old code was started without the undo script,** what it wrote went to the old tables only. The new code
+then refuses to start, changing nothing: "the site's old tables hold rows that are newer than the import that
+copied them", naming the tables. `docker compose logs app` shows it. Two scripts mend it, and each discards
+something:
+
+- **The old code did run after the move:** `deploy/redo-wts-core.sql`. It forgets the move and touches nothing
+  else, so the next start brings everything the old tables hold across, what the old code wrote included. It
+  discards what the new code wrote between the move and the day the old code was started (its spending, saved
+  briefings, reports and statements), which the old tables do not hold.
+- **The old code never ran after the move** (a false alarm: the server's clock was put back about the time of the
+  move): `deploy/undo-wts-core.sql`, which loses nothing then.
+
+Do not run `undo-wts-core.sql` to keep what the old code wrote: it writes the old tables afresh from the new ones,
+and discards exactly those rows. Either script is run as the undo script is, above (with the site stopped, and
+`redo-wts-core.sql` in place of `undo-wts-core.sql`); then `docker compose up -d`.
+
+**What the new code cannot see,** and so cannot refuse on: a row the old code wrote in the very second the move
+was made; a row with no time (the old `kv` and `questions` tables keep none); and what the old code changed in a
+row already there (a report closed, a statement decided, a briefing withdrawn): only rows added are seen.
+
+The copy made in step 1 of the import is the other way back, to the day of the move exactly; it is deleted 60 days
+after the move. After both dates, going back means putting back a backup made before the move, while one is still
+kept (60 are, so about two months).
+
+### Putting a backup back
+
+With the site stopped:
 
 ```bash
 docker compose stop app
@@ -571,7 +654,9 @@ The charity's repository checks every site each night (wts-core's decision recor
 token: set the same random value as `COUNCILS_CHECK_TOKEN` in `deploy/.env` here and as `FAMILY_CHECK_TOKEN` in
 the charity repository's Actions secrets, then `bash deploy/update.sh`. Until it is set, `/api/check` is not
 there (404). It gives counts and ages only: reports and statements waiting and for how many working days, pages
-hidden, the age of the newest backup and off-site copy, and how the last day's briefings ended. A question asked
+hidden, the age of the newest backup and off-site copy, how the last day's briefings ended, and the totals of the
+newest weekly report (numbers only, never a question: wts-core 0.3.0), from which the charity's check writes the
+family's weekly summary without reaching the server. A question asked
 with the token is written afresh, not replayed, and is kept apart from readers' in the statistics.
 
 ## A newer wts-core

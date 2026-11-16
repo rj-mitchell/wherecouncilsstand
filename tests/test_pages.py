@@ -129,6 +129,37 @@ def test_shell_helpers_escape_and_replace():
     assert with_text(page, None) == page and "needs JavaScript" not in with_text(page, "<p>x</p>")
 
 
+def test_the_pages_dates_are_written_as_the_sites_own_function_wrote_them_every_day_of_every_month():
+    """The readable pages write a date with the package's ``wts_core.dates.long_date`` (wts-core 0.3.0), where
+    api/plaintext.py had a function of its own. The site's own is copied here as it was, and the two give the same
+    text, byte for byte, for every day from the earliest a council's record can reach (25 February 2014) to the end
+    of 2030, given as a date, as a day's text and as a time's text (a statement's `shown_on`, a correction's day, a
+    vote's or a meeting's date); and nothing for nothing. The pages recorded from the site before the package
+    (tests/golden/pages.json, tests/test_parity.py) are unchanged. The one difference is where the server's
+    language is not English: the site's own then wrote the month in that language, and the package's never does.
+    The server's image sets no language, so it wrote English there too."""
+    from datetime import timedelta
+
+    from councils.api.plaintext import long_date
+
+    def the_sites_own(iso):                                 # api/plaintext.py before wts-core 0.3.0
+        if not iso:
+            return ""
+        d = iso if isinstance(iso, date) else date.fromisoformat(str(iso)[:10])
+        return f"{d.day} {d.strftime('%B %Y')}"
+
+    day, months = date(2014, 2, 25), set()
+    while day <= date(2030, 12, 31):
+        for given in (day, day.isoformat(), f"{day.isoformat()}T10:41:07+00:00"):
+            assert long_date(given) == the_sites_own(given), given
+        months.add((day.year, day.month))
+        day += timedelta(days=1)
+    assert len(months) == 203 and {m for _, m in months} == set(range(1, 13))
+    for nothing in (None, ""):
+        assert long_date(nothing) == the_sites_own(nothing) == ""
+    assert long_date("2026-11-16") == "16 November 2026" and long_date(date(2024, 2, 29)) == "29 February 2024"
+
+
 SOUTH_YORKSHIRE = "E47000002"
 
 

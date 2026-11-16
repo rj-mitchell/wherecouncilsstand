@@ -39,7 +39,7 @@ from wts_core.briefing import (
     desk_parts,
     sse,
 )
-from wts_core.cli import backup_ages, check_route, last_day_figures
+from wts_core.cli import backup_ages, check_route, last_day_figures, latest_week_figures
 from wts_core.observe import LOGGER, SqliteBriefingLog, json_logging
 from wts_core.ports import SYSTEM_CLOCK, SYSTEM_RANDOM, Clock, Random
 from wts_core.replies import Refused, Replies
@@ -370,11 +370,13 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     # Counts, ages and versions for whoever holds the family's check token, and for no one else (wts-core
     # docs/adr/0010): 404 with no token set on this site, 401 for a wrong one. Never a question, a name or a word
     # of a report: what is waiting and for how long, how old the newest backup and its off-site copy are, and how
-    # the last day's briefings ended.
+    # the last day's briefings ended, and the newest weekly report's totals (numbers only), from which the charity's
+    # nightly check writes the family's weekly summary without reaching the server.
     check = check_route(SITE, token=site_parts.check_token, replies=replies,
                         backups=lambda: backup_ages(Path(state_database.BACKUPS_FOLDER), state_database.BACKUPS,
                                                     clock=clock),
-                        figures=lambda: last_day_figures(site_parts.log, clock=clock), clock=clock)
+                        figures=lambda: last_day_figures(site_parts.log, clock=clock),
+                        weekly=lambda: latest_week_figures(site_parts.db), clock=clock)
 
     @app.get("/api/check", include_in_schema=False)
     def api_check(authorization: str | None = Header(None)):
@@ -526,14 +528,6 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             out.append({**r, "about": about or r["page"]})
         return out
 
-    def beside_a_hidden_briefing(statement: dict[str, Any], now: right_of_reply.Hidden) -> bool:
-        """Whether a statement sits beside a saved briefing that is shown as hidden because of what it cites."""
-        kind, key = statement["page"].split("/")[1:3]
-        if kind != "b" or not now.notes:
-            return False
-        saved = archive.get(key)
-        return saved is not None and now.instead_of_briefing(saved.id, saved.events) is not None
-
     @app.post("/api/statements")
     def add_statement(body: StatementBody, request: Request):
         """A statement as sent: held until the owner has confirmed who sent it, then published or declined."""
@@ -562,11 +556,12 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         except Refused as exc:
             raise HTTPException(422, str(exc)) from None
         rows = right_of_reply.published(replies, item, council.upper() or None)
-        # a statement beside a hidden item is hidden with it (the package sees to that); so is one beside a named
-        # vote of a council whose page is hidden, and every statement gathered on that council's page
+        # A statement beside a hidden item is hidden with it, and so is one beside a named vote of a council whose
+        # page is hidden or a briefing shown as hidden because of what it cites: the package sees to those
+        # (src/councils/replies.py, ``hidden_with``). Here, as before: every statement gathered on a hidden
+        # council's page, wherever it sits, is left out of what this route gives.
         now = hidden()
-        rows = [r for r in rows if now.note(r["page"]) is None and r["council"] not in now.councils
-                and not beside_a_hidden_briefing(r, now)]
+        rows = [r for r in rows if r["council"] not in now.councils]
         return {"statements": with_about(rows) if council else rows, "note": right_of_reply.NOT_ENDORSED}
 
     # ---- pages ---------------------------------------------------------------------------------------
@@ -657,8 +652,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             # statements are shown after the record, never in its description or structured data (decision 22)
             return (200, f"{c['name']} — Where Councils Stand", plaintext.council_description(c), url,
                     plaintext.council_data(c, url, base), plaintext.council_text(c) + plaintext.statements_text(
-                        with_about([r for r in right_of_reply.published(replies, council=c["gss"])
-                                    if now.note(r["page"]) is None and not beside_a_hidden_briefing(r, now)]),
+                        with_about(right_of_reply.published(replies, council=c["gss"])),
                         here=plaintext.council_path(c["gss"])))
 
         return readable("council", build)

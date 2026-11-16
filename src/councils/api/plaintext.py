@@ -12,6 +12,7 @@ from html import escape as e
 from typing import Any
 from urllib.parse import quote
 
+from wts_core.dates import long_date
 from wts_core.replies import safe_link
 
 SITE = "Where Councils Stand"
@@ -28,13 +29,6 @@ _NEEDS_JS = re.compile(r"\s*<noscript><p>This page needs JavaScript\..*?</noscri
 _HEAD_TAGS = re.compile(
     r'\s*<(?:title>[^<]*</title|meta name="(?:description|robots|twitter:card)"[^>]*|link rel="canonical"[^>]*|'
     r'meta property="og:(?:title|description|url|type|site_name|locale)"[^>]*)>', re.I)
-
-
-def long_date(iso: str | date | None) -> str:
-    if not iso:
-        return ""
-    d = iso if isinstance(iso, date) else date.fromisoformat(str(iso)[:10])
-    return f"{d.day} {d.strftime('%B %Y')}"
 
 
 def month_year(iso: str | None) -> str:

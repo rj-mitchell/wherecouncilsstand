@@ -233,3 +233,86 @@ def test_a_row_that_would_stop_the_import_is_named_and_the_import_does_stop_on_i
     assert status == 1 and "Statement 6 would stop the import: an entry of its log has no time" in said
     with pytest.raises(sqlite3.IntegrityError):
         open_state(site_settings(tmp_path / "other"), clock)
+
+
+def test_the_looks_own_sum_of_three_months_is_the_packages_at_month_ends_and_leap_days(tmp_path):
+    """wts-core docs/UPGRADING.md, "The look before the first move, and the day something lapses": the look is
+    piped into the old image's Python, where the package is not installed, so it keeps its own copy of the sum
+    (`months_before`). It is held to the package's here: for every day of five years, at the start, the middle
+    and the last second of the day, its cutoff is `replies.lapse_cutoff`; and on the old database, each statement
+    and report it says will lapse is one `replies.has_lapsed` says has lapsed, and no other, a second either side
+    of the cutoff, at month ends and leap days."""
+    import importlib.util
+    from datetime import UTC, datetime, timedelta
+
+    from wts_core.replies import has_lapsed, lapse_cutoff
+
+    spec = importlib.util.spec_from_file_location("before_wts_core", DEPLOY / "before-wts-core.py")
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+    assert script.MONTHS == 3
+
+    day = datetime(2024, 1, 1, tzinfo=UTC)
+    while day < datetime(2029, 1, 1, tzinfo=UTC):
+        for moment in (day, day.replace(hour=12), day.replace(hour=23, minute=59, second=59)):
+            assert script.months_before(moment, 3).isoformat(timespec="seconds") == lapse_cutoff(moment, 3), moment
+        day += timedelta(days=1)
+
+    path = old_database(tmp_path / "old")
+    nows = ["2026-11-13T12:00:00+00:00", "2026-05-31T09:30:00+00:00", "2027-05-31T23:59:59+00:00",
+            "2028-05-29T00:00:00+00:00", "2028-05-31T12:00:00+00:00", "2027-03-01T00:00:01+00:00",
+            "2028-02-29T12:00:00+00:00", "2026-12-31T23:59:59+00:00"]
+    for typed in nows:
+        now = datetime.fromisoformat(typed)
+        cutoff = datetime.fromisoformat(lapse_cutoff(now, 3))
+        for step in (-1, 0, 1):
+            at = (cutoff + timedelta(seconds=step)).isoformat()
+            con = sqlite3.connect(path)
+            con.execute("UPDATE statements SET at = ? WHERE id = 6", (at,))       # the one waiting
+            con.execute("UPDATE reports SET at = ? WHERE id = 4", (at,))          # open, with a contact
+            con.commit()
+            con.close()
+            said, stops = script.look(path, now)
+            assert not stops
+            assert any(line.startswith("Statement 6, sent") for line in said) is has_lapsed(at, now, 3), (typed, at)
+            assert any(line.startswith("Report 4, sent") for line in said) is has_lapsed(at, now, 3), (typed, at)
+            assert has_lapsed(at, now, 3) is (step < 0)
+
+
+def test_would_lapse_on_the_new_code_says_what_the_look_said_on_the_old_and_changes_nothing(tmp_path, monkeypatch):
+    """wts-core 0.3.0 gives the owner `councils would-lapse` (its CHANGELOG, "A new command, `would-lapse`"), in this
+    site's words (`cli._lapsing`): the sentences the look before the move says on the old code, of the same
+    statements and reports, with "would" for "will". It only reads: what it names is still waiting afterwards."""
+    from test_parity import environment
+    from typer.testing import CliRunner
+
+    from councils import cli
+
+    path = old_database(tmp_path / "old")
+    con = sqlite3.connect(path)
+    con.execute("UPDATE statements SET at = '2026-08-13T11:59:59+00:00' WHERE id = 6")
+    con.execute("UPDATE reports SET at = '2026-08-01T09:00:00+00:00' WHERE id = 4")
+    con.commit()
+    con.close()
+    _, looked = look(path)
+    assert "Statement 6, sent 2026-08-13 (92 days ago), will be declined as undecided." in looked
+    assert "Report 4, sent 2026-08-01 (104 days ago), will lose its contact address." in looked
+
+    environment(monkeypatch, tmp_path / "old")
+    monkeypatch.setattr(cli, "CLOCK", shared.Clock())
+    said = CliRunner().invoke(cli.app, ["would-lapse"])
+    assert (said.exit_code, said.stderr) == (0, ""), said.output
+    assert said.stdout.splitlines() == [
+        "Statement 6, sent 2026-08-13 (92 days ago), would be declined as undecided.",
+        "Report 4, sent 2026-08-01 (104 days ago), would lose its contact address.",
+        "They lapse at the next tidy: tonight's, or sooner, when a report or a statement is next sent or a reports "
+        "or statements command is next run."]
+    con = sqlite3.connect(path)
+    assert con.execute("SELECT status FROM wts_statements WHERE id = 6").fetchone() == ("pending",)
+    assert con.execute("SELECT contact FROM wts_reports WHERE id = 4").fetchone()[0]
+    con.close()
+    # asked on the day the statement was sent, twelve days after the report: nothing
+    monkeypatch.setattr(cli, "CLOCK", shared.Clock("2026-08-13T11:59:59+00:00"))
+    assert CliRunner().invoke(cli.app, ["would-lapse"]).stdout == (
+        "Nothing would lapse: no statement has waited, and no report with a contact address has been open, for "
+        "more than three months.\n")

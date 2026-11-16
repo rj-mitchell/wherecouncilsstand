@@ -1,28 +1,55 @@
 -- Going back to the site's code as it was before the shared package (wts-core), without losing what was sent,
--- saved or spent since. docs/OPERATIONS.md, "The state database", says when and how to run this.
+-- saved or spent since. docs/OPERATIONS.md, "Going back, and coming forward again", says when and how to run this.
 --
 -- VALID ONLY UNTIL 1 FEBRUARY 2027. From that day the nightly `councils tidy` drops the site's old tables, which
--- this script writes into: run after that, it stops at its first statement ("no such table") and changes nothing.
+-- this script writes into: run after that, it stops ("no such table") and changes nothing.
 -- After that day, going back means putting back a backup made before the move, while one is still kept.
 --
 -- Since the move, everything in the state database is kept in the package's tables (wts_spending, wts_briefings,
 -- wts_answer_cache, wts_reports, wts_statements, wts_statement_log, wts_kv). The site's old tables (kv, usage,
 -- questions, answer_cache, briefings, reports, statements) are kept until that day, with what the site promises
--- to delete taken out of them each night, and the old code reads only those. This writes the old tables again from the package's, in one transaction, so
--- the old code finds everything: what it had, and what has come in since.
+-- to delete taken out of them each night, and the old code reads only those. This writes the old tables again
+-- from the package's, in one transaction, so the old code finds everything: what it had, and what has come in
+-- since. Then it forgets the move (below).
 --
 --   docker compose stop app
---   docker compose run --rm -T app python -c "import sqlite3, sys; con = sqlite3.connect('/data/state.db'); con.executescript(sys.stdin.read())" < undo-wts-core.sql
+--   docker compose run --rm --no-deps -T app python -c "import sqlite3, sys; con = sqlite3.connect('/data/state.db'); con.executescript(sys.stdin.read())" < undo-wts-core.sql
+--   (then check out the version before the move, and: docker compose up -d --build)
 --
--- What the old tables can't hold is folded into what they can, or left behind: a statement the site removed for
--- breaking the rules is "withdrawn" there (with its reason); a statement that lapsed is "declined"; how a report
--- ended and any note for the corrections page are not kept; an item hidden while a concern is decided is shown
--- again (the old code can hide nothing); the record of each briefing stays in the package's tables, unread. A
--- visitor's code is on the day's spending rows only, as the package forgets it after its day; the old code looks
--- at no other day's. The package's tables are not changed, so the move can be made again later: delete the row
--- 'import:councils-state' from wts_schema first, and empty the wts_ tables named above, or the old rows would be
--- imported twice.
+-- Run it BEFORE the old code is started, and once: a second run stops at its first step ("CHECK constraint
+-- failed") and changes nothing.
+--
+-- WHAT THE OLD CODE IS GIVEN BACK. What the old tables can't hold is folded into what they can, or left behind: a
+-- statement the site removed for breaking the rules is "withdrawn" there (with its reason); a statement that
+-- lapsed is "declined"; how a report ended and any note for the corrections page are not kept; an item hidden
+-- while a concern is decided is shown again (the old code can hide nothing); the record of each briefing stays in
+-- the package's tables, unread. And what the package has forgotten stays forgotten. A spending row of a day gone
+-- by comes back with its day, its kind, its model, its counts and its cost, all exact, so every day's and month's
+-- total and both caps are what they were; with no visitor's code (an empty one), and with its day's midnight as
+-- its time (2026-11-15T00:00:00+00:00): which visitor a call of an earlier day was for, and at what time of day,
+-- is known to nothing any more. Today's rows go back whole, code and time. The old code counts a visitor's
+-- briefings for today only, and looks at no other day's code or time.
+--
+-- WHAT THIS DISCARDS. Anything the OLD code has written to the old tables since the move. It can have written
+-- there only if it was started after the move without this script being run first; the new code then refuses to
+-- start, and says so. If the old code's rows are the ones to keep, run deploy/redo-wts-core.sql instead, and read
+-- what that one discards.
+--
+-- IT ENDS BY FORGETTING THE MOVE: the package's copies of these rows are emptied, with what it keeps in summary
+-- of them (wts_account_months, and the month rows of wts_visitor_days: left behind, a second move would bring the
+-- same spending back beside them), and the move's mark is removed. The old tables are then the whole truth
+-- again, and the old code can run for as long as need be. When the new code is next started it makes the move
+-- afresh from the old tables, with whatever the old code has taken in meanwhile. Kept as they are: the record of
+-- each briefing, the weekly figures, and the list of hidden items (an item hidden on the new code is hidden
+-- again when the new code next starts).
 BEGIN IMMEDIATE;
+
+-- Only on a database that has been moved, and only once. Without the move's mark the package's tables are empty
+-- or were never made, and this script would write the old tables afresh from nothing: the INSERT below then
+-- fails ("CHECK constraint failed"), and nothing is changed.
+CREATE TEMP TABLE the_move_was_made (yes INTEGER NOT NULL CHECK (yes = 1));
+INSERT INTO the_move_was_made SELECT count(*) FROM wts_schema WHERE name = 'import:councils-state';
+DROP TABLE the_move_was_made;
 
 DELETE FROM kv WHERE key LIKE 'visitor_salt:%';
 INSERT INTO kv (key, value) SELECT key, value FROM wts_kv WHERE key LIKE 'visitor_salt:%';
@@ -70,5 +97,17 @@ SELECT s.id, s.at, s.item, s.about, s.name, s.role, s.text, coalesce(s.link, '')
                   AS entry
            FROM wts_statement_log l WHERE l.statement = s.id ORDER BY l.id)), '[]')
 FROM wts_statements s;
+
+-- Forgetting the move (the same statements as deploy/redo-wts-core.sql; tests/test_import.py keeps them the same).
+DELETE FROM wts_spending;
+DELETE FROM wts_account_months;
+DELETE FROM wts_visitor_days WHERE who != '*';
+DELETE FROM wts_answer_cache;
+DELETE FROM wts_briefings;
+DELETE FROM wts_reports;
+DELETE FROM wts_statement_log;
+DELETE FROM wts_statements;
+DELETE FROM wts_kv WHERE key LIKE 'visitor_salt:%';
+DELETE FROM wts_schema WHERE name = 'import:councils-state';
 
 COMMIT;

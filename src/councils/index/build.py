@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+from wts_core.adapters.lancedb import UNKNOWN_EMBEDDER
 from wts_core.ports import Embedder
 
 from councils import authority, store
@@ -189,7 +190,7 @@ class Indexer:
         built with says nothing until it is opened with its embedder: the embedder the settings name is loaded
         then, once. False if the vectors could not be kept (they are made again by the next embedding run)."""
         try:
-            if self.index.meta.embedder_id == "unknown" and self.index.stats()["vectors"]:
+            if self.index.meta.embedder_id == UNKNOWN_EMBEDDER and self.index.stats()["vectors"]:
                 self._embedder = self._embedder or get_embedder(self.settings)
                 self.index = open_index(self.settings, self._embedder)
             self.index.add_vectors([], rows, np.asarray(vectors, dtype=np.float32))

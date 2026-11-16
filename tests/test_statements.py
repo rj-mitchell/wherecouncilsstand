@@ -205,10 +205,17 @@ def test_the_owner_lists_publishes_updates_declines_and_withdraws_statements(own
                   "dem@barnsley.gov.uk")
     run = CliRunner().invoke
 
-    out = run(cli, ["statements", "list"]).output
+    listing = run(cli, ["statements", "list"])
+    out = listing.stdout
+    assert listing.stderr == ""                                 # the name it has now says nothing more
     assert f"#{first}" in out and f"#{second}" in out and "pending" in out and "confirm with: a@b.gov.uk" in out
     assert "(on no council's page: --council)" in out and f"(on {BARNSLEY}'s page)" in out and "(25 words)" in out
-    assert run(cli, ["list-statements"]).output == out          # the name the command had before still works
+    # The name the command had before still works. wts-core's CHANGELOG, 0.3.0, "An older name for a command, kept
+    # through RepliesCommands.also, says what replaces it": on standard error, before it does its work; standard
+    # output and the exit status are unchanged.
+    older = run(cli, ["list-statements"])
+    assert (older.exit_code, older.stdout) == (0, out)
+    assert older.stderr == '"list-statements" is an older name for this command: it is now "statements list".\n'
 
     # publishing needs a note of how the sender was confirmed: kept in the log, never shown
     r = run(cli, ["statements", "publish", str(first)])

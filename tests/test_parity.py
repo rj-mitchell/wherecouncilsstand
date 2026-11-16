@@ -732,6 +732,35 @@ NOT_DONE_NOW = {
 }
 
 
+# wts-core's CHANGELOG, 0.3.0, "An older name for a command, kept through RepliesCommands.also, says what replaces
+# it": on standard error, before the command does its work. Standard output and the exit status are unchanged. The
+# goldens were recorded under the older names, so every such run now has this one line more, and nothing else.
+NOW_CALLED = {"list-reports": "reports list", "close-report": "reports close", "list-statements": "statements list",
+              "publish-statement": "statements publish", "decline-statement": "statements decline",
+              "update-statement": "statements update", "withdraw-statement": "statements withdraw"}
+
+
+def older_name(old: str) -> str:
+    """What a command run under the name it had before the shared package says first, on standard error."""
+    return f'"{old}" is an older name for this command: it is now "{NOW_CALLED[old]}".\n'
+
+
+def without_the_older_names_notice(run: dict) -> dict:
+    """A command's run as the goldens hold it. Under an older name, the notice must be the first thing on standard
+    error, once, and is taken off; under any other name, or where Typer itself turned the command away before it
+    ran (exit status 2, kept as that alone), there must be none."""
+    name = run["args"][0]
+    if "stderr" not in run:
+        return run
+    if name not in NOW_CALLED:
+        assert "is an older name" not in run["stderr"], run
+        return run
+    notice = older_name(name)
+    assert run["stderr"].startswith(notice) and run["stderr"].count("is an older name") == 1, run
+    assert "is an older name" not in run["stdout"], run
+    return {**run, "stderr": run["stderr"][len(notice):]}
+
+
 def listed(output: str) -> list[str]:
     """A listing cut into its reports or statements: each begins "#<number>" at the start of a line."""
     import re
@@ -748,7 +777,8 @@ def test_the_owners_commands_print_what_they_did(owner):
         typed = " ".join(was["args"])
         seen[typed] = seen.get(typed, 0) + 1
         clock.advance(61)
-        now = {"args": was["args"], **command([a.replace("<tmp>", str(tmp)) for a in was["args"]], tmp)}
+        now = without_the_older_names_notice(
+            {"args": was["args"], **command([a.replace("<tmp>", str(tmp)) for a in was["args"]], tmp)})
         if typed in NOT_DONE_NOW and not (typed in (CHECKED_WORDS, "withdraw-statement 4", "close-report 1")
                                           and seen[typed] == 1):
             where, line, reason = NOT_DONE_NOW[typed]
@@ -805,6 +835,10 @@ def test_the_owners_commands_under_their_new_names_do_the_same(owner):
     assert command(["statements", "list", "--all"], tmp)["stdout"] == command(["list-statements", "--all"], tmp)[
         "stdout"]
     assert listed(command(["reports", "list"], tmp)["stdout"]) == listed(command(["list-reports"], tmp)["stdout"])
+    # and only the older name says, on standard error, what the command is called now (wts-core 0.3.0)
+    assert command(["statements", "list", "--all"], tmp)["stderr"] == ""
+    assert command(["list-statements", "--all"], tmp)["stderr"] == older_name("list-statements")
+    assert command(["close-report", "999"], tmp)["stderr"] == older_name("close-report") + "error: no open report 999\n"
     replies = app.state.councils.replies
     assert [s["status"] for s in sorted(replies.statements(), key=lambda s: s["id"])] == [
         "published", "published", "declined", "withdrawn", "pending"]

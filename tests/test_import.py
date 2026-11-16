@@ -27,6 +27,7 @@ from test_parity import (  # noqa: E402
     environment,
     kept,
     listed,
+    older_name,
     site_settings,
     statements_marked,
 )
@@ -35,6 +36,27 @@ from councils.state import OLD_TABLE_NAMES, open_state  # noqa: E402
 
 MINE, OTHER = shared.visitor_of(shared.ADDRESS), shared.visitor_of("203.0.113.7")
 ROOT = Path(__file__).resolve().parents[1]
+
+# What `councils tidy` prints before its lines for the old tables and the file, since wts-core 0.3.0 (its
+# CHANGELOG, "The nightly tidy does more, in a fixed order, and prints more lines"): the package's own deletions,
+# of which the notes of failed briefings (this site keeps none), the visitor secrets and the cached answers are
+# new lines, and then the site's one step, the right of reply's.
+def tidy_lines(codes: int, secrets: int, cached: int, right_of_reply: str) -> list[str]:
+    def counted(n: int, one: str) -> str:
+        return f"{n} {one}{'' if n == 1 else 's'}"
+
+    return ["Deleted 0 records of briefings older than 13 months.",
+            "Removed the question from 0 records of failed briefings older than 90 days.",
+            "Deleted 0 weekly report files older than 13 months.",
+            f"Forgot the visitor codes on {counted(codes, 'spending row')} from before today.",
+            "Deleted 0 notes of failed briefings older than 90 days.",
+            f"Deleted {counted(secrets, 'visitor secret')} of earlier days.",
+            f"Deleted {counted(cached, 'cached answer')} older than the 168 hours the site keeps one.",
+            "Deleted 0 copies of the database made before an import, older than 60 days.",
+            f"right of reply: {right_of_reply}"]
+
+
+AFRESH = "Wrote the database out afresh: nothing deleted is left in the file."
 
 
 def old_database(folder: Path) -> Path:
@@ -207,7 +229,9 @@ def test_reports_and_statements_are_kept_and_listed_as_before(moved):
     # the owner's listings: each statement's and report's own lines as before; open takedown requests first now
     for run in golden["listed"]:
         got = command(run["args"], tmp)
-        assert got["exit_code"] == run["exit_code"] == 0 and got["stderr"] == ""
+        # each was recorded under the name the command had before, which now says so first, on standard error
+        # (wts-core's CHANGELOG, 0.3.0, "An older name for a command ... says what replaces it"), and nothing else
+        assert got["exit_code"] == run["exit_code"] == 0 and got["stderr"] == older_name(run["args"][0])
         if run["args"][0] == "list-statements":
             assert got["stdout"] == run["stdout"], run["args"]
         else:
@@ -255,10 +279,21 @@ def old_rows(path: Path) -> dict:
     return out
 
 
-def undo(path: Path) -> None:
+def run_script(path: Path, name: str) -> None:
+    """One of the scripts in deploy/, run as docs/OPERATIONS.md says: the whole file, on the database."""
     con = sqlite3.connect(path)
-    con.executescript((ROOT / "deploy" / "undo-wts-core.sql").read_text())
-    con.close()
+    try:
+        con.executescript((ROOT / "deploy" / name).read_text())
+    finally:
+        con.close()          # a script that stopped part-way is rolled back: nothing is changed
+
+
+def undo(path: Path) -> None:
+    run_script(path, "undo-wts-core.sql")
+
+
+def redo(path: Path) -> None:
+    run_script(path, "redo-wts-core.sql")
 
 
 def test_going_back_straight_after_the_move_gives_the_old_code_what_it_had(moved):
@@ -322,6 +357,203 @@ def test_going_back_later_carries_across_what_has_come_in_since(moved, monkeypat
     # the new answer, and the two still within their week; the one long expired was dropped when it was stored
     assert {"an-hour-old", "six-days-old"} < {c["key"] for c in after["answer_cache"]}
     assert len(after["answer_cache"]) == 3
+
+
+# ---- going back without the undo script, and coming forward again (wts-core 0.3.0) --------------------------------
+
+# The old code's kind of write, as its own tables took one (tests/golden/old-state.sql has their shape): a model
+# call recorded, a briefing saved, a reader's report, a statement sent, an answer cached. Each a minute after the move.
+AFTER_THE_MOVE = "2026-11-13T12:01:00+00:00"
+OLD_CODE_WRITES = {
+    "usage": ("INSERT INTO usage (at, day, visitor, kind, model, input_tokens, output_tokens, cache_read_tokens, "
+              f"cache_write_tokens, cost_usd) VALUES ('{AFTER_THE_MOVE}', '2026-11-13', '{MINE}', 'answer', "
+              "'claude-sonnet-5-5', 9000, 700, 0, 0, 0.0375)"),
+    "briefings": ("INSERT INTO briefings (id, at, question, options, events) VALUES ('oldcode0001', "
+                  f"'{AFTER_THE_MOVE}', 'Asked of the old code after the move?', '{{}}', '[]')"),
+    "reports": ("INSERT INTO reports (at, kind, page, message, contact) VALUES "
+                f"('{AFTER_THE_MOVE}', 'error', '', 'Sent to the old code after the move.', '')"),
+    "statements": ("INSERT INTO statements (at, page, council, name, role, text) VALUES "
+                   f"('{AFTER_THE_MOVE}', '/councils/E08000038', 'E08000038', 'A B', 'Councillor', 'Sent to the old "
+                   "code.')"),
+    "answer_cache": f"INSERT INTO answer_cache (key, at, events) VALUES ('cached-by-the-old-code', '{AFTER_THE_MOVE}', '[]')",
+}
+
+
+def written_by_the_old_code(path: Path, *tables: str) -> None:
+    con = sqlite3.connect(path)
+    for table in tables:
+        con.execute(OLD_CODE_WRITES[table])
+    con.commit()
+    con.close()
+
+
+@pytest.mark.parametrize("table", sorted(OLD_CODE_WRITES))
+def test_a_row_the_old_code_wrote_after_the_move_stops_the_new_code_and_the_words_name_the_mend(moved, table):
+    """wts-core's CHANGELOG, 0.3.0, "state.StateError, and Import(written_at=…)": the site is put back on its old
+    code without deploy/undo-wts-core.sql, the old code writes to its own tables, and the new code is deployed
+    again. The import is marked as done and would be skipped: what was written meanwhile would be silently
+    missing. The new code refuses to open the database, changes nothing, and says what to run."""
+    from wts_core.state import StateError
+
+    tmp, clock, path, app = moved
+    clock.advance(3600)
+    open_state(site_settings(tmp / "old"), clock)                  # as it stands, the database opens
+    written_by_the_old_code(path, table)
+    before = everything_in(path)
+    with pytest.raises(StateError) as refused:
+        open_state(site_settings(tmp / "old"), clock)
+    said = str(refused.value)
+    assert f"{table} has 1 row written after the import 'councils-state' ran (2026-11-13T12:00:00+00:00)" in said
+    assert "Nothing has been changed" in said and everything_in(path) == before
+    # the package's words for the mend, and then this site's: which of its two scripts, and what each discards
+    assert "run the site's script for undoing the move" in said
+    assert "deploy/redo-wts-core.sql, which keeps what the old code wrote" in said
+    assert "Do not run undo-wts-core.sql to keep what the old code wrote" in said
+    assert 'docs/OPERATIONS.md, "Going back, and coming forward again"' in said
+    # and the site does not start, nor does a command of the owner's
+    from councils.api.app import create_app
+
+    with pytest.raises(StateError):
+        create_app(site_settings(tmp / "old"), clock=clock)
+    assert isinstance(command(["reports", "list"], tmp)["error"], str)
+
+
+def test_the_mend_brings_across_what_the_old_code_wrote_meanwhile(moved):
+    """deploy/redo-wts-core.sql forgets the move and touches nothing else: the next start of the new code makes
+    the move afresh, and what the old code wrote since is there, counted and found."""
+    from wts_core.state import StateError
+
+    tmp, clock, path, app = moved
+    spent = app.state.councils.parts.spending.spent_since("2026-11-13")
+    clock.advance(3600)
+    written_by_the_old_code(path, *OLD_CODE_WRITES)
+    old_tables_then = old_tables(path)
+    with pytest.raises(StateError):
+        open_state(site_settings(tmp / "old"), clock)
+    redo(path)
+    assert old_tables(path) == old_tables_then                     # the old tables are not touched
+    assert count(path, "wts_spending") == count(path, "wts_briefings") == count(path, "wts_reports") == 0
+    assert count(path, "wts_schema", "name = 'import:councils-state'") == 0
+    _, _, again = a_site(tmp / "old", clock, state=open_state(site_settings(tmp / "old"), clock))
+    site = again.state.councils
+    assert site.parts.spending.spent_since("2026-11-13") == round(spent + 0.0375, 6)
+    assert site.parts.spending.briefings_today(visitor=MINE) == 3              # two before the move, and this one
+    assert site.parts.archive.get("oldcode0001").question == "Asked of the old code after the move?"
+    assert site.parts.cache.get("cached-by-the-old-code", 168) == []
+    assert "Sent to the old code after the move." in [r["message"] for r in site.replies.reports()]
+    assert site.replies.statement(8)["text"] == "Sent to the old code."
+    assert count(path, "wts_schema", "name = 'import:councils-state'") == 1
+    open_state(site_settings(tmp / "old"), clock)                  # and it opens from then on
+    # a second run of either script on a database whose move has been forgotten changes nothing
+    redo(path)
+    forgotten = everything_in(path)
+    for script in (redo, undo):
+        with pytest.raises(sqlite3.IntegrityError, match="CHECK constraint failed"):
+            script(path)
+        assert everything_in(path) == forgotten
+
+
+def test_the_undo_script_run_in_that_state_would_discard_what_the_old_code_wrote(moved):
+    """Why the refusal's words name deploy/redo-wts-core.sql and warn against the other: deploy/undo-wts-core.sql
+    writes the old tables afresh from the package's. That is right before the old code is started, and for the
+    false alarm (the server's clock put back). Run after the old code has written, it discards those rows, as
+    its own heading says."""
+    tmp, clock, path, app = moved
+    clock.advance(3600)
+    written_by_the_old_code(path, "briefings", "reports")
+    undo(path)
+    assert count(path, "briefings", "id = 'oldcode0001'") == 0
+    assert count(path, "reports", "message = 'Sent to the old code after the move.'") == 0
+    assert "WHAT THIS DISCARDS. Anything the OLD code has written" in (ROOT / "deploy" / "undo-wts-core.sql").read_text()
+
+
+def test_the_nightly_tidy_of_the_old_tables_never_looks_like_the_old_code_writing(moved):
+    """wts-core docs/UPGRADING.md, "Going back, and coming forward again": "The nightly tidy of the old tables
+    never trips this: it changes and deletes rows, and adds none." A week of nights on the new code, with readers
+    and the owner at work each day: the database opens every morning."""
+    from fastapi.testclient import TestClient
+
+    tmp, clock, path, app = moved
+    client = TestClient(app)
+    for night in range(14, 21):
+        # the day's work on the new code: a report, a briefing, an owner's decision (rows of the package's tables)
+        client.post("/api/report", json={"kind": "error", "page": "", "message": f"Sent before the night of {night}."})
+        client.post("/api/ask", json={"question": f"What have councils decided about bins, asked before {night}?"})
+        clock.set(f"2026-11-{night}T04:30:00+00:00")
+        tidied = command(["tidy"], tmp)
+        assert tidied["exit_code"] == 0, tidied
+        assert "Kept the site's old tables within what it promises" in tidied["stdout"]
+        clock.set(f"2026-11-{night}T09:00:00+00:00")
+        open_state(site_settings(tmp / "old"), clock)
+    # the old tables were changed by those nights (codes, counts and the old secret gone), and nothing was added
+    assert count(path, "usage", "visitor IS NOT NULL") == 0 and count(path, "questions") == count(path, "kv") == 0
+    assert count(path, "usage") == 12 and count(path, "reports") == 5 and count(path, "briefings") == 4
+
+
+def test_going_back_and_coming_forward_again_counts_nothing_twice(moved):
+    """wts-core docs/UPGRADING.md, "What the undo script must clear, on every site": the undo script ends by
+    forgetting the move, with what the package keeps in summary of the spending rows (wts_account_months, and the
+    month rows of wts_visitor_days). The old code then runs; the new code, started again, makes the move afresh.
+    The spending, and the report of who it was for, are what they were, once."""
+    from fastapi.testclient import TestClient
+
+    tmp, clock, path, app = moved
+    client = TestClient(app)
+    assert shared.events_of(client.post("/api/ask", json={"question": "What have councils decided about bins?"}
+                                        ).text)[-1]["type"] == "final"
+    clock.set("2026-11-14T04:30:00+00:00")
+    assert command(["tidy"], tmp)["exit_code"] == 0               # the night's forgetting: codes, times of day
+    spending = app.state.councils.parts.spending
+    month, year = spending.spent_since("2026-11"), spending.spent_since("2026")
+    lines = spending.by_account("2026-11-01")
+    assert count(path, "wts_visitor_days", "who != '*'") > 0      # the public's visitors, by the month
+    calls = count(path, "wts_spending", "at >= '2026-11'")
+    assert round(sum(line.spent_usd for line in lines), 6) == month and sum(line.calls for line in lines) == calls
+    rows = count(path, "wts_spending")
+
+    undo(path)
+    # what the old code is given back, as the script's heading says: every row with its day and its cost, exact;
+    # of a day gone by, no visitor's code and its day's midnight as its time
+    back = old_rows(path)["usage"]
+    assert len(back) == rows and round(sum(u["cost_usd"] for u in back if u["day"] >= "2026-11-01"), 6) == month
+    assert round(sum(u["cost_usd"] for u in back), 6) == year
+    assert all(u["at"] == f"{u['day']}T00:00:00+00:00" and not u["visitor"] for u in back)
+    # and the move is forgotten: the package's copies are empty, with what summarised them, and the mark is gone
+    for table in ("wts_spending", "wts_account_months", "wts_answer_cache", "wts_briefings", "wts_reports",
+                  "wts_statements", "wts_statement_log"):
+        assert count(path, table) == 0, table
+    assert count(path, "wts_visitor_days", "who != '*'") == 0
+    assert count(path, "wts_kv", "key LIKE 'visitor_salt:%'") == 0
+    assert count(path, "wts_schema", "name = 'import:councils-state'") == 0
+    assert count(path, "wts_kv", "key = 'site'") == 1 and count(path, "wts_briefing_log") > 0   # kept as they are
+
+    # the old code runs for a day, and takes a briefing in
+    written_by_the_old_code(path, "usage", "briefings")
+    clock.set("2026-11-15T09:00:00+00:00")
+    _, _, again = a_site(tmp / "old", clock, state=open_state(site_settings(tmp / "old"), clock))
+    spending = again.state.councils.parts.spending
+    assert count(path, "wts_spending") == rows + 1                # each row once, and the old code's one
+    assert spending.spent_since("2026-11") == round(month + 0.0375, 6)
+    assert spending.spent_since("2026") == round(year + 0.0375, 6)
+    assert command(["tidy"], tmp)["exit_code"] == 0
+    lines = spending.by_account("2026-11-01")
+    assert round(sum(line.spent_usd for line in lines), 6) == round(month + 0.0375, 6)
+    assert sum(line.calls for line in lines) == calls + 1
+    assert again.state.councils.parts.archive.get("oldcode0001") is not None
+    assert again.state.councils.parts.archive.get("abc123") is not None
+
+
+def test_the_two_scripts_forget_the_move_with_the_same_statements():
+    def forgetting(name: str) -> list[str]:
+        text = (ROOT / "deploy" / name).read_text()
+        return [line for line in text[text.index("-- Forgetting the move"):].splitlines()
+                if line and not line.startswith("--")]
+
+    assert forgetting("undo-wts-core.sql") == forgetting("redo-wts-core.sql")
+    assert "DELETE FROM wts_account_months;" in forgetting("undo-wts-core.sql")
+    assert "DELETE FROM wts_visitor_days WHERE who != '*';" in forgetting("undo-wts-core.sql")
+    assert forgetting("undo-wts-core.sql")[-2:] == ["DELETE FROM wts_schema WHERE name = 'import:councils-state';",
+                                                    "COMMIT;"]
 
 
 # ---- the old tables after the move: kept within the site's promises, then dropped ----------------------------------
@@ -411,7 +643,15 @@ def test_the_old_tables_keep_nothing_the_site_has_promised_to_delete_and_then_go
     assert old("SELECT key FROM kv") == [("visitor_salt:2026-11-13",)]
     # 5. answers in the old cache past their week
     assert old("SELECT min(at) >= '2026-11-06' , count(*) FROM answer_cache") == [(1, 2)]
-    assert "Kept the site's old tables within what it promises" in said and "dropped on 2027-02-01" in said
+    # What the command says, line by line and in the order it works (wts-core's CHANGELOG, 0.3.0, "The nightly
+    # tidy does more, in a fixed order, and prints more lines"): the package's own deletions; then the site's step,
+    # the right of reply's; then the old tables, AFTER it, so an address the right of reply deletes tonight is gone
+    # from the old row tonight; and last the file written out afresh. The site's own second pass over the old
+    # tables and its own VACUUM, which 0.2.1 needed, are gone (tidy_lines).
+    nothing = "0 confirming addresses deleted, 0 statements lapsed undecided, 0 old reports' contact addresses deleted"
+    assert said.splitlines() == tidy_lines(codes=6, secrets=1, cached=1, right_of_reply=nothing) + [
+        "Kept the site's old tables within what it promises: 11 rows changed or deleted. They are dropped on "
+        "2027-02-01.", AFRESH]
 
     # the next night: the day's codes and secret have had their day
     clock.set("2026-11-14T04:00:00+00:00")
@@ -424,7 +664,13 @@ def test_the_old_tables_keep_nothing_the_site_has_promised_to_delete_and_then_go
     run("tidy")
     assert set(OLD_TABLE_NAMES) <= open_state(s, clock).tables()
     clock.set("2027-02-01T04:00:00+00:00")
-    assert "Dropped the site's old tables" in run("tidy")["stdout"]
+    # the command's own line says which tables went (0.2.1: the site's own second pass dropped them first, and
+    # this line was never printed), after the right of reply's line and before the last
+    assert run("tidy")["stdout"].splitlines()[-3:] == [
+        "right of reply: 0 confirming addresses deleted, 0 statements lapsed undecided, 0 old reports' contact "
+        "addresses deleted",
+        "Dropped the site's old tables, kept since it moved to the shared package: kv, usage, questions, "
+        "answer_cache, briefings, reports, statements.", AFRESH]
     tables = open_state(s, clock).tables()
     assert not set(OLD_TABLE_NAMES) & tables and {"wts_spending", "wts_briefings", "wts_statements"} <= tables
     assert count(path, "wts_spending") == 14 and count(path, "wts_briefings") > 0 and count(path, "wts_statements") == 7
@@ -448,10 +694,39 @@ def test_the_old_tables_keep_nothing_the_site_has_promised_to_delete_and_then_go
     files = [f for f in s.data_dir.rglob("*") if f.is_file() and f.name.startswith("state")]
     assert [f.name for f in files] == ["state.db"]
     # nor in the bytes of either file: SQLite leaves what it deletes in a file's unused space, and a dropped
-    # table's rows whole, so the tidy ends by writing the database out afresh (councils.state.write_afresh)
+    # table's rows whole, so the tidy ends by writing the database out afresh (the package's own last step since
+    # wts-core 0.3.0; until then the site's own)
     for address in addresses:
         for file in (path, tmp / "restored.db"):
             assert address.encode() not in file.read_bytes(), (address, file.name)
+
+
+def test_the_tidy_says_each_thing_it_did_once_and_in_order_on_a_quiet_night(moved):
+    """wts-core's CHANGELOG, 0.3.0, "The nightly tidy does more, in a fixed order, and prints more lines": the
+    whole of what `councils tidy` prints, on the night of the move and the night after. Nothing is said twice:
+    the old tables have one line, the command's own, and the file is written out afresh once, last."""
+    tmp, clock, path, app = moved
+    nothing = "0 confirming addresses deleted, 0 statements lapsed undecided, 0 old reports' contact addresses deleted"
+    first = command(["tidy"], tmp)
+    assert (first["exit_code"], first["stderr"]) == (0, "")
+    # the night of the move: the codes of the four spending rows of days gone by, the cached answer long past its
+    # week (0.2.1 left it until the next answer was stored), and in the old tables what matches both
+    assert first["stdout"].splitlines() == tidy_lines(
+        codes=4, secrets=0, cached=1, right_of_reply="1 confirming addresses deleted, 0 statements lapsed "
+        "undecided, 0 old reports' contact addresses deleted") + [
+        "Kept the site's old tables within what it promises: 8 rows changed or deleted. They are dropped on "
+        "2027-02-01.", AFRESH]
+    clock.set("2026-11-14T04:30:00+00:00")
+    second = command(["tidy"], tmp)
+    assert (second["exit_code"], second["stderr"]) == (0, "")
+    # the next night: the day of the move is over, so its rows' codes and its secret go
+    assert second["stdout"].splitlines() == tidy_lines(codes=7, secrets=1, cached=0, right_of_reply=nothing) + [
+        "Kept the site's old tables within what it promises: 10 rows changed or deleted. They are dropped on "
+        "2027-02-01.", AFRESH]
+    again = command(["tidy"], tmp)["stdout"].splitlines()        # run twice in a night: nothing is left to do
+    assert again == tidy_lines(codes=0, secrets=0, cached=0, right_of_reply=nothing) + [
+        "Kept the site's old tables within what it promises: 0 rows changed or deleted. They are dropped on "
+        "2027-02-01.", AFRESH]
 
 
 def test_a_database_from_before_the_right_of_reply_is_brought_across_without_statements(tmp_path, monkeypatch):

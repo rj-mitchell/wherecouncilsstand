@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 from test_api import events, rows, site_with
-from test_pipeline import TODAY, FakeClient, as_model, settings  # noqa: F401 - the fixture
+from test_pipeline import BARNSLEY, TODAY, FakeClient, as_model, settings  # noqa: F401 - the fixture
 from typer.testing import CliRunner
 from wts_core.adapters.hashing import HashingEmbedder
 from wts_core.observe import LOGGER
@@ -188,6 +188,91 @@ def test_tidy_deletes_what_the_privacy_page_says_is_deleted(asked, monkeypatch):
     # (what the same command does to the tables the site kept before the shared package: tests/test_import.py)
 
 
+def test_propose_questions_never_proposes_a_briefing_hidden_withdrawn_or_under_an_open_report(settings, monkeypatch):  # noqa: F811
+    """wts-core 0.3.0, `councils propose-questions` (its CHANGELOG, "propose-questions"; docs/UPGRADING.md, step 8):
+    the site says which saved briefings' questions are never proposed as test questions (``cli._never_proposed``),
+    as its briefing page decides what to show. Four briefings, each written and each flagged by the checks (the
+    stand-in model adds a loaded word and a sentence with no citation), so each is a candidate: one is left alone,
+    one is hidden by its own address, one is withdrawn, and one has a report about it that is still open. Only the
+    first is proposed. And a briefing that cites a council's minutes is not proposed while that council's page is
+    hidden, and is again once it is shown."""
+    monkeypatch.setenv("COUNCILS_DATA_DIR", str(settings.data_dir))
+    (settings.data_dir / "settings.local.toml").write_text(LOCAL)
+    c, _, site, _ = site_with(settings, per_visitor_daily_questions=20)
+    ids = {}
+    for name in ("left alone", "hidden", "withdrawn", "reported"):
+        final = events(c.post("/api/ask", json={"question": f"{BINS[:-1]}, {name}?"}))[-1]
+        assert final["type"] == "final", final
+        ids[name] = final["briefing_id"]
+    run = CliRunner().invoke
+    assert run(cli.app, ["hide", f"/b/{ids['hidden']}", "--note", "A concern about it is being decided."]).exit_code == 0
+    assert run(cli.app, ["withdraw", "--reason", "It gave the wrong year.", "--", ids["withdrawn"]]).exit_code == 0
+    assert c.post("/api/report", json={"kind": "error", "message": "The year in this briefing is wrong.",
+                                       "page": f"/b/{ids['reported']}"}).status_code == 200
+
+    # the site's own answer, for each, without leaning on the record's marks (withdrawn, corrected, reported)
+    assert {name: cli._never_proposed(bid) for name, bid in ids.items()} == {
+        "left alone": False, "hidden": True, "withdrawn": True, "reported": True}
+    assert cli._never_proposed("noSuchBrief") is True
+
+    def proposed(to: Path) -> str:
+        out = run(cli.app, ["propose-questions", "--since", "24h", "--to", str(to)])
+        assert out.exit_code == 0, out.output
+        return Path(out.output.splitlines()[0]).read_text()
+
+    text = proposed(settings.data_dir / "first")
+    assert f"saved as {ids['left alone']}" in text and "left alone?" in text
+    for name in ("hidden", "withdrawn", "reported"):
+        assert ids[name] not in text and f"{name}?" not in text, name
+
+    # hidden because of what it cites: the briefing was written from Barnsley's minutes
+    assert run(cli.app, ["hide", f"/councils/{BARNSLEY}", "--note", "A concern is being decided."]).exit_code == 0
+    assert cli._never_proposed(ids["left alone"]) is True
+    assert ids["left alone"] not in proposed(settings.data_dir / "while-hidden")
+    assert run(cli.app, ["unhide", f"/councils/{BARNSLEY}"]).exit_code == 0
+    assert cli._never_proposed(ids["left alone"]) is False
+    # and a report once closed no longer keeps the site from proposing it (the record still does: it was reported)
+    (report,) = [r["id"] for r in site.replies.reports()]
+    assert run(cli.app, ["reports", "close", str(report)]).exit_code == 0
+    assert cli._never_proposed(ids["reported"]) is False
+    assert ids["reported"] not in proposed(settings.data_dir / "after-closing")
+
+
+def only_numbers(value) -> bool:
+    """Whether a part of the check's answer holds numbers, yes or no and nothing else, however it is nested."""
+    if isinstance(value, dict):
+        return all(only_numbers(v) for v in value.values())
+    if isinstance(value, list):
+        return all(only_numbers(v) for v in value)
+    return value is None or isinstance(value, (bool, int, float))
+
+
+def test_the_familys_check_gets_the_newest_weekly_reports_totals_and_no_question(asked, monkeypatch):
+    """wts-core 0.3.0: the check's answer carries the totals of the newest weekly report the site has saved
+    (``latest_week_figures``): the week's name and numbers. The weekly report itself, on the server, quotes
+    readers' questions (those that found no records, the themes); none of that is in the check's answer."""
+    site, cfg, _ = asked
+    monkeypatch.setenv("COUNCILS_CHECK_TOKEN", "the-family-token")
+    with_token = {"Authorization": "Bearer the-family-token"}
+    later = FixedClock(datetime.now(UTC) + timedelta(days=7))               # the week just gone
+    monkeypatch.setattr(cli, "CLOCK", later)
+    c = TestClient(create_app(cfg, clock=later))
+    assert c.get("/api/check", headers=with_token).json()["weekly"] == {"week": None, "figures": {}}
+
+    saved = CliRunner().invoke(cli.app, ["weekly-report"])
+    assert saved.exit_code == 0, saved.output
+    page = Path(saved.output.splitlines()[0])
+    answer = c.get("/api/check", headers=with_token)
+    weekly = answer.json()["weekly"]
+    assert set(weekly) == {"week", "figures"} and weekly["week"] == page.stem
+    assert re.fullmatch(r"\d{4}-W\d{2}", weekly["week"])
+    assert weekly["figures"]["questions"] == 3
+    assert {k: v for k, v in weekly["figures"]["by_outcome"].items() if v} == {"completed": 1, "cached": 1, "error": 1}
+    assert only_numbers(weekly["figures"])
+    text = answer.text.lower()
+    assert "bin collections" not in text and "recycling" not in text and "the-family-token" not in text
+
+
 def test_every_command_the_timers_run_is_one_the_site_has():
     """deploy/*.service run `councils <command>` in the container: each must exist, with the options given."""
     run = CliRunner().invoke
@@ -234,7 +319,11 @@ def test_the_familys_check_gets_counts_and_ages_and_nothing_a_reader_wrote(setti
     answer = c.get("/api/check", headers=with_token)
     assert answer.status_code == 200
     body = answer.json()
-    assert set(body) == {"site", "at", "versions", "waiting", "backups", "figures"} and body["site"] == "councils"
+    # wts-core's CHANGELOG, 0.3.0, "cli.latest_week_figures(db) and check_route(..., weekly=…)": the answer has one
+    # more key, the newest weekly report's totals, from which the charity's nightly check writes the family's
+    # weekly summary without reaching the server. No weekly report has been saved here yet.
+    assert set(body) == {"site", "at", "versions", "waiting", "backups", "figures", "weekly"}
+    assert body["site"] == "councils" and body["weekly"] == {"week": None, "figures": {}}
     assert body["waiting"] == {"reports": 1, "statements": 0, "hidden": 0, "oldest_working_days": 0}
     assert set(body["backups"]) == {"newest_hours", "offsite_hours", "offsite_ok"}
     assert body["figures"]["briefings"] == 1 and body["figures"]["checks"] == 2 and body["figures"]["errors"] == 0

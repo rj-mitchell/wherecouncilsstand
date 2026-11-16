@@ -215,6 +215,32 @@ def test_reading_a_question_is_priced_as_the_model_that_read_it(settings):  # no
     assert asked == ["claude-sonnet-5-5"] * 2
 
 
+def test_a_reading_of_the_question_that_was_paid_for_and_could_not_be_read_is_counted(client):
+    """wts-core's CHANGELOG, 0.3.0, "`ModelClient.structured` raises `ports.NoStructuredAnswer` whenever an
+    answered call cannot be read into the schema": the error carries what the call cost. The model declines to
+    read the question (it was paid for: 400 tokens in, 30 out); the built-in rules read it, as before, and the
+    briefing is written. The reading's cost is now in the spending, and so counts towards the caps, where before
+    0.3.0 it was counted nowhere. The reader is sent neither the cost nor why the model could not read it."""
+    from types import SimpleNamespace as NS
+
+    c, fake, site, _ = client
+    fake.messages.parse = lambda **kw: NS(stop_reason="refusal", parsed_output=None, content=[],
+                                          usage=NS(input_tokens=400, output_tokens=30, cache_read_input_tokens=0,
+                                                   cache_creation_input_tokens=0))
+    evs = events(c.post("/api/ask", json={"question": "What have councils decided about bin collections?"}))
+    assert evs[-1]["type"] == "final" and evs[-1]["answer"]["citations_total"] == 1
+    plan = next(e for e in evs if e["type"] == "plan")
+    assert "usage" not in plan and "parse_error" not in plan
+    assert rows(site, "SELECT kind, model, input_tokens, output_tokens FROM wts_spending ORDER BY id") == [
+        ("parse", "claude-haiku-5-5", 400, 30), ("answer", "claude-sonnet-5-5", 1000, 200)]
+    (record,) = rows(site, "SELECT input_tokens, output_tokens FROM wts_briefing_log")
+    assert record == (1400, 230)                                  # and in the briefing's own record of its cost
+    # a reading that failed with nothing paid for (a bad key, the network) is counted nowhere, as before
+    fake.messages.parse = lambda **kw: (_ for _ in ()).throw(RuntimeError("the network is down"))
+    assert events(c.post("/api/ask", json={"question": "What have councils decided about recycling?"}))[-1]
+    assert rows(site, "SELECT count(*) FROM wts_spending WHERE kind = 'parse'") == [(1,)]
+
+
 def test_a_briefing_id_already_in_use_is_tried_again(client, monkeypatch):
     """A new briefing's id is 64 random bits, so a clash is astronomically unlikely; if one happens another id is
     tried (as Where MPs Stand), rather than the reader getting an error after the briefing was paid for."""

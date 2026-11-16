@@ -22,8 +22,9 @@ are copied into the ``wts_`` tables, once (``IMPORTS``), and a copy of the whole
 first, as ``state.pre-wts-core.<date>.db``; ``councils tidy`` deletes that copy once it is older than the backups
 are kept.
 
-The old tables stay in the file for a while, so that the move can be undone (deploy/undo-wts-core.sql), but they
-are not left to keep what the site has promised to delete (``OLD_TABLES``): every night ``councils tidy`` takes
+The old tables stay in the file for a while, so that the move can be undone (deploy/undo-wts-core.sql; and made
+again with deploy/redo-wts-core.sql, should the old code have run meanwhile), but they are not left to keep what
+the site has promised to delete (``OLD_TABLES``): every night ``councils tidy`` takes
 out of them what the package has deleted from its own (a statement's confirming address, a report's contact, a
 visitor's code after its day, yesterday's secret, answers past their week in the cache), and from 1 February 2027
 it drops them. docs/OPERATIONS.md, "The state database", says how to go back, and until when.
@@ -39,7 +40,7 @@ from datetime import date
 from wts_core import observe, replies, usage
 from wts_core.ops import AlertWording, BackupSpec
 from wts_core.ports import SYSTEM_CLOCK, SYSTEM_RANDOM, Clock, Random
-from wts_core.state import Import, Migration, OldTables, StateDB, columns
+from wts_core.state import Import, Migration, OldTables, StateDB, StateError, columns
 from wts_core.usage import BriefingArchive, SqliteAnswerCache, token_id
 
 from councils.config import SITE, Settings
@@ -196,15 +197,41 @@ IMPORTS = (Import(
     # an import that needed it would be passed over on that database for good, leaving the site with no spending
     # and no saved briefings
     needs=ALWAYS_THERE,
+    # Going back is noticed (wts-core 0.3.0; its docs/UPGRADING.md, "Going back, and coming forward again"): the
+    # column of each old table that holds the time a row was written. If the site is put back on its old code
+    # without deploy/undo-wts-core.sql being run, the old code writes to these tables again; the import is marked
+    # as done and would not run a second time, so what was written meanwhile would be silently missing. With
+    # this, the new code then refuses to open the database, naming the tables and the mend. `kv` and `questions`
+    # keep no time of writing and are left out. The nightly tidy of the old tables changes and deletes rows and
+    # adds none, so it never trips this.
+    written_at={"usage": "at", "answer_cache": "at", "briefings": "at", "reports": "at", "statements": "at"},
 ),)
+
+
+# Said after the package's own words when the database is refused because the old code has written to the old
+# tables since the move (``Import.written_at``, above). The package says to run "the site's script for undoing the
+# move". This site has two, and which is right depends on what happened: deploy/undo-wts-core.sql writes the old
+# tables afresh from the package's, so run in that state it would discard the very rows the refusal is about.
+WHICH_SCRIPT = ("On Where Councils Stand there are two such scripts, and each discards something. If the old code "
+                "was started after the move: deploy/redo-wts-core.sql, which keeps what the old code wrote and "
+                "discards what the new code wrote between the move and then. If the old code was never started "
+                "after the move (the false alarm): deploy/undo-wts-core.sql, which keeps what the new code wrote "
+                "and writes the old tables afresh from it. Do not run undo-wts-core.sql to keep what the old code "
+                "wrote: it would discard it. docs/OPERATIONS.md, \"Going back, and coming forward again\".")
 
 
 def open_state(settings: Settings, clock: Clock = SYSTEM_CLOCK) -> StateDB:
     """The state database, with the shared package's tables made on the way in and the old rows brought across the
     first time. It is marked as this site's the first time it is opened, and a file marked as another site's is
-    refused."""
-    return StateDB(settings.state_db, migrations=migrations(), imports=IMPORTS, old_tables=OLD_TABLES, clock=clock,
-                   site=SITE.package)
+    refused. So is one whose old tables hold rows written after the move (the site was put back on its old code
+    without deploy/undo-wts-core.sql): nothing is changed, and the error says which script mends it."""
+    try:
+        return StateDB(settings.state_db, migrations=migrations(), imports=IMPORTS, old_tables=OLD_TABLES,
+                       clock=clock, site=SITE.package)
+    except StateError as exc:
+        if "newer than the import" not in str(exc):      # some other fault of the database's: as the package says it
+            raise
+        raise StateError(f"{exc} {WHICH_SCRIPT}") from exc
 
 
 def new_briefing_id(chance: Random = SYSTEM_RANDOM) -> str:
@@ -223,16 +250,3 @@ def forget_replays(db: StateDB, briefing_id: str, clock: Clock = SYSTEM_CLOCK) -
     withdrawn or hidden, so that the next reader with the same question is not played what was taken down."""
     return SqliteAnswerCache(db, clock=clock).delete_briefing(briefing_id)
 
-
-def write_afresh(db: StateDB) -> list[str]:
-    """Write the database out afresh (SQLite's VACUUM), as the last step of the nightly ``councils tidy``, and say
-    so. SQLite does not wipe what it deletes: a deleted address, or a dropped table's rows, stay in the file's
-    unused space until something is written over them, and a backup copies that space too. Written out afresh,
-    the file holds only what is kept, so what the site says is deleted is gone from the file, and from every
-    backup made after."""
-    con = sqlite3.connect(db.path, timeout=60, isolation_level=None)
-    try:
-        con.execute("VACUUM")
-    finally:
-        con.close()
-    return ["Wrote the database out afresh, so that nothing deleted is left in the file."]

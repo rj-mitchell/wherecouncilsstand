@@ -86,7 +86,8 @@ done
 if [[ -z "$answered" ]]; then
   echo "✗ The site did not answer within a minute and a half: see docker compose -f $DIR/deploy/docker-compose.yml logs app"
   echo "  Its timers are as they were. If it says a row of the state database could not be brought across, see"
-  echo "  docs/OPERATIONS.md, \"The state database\"."
+  echo "  docs/OPERATIONS.md, \"The state database\"; if it says the old tables hold rows newer than the import,"
+  echo "  see \"Going back, and coming forward again\" there."
   exit 1
 fi
 

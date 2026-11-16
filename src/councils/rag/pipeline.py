@@ -17,7 +17,7 @@ from wts_core.briefing import current_stages
 from wts_core.checks import check_briefing, to_british
 from wts_core.events import Block, Completed, blocks_as_today, to_reader
 from wts_core.observe import SqliteBriefingLog, briefing_config
-from wts_core.ports import BriefingConfig, Document, ModelClient
+from wts_core.ports import BriefingConfig, Document, ModelClient, NoStructuredAnswer
 
 from councils.config import INSTRUCTIONS_VERSION, SITE, Settings
 from councils.engine import Engine
@@ -118,6 +118,15 @@ class Pipeline:
             plan, usage = parse_with_model(self.model, self.settings, req.question, today)
             plan.interpretation = to_british(plan.interpretation)
             return plan, usage.as_stored()
+        except NoStructuredAnswer as exc:
+            # The model answered and was paid, but its answer could not be read (a refusal, nothing, cut off, not
+            # JSON, not fitting). From wts-core 0.3.0 the error carries what the call cost, and it is recorded as
+            # a reading that worked is, so that it counts in the spending and towards the caps (until then it was
+            # counted nowhere). The built-in rules read the question, as before.
+            log.warning("model query parsing failed (%s); using offline rules", exc)
+            offline.parse_error = f"{type(exc).__name__}: {exc}"
+            paid = exc.usage.as_stored()
+            return offline, paid if any(paid.values()) else None
         except Exception as exc:
             log.warning("model query parsing failed (%s); using offline rules", exc)
             offline.parse_error = f"{type(exc).__name__}: {exc}"
