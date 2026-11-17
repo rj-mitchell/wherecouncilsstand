@@ -1,8 +1,7 @@
 """The site on the shared package (wts-core) gives what its own code gave before.
 
-tests/golden/ holds what the site's code gave on 14 November 2026, before the switch, recorded by
-tests/golden/record.py from the scripts in tests/golden/shared.py. Each test here plays the same script to the site
-as it is now and compares. Where the two differ on purpose, the difference is asserted, with the entry of wts-core's
+tests/golden/ holds what the site's code gave on 14 November 2026, before the switch, for the scenarios in
+tests/golden/shared.py. Each test here plays the same scenario to the site as it is now and compares. Where the two differ on purpose, the difference is asserted, with the entry of wts-core's
 docs/AS-BUILT.md (or docs/MIGRATION.md, or its CHANGELOG.md) that lists it: nothing is skipped.
 """
 

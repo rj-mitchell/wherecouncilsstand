@@ -1,10 +1,11 @@
-"""What the golden recorder (record.py, run on the site's code as it was before wts-core) and the parity tests
-(tests/test_parity.py, run on the code as it is now) both need: a clock that is told the time, the made-up record
-the scenarios run on, a scripted pipeline, a simulated Backblaze B2, and the scripts themselves. Nothing here
-imports the site's code, so it reads the same under either.
+"""The scenarios behind the goldens in tests/golden/ and the parity tests (tests/test_parity.py): a clock that is
+told the time, the made-up record the scenarios run on, a scripted pipeline, a simulated Backblaze B2, and the
+scripts themselves. Nothing here imports the site's code.
 
-The goldens of the pages were later edited once, by fixed text substitutions only, to match the site's move to the
-family's 2.0 design (page titles, headings, wording and curly apostrophes); every other difference still fails.
+The goldens (the JSON files, and old-state.sql, a state database with rows of every kind) were recorded on
+14 November 2026 by playing these scenarios to the site's own code before it moved onto wts-core. The goldens of the
+pages were later edited once, by fixed text substitutions only, to match the family kit 2.0 design (page titles,
+headings, wording and curly apostrophes); every other difference still fails.
 """
 
 from __future__ import annotations
@@ -693,9 +694,8 @@ class ScriptedPipeline:
 
 
 class Side:
-    """One telling of a scenario: the site's app with a scripted pipeline, whichever code it is running on. The
-    recorder and the parity tests each build one (the app, its test client, the pipeline, and how to read what was
-    written and to take a response piece by piece)."""
+    """One telling of a scenario: the site's app with a scripted pipeline (the app, its test client, the pipeline,
+    and how to read what was written and to take a response piece by piece)."""
 
     def __init__(self, app: Any, client: Any, pipeline: ScriptedPipeline, clock: Clock, *,
                  rows: Callable[[], dict[str, list[list[Any]]]], stream: Callable[..., Iterator[bytes]],
