@@ -84,7 +84,7 @@ def test_a_statement_is_received_as_waiting_and_not_shown(site):
     ({"email": ""}, "email address"),
     ({"acting": False}, "act for them"),
     ({"page": "https://example.org/votes/x"}, "a page on wherecouncilsstand.com"),
-    ({"page": "/about"}, "a council's page, a named vote or a briefing"),
+    ({"page": "/about"}, "a council’s page, a named vote or a briefing"),
     ({"page": ""}, "Give the address"),
     ({"page": f"/votes/{BARNSLEY}:9:9:9"}, "no page at that address"),
     ({"page": "/b/nosuchbriefing"}, "no page at that address"),

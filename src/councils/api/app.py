@@ -68,8 +68,8 @@ FORGET_IDLE_VISITORS_OVER = 10_000
 MESSAGES = Messages(
     too_many_requests="Too many requests. Please wait a minute and try again.",
     visitor_daily_limit="You have asked a lot of questions today, so new briefings are paused until tomorrow.",
-    daily_cap="The site has reached today's limit on new briefings, which keeps its costs down.",
-    monthly_cap="The site has reached this month's limit on new briefings, which keeps its costs down.",
+    daily_cap="The site has reached today’s limit on new briefings, which keeps its costs down.",
+    monthly_cap="The site has reached this month’s limit on new briefings, which keeps its costs down.",
     busy_visitor="A briefing is already being written for you; please wait for it to finish.",
     busy_site="Many briefings are being written at the moment; please try again in a minute.",
     sources_follow="{reason} The sources found are shown below.",
@@ -84,7 +84,7 @@ EXAMPLES = [
     "What have councils said about closing public toilets?",
     "What have councils in Wales decided about second homes and council tax?",
     "How did councillors vote on declaring a climate emergency?",
-    "What has Barnsley's full council decided about libraries?",
+    "What has Barnsley’s full council decided about libraries?",
 ]
 
 
@@ -607,7 +607,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                   "publisher": {"@type": "Organization", "name": "Where They Stand", "url": "https://wheretheystand.uk"}}
             return (200, "Where Councils Stand",
                     "Sourced briefings on what councils across the UK have discussed, decided and voted on. Every "
-                    "point cites the council's own minutes.", base + "/", ld, plaintext.home_text(totals, EXAMPLES))
+                    "point cites the council’s own minutes.", base + "/", ld, plaintext.home_text(totals, EXAMPLES))
 
         return readable("index", build)
 
@@ -623,10 +623,10 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             directory = shown_directory(hidden())
             t = directory["totals"]
             return (200, "Councils | Where Councils Stand",
-                    f"The {t['councils']:,} principal councils in the UK and England's {t.get('authorities', 0):,} "
+                    f"The {t['councils']:,} principal councils in the UK and England’s {t.get('authorities', 0):,} "
                     f"strategic authorities: which {t['loaded']:,} councils and {t.get('authorities_loaded', 0):,} "
                     "authorities are covered, from when, and which party is in overall control (or, for an "
-                    "authority, its mayor's party).", base + "/councils", None,
+                    "authority, its mayor’s party).", base + "/councils", None,
                     plaintext.councils_text(directory))
 
         return readable("councils", build)
@@ -666,7 +666,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             if v is None:
                 return (404, "Named vote not found | Where Councils Stand", "There is no named vote at this address.",
                         base + plaintext.vote_path(vote_id), None,
-                        "<h1>Named vote not found</h1><p>There is no named vote at this address. Each council's "
+                        "<h1>Named vote not found</h1><p>There is no named vote at this address. Each council’s "
                         'named votes are listed on its page: see the <a href="/councils">list of councils</a>.</p>')
             url = base + plaintext.vote_path(vote_id)
             instead = hidden().instead(plaintext.vote_path(vote_id))

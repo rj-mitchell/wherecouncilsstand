@@ -108,7 +108,7 @@ function App() {
     <>
       <div className="split">
         <div>
-          <h1>What has your council decided?</h1>
+          <h1>Council decisions, from the minutes</h1>
           <p className="lede">
             Ask about anything councils across the UK have discussed, decided or voted on at full council and cabinet, and
             England’s strategic authorities at their boards and scrutiny committees.

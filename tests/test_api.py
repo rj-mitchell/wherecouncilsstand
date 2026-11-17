@@ -314,7 +314,7 @@ def test_briefings_in_progress_count_against_the_daily_cap(settings):  # noqa: F
     release.set()
     worker.join(10)
     assert first[-1]["type"] == "final" and first[-1]["answer"]
-    assert second[-1]["answer"] is None and "today's limit" in second[-1]["note"]
+    assert second[-1]["answer"] is None and "today’s limit" in second[-1]["note"]
     assert len(fake.calls) == 1
 
 def test_in_flight_reservations(settings):  # noqa: F811
@@ -424,7 +424,7 @@ def test_status(client, settings):  # noqa: F811
                     "ok": True}
     c, _, _, _ = site_with(settings, daily_spend_cap_usd=0.0)
     s = c.get("/api/status").json()
-    assert s["briefings"] == "paused" and "today's limit" in s["briefings_note"]
+    assert s["briefings"] == "paused" and "today’s limit" in s["briefings_note"]
 
 
 def test_cost_counts_cache_writes_once_whichever_names_the_usage_uses():

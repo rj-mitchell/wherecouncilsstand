@@ -97,7 +97,7 @@ def test_the_list_of_councils_and_the_home_page_can_be_read_without_scripts(site
     assert f'<a href="/councils/{BARNSLEY}">Barnsley Metropolitan Borough Council</a>' in html
     assert "Not covered yet" in html and 'rel="canonical" href="https://wherecouncilsstand.com/councils"' in html
     home = site.get("/").text
-    assert "<h1>What has your council decided?</h1>" in home and ld(home)["@type"] == "WebSite"
+    assert "<h1>Council decisions, from the minutes</h1>" in home and ld(home)["@type"] == "WebSite"
     assert 'rel="canonical" href="https://wherecouncilsstand.com/"' in home
 
 
@@ -195,7 +195,7 @@ def test_an_authority_page_and_its_councils_pages_link_both_ways(site, settings)
     assert members[2]["name"] is None
     html = site.get(f"/councils/{SOUTH_YORKSHIRE}").text
     app = html[html.index('<div id="app">'):html.index("</main>")]
-    assert "Mayoral combined authority" in app and "Mayor: Oliver Coppard (Labour)" in app
+    assert "Mayoral combined authority" in app and "<dt>Mayor</dt><dd>Oliver Coppard (Labour)" in app
     assert f'<a href="/councils/{BARNSLEY}">Barnsley Metropolitan Borough Council</a>' in app
     assert "Name not shown (not a councillor)" in app and "Business Advisory" not in app
     assert ld(html)["about"]["additionalType"] == "Mayoral combined authority"

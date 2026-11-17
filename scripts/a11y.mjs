@@ -103,7 +103,7 @@ for (const scheme of ["light", "dark"]) {
 
 // Council and vote pages as sent by the server, before (or without) their scripts: the page's own scripts are
 // blocked, so its readable copy is what is checked, both for axe and for its text.
-const plain = [["/", "What has your council decided?"], ["/councils", "Barnsley"],
+const plain = [["/", "Council decisions, from the minutes"], ["/councils", "Barnsley"],
   ["/councils/E08000038", "Members by party"], [VOTE, "Against"], [VOTE, "Not checked or endorsed by Where Councils Stand"],
   ["/councils/E47000002", "Constituent councils"], ["/corrections", "Briefing withdrawn"],
   ["/corrections", "A made-up correction"], [HIDDEN, "This page is hidden while a concern about it is decided."]];

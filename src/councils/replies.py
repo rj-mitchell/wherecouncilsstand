@@ -71,7 +71,7 @@ MESSAGES = ReplyMessages(
     bad_link="The link to the record must be a web address starting https:// (or leave it empty).",
     link_too_long="The link to the record can be up to {max} characters.",
     bad_email="Give an email address we can use to confirm who you are.",
-    item_not_shown="There's no page at that address on this site. Copy the address from the page the statement is "
+    item_not_shown="There’s no page at that address on this site. Copy the address from the page the statement is "
                    "about.",
     # never shown: no visitor is counted (see RULES)
     daily_statements="We have several statements from you today. Email us if there is more to add.",
@@ -120,7 +120,7 @@ class Items:
             raise Refused("The address must be a page on wherecouncilsstand.com.", "bad_item")
         m = _ITEM.match(unquote(parts.path).rstrip("/"))
         if not m:
-            raise Refused("The address must be a council's page, a named vote or a briefing on this site, such as "
+            raise Refused("The address must be a council’s page, a named vote or a briefing on this site, such as "
                           "https://wherecouncilsstand.com/votes/…", "bad_item")
         kind, key = m.groups()
         if kind == "councils":

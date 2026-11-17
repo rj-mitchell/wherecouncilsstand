@@ -568,7 +568,7 @@
    ]
   },
   {
-   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "gives": "The site has reached today’s limit on new briefings, which keeps its costs down.",
    "step": [
     "check",
     "v1",
@@ -576,7 +576,7 @@
    ]
   },
   {
-   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "gives": "The site has reached today’s limit on new briefings, which keeps its costs down.",
    "step": [
     "paused",
     0.15
@@ -770,7 +770,7 @@
    ]
   },
   {
-   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "gives": "The site has reached today’s limit on new briefings, which keeps its costs down.",
    "step": [
     "paused",
     0.05
@@ -796,7 +796,7 @@
    ]
   },
   {
-   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "gives": "The site has reached today’s limit on new briefings, which keeps its costs down.",
    "step": [
     "check",
     "v3",
@@ -804,7 +804,7 @@
    ]
   },
   {
-   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "gives": "The site has reached today’s limit on new briefings, which keeps its costs down.",
    "step": [
     "paused",
     0.0
@@ -818,7 +818,7 @@
    ]
   },
   {
-   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "gives": "The site has reached today’s limit on new briefings, which keeps its costs down.",
    "step": [
     "paused",
     0.0
@@ -856,7 +856,7 @@
    ]
   },
   {
-   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "gives": "The site has reached today’s limit on new briefings, which keeps its costs down.",
    "step": [
     "paused",
     0.12
@@ -870,7 +870,7 @@
    ]
   },
   {
-   "gives": "The site has reached today's limit on new briefings, which keeps its costs down.",
+   "gives": "The site has reached today’s limit on new briefings, which keeps its costs down.",
    "step": [
     "paused",
     0.05

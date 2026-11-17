@@ -31,7 +31,7 @@ from councils.registry import (
 )
 
 KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy committee", "board": "Board",
-              "mayor": "Mayor's decisions", "scrutiny": "Overview and scrutiny"}
+              "mayor": "Mayor’s decisions", "scrutiny": "Overview and scrutiny"}
 AUTHORITY_KINDS = ("board", "mayor", "scrutiny")
 
 # How fully each council is covered, for the councils page: "not_yet" (not loaded), "partial" (loaded with a gap)
@@ -39,9 +39,9 @@ AUTHORITY_KINDS = ("board", "mayor", "scrutiny")
 NOT_LOADED = {
     "robots": "Its meetings site asks automated readers not to visit (robots.txt).",
     "blocked": "Its meetings site refuses automated requests.",
-    "unreachable": "Its meetings site couldn't be reached.",
-    "none": "It doesn't publish its minutes through a system we can read yet.",
-    "ok": "Its meetings site answers, but it hasn't been loaded yet or failed to load.",
+    "unreachable": "Its meetings site couldn’t be reached.",
+    "none": "It doesn’t publish its minutes through a system we can read yet.",
+    "ok": "Its meetings site answers, but it hasn’t been loaded yet or failed to load.",
 }
 MIN_WITH_MINUTES = 0.7          # share of meetings with minutes text
 STALE_DAYS = 120                # no meeting for this long
@@ -74,7 +74,7 @@ def coverage(row: dict[str, Any], attendance: int = 0, with_party: int = 0, toda
     share = row.get("with_minutes") or 0
     if share < MIN_WITH_MINUTES:
         gaps.append(f"Minutes text for only {round(share * 100)}% of meetings (often published only as documents "
-                    "the site wouldn't serve, or not yet).")
+                    "the site wouldn’t serve, or not yet).")
     last = date.fromisoformat(row["to"]) if row.get("to") else None
     if last and (today - last).days > STALE_DAYS:
         gaps.append(f"No meeting since {last.strftime('%B %Y')}.")
@@ -84,9 +84,9 @@ def coverage(row: dict[str, Any], attendance: int = 0, with_party: int = 0, toda
     if first and first > LATE_START and not new:
         gaps.append(f"Records start in {first.strftime('%B %Y')}, not May 2018.")
     if not attendance:
-        gaps.append("No attendance records, so votes can't be matched to councillors.")
+        gaps.append("No attendance records, so votes can’t be matched to councillors.")
     elif with_party < MIN_PARTY * attendance:
-        gaps.append(f"Party recorded for only {round(100 * with_party / attendance)}% of attendance, so votes can't "
+        gaps.append(f"Party recorded for only {round(100 * with_party / attendance)}% of attendance, so votes can’t "
                     "all be read by party.")
     if gaps:
         return "partial", gaps

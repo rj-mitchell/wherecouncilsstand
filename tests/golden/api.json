@@ -209,7 +209,7 @@
   {
    "case": "a page a statement cannot sit beside",
    "json": {
-    "detail": "The address must be a council's page, a named vote or a briefing on this site, such as https://wherecouncilsstand.com/votes/…"
+    "detail": "The address must be a council’s page, a named vote or a briefing on this site, such as https://wherecouncilsstand.com/votes/…"
    },
    "status": 422,
    "text": null,
@@ -236,7 +236,7 @@
   {
    "case": "a vote that is not on the site",
    "json": {
-    "detail": "There's no page at that address on this site. Copy the address from the page the statement is about."
+    "detail": "There’s no page at that address on this site. Copy the address from the page the statement is about."
    },
    "status": 422,
    "text": null,
@@ -245,7 +245,7 @@
   {
    "case": "a council that is not on the site",
    "json": {
-    "detail": "There's no page at that address on this site. Copy the address from the page the statement is about."
+    "detail": "There’s no page at that address on this site. Copy the address from the page the statement is about."
    },
    "status": 422,
    "text": null,
@@ -254,7 +254,7 @@
   {
    "case": "a briefing that is not on the site",
    "json": {
-    "detail": "There's no page at that address on this site. Copy the address from the page the statement is about."
+    "detail": "There’s no page at that address on this site. Copy the address from the page the statement is about."
    },
    "status": 422,
    "text": null,
@@ -263,7 +263,7 @@
   {
    "case": "a briefing that has been withdrawn",
    "json": {
-    "detail": "There's no page at that address on this site. Copy the address from the page the statement is about."
+    "detail": "There’s no page at that address on this site. Copy the address from the page the statement is about."
    },
    "status": 422,
    "text": null,
@@ -489,7 +489,7 @@
   {
    "case": "two faults: no words and a page that is not an item's",
    "json": {
-    "detail": "The address must be a council's page, a named vote or a briefing on this site, such as https://wherecouncilsstand.com/votes/…"
+    "detail": "The address must be a council’s page, a named vote or a briefing on this site, such as https://wherecouncilsstand.com/votes/…"
    },
    "status": 422,
    "text": null,
