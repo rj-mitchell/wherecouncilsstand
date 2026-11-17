@@ -3,7 +3,7 @@ import { StrictMode, useEffect, useRef, useState, type FormEvent } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { ask, getBriefing, getCouncils, getMeta, type Answer, type AskEvent, type Meta, type Plan, type SourceCard } from "./api";
-import { BriefingText } from "./components/Briefing";
+import { BriefingText, CheckNotices } from "./components/Briefing";
 import { Statements } from "./components/Statements";
 import { AskSister } from "./components/Sister";
 import { PlanChips } from "./components/PlanChips";
@@ -183,12 +183,7 @@ function App() {
             {s.error && <p className="notice">{s.error}</p>}
             {s.answer && !s.answer.no_records && (
               <>
-                {(s.answer.unsupported_segments || 0) > 0 && (
-                  <p className="notice">
-                    Text <span className="unsupported">marked like this</span> isn't supported by a cited source. Treat it with
-                    care, and check the minutes.
-                  </p>
-                )}
+                <CheckNotices answer={s.answer} />
                 {(s.answer.loaded_words || 0) > 0 && (
                   <p className="notice">
                     {s.answer.loaded_words === 1 ? "One word" : `${s.answer.loaded_words} words`} in the briefing's own voice

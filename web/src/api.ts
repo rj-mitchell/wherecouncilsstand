@@ -39,7 +39,11 @@ export type SourceCard = {
   votes: { vote_id: string; text: string }[];
 };
 
-export type Segment = { text: string; sources: number[]; status: string; loaded?: unknown[]; misquotes?: unknown[] };
+/** A quotation the checks did not find word for word in the minutes cited for it: offsets into the segment's text
+ * (the quotation marks included), and the quotation. */
+export type Misquote = { start: number; end: number; text: string };
+
+export type Segment = { text: string; sources: number[]; status: string; loaded?: unknown[]; misquotes?: Misquote[] };
 
 export type Answer = {
   segments: Segment[];
@@ -48,6 +52,7 @@ export type Answer = {
   citations_invalid: number;
   unsupported_segments?: number;
   loaded_words?: number;
+  quotes_total?: number;
   quotes_unverified?: number;
 };
 

@@ -895,6 +895,15 @@ input[type="checkbox"] {
   text-underline-offset: 0.2em;
 }
 
+/* a quotation not found word for word in the minutes cited for it: a wavy line, so it is told apart from the dotted
+   line of unsupported text (and still shows inside it); the explanation is said by a screen reader (Briefing.tsx) */
+.misquote {
+  text-decoration: underline wavy var(--warn);
+  text-decoration-thickness: 0.08em;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 0.22em;
+}
+
 .notice {
   border-inline-start: 4px solid var(--warn);
   background: var(--warn-subtle);

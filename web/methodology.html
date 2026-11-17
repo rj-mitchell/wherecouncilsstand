@@ -45,7 +45,7 @@
           <li><strong>The minutes are searched</strong>, both by keyword and by meaning, using a model that runs on the site's own server.</li>
           <li><strong>The evidence is balanced.</strong> The passages found are grouped by the party in overall control of each council on the date (a strategic authority by its mayor's party, in a group of its own), and drawn from each group in turn, at most two from any one council or authority. The same rules apply to every party.</li>
           <li><strong>A briefing is written</strong> by an AI model, Claude (made by Anthropic), only from those passages. It is told to report what the minutes record, in neutral words. Each point cites the passage it comes from.</li>
-          <li><strong>The briefing is checked.</strong> Every citation is checked against its passage, and quotations against the minutes. Text that no source supports is marked, and loaded words in the model's own voice are flagged.</li>
+          <li><strong>The briefing is checked.</strong> Every citation is checked against its passage, and quotations against the minutes. Text that no source supports is marked, and so is text whose citations all failed the check (they are removed); a quotation not found word for word in the minutes cited for it is marked with a wavy line; and loaded words in the model's own voice are flagged.</li>
         </ol>
         <p>If the minutes hold nothing relevant, the briefing says "No records found." rather than guessing. Briefings can still be wrong. Please check the sources, and <a href="/corrections">tell us</a> if something is wrong.</p>
 
