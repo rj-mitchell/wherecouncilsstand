@@ -1,0 +1,1516 @@
+/*
+ * Where Councils Stand: styles (docs/DESIGN.md).
+ *
+ * The Where They Stand family kit 2.0 (public/family/family.css) gives the colours, the fonts (Source Serif 4 for
+ * headings, Source Sans 3 for everything else) and the footer shelf. The site's cloth, Buckram brown, is the header
+ * band and the colour of its buttons, and its text shade colours the links.
+ */
+
+/* Reset */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+:root {
+  scrollbar-gutter: stable;
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+body > footer {
+  margin-block-start: auto;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+  font-size: max(16px, 1rem);
+}
+
+a,
+button,
+summary,
+label {
+  touch-action: manipulation;
+}
+
+button {
+  user-select: none;
+}
+
+::placeholder {
+  color: var(--ink-faint);
+  opacity: 1;
+}
+
+/* Tokens */
+
+:root {
+  color-scheme: light dark;
+
+  --paper: var(--wts-paper-light);
+  --paper-raised: var(--wts-paper-light);
+  --panel: var(--wts-paper);
+  --ink: var(--wts-ink);
+  --ink-soft: var(--wts-ink-muted);
+  --ink-faint: var(--wts-ink-muted);
+  --rule: var(--wts-rule-faint);
+  --rule-strong: color-mix(in oklab, var(--ink) 55%, var(--paper));
+
+  /* the cloth: Buckram brown (#6E4A2A; in dark mode #865A33 as a fill and #D8AE84 for text) */
+  --binding: var(--wts-cloth-councils);
+  --on-binding: var(--wts-on-cloth);
+  --council: var(--wts-cloth-councils-text);
+
+  --accent: var(--council);
+  --accent-subtle: color-mix(in oklab, var(--accent) 10%, var(--paper));
+  --warn: light-dark(oklch(55% 0.125 82), oklch(84% 0.12 88));
+  --warn-subtle: color-mix(in oklab, var(--warn) 13%, var(--paper));
+
+  /* party colours, for charts only (docs/DESIGN.md) */
+  --party-LAB: light-dark(#c8102e, #ff7a85);
+  --party-CON: light-dark(#0063a8, #6fb8f0);
+  --party-LD: light-dark(#b85f00, #ffb257);
+  --party-REF: light-dark(#007a8a, #5fd6e6);
+  --party-GRN: light-dark(#2e7d32, #8fd694);
+  --party-PC: light-dark(#2f6b3a, #9be0a4);
+  --party-other: light-dark(#6b6b6b, #a8a8a8);
+
+  --serif: var(--wts-serif);
+  --sans: var(--wts-sans);
+  --wide: 72rem;
+  --gutter: clamp(1rem, 0.5rem + 3.5vw, 2.5rem);
+  --measure: 46rem;
+
+  --step--1: clamp(0.9rem, 0.87rem + 0.15vw, 1rem);
+  --step-0: clamp(1.0625rem, 1.03rem + 0.15vw, 1.125rem);
+  --step-1: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem);
+  --step-2: clamp(1.5rem, 1.3rem + 0.9vw, 1.875rem);
+  --step-3: clamp(2rem, 1.6rem + 1.6vw, 2.75rem);
+  --space-xs: 0.375rem;
+  --space-s: 0.75rem;
+  --space-m: 1.25rem;
+  --space-l: 2rem;
+  --space-xl: 3rem;
+
+  --wts-focus: var(--accent);
+  --focus-ring: var(--wts-focus-width, 3px) solid var(--accent);
+  --focus-offset: var(--wts-focus-offset, 3px);
+  --target-min: var(--wts-target-min, 24px);
+  --target: var(--wts-target, 44px);
+  --ease-out: var(--wts-ease-out, ease-out);
+  --duration: var(--wts-duration, 150ms);
+  /* the footer shelf lines up with the header and main column */
+  --wts-gutter: var(--gutter);
+  --wts-shelf-width: calc(var(--wide) - 2 * var(--gutter));
+}
+
+/* Page */
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: var(--step-0);
+  line-height: 1.55;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+a:active {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.skip-link {
+  position: absolute;
+  z-index: 10;
+  inset-inline-start: var(--space-s);
+  inset-block-start: -10rem;
+  background: var(--paper);
+  color: var(--ink);
+  padding: var(--space-xs) var(--space-s);
+  font-weight: 600;
+  border: 2px solid var(--ink);
+}
+
+.skip-link:focus {
+  inset-block-start: var(--space-s);
+}
+
+.wrap,
+main {
+  width: 100%;
+  max-width: var(--wide);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+main {
+  padding-block: var(--space-l) var(--space-xl);
+}
+
+/* running text is held to about two-thirds of the column; panels, tables and lists use all of it */
+.prose > *,
+main p,
+main blockquote {
+  max-width: var(--measure);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: var(--step-3);
+  margin-block: 0 var(--space-s);
+}
+
+h2 {
+  font-size: var(--step-2);
+  margin-block: var(--space-xl) var(--space-s);
+}
+
+h3 {
+  font-size: var(--step-1);
+  margin-block: var(--space-l) var(--space-xs);
+}
+
+.lede {
+  font-size: var(--step-1);
+  line-height: 1.45;
+  max-width: var(--measure);
+  margin-block: 0 var(--space-m);
+}
+
+.meta,
+.small {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.muted {
+  color: var(--ink-soft);
+}
+
+blockquote {
+  margin: var(--space-s) 0;
+  padding-inline-start: var(--space-m);
+  border-inline-start: 2px solid var(--rule-strong);
+}
+
+.panel {
+  background: var(--panel);
+  padding: var(--space-m) clamp(1rem, 0.8rem + 1vw, 1.5rem);
+}
+
+.panel > :first-child {
+  margin-block-start: 0;
+}
+
+.panel > :last-child {
+  margin-block-end: 0;
+}
+
+/* two blocks side by side, the first wider, so the row fills the column */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-m) var(--space-xl);
+  align-items: start;
+}
+
+@media (min-width: 56rem) {
+  .split {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+
+  .split.even {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.split > * > :first-child {
+  margin-block-start: 0;
+}
+
+.split.even {
+  margin-block-start: var(--space-xl);
+}
+
+/* Header: the cloth as a band across the page */
+
+.masthead {
+  background: var(--binding);
+  color: var(--on-binding);
+}
+
+.masthead-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-s) var(--space-l);
+  padding-block: var(--space-s);
+}
+
+.masthead a {
+  color: inherit;
+}
+
+.masthead :focus-visible {
+  outline-color: var(--on-binding);
+}
+
+.home-link,
+.home-mark {
+  text-decoration: none;
+}
+
+.masthead-brand {
+  --mark-size: 52px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "mark name"
+    "mark endorse";
+  justify-items: start;
+  align-items: center;
+  column-gap: var(--space-s);
+}
+
+.home-mark {
+  grid-area: mark;
+}
+
+.masthead-brand .home-link {
+  grid-area: name;
+}
+
+.masthead-brand .wts-endorse {
+  grid-area: endorse;
+  font-size: 0.9375rem;
+}
+
+/* the endorsement's spine is the site's own cloth, so on the band it is drawn a shade darker to stay visible */
+.masthead .wts-endorse .wts-spine__cloth {
+  fill: color-mix(in srgb, var(--binding) 62%, #000);
+}
+
+@media (width < 30rem) {
+  .masthead-brand {
+    --mark-size: 44px;
+  }
+}
+
+/* the site's mark (partials/mark.html): a town hall on a tile of the cloth inside a gilt edge */
+.site-mark {
+  flex: none;
+  inline-size: var(--mark-size, 52px);
+  block-size: var(--mark-size, 52px);
+}
+
+.site-mark__cloth,
+.site-mark__ink {
+  fill: var(--binding);
+}
+
+@media (forced-colors: active) {
+  .site-mark {
+    forced-color-adjust: none;
+  }
+  .site-mark__cloth,
+  .site-mark__ink {
+    fill: CanvasText;
+  }
+  .site-mark__gilt,
+  .site-mark__hands {
+    stroke: Canvas;
+  }
+  .site-mark__stone,
+  .site-mark__step {
+    fill: Canvas;
+  }
+}
+
+.wordmark {
+  display: block;
+  font-family: var(--serif);
+  font-size: var(--step-2);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .home-link:hover .wordmark {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.15em;
+  }
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-m);
+}
+
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target);
+  font-size: 1.0625rem;
+}
+
+.site-nav a[aria-current="page"] {
+  font-weight: 600;
+  text-decoration-thickness: 3px;
+}
+
+/* the phase banner: a grey strip under the band, its words on the page's column */
+.phase-banner {
+  background: var(--panel);
+  font-size: var(--step--1);
+}
+
+.phase-banner p {
+  margin-block: 0;
+  padding-block: var(--space-xs);
+}
+
+.phase-tag {
+  display: inline-block;
+  margin-inline-end: 0.5em;
+  padding: 0 0.45em 0.05em;
+  border-radius: 3px;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  /* invisible, but drawn as a box in forced colours, where the background goes */
+  border: 1px solid transparent;
+}
+
+@media (forced-colors: active) {
+  .masthead {
+    border-block-end: 1px solid CanvasText;
+  }
+}
+
+/* Footer: the family shelf, then the site's own links */
+
+.site-footer .wts-shelf {
+  margin-block-start: var(--space-xl);
+}
+
+.footer {
+  background: var(--panel);
+  color: var(--ink-soft);
+  font-size: var(--step--1);
+}
+
+.footer .wrap {
+  padding-block: 0 var(--space-l);
+}
+
+.footer p {
+  margin: 0;
+  max-width: var(--measure);
+}
+
+.footer-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-m);
+  margin: 0 0 var(--space-xs);
+  padding: 0;
+  list-style: none;
+}
+
+.footer-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+  color: inherit;
+}
+
+@media (pointer: coarse) {
+  .footer-nav a {
+    min-block-size: var(--target);
+  }
+}
+
+
+/* The status page */
+
+.status-list {
+  display: grid;
+  grid-template-columns: minmax(8rem, max-content) 1fr;
+  gap: var(--space-xs) var(--space-m);
+  margin-block: var(--space-m);
+}
+
+.status-list dt {
+  font-weight: 600;
+}
+
+.status-list dd {
+  margin: 0;
+}
+
+/* a state is said in words; the mark beside it only repeats them */
+.status-list dd[data-state]::before {
+  content: "";
+  display: inline-block;
+  inline-size: 0.6em;
+  block-size: 0.6em;
+  margin-inline-end: 0.4em;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.status-list dd[data-state="available"]::before {
+  background: currentColor;
+}
+
+@media (width < 30rem) {
+  .status-list {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .status-list dd {
+    margin-block-end: var(--space-xs);
+  }
+}
+
+/* Controls */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  min-block-size: var(--target);
+  font-family: var(--sans);
+  font-weight: 600;
+  line-height: 1.3;
+  padding: 0.55em 1.1em;
+  border: 1px solid var(--binding);
+  background: var(--binding);
+  color: var(--on-binding);
+  cursor: pointer;
+  border-radius: 3px;
+  text-decoration: none;
+}
+
+.button.secondary {
+  background: transparent;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button:not(:disabled):hover {
+    background: color-mix(in oklab, var(--binding) 82%, #000);
+  }
+
+  .button.secondary:not(:disabled):hover {
+    background: var(--accent-subtle);
+  }
+}
+
+.button:not(:disabled):active {
+  background: color-mix(in oklab, var(--binding) 72%, #000);
+}
+
+.button.secondary:not(:disabled):active {
+  background: var(--accent-subtle);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button {
+    transition: background-color var(--duration) var(--ease-out);
+  }
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ask-form {
+  display: grid;
+  gap: var(--space-s);
+}
+
+.ask-form textarea,
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: var(--space-s);
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-raised);
+  color: var(--ink);
+  border-radius: 3px;
+}
+
+.ask-form textarea {
+  min-height: 5.5rem;
+  resize: vertical;
+}
+
+/* a question box that grows with the question, where the browser can, up to a dozen lines */
+.ask-form textarea,
+.field textarea {
+  field-sizing: content;
+  max-block-size: 12lh;
+}
+
+.field textarea {
+  min-block-size: 6lh;
+}
+
+.ask-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-m);
+  align-items: center;
+  font-size: var(--step--1);
+}
+
+.ask-options label {
+  display: inline-flex;
+  gap: 0.4em;
+  align-items: center;
+  min-block-size: var(--target-min);
+  cursor: pointer;
+}
+
+/* the check boxes a little larger than the browser's own, and in the site's colour */
+input[type="checkbox"] {
+  inline-size: 1.15em;
+  block-size: 1.15em;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+@media (pointer: coarse) {
+  .ask-options label {
+    min-block-size: var(--target);
+  }
+}
+
+.field {
+  display: grid;
+  gap: var(--space-xs);
+  font-size: var(--step--1);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s) var(--space-m);
+  align-items: end;
+  margin-block: var(--space-m);
+}
+
+.filters .field {
+  min-width: min(100%, 12rem);
+  flex: 1 1 12rem;
+}
+
+.examples {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--space-xl);
+}
+
+@media (min-width: 48rem) {
+  .examples {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.examples li {
+  border-block-end: 1px solid var(--rule);
+  padding-block: var(--space-xs);
+}
+
+.examples button {
+  all: unset;
+  display: inline-block;
+  min-block-size: var(--target-min);
+  cursor: pointer;
+  color: var(--accent);
+  text-align: start;
+  touch-action: manipulation;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+.examples button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .examples button:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+.examples button:active {
+  text-decoration-thickness: 2px;
+}
+
+/* the line about the briefings beside the question box, and the disclosure under it (components/Why.tsx) */
+.why {
+  font-size: var(--step--1);
+}
+
+.why p {
+  margin: 0;
+}
+
+.why summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+  inline-size: fit-content;
+  min-block-size: var(--target-min);
+  margin-block-start: var(--space-xs);
+  padding-block: 0.15em;
+}
+
+.why ul {
+  display: grid;
+  gap: var(--space-xs);
+  margin-block: var(--space-xs) var(--space-s);
+  padding-inline-start: 1.2em;
+}
+
+.record {
+  margin-block: var(--space-s) 0;
+}
+
+/* chips: the filters the question was read as */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-size: var(--step--1);
+}
+
+.chips li {
+  background: var(--panel);
+  padding: 0.1em 0.55em;
+}
+
+/* a briefing's question, in the head of the briefing: long questions wrap rather than run on */
+.briefing-head em {
+  overflow-wrap: anywhere;
+}
+
+/* The briefing */
+
+.briefing {
+  max-width: var(--measure);
+  margin-block-start: var(--space-l);
+}
+
+.briefing-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-m);
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin: 0;
+  border-block-end: 1px solid var(--rule-strong);
+  padding-block: var(--space-xs);
+  font-size: var(--step--1);
+}
+
+.answer {
+  margin-block: var(--space-m);
+}
+
+.answer h2,
+.answer h3 {
+  font-size: var(--step-1);
+  margin-block: var(--space-l) var(--space-xs);
+}
+
+/* "In brief", on a panel */
+.answer .resolved {
+  padding: var(--space-s) var(--space-m);
+  background: var(--panel);
+}
+
+.answer .resolved > h2:first-child,
+.answer .resolved > h3:first-child {
+  margin-block-start: 0;
+}
+
+.answer ul {
+  padding-inline-start: 1.2em;
+}
+
+.cite {
+  font-size: 0.72em;
+  vertical-align: super;
+  line-height: 0;
+  text-decoration: none;
+  padding-inline: 0.12em;
+  /* kept whole on one line: one split across two lines would stretch its tap area (below) over the text between */
+  white-space: nowrap;
+  /* a larger, invisible place to tap or click (below): 24px tall, 28px on a touch screen, which still fits inside a
+     line, and reaching a little either side, but never into a citation next to it */
+  position: relative;
+  --cite-hit: 24px;
+  --cite-reach: 4px;
+}
+
+.cite::after {
+  content: "";
+  position: absolute;
+  inset-block: calc((100% - var(--cite-hit)) / 2);
+  inset-inline: calc(-1 * var(--cite-reach));
+}
+
+.cite:has(+ .cite)::after {
+  inset-inline-end: 0;
+}
+
+.cite + .cite::after {
+  inset-inline-start: 0;
+}
+
+@media (pointer: coarse) {
+  .cite {
+    --cite-hit: 28px;
+    --cite-reach: 8px;
+  }
+}
+
+.unsupported {
+  background: var(--warn-subtle);
+  text-decoration: underline dotted var(--warn);
+  text-underline-offset: 0.2em;
+}
+
+/* a quotation not found word for word in the minutes cited for it: a wavy line, so it is told apart from the dotted
+   line of unsupported text (and still shows inside it); the explanation is said by a screen reader (Briefing.tsx) */
+.misquote {
+  text-decoration: underline wavy var(--warn);
+  text-decoration-thickness: 0.08em;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 0.22em;
+}
+
+.notice {
+  background: var(--warn-subtle);
+  padding: var(--space-s) var(--space-m);
+  font-size: var(--step--1);
+  max-width: var(--measure);
+}
+
+.notice.info {
+  background: var(--panel);
+}
+
+@media (forced-colors: active) {
+  .notice,
+  .statement,
+  .panel,
+  .routes > li,
+  .answer .resolved {
+    border: 1px solid CanvasText;
+  }
+}
+
+/* a statement under the right of reply (decision 22): its author's words, set apart on a panel */
+.statement {
+  margin-block: var(--space-m);
+  padding: var(--space-s) var(--space-m);
+  background: var(--panel);
+}
+
+.statement .statement-head {
+  font-family: var(--sans);
+  font-size: var(--step-0);
+  font-weight: 600;
+  margin-block: 0;
+}
+
+.statement-role,
+.statement-about,
+.statement-link,
+.statement-note {
+  font-size: var(--step--1);
+  margin-block: var(--space-xs) 0;
+}
+
+.statement-role,
+.statement-note {
+  color: var(--ink-soft);
+}
+
+.statement-text p {
+  margin-block: var(--space-s) 0;
+}
+
+.statement-note {
+  margin-block-start: var(--space-s);
+  padding-block-start: var(--space-xs);
+  border-block-start: 1px solid var(--rule);
+}
+
+/* the corrections log (the impartiality policy, 7.1), on the corrections page */
+.corrections-log {
+  list-style: none;
+  padding: 0;
+  max-width: var(--measure);
+}
+
+.corrections-log li {
+  padding-block: var(--space-s);
+  border-block-start: 1px solid var(--rule);
+}
+
+.corrections-log h3 {
+  margin: 0;
+  font-size: var(--step-0);
+}
+
+.corrections-log p {
+  margin-block: var(--space-xs) 0;
+}
+
+.corrections-log .corrections-when {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+  margin-block: 0;
+}
+
+/* "How a statement is shown", on the page for people who are named */
+.statement-example {
+  margin: var(--space-m) 0;
+}
+
+.statement-example figcaption {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+/* the page for people who are named: its routes, side by side, each with a way to start it */
+.prose > .routes {
+  max-width: none;
+}
+
+.routes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--space-m);
+  padding: 0;
+  list-style: none;
+}
+
+.routes > li {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  padding: var(--space-m);
+}
+
+.routes > li > :last-child {
+  margin-block: auto 0;
+  padding-block-start: var(--space-xs);
+}
+
+.routes h3 {
+  margin-block: 0 var(--space-xs);
+  font-size: var(--step-1);
+}
+
+.routes p {
+  margin-block: var(--space-xs);
+}
+
+.word-count[data-over] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.progress {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+/* Sources: minutes, numbered as the briefing cites them */
+
+.sources {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.source {
+  display: grid;
+  grid-template-columns: minmax(2.6rem, max-content) 1fr;
+  gap: 0 var(--space-s);
+  border-block-start: 1px solid var(--rule);
+  padding-block: var(--space-s);
+  scroll-margin-block-start: var(--space-l);
+}
+
+.source:target {
+  background: var(--accent-subtle);
+}
+
+.source-n {
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-align: end;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.source h3,
+.source h4 {
+  font-size: var(--step-0);
+  margin: 0;
+  font-weight: 600;
+}
+
+.source .meta {
+  margin: 0.15em 0 var(--space-xs);
+}
+
+.source > div > * {
+  max-width: var(--measure);
+}
+
+.source details summary {
+  font-size: var(--step--1);
+  cursor: pointer;
+  color: var(--accent);
+  inline-size: fit-content;
+  min-block-size: var(--target-min);
+  padding-block: 0.15em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .source details summary:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 0.07em;
+    text-underline-offset: 0.18em;
+  }
+}
+
+.source blockquote {
+  margin: var(--space-xs) 0 0;
+  padding-inline-start: var(--space-s);
+  border-inline-start: 2px solid var(--rule);
+  white-space: pre-line;
+}
+
+.group-heading {
+  font-size: var(--step-1);
+  margin-block: var(--space-l) var(--space-xs);
+}
+
+/* A sister site's links (components/Sister.tsx), under the sister's name and spine */
+
+.sister {
+  display: flex;
+  gap: var(--space-s);
+  align-items: start;
+  margin-block: var(--space-m);
+  font-size: var(--step--1);
+}
+
+.sister .wts-spine {
+  margin-block-start: 0.15em;
+}
+
+.sister-name {
+  margin: 0 0 var(--space-xs);
+  font-family: var(--serif);
+  font-size: var(--step-0);
+  font-weight: 600;
+}
+
+.sister ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+/* the links sit close together, so each is at least 24px tall (WCAG 2.5.8) */
+.sister li a {
+  display: inline-block;
+  min-block-size: var(--target-min);
+  padding-block: 0.1em;
+}
+
+.sister-ask {
+  font-size: var(--step--1);
+  margin-block: var(--space-s) 0;
+}
+
+.sister-ask .wts-spine {
+  display: inline-block;
+  vertical-align: -0.3em;
+  margin-inline-end: var(--space-xs);
+}
+
+/* Votes: neutral marks */
+
+.mark {
+  display: inline-block;
+  inline-size: 0.8em;
+  block-size: 0.8em;
+  border: 1.5px solid currentColor;
+  margin-inline-end: 0.35em;
+  vertical-align: -0.05em;
+}
+
+.mark.for {
+  background: currentColor;
+}
+
+.mark.abstain {
+  background: repeating-linear-gradient(45deg, currentColor 0 1.5px, transparent 1.5px 4px);
+}
+
+.vote-sides {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--space-m);
+  margin-block: var(--space-m);
+}
+
+.vote-side h2 {
+  font-size: var(--step-1);
+  margin: 0 0 var(--space-xs);
+}
+
+.vote-side ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.vote-side li {
+  border-block-end: 1px solid var(--rule);
+  padding-block: 0.15em;
+}
+
+/* each side kept together, the sides wrapping on a narrow phone */
+.vote-tally {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.15em 0.9em;
+  font-size: var(--step--1);
+}
+
+.vote-tally > span {
+  white-space: nowrap;
+}
+
+/* Tables */
+
+.table-wrap {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  max-width: 100%;
+}
+
+.table-wrap.narrow {
+  font-variant-numeric: tabular-nums;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--step--1);
+}
+
+th,
+td {
+  text-align: start;
+  padding: var(--space-xs) var(--space-s);
+  border-block-end: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+th {
+  font-weight: 600;
+  border-block-end: 1px solid var(--rule-strong);
+}
+
+td.num,
+th.num {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+/* on a phone the columns need the room more than the gutters do */
+@media (width < 30rem) {
+  th,
+  td {
+    padding-inline: var(--space-xs);
+  }
+
+  th:first-child,
+  td:first-child {
+    padding-inline-start: 0;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-inline-end: 0;
+  }
+}
+
+/* a table whose rows are headed by their first cell (the councils page): on a wide screen it looks like any other */
+.stack-table tbody th {
+  font-weight: 400;
+  border-block-end-color: var(--rule);
+}
+
+/* On a phone each row becomes a block: the council (its row heading) on top, then each other cell as a pair, its
+   column's name (data-label) beside its value, so nothing is squeezed into a narrow column or scrolls sideways. The
+   column headings stay for screen readers, and the roles in the markup keep it a table for them, which some browsers
+   stop announcing once a table's display changes. */
+@media (width < 30rem) {
+  .stack-table thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .stack-table,
+  .stack-table tbody,
+  .stack-table tr {
+    display: block;
+  }
+
+  .stack-table tr {
+    padding-block: var(--space-s);
+    border-block-end: 1px solid var(--rule);
+  }
+
+  .stack-table tbody th,
+  .stack-table td {
+    padding: 0;
+    border: 0;
+    text-align: start;
+  }
+
+  .stack-table tbody th {
+    display: block;
+    margin-block-end: var(--space-xs);
+  }
+
+  .stack-table tbody th a {
+    font-weight: 600;
+  }
+
+  .stack-table td {
+    display: grid;
+    grid-template-columns: minmax(0, 8.5em) 1fr;
+    gap: 0 var(--space-s);
+  }
+
+  .stack-table td + td {
+    margin-block-start: 0.2em;
+  }
+
+  .stack-table td::before {
+    content: attr(data-label);
+    color: var(--ink-soft);
+  }
+
+  .stack-table td > * {
+    grid-column: 2;
+  }
+
+  .stack-table .wide-only {
+    display: none;
+  }
+}
+
+/* members by party: one bar, parties in their colours */
+.seats-bar {
+  display: flex;
+  block-size: 1.2rem;
+  border: 1px solid var(--rule-strong);
+  margin-block: var(--space-xs);
+}
+
+.seats-bar span {
+  background: var(--c, var(--party-other));
+}
+
+.seats-bar span + span {
+  border-inline-start: 1px solid var(--paper);
+}
+
+.swatch {
+  display: inline-block;
+  inline-size: 0.75em;
+  block-size: 0.75em;
+  background: var(--c, var(--party-other));
+  margin-inline-end: 0.35em;
+}
+
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--step--1);
+}
+
+/* dates and what happened, the dates' column as wide as the longest (a mayor's "From 3 May 2018 to 5 May 2022"),
+   lined up from row to row, but never more than 16rem or 45% of the width, so on a narrow phone a long date range
+   wraps rather than squeezing the names; where subgrid isn't supported, a fixed column */
+.timeline li {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 0 var(--space-m);
+  border-block-end: 1px solid var(--rule);
+  padding-block: var(--space-xs);
+}
+
+@supports (grid-template-columns: subgrid) {
+  .timeline {
+    display: grid;
+    grid-template-columns: fit-content(min(16rem, 45%)) 1fr;
+  }
+
+  .timeline li {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+}
+
+.party-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--step--1);
+}
+
+.party-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-m);
+  border-block-end: 1px solid var(--rule);
+  padding-block: var(--space-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.swatch,
+.mark {
+  flex: none;
+}
+
+/* a council's figures: a short list of terms and values */
+.facts {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
+  gap: var(--space-xs) var(--space-m);
+  margin: 0;
+}
+
+.facts dt {
+  color: var(--ink-soft);
+}
+
+.facts dd {
+  margin: 0;
+}
+
+@media (width < 30rem) {
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .facts dd {
+    margin-block-end: var(--space-xs);
+  }
+}
+
+.form-grid {
+  display: grid;
+  gap: var(--space-m);
+  max-width: var(--measure);
+}
+
+@media (width < 40rem) {
+  .wide-only {
+    display: none;
+  }
+}
+
+/* a short value that reads badly broken, such as "July 2024" in a table */
+.nowrap {
+  white-space: nowrap;
+}
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Printed: the site's name and address, and its independence statement, stay on the page, so a printout can't pass
+   for a council document (docs/DESIGN.md). */
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body {
+    background: #fff;
+  }
+
+  .masthead {
+    background: none;
+    color: #000;
+  }
+
+  .skip-link,
+  .phase-banner,
+  .site-nav,
+  .footer-nav,
+  .wts-shelf,
+  .ask-form,
+  .why,
+  .examples {
+    display: none;
+  }
+
+  .wordmark::after {
+    content: " (wherecouncilsstand.com)";
+    font-weight: 400;
+    font-size: var(--step-0);
+  }
+
+  .footer {
+    background: none;
+    border-block-start: 1px solid #999;
+  }
+}
+
+/* Coverage (councils page): how much of a council's record the site reads. Neutral square marks, like the votes':
+   filled for full, half filled for partial, outlined for not yet, with a word beside each. */
+.coverage-status {
+  font-size: var(--step--1);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.mark.coverage-full {
+  background: currentColor;
+}
+.mark.coverage-partial {
+  background: linear-gradient(to right, currentColor 50%, transparent 50%);
+}
+
+/* Forced colours drop backgrounds, which would make the filled, half-filled and hatched marks look alike: draw them
+   in the system's text colour instead (the words beside them still say what they mean). */
+@media (forced-colors: active) {
+  .mark,
+  .status-list dd[data-state]::before {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+
+  .mark.for,
+  .mark.coverage-full,
+  .status-list dd[data-state="available"]::before {
+    background: CanvasText;
+  }
+
+  .mark.against,
+  .mark.coverage-not_yet {
+    background: Canvas;
+  }
+
+  .mark.abstain {
+    background: repeating-linear-gradient(45deg, CanvasText 0 1.5px, Canvas 1.5px 4px);
+  }
+
+  .mark.coverage-partial {
+    background: linear-gradient(to right, CanvasText 50%, Canvas 50%);
+  }
+
+  ::placeholder {
+    color: GrayText;
+  }
+}

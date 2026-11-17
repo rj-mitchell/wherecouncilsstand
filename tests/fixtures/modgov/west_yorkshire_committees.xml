@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<committees>
+  <committeescount> 22</committeescount>
+  <committee>
+    <committeeid>221</committeeid>
+    <committeetitle>ARCHIVED - Business, Economy &amp; Innovation Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>222</committeeid>
+    <committeetitle>ARCHIVED - Climate, Energy &amp; Environment Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>226</committeeid>
+    <committeetitle>ARCHIVED - Corporate Scrutiny Committee (2021-2024)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>223</committeeid>
+    <committeetitle>ARCHIVED - Culture, Heritage &amp; Sport Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>253</committeeid>
+    <committeetitle>ARCHIVED - Economy Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>228</committeeid>
+    <committeetitle>ARCHIVED - Economy Scrutiny Committee (2021-2024)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>224</committeeid>
+    <committeetitle>ARCHIVED - Employment &amp; Skills Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>220</committeeid>
+    <committeetitle>ARCHIVED - Finance, Resources &amp; Corporate Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>250</committeeid>
+    <committeetitle>ARCHIVED - Joint Business, Economy &amp; Innovation and Employment &amp; Skills Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>135</committeeid>
+    <committeetitle>ARCHIVED - Overview and Scrutiny Committee (2014-2021)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>225</committeeid>
+    <committeetitle>ARCHIVED - Place, Regeneration &amp; Housing Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>227</committeeid>
+    <committeetitle>ARCHIVED - Transport &amp; Infrastructure Scrutiny Committee (2021-2024)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>138</committeeid>
+    <committeetitle>ARCHIVED - Transport Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>156</committeeid>
+    <committeetitle>ARCHIVED - West Yorkshire &amp; York Investment Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>ARCHIVE</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>133</committeeid>
+    <committeetitle>Combined Authority Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Decision making</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>150</committeeid>
+    <committeetitle>Council of the West Yorkshire Business Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>137</committeeid>
+    <committeetitle>Governance &amp; Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Statutory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>261</committeeid>
+    <committeetitle>Healthy Working Life Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>270</committeeid>
+    <committeetitle>Investment Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Decision making</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>247</committeeid>
+    <committeetitle>Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Statutory</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>271</committeeid>
+    <committeetitle>Weaver Network Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Decision making</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>263</committeeid>
+    <committeetitle>West Yorkshire Mass Transit Spatial Development Framework Joint Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Joint Committees</committeecategory>
+  </committee>
+</committees>

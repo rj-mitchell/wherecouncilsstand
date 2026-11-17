@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<committees>
+  <committeescount> 11</committeescount>
+  <committee>
+    <committeeid>151</committeeid>
+    <committeetitle>Constitution</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Constitution</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>137</committeeid>
+    <committeetitle>Greater Lincolnshire Combined County Authority</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Main Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>138</committeeid>
+    <committeetitle>Greater Lincolnshire Combined County Authority - Appointments Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Executive Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>139</committeeid>
+    <committeetitle>Greater Lincolnshire Combined County Authority - Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Non-Executive Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>141</committeeid>
+    <committeetitle>Greater Lincolnshire Combined County Authority - Business and Infrastructure Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Executive Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>140</committeeid>
+    <committeetitle>Greater Lincolnshire Combined County Authority - Employment and Skills Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Executive Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>143</committeeid>
+    <committeetitle>Greater Lincolnshire Combined County Authority - Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Non-Executive Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>142</committeeid>
+    <committeetitle>Greater Lincolnshire Combined County Authority - Transport Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Executive Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>150</committeeid>
+    <committeetitle>TEST</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>149</committeeid>
+    <committeetitle>Test Committee</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>136</committeeid>
+    <committeetitle>zzTestCommittee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+</committees>

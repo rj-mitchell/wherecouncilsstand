@@ -1,0 +1,21 @@
+# Nightly backup of the state database, the one thing that cannot be rebuilt (spending, saved briefings, reports).
+# Copies land in /opt/wherecouncilsstand/deploy/backups (the last 7; the off-site bucket keeps 60). Afterwards,
+# `councils tidy` deletes what the privacy page says is deleted in time; it runs as ExecStopPost, so a failed backup
+# never delays it. Installed by deploy/update.sh with councils-backup.timer.
+[Unit]
+Description=Where Councils Stand: back up the state database
+After=docker.service
+Requires=docker.service
+# Emails the alerts address if this fails (deploy/alert@.service in Where MPs Stand, docs/HOSTING.md there)
+OnFailure=alert@%n.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/wherecouncilsstand/deploy
+ExecStart=/usr/bin/docker compose run --rm -T app councils backup --to /backups --keep 7
+ExecStopPost=/usr/bin/docker compose run --rm --no-deps -T app councils tidy
+Nice=10
+TimeoutStartSec=30min
+# the tidy runs as the unit stops, so it has the stop timeout, not the start one: without this it would be cut
+# off after systemd's default minute and a half
+TimeoutStopSec=30min

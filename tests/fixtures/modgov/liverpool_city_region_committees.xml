@@ -1,0 +1,1402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<committees>
+  <committeescount> 218</committeescount>
+  <committee>
+    <committeeid>386</committeeid>
+    <committeetitle>Adult Education Budget</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>374</committeeid>
+    <committeetitle>Adult Education Budget Project Steering Group</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>395</committeeid>
+    <committeetitle>Air Quality Task Force</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>236</committeeid>
+    <committeetitle>Appeals and Disputes Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>276</committeeid>
+    <committeetitle>Appeals Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>130</committeeid>
+    <committeetitle>Appointment and Appeals Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>275</committeeid>
+    <committeetitle>Appointment Sub-Committee</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>262</committeeid>
+    <committeetitle>Appointments Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>389</committeeid>
+    <committeetitle>Appointments Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>265</committeeid>
+    <committeetitle>Appointments Sub Committee (Chief Executive)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>235</committeeid>
+    <committeetitle>Appointments Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>209</committeeid>
+    <committeetitle>Assessment Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>273</committeeid>
+    <committeetitle>Audit and Governance Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>327</committeeid>
+    <committeetitle>Audit and Governance Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>336</committeeid>
+    <committeetitle>Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>337</committeeid>
+    <committeetitle>Audit Committee</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>349</committeeid>
+    <committeetitle>Audit, Risk and Governance Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>220</committeeid>
+    <committeetitle>Beatles Story Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Company</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>353</committeeid>
+    <committeetitle>Bus Alliance Joint Alliance Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>351</committeeid>
+    <committeetitle>Bus Alliance Programme Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>352</committeeid>
+    <committeetitle>Bus Alliance Stakeholder Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>470</committeeid>
+    <committeetitle>Bus Franchising Sub-Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>532</committeeid>
+    <committeetitle>Business Investment and Trade Cabinet Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>451</committeeid>
+    <committeetitle>Business Support Portfolio Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>516</committeeid>
+    <committeetitle>Business, Investment and Trade Cabinet Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Cabinet Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>154</committeeid>
+    <committeetitle>Chair's Conference</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>471</committeeid>
+    <committeetitle>Chief Executive</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>415</committeeid>
+    <committeetitle>Chief Executive of the Liverpool City Region Combined Authority (Katherine Fairclough)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>446</committeeid>
+    <committeetitle>Climate Emergency and Renewable Energy Portfolio Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>392</committeeid>
+    <committeetitle>Cllr Hodson</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>324</committeeid>
+    <committeetitle>Combined Authority</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>443</committeeid>
+    <committeetitle>Combined Authority Constitution</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Constitution</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>123</committeeid>
+    <committeetitle>Corporate Development and Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>261</committeeid>
+    <committeetitle>Corporate Responsibility Forum</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>206</committeeid>
+    <committeetitle>Corporate Social Responsibility Chair's Conference</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>201</committeeid>
+    <committeetitle>Corporate Social Responsibility Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>400</committeeid>
+    <committeetitle>Cultural Partnership</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>189</committeeid>
+    <committeetitle>Culture Transport and Tourism Liaison Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>445</committeeid>
+    <committeetitle>Culture, Tourism and the Visitor Economy Portfolio Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>517</committeeid>
+    <committeetitle>Digital and Innovation Portfolio Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Cabinet Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>449</committeeid>
+    <committeetitle>Digital Connectivity and Inclusion Portfolio Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>406</committeeid>
+    <committeetitle>Digital Steering Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>407</committeeid>
+    <committeetitle>Director of Commerical Development and Investment (Mark Bousfield)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>557</committeeid>
+    <committeetitle>Economic Development and Regeneration Delivery Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>563</committeeid>
+    <committeetitle>Economic Growth and Regeneration Cabinet Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Cabinet Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>447</committeeid>
+    <committeetitle>Education and Skills Portfolio Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>509</committeeid>
+    <committeetitle>Elections 2024 Project Team</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>369</committeeid>
+    <committeetitle>Employment and Skills Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>388</committeeid>
+    <committeetitle>Employment and Skills Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>512</committeeid>
+    <committeetitle>Employment, Education and Skills Cabinet Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Cabinet Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>559</committeeid>
+    <committeetitle>Environment and Climate Change Delivery Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>129</committeeid>
+    <committeetitle>Environmental Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>312</committeeid>
+    <committeetitle>Environmental Management System Review</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>214</committeeid>
+    <committeetitle>Environmental Strategy Delivery Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>117</committeeid>
+    <committeetitle>Equalities Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>448</committeeid>
+    <committeetitle>Equality and Diversity Portfolio Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>136</committeeid>
+    <committeetitle>Executive Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>408</committeeid>
+    <committeetitle>Executive Director of Corporate Services (John Fogarty)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>418</committeeid>
+    <committeetitle>Executive Leadership Team</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>427</committeeid>
+    <committeetitle>FASJAB</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>267</committeeid>
+    <committeetitle>General Purposes Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>329</committeeid>
+    <committeetitle>General Purposes Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Merseytravel Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>317</committeeid>
+    <committeetitle>Global Smart Media Limited</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Company</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>371</committeeid>
+    <committeetitle>Hate Crime Task and Finish Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>539</committeeid>
+    <committeetitle>Health and Inequalities Cabinet Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Cabinet Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>556</committeeid>
+    <committeetitle>Health, Wellbeing and Public Service Reform Delivery Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>551</committeeid>
+    <committeetitle>Homelessness Task Force Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Cabinet Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>390</committeeid>
+    <committeetitle>Housing and Regeneration Cabinet Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>560</committeeid>
+    <committeetitle>Housing and Strategic Planning Delivery Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>544</committeeid>
+    <committeetitle>Housing Retrofit Task and Finish Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Overview &amp; Scrutiny</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>444</committeeid>
+    <committeetitle>Inclusive Economy and Third Sector Portfolio Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>545</committeeid>
+    <committeetitle>Independent Remuneration Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Independent</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>360</committeeid>
+    <committeetitle>Information Management Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>533</committeeid>
+    <committeetitle>Innovation Cabinet Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Cabinet Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>394</committeeid>
+    <committeetitle>Integrated Leadership Team</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>442</committeeid>
+    <committeetitle>Interim Executive Director Strategic Commissioning and Delivery</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>321</committeeid>
+    <committeetitle>Issue Manager Test</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>213</committeeid>
+    <committeetitle>Joint Health, Safety, Wellbeing &amp; Learning Forum</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>211</committeeid>
+    <committeetitle>Joint Learning Forum</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>370</committeeid>
+    <committeetitle>Key Route Network Programme Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>239</committeeid>
+    <committeetitle>Knowsley Customer Forum</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>476</committeeid>
+    <committeetitle>LCR &amp; TU Strategic Partnership Forum</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>366</committeeid>
+    <committeetitle>LCR Appointments and Disciplinary Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>372</committeeid>
+    <committeetitle>LCR Audit &amp; Governance Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>401</committeeid>
+    <committeetitle>LCR Borough of Culture Sub-Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>515</committeeid>
+    <committeetitle>LCR Business &amp; Enterprise Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>367</committeeid>
+    <committeetitle>LCR Cabinet Briefing</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>402</committeeid>
+    <committeetitle>LCR Chief Executives</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>409</committeeid>
+    <committeetitle>LCR Comprehensive Spending Review Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>417</committeeid>
+    <committeetitle>LCR Covid-19 Action Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>399</committeeid>
+    <committeetitle>LCR Cultural Partnership</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>503</committeeid>
+    <committeetitle>LCR Economic Development and Business Portfolio Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>419</committeeid>
+    <committeetitle>LCR Economic Recovery Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>501</committeeid>
+    <committeetitle>LCR Employent, Education and Skills Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>564</committeeid>
+    <committeetitle>LCR Energy and Environment Cabinet Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Cabinet Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>520</committeeid>
+    <committeetitle>LCR Innovation Zone Finance and Risk Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>453</committeeid>
+    <committeetitle>LCR Innovation Zone Programme Management Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>432</committeeid>
+    <committeetitle>LCR LA Portfolio Holders - Digital</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>456</committeeid>
+    <committeetitle>LCR Member Induction</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>396</committeeid>
+    <committeetitle>LCR Music Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>365</committeeid>
+    <committeetitle>LCR Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>511</committeeid>
+    <committeetitle>LCR Overview and Scrutiny Knowledge Briefings</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Overview &amp; Scrutiny</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>435</committeeid>
+    <committeetitle>LCR Portfolio and Deputy Portfolio Holder Briefing: Climate Emergency and Renewable Energy</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>433</committeeid>
+    <committeetitle>LCR Portfolio and Deputy Portfolio Holder Briefing: Culture, Tourism and the Visitor Economy</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>437</committeeid>
+    <committeetitle>LCR Portfolio and Deputy Portfolio Holder Briefing: Digital Connectivity and Inclusion</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>438</committeeid>
+    <committeetitle>LCR Portfolio and Deputy Portfolio Holder Briefing: Education, Skills and Equality and Diversity</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>436</committeeid>
+    <committeetitle>LCR Portfolio and Deputy Portfolio Holder Briefing: Inclusive Economy and Third Sector</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>562</committeeid>
+    <committeetitle>LCR Public Service Innovation Cabinet Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Cabinet Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>414</committeeid>
+    <committeetitle>LCR Strategic Investment - External Panel</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>411</committeeid>
+    <committeetitle>LCR Strategic Investment Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>413</committeeid>
+    <committeetitle>LCR Strategic Investment Panel (Extermal)</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>359</committeeid>
+    <committeetitle>LCR Ticketing Steering Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>362</committeeid>
+    <committeetitle>LCR Transport Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>500</committeeid>
+    <committeetitle>LCR Workforce Planning</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>425</committeeid>
+    <committeetitle>LERG Labour Market, Employment and Skills Task and Finish Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>452</committeeid>
+    <committeetitle>Liverpool City Council Independent Remuneration Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>364</committeeid>
+    <committeetitle>Liverpool City Region Combined Authority</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Liverpool City Region Combined Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>434</committeeid>
+    <committeetitle>Liverpool City Region Digital Ltd Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Company</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>368</committeeid>
+    <committeetitle>Liverpool City Region Local Enterprise Partnership</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>264</committeeid>
+    <committeetitle>Liverpool City Region Local Transport Body</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>523</committeeid>
+    <committeetitle>Liverpool City Region's Destination Partnership Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>237</committeeid>
+    <committeetitle>Liverpool Customer Forum</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>225</committeeid>
+    <committeetitle>Liverpool South Parkway Limited</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>481</committeeid>
+    <committeetitle>Liverpool Strategic Futures Advisory Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>549</committeeid>
+    <committeetitle>Liverpool-Manchester Railway Partnership Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>397</committeeid>
+    <committeetitle>Local Access Forum</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Independent</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>319</committeeid>
+    <committeetitle>Local Sustainable Transport Fund  Board (LSTF)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>131</committeeid>
+    <committeetitle>Local Transport Plan Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>202</committeeid>
+    <committeetitle>Local Transport Plan Delivery,  Bus &amp; Merseytram Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>475</committeeid>
+    <committeetitle>Local Transport Plan Task and Finish Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Overview &amp; Scrutiny</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>339</committeeid>
+    <committeetitle>Major Events Transport Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>278</committeeid>
+    <committeetitle>Member Learning Liaison Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>230</committeeid>
+    <committeetitle>Mersey Ferries Limited</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Company</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>195</committeeid>
+    <committeetitle>Mersey Ferries Ltd</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Company</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>405</committeeid>
+    <committeetitle>Mersey Tidal Commission Steering Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>198</committeeid>
+    <committeetitle>Mersey Tunnels Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>426</committeeid>
+    <committeetitle>Merseyside and Cheshire Heads of Legal</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>133</committeeid>
+    <committeetitle>Merseyside Integrated Transport Authority</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>227</committeeid>
+    <committeetitle>Merseyside Passenger Transport Services Limited</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Company</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>221</committeeid>
+    <committeetitle>Merseyside Rapid Transit Limited</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>226</committeeid>
+    <committeetitle>Merseytram 2005 Limited</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>121</committeeid>
+    <committeetitle>Merseytram and Bus Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>332</committeeid>
+    <committeetitle>Merseytravel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>222</committeeid>
+    <committeetitle>Merseytravel Commercial Services Limited</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>326</committeeid>
+    <committeetitle>Merseytravel Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Merseytravel Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>550</committeeid>
+    <committeetitle>Merseytravel Constiution</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Constitution</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>223</committeeid>
+    <committeetitle>Merseytravel Facilities Management Limited</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>224</committeeid>
+    <committeetitle>Merseytravel Limited</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Company</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>325</committeeid>
+    <committeetitle>Mesreytravel Committee</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>338</committeeid>
+    <committeetitle>Minutes</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>403</committeeid>
+    <committeetitle>Multi Modal Ticketing Transport Operators Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>514</committeeid>
+    <committeetitle>Net Zero &amp; Air Quality Portfolio Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>507</committeeid>
+    <committeetitle>Net Zero Cabinet Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Cabinet Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>135</committeeid>
+    <committeetitle>Passenger Transport Executive Liaison Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>441</committeeid>
+    <committeetitle>PCC Scrutiny Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Outside Bodies</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>561</committeeid>
+    <committeetitle>People and Skills Delivery Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>205</committeeid>
+    <committeetitle>People, Organisational Development and Governance Delivery</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>203</committeeid>
+    <committeetitle>People, Organisational Development and Governance Delivery Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>328</committeeid>
+    <committeetitle>Performance and Review Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Merseytravel Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>118</committeeid>
+    <committeetitle>Personnel and Development Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>199</committeeid>
+    <committeetitle>Policy and Delivery - Review Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>120</committeeid>
+    <committeetitle>Policy and Resources Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>361</committeeid>
+    <committeetitle>Primary Assurance and Risk Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>393</committeeid>
+    <committeetitle>Programme Delivery Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>219</committeeid>
+    <committeetitle>Public Arts Steering Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>212</committeeid>
+    <committeetitle>Public Transport Tasking and Co-ordination Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>119</committeeid>
+    <committeetitle>Rail Services Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>304</committeeid>
+    <committeetitle>Real Time Information Group Limited</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Company</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>522</committeeid>
+    <committeetitle>Review of the LCR Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>277</committeeid>
+    <committeetitle>Review Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>410</committeeid>
+    <committeetitle>Risk Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>318</committeeid>
+    <committeetitle>Road Safety Management Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>274</committeeid>
+    <committeetitle>Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>240</committeeid>
+    <committeetitle>Sefton Customer Forum</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>547</committeeid>
+    <committeetitle>Sound! Music Hub Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>229</committeeid>
+    <committeetitle>Spaceport Limited</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Company</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>241</committeeid>
+    <committeetitle>St Helens Customer Forum</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>122</committeeid>
+    <committeetitle>Standards Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>416</committeeid>
+    <committeetitle>Station Commission</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>555</committeeid>
+    <committeetitle>Strategic Investment Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>412</committeeid>
+    <committeetitle>Strategic Investment Panel - Internal</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>536</committeeid>
+    <committeetitle>Strategic Place Partnership</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>204</committeeid>
+    <committeetitle>Strategy and Finance Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>340</committeeid>
+    <committeetitle>TAG Discussion Group</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>132</committeeid>
+    <committeetitle>Tender and Contracts Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>245</committeeid>
+    <committeetitle>Test</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>116</committeeid>
+    <committeetitle>Test</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>358</committeeid>
+    <committeetitle>Test</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>363</committeeid>
+    <committeetitle>test</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>323</committeeid>
+    <committeetitle>Test</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>424</committeeid>
+    <committeetitle>TEST - LP</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>350</committeeid>
+    <committeetitle>Test Committee</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>194</committeeid>
+    <committeetitle>The Executive</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>354</committeeid>
+    <committeetitle>Ticketing Steering Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>398</committeeid>
+    <committeetitle>Ticketing Steering Group 2</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>404</committeeid>
+    <committeetitle>Transforming Cities Fund Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>315</committeeid>
+    <committeetitle>Transport Advisory Group</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>316</committeeid>
+    <committeetitle>Transport Advisory Group</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>320</committeeid>
+    <committeetitle>Transport Advisory Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>450</committeeid>
+    <committeetitle>Transport and Air Quality Portfolio Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>505</committeeid>
+    <committeetitle>Transport Cabinet Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Cabinet Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>558</committeeid>
+    <committeetitle>Transport Delivery Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>303</committeeid>
+    <committeetitle>TravelSafe Partnership Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Advisory Boards</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>200</committeeid>
+    <committeetitle>Tunnels, Ferries and Visitor Economy Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>228</committeeid>
+    <committeetitle>U534 Limited</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Company</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>335</committeeid>
+    <committeetitle>Urban Transport Safety and Security Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>134</committeeid>
+    <committeetitle>Urgency Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>238</committeeid>
+    <committeetitle>Wirral Customer Forum</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>215</committeeid>
+    <committeetitle>Wirral District Liaison Meeting</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>283</committeeid>
+    <committeetitle>Wirral District Liaison Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Officer Meeting</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>391</committeeid>
+    <committeetitle>Workforce Engagement Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>216</committeeid>
+    <committeetitle>zz Test</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>518</committeeid>
+    <committeetitle>zznew</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>232</committeeid>
+    <committeetitle>zzTestCommittee</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>311</committeeid>
+    <committeetitle>zzTestCommittee (Please don't delete - For testing purposes)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>495</committeeid>
+    <committeetitle>ZZZ Dummy Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>546</committeeid>
+    <committeetitle>zzz upgrade15215</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>266</committeeid>
+    <committeetitle>zzzTest</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+</committees>

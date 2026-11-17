@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="utf-8"?>
+<committees>
+  <committeescount> 106</committeescount>
+  <committee>
+    <committeeid>383</committeeid>
+    <committeetitle>AGMA Executive Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>AGMA Executive Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>376</committeeid>
+    <committeetitle>AGMA Statutory Functions Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>AGMA Statutory Functions Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>442</committeeid>
+    <committeetitle>Bee Network Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Bee Network</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>411</committeeid>
+    <committeetitle>Bus Reform Documents</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>416</committeeid>
+    <committeetitle>GM Health &amp; Care Joint Planning &amp; Delivery Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>348</committeeid>
+    <committeetitle>GMCA -  Standards Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>349</committeeid>
+    <committeetitle>GMCA - AGMA Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>350</committeeid>
+    <committeetitle>GMCA - AGMA Executive Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>351</committeeid>
+    <committeetitle>GMCA - AGMA Scrutiny Pool</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>352</committeeid>
+    <committeetitle>GMCA - Bus Network and Transport for Greater Manchester Services Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>353</committeeid>
+    <committeetitle>GMCA - Capital Projects and Policy Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>354</committeeid>
+    <committeetitle>GMCA - Corporate Issues and Reform Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Meeting papers before 2019/20</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>355</committeeid>
+    <committeetitle>GMCA - Economy Business Growth and Skills Overview and Scrutiny</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>356</committeeid>
+    <committeetitle>GMCA - GM Culture and Social Impact Fund Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>357</committeeid>
+    <committeetitle>GMCA - GM Health and Social Care Strategic Partnership Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>358</committeeid>
+    <committeetitle>GMCA - GM Joint Commissioning Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>359</committeeid>
+    <committeetitle>GMCA - GM Joint Health Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>360</committeeid>
+    <committeetitle>GMCA - GM Waste and Recycling Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>361</committeeid>
+    <committeetitle>GMCA - Greater Manchester Combined Authority</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>362</committeeid>
+    <committeetitle>GMCA - Greater Manchester Local Enterprise Partnership</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Low Carbon Hub Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>363</committeeid>
+    <committeetitle>GMCA - Housing Planning and Environment Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Meeting papers before 2019/20</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>364</committeeid>
+    <committeetitle>GMCA - Independent Ethics Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>365</committeeid>
+    <committeetitle>GMCA - Joint GMCA AGMA Executive Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>366</committeeid>
+    <committeetitle>GMCA - Low Carbon Hub</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>367</committeeid>
+    <committeetitle>GMCA - Metrolink and Rail Networks Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>368</committeeid>
+    <committeetitle>GMCA - Planning and Housing Commission</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>369</committeeid>
+    <committeetitle>GMCA - Police and Crime Joint Audit Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>370</committeeid>
+    <committeetitle>GMCA - Police and Crime Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>371</committeeid>
+    <committeetitle>GMCA - Resources Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>372</committeeid>
+    <committeetitle>GMCA - Skills and Employment Partnership</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>373</committeeid>
+    <committeetitle>GMCA - Statutory Functions Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>374</committeeid>
+    <committeetitle>GMCA - Transport for Greater Manchester Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>477</committeeid>
+    <committeetitle>GMCA Investment Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>GMCA Investment Sub-Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>424</committeeid>
+    <committeetitle>GMCA Overview &amp; Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>GMCA Overview and Scrutiny Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>326</committeeid>
+    <committeetitle>GMFRS - Appeals Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>327</committeeid>
+    <committeetitle>GMFRS - Appointments Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>328</committeeid>
+    <committeetitle>GMFRS - Audit and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>329</committeeid>
+    <committeetitle>GMFRS - Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>330</committeeid>
+    <committeetitle>GMFRS - Audit, Scrutiny and Standards Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>331</committeeid>
+    <committeetitle>GMFRS - Authority</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>332</committeeid>
+    <committeetitle>GMFRS - Emergency Response Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>333</committeeid>
+    <committeetitle>GMFRS - Finance and General Purposes Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>334</committeeid>
+    <committeetitle>GMFRS - Fire Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>335</committeeid>
+    <committeetitle>GMFRS - Human Resources Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>336</committeeid>
+    <committeetitle>GMFRS - Inclusivity Scrutiny Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>337</committeeid>
+    <committeetitle>GMFRS - Joint Audit, Scrutiny and Standards and Policy, Resources and Performance Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>338</committeeid>
+    <committeetitle>GMFRS - Joint Policy and Finance and General Purposes Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>339</committeeid>
+    <committeetitle>GMFRS - Local Pensions Board - Firefighters Pension Scheme</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>340</committeeid>
+    <committeetitle>GMFRS - Member Development Steering Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>341</committeeid>
+    <committeetitle>GMFRS - Personnel Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>342</committeeid>
+    <committeetitle>GMFRS - Policy Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>343</committeeid>
+    <committeetitle>GMFRS - Policy Standing Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>344</committeeid>
+    <committeetitle>GMFRS - Policy, Resources and Performance Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>345</committeeid>
+    <committeetitle>GMFRS - Prevention and Protection Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>346</committeeid>
+    <committeetitle>GMFRS - Service Delivery Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>347</committeeid>
+    <committeetitle>GMFRS - Standards Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>279</committeeid>
+    <committeetitle>GMWDA - Asset Management Steering Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>282</committeeid>
+    <committeetitle>GMWDA - Audit &amp; Standards Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>283</committeeid>
+    <committeetitle>GMWDA - Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>288</committeeid>
+    <committeetitle>GMWDA - Constitution</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>290</committeeid>
+    <committeetitle>GMWDA - Decisions taken by Committees</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>291</committeeid>
+    <committeetitle>GMWDA - Decisions taken by the Authority</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>292</committeeid>
+    <committeetitle>GMWDA - Delegated Decisions taken by Officers</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>293</committeeid>
+    <committeetitle>GMWDA - General Information Domain</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>294</committeeid>
+    <committeetitle>GMWDA - General Information Domain - Audit &amp; Standards Committee Information</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>295</committeeid>
+    <committeetitle>GMWDA - General Information Domain - Resources Committee Information</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>304</committeeid>
+    <committeetitle>GMWDA - Performance, Policy and Resources Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>305</committeeid>
+    <committeetitle>GMWDA - Policy &amp; Procurement Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>307</committeeid>
+    <committeetitle>GMWDA - Recycling, Waste Management and Operations Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>311</committeeid>
+    <committeetitle>GMWDA - Special Purposes Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>312</committeeid>
+    <committeetitle>GMWDA - Special Purposes Committee 201213</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>313</committeeid>
+    <committeetitle>GMWDA - Standards Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>317</committeeid>
+    <committeetitle>GMWDA - Strategy and Behavioural Change Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>318</committeeid>
+    <committeetitle>GMWDA - Waste Management Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>381</committeeid>
+    <committeetitle>Greater Manchester 5 Year Environment Plan (5YEP) Partnership</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Greater Manchester Green City Region Partnership (was Low Carbon Hub Board)</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>409</committeeid>
+    <committeetitle>Greater Manchester Air Quality Administration Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>GM Air Quality Administration Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>142</committeeid>
+    <committeetitle>Greater Manchester Business Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>415</committeeid>
+    <committeetitle>Greater Manchester Clean Air Charging Authorities Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Greater Manchester Clean Air Charging Authorities Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>136</committeeid>
+    <committeetitle>Greater Manchester Combined Authority</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Greater Manchester Combined Authority (GMCA)</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>178</committeeid>
+    <committeetitle>Greater Manchester Combined Authority Audit Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>GMCA Audit Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>210</committeeid>
+    <committeetitle>Greater Manchester Combined Authority Resources Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>GMCA Resources Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>138</committeeid>
+    <committeetitle>Greater Manchester Combined Authority Standards Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>GMCA Standards Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>216</committeeid>
+    <committeetitle>Greater Manchester Corporate Issues &amp; Reform Overview and Scrutiny Committee 2021/22</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>135</committeeid>
+    <committeetitle>Greater Manchester Culture and Social Impact Fund Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>GM Culture &amp; Social Impact Fund Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>148</committeeid>
+    <committeetitle>Greater Manchester Economy, Business Growth and Skills Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>140</committeeid>
+    <committeetitle>Greater Manchester Health and Care  Joint Commissioning Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Greater Manchester Joint Commissioning Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>255</committeeid>
+    <committeetitle>Greater Manchester Housing First, Planning and Infrastructure Commission</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Greater Manchester Housing First, Planning &amp; Infrastructure Commission</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>247</committeeid>
+    <committeetitle>Greater Manchester Housing Planning and Environment Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>426</committeeid>
+    <committeetitle>Greater Manchester Integrated Care Partnership Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Greater Manchester Healthy Lives &amp; Quality Care</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>443</committeeid>
+    <committeetitle>Greater Manchester Joint Clean Air Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>GM Clean Air Scrutiny Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>228</committeeid>
+    <committeetitle>Greater Manchester Joint Health Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Greater Manchester Joint Health Scrutiny Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>139</committeeid>
+    <committeetitle>Greater Manchester Police, Fire and Crime Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Police, Fire and Crime Panel</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>193</committeeid>
+    <committeetitle>Greater Manchester Transport Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>436</committeeid>
+    <committeetitle>Greater Manchester Transport Committee - Active Travel Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>438</committeeid>
+    <committeetitle>Greater Manchester Transport Committee - Bus Services Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>437</committeeid>
+    <committeetitle>Greater Manchester Transport Committee- Metrolink &amp; Rail Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>137</committeeid>
+    <committeetitle>Greater Manchester Waste &amp; Recycling Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Greater Manchester Waste and Recycling Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>382</committeeid>
+    <committeetitle>Independent Police Ethics Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>454</committeeid>
+    <committeetitle>Legal &amp; Gov Issues</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>379</committeeid>
+    <committeetitle>Low Carbon Hub Board (to 29 July 2019)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Greater Manchester Green City Region Partnership (was Low Carbon Hub Board)</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>237</committeeid>
+    <committeetitle>Low Carbon Programmes Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Low Carbon Hub Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>395</committeeid>
+    <committeetitle>Pension Board - Firefighters Pension Scheme</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>412</committeeid>
+    <committeetitle>Places for Everyone Joint Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Places for Everyone Joint Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>199</committeeid>
+    <committeetitle>Transport for Greater Manchester Committee Bus Networks and TFGM Services Sub Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>206</committeeid>
+    <committeetitle>Transport for Greater Manchester Committee Capital Projects and Policy Sub Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>151</committeeid>
+    <committeetitle>Transport for Greater Manchester Committee Metrolink and Rail Networks Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+</committees>

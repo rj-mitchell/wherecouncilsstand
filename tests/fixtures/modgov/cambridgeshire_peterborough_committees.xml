@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<committees>
+  <committeescount> 20</committeescount>
+  <committee>
+    <committeeid>142</committeeid>
+    <committeetitle>Audit and Governance Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Regulatory Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>178</committeeid>
+    <committeetitle>Audit and Governance Sub Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>187</committeeid>
+    <committeetitle>Audit and Governance Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Regulatory Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>137</committeeid>
+    <committeetitle>Business Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Business Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>141</committeeid>
+    <committeetitle>Combined Authority Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Combined Authority Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>148</committeeid>
+    <committeetitle>Constitution</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Constitution</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>179</committeeid>
+    <committeetitle>Eastern Agri-Tech Programme Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>180</committeeid>
+    <committeetitle>Employment Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>146</committeeid>
+    <committeetitle>Funding Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Operating Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>143</committeeid>
+    <committeetitle>Growth Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Thematic Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>181</committeeid>
+    <committeetitle>Housing and Communities Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>175</committeeid>
+    <committeetitle>Mayor's Question Time</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Member Forums</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>139</committeeid>
+    <committeetitle>Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Regulatory Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>182</committeeid>
+    <committeetitle>Overview and Scrutiny Committee (June 2017 – March 2024)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>183</committeeid>
+    <committeetitle>Skills  Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>184</committeeid>
+    <committeetitle>Skills and Employment Committee (June 2023 – March 2024)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>140</committeeid>
+    <committeetitle>Skills Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Thematic Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>144</committeeid>
+    <committeetitle>Staffing Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Operating Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>185</committeeid>
+    <committeetitle>Transport and Infrastructure Committee (October 2018 – March 2024)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>138</committeeid>
+    <committeetitle>Transport Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Thematic Committees</committeecategory>
+  </committee>
+</committees>

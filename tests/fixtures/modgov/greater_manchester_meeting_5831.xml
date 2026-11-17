@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='utf-8'?>
+<meeting>
+  <meetingid>5831</meetingid>
+  <meetingdate>27/06/2025</meetingdate>
+  <meetingstatus>Confirmed</meetingstatus>
+  <isdisplayallowed>True</isdisplayallowed>
+  <meetingtime>10.00 am</meetingtime>
+  <meetingactualstarttime>
+  </meetingactualstarttime>
+  <meetingplannedfinishtime>2.00 pm</meetingplannedfinishtime>
+  <meetingactualfinishtime>
+  </meetingactualfinishtime>
+  <meetinglocation>Rochdale Town Hall, The Esplanade, Rochdale, OL16 1AZ</meetinglocation>
+  <iswebcast>False</iswebcast>
+  <agendaid>5831</agendaid>
+  <agendapublished>True</agendapublished>
+  <decisionpublished>True</decisionpublished>
+  <minutepublished>False</minutepublished>
+  <meetingroom>
+  </meetingroom>
+  <agendaitems>
+    <agendaitem>
+      <agendaitemid>20107</agendaitemid>
+      <agendaitemtitle>Apologies</agendaitemtitle>
+      <agendatext>
+      </agendatext>
+      <actualmeetingdate>27/06/2025</actualmeetingdate>
+      <agendaitemnumber>1</agendaitemnumber>
+      <agendaitemsubnumber>
+      </agendaitemsubnumber>
+      <fulldisplaynumberformat>1.</fulldisplaynumberformat>
+      <authorusername>
+      </authorusername>
+      <commentlabel1>Presented By</commentlabel1>
+      <commenttext1>
+      </commenttext1>
+      <commentlabel2>Actions</commentlabel2>
+      <commenttext2>
+      </commenttext2>
+      <decisionnonemptyhtmlbody>&lt;div class="WordSection1"&gt;
+&lt;p class="MsoNormal"&gt;&lt;span style=""&gt;That apologies be received from
+Andy Burnham (Mayor of Greater Manchester), Councillor David
+Molyneux (Wigan), Lynne Ridsdale (Bury), Tom Stannard (Manchester)
+&amp;amp; Sara Todd (Trafford).&lt;/span&gt;&lt;/p&gt;
+&lt;p class="MsoNormal"&gt;&amp;nbsp;&lt;/p&gt;
+&lt;/div&gt;
+</decisionnonemptyhtmlbody>
+      <declarationcount>0</declarationcount>
+      <iscallin>False</iscallin>
+      <iscomment>False</iscomment>
+      <isdecision>True</isdecision>
+      <isdecisionpublished>True</isdecisionpublished>
+      <isminutepublished>False</isminutepublished>
+      <ispubliccanspeak>False</ispubliccanspeak>
+      <isrestricted>False</isrestricted>
+      <isdisplayallowed>True</isdisplayallowed>
+      <meetingdate>27/06/2025</meetingdate>
+      <meetingtime>10.00 am</meetingtime>
+      <minutesitemnumber>1</minutesitemnumber>
+      <minutesitemsubnumber>
+      </minutesitemsubnumber>
+      <preferreddate>27/06/2025</preferreddate>
+      <refertocommittee>Greater Manchester Combined Authority</refertocommittee>
+    </agendaitem>
+    <agendaitem>
+      <agendaitemid>20114</agendaitemid>
+      <agendaitemtitle>Appointment of Chair 2025/26</agendaitemtitle>
+      <agendatext>&lt;div class="WordSection1"&gt;
+&lt;p class="MsoNormal"&gt;&lt;span style=""&gt;GMCA Members are required to
+note that Andy Burnham, as the Mayor of Greater Manchester, under
+Part 5A, section 4 of the Constitution, is the Chair of the GMCA
+(ex-officio).&lt;/span&gt;&lt;/p&gt;
+&lt;p class="MsoNormal"&gt;&amp;nbsp;&lt;/p&gt;
+&lt;/div&gt;
+</agendatext>
+      <actualmeetingdate>27/06/2025</actualmeetingdate>
+      <agendaitemnumber>2</agendaitemnumber>
+      <agendaitemsubnumber>
+      </agendaitemsubnumber>
+      <fulldisplaynumberformat>2.</fulldisplaynumberformat>
+      <authorusername>
+      </authorusername>
+      <commentlabel1>Presented By</commentlabel1>
+      <commenttext1>
+      </commenttext1>
+      <commentlabel2>Actions</commentlabel2>
+      <commenttext2>
+      </commenttext2>
+      <decisionnonemptyhtmlbody>&lt;div class="WordSection1"&gt;
+&lt;p class="MsoNormal"&gt;&lt;span style=""&gt;That it be noted that Andy
+Burnham, as the Mayor of Greater Manchester, under Part 5A, section
+4 of the Constitution, is the Chair of the GMCA
+(ex-officio).&lt;/span&gt;&lt;/p&gt;
+&lt;p class="MsoNormal"&gt;&amp;nbsp;&lt;/p&gt;
+&lt;/div&gt;
+</decisionnonemptyhtmlbody>
+      <declarationcount>0</declarationcount>
+      <iscallin>False</iscallin>
+      <iscomment>False</iscomment>
+      <isdecision>True</isdecision>
+      <isdecisionpublished>True</isdecisionpublished>
+      <isminutepublished>False</isminutepublished>
+      <ispubliccanspeak>False</ispubliccanspeak>
+      <isrestricted>False</isrestricted>
+      <isdisplayallowed>True</isdisplayallowed>
+      <meetingdate>27/06/2025</meetingdate>
+      <meetingtime>10.00 am</meetingtime>
+      <minutesitemnumber>2</minutesitemnumber>
+      <minutesitemsubnumber>
+      </minutesitemsubnumber>
+      <preferreddate>27/06/2025</preferreddate>
+      <refertocommittee>Greater Manchester Combined Authority</refertocommittee>
+    </agendaitem>
+    </agendaitems>
+  <attendees>
+    <attendee membertype="U" memberid="2452" name="May Coffey" roledescription="Officer (Full Permission)" attendance="Expected" representing="Group CXs Office" keyposts="Group CXs Office">
+    </attendee>
+    <attendee membertype="U" memberid="2289" name="Councillor Jackie Schofield" roledescription="Substitute" attendance="Not required" representing="Bolton Council" politicalparty="Labour" ward="BMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=2289</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/9/8/2/Info00002289/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/9/8/2/Info00002289/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="1151" name="Councillor Eleanor Wills" roledescription="Committee Member" attendance="Expected" representing="Tameside MBC" politicalparty="Labour" ward="TMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=1151</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/1/5/1/Info00001151/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/1/5/1/Info00001151/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="120" name="GM Mayor Andy Burnham" roledescription="Chair" attendance="Expected" representing="GMCA" politicalparty="Labour" keyposts="Mayor">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=120</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/0/2/1/Info00000120/smallpic.png</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/0/2/1/Info00000120/bigpic.png</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="506" name="Councillor Arooj Shah" roledescription="Committee Member" attendance="Expected" representing="Oldham Council" politicalparty="Labour" ward="OMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=506</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/6/0/5/Info00000506/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/6/0/5/Info00000506/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="1981" name="Councillor Tom Ross" roledescription="Committee Member" attendance="Expected" representing="Trafford" politicalparty="Labour" ward="TMBC" keyposts="Leader">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=1981</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/1/8/9/Info00001981/smallpic.png</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/1/8/9/Info00001981/bigpic.png</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="579" name="Councillor Neil Emmott" roledescription="Committee Member" attendance="Expected" representing="Rochdale" politicalparty="Labour" ward="RBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=579</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/9/7/5/Info00000579/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/9/7/5/Info00000579/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="293" name="Councillor Nicholas Peel" roledescription="Committee Member" attendance="Expected" representing="Bolton Council" politicalparty="Labour" ward="BMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=293</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/3/9/2/Info00000293/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/3/9/2/Info00000293/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="304" name="Councillor Eamonn O'Brien" roledescription="Committee Member" attendance="Expected" representing="Bury Council" politicalparty="Labour" ward="BMBC" keyposts="Portfolio Holder">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=304</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/4/0/3/Info00000304/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/4/0/3/Info00000304/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="223" name="City Mayor Paul Dennett" roledescription="Committee Member" attendance="Expected" representing="Salford City Council" politicalparty="Labour" ward="SCC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=223</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/3/2/2/Info00000223/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/3/2/2/Info00000223/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="230" name="Councillor David Molyneux" roledescription="Committee Member" attendance="Expected" representing="Wigan Council" politicalparty="Labour" ward="WMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=230</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/0/3/2/Info00000230/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/0/3/2/Info00000230/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="140" name="Councillor Bev Craig" roledescription="Committee Member" attendance="Expected" representing="Manchester CC" politicalparty="Labour" ward="GM">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=140</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/0/4/1/Info00000140/smallpic.png</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/0/4/1/Info00000140/bigpic.png</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="1788" name="Councillor Elaine Taylor" roledescription="Substitute" attendance="Not required" representing="Oldham Council" politicalparty="Labour" ward="OMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=1788</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/8/8/7/Info00001788/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/8/8/7/Info00001788/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="513" name="Councillor Daalat Ali" roledescription="Substitute" attendance="Not required" representing="Rochdale" politicalparty="Labour" ward="RBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=513</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/3/1/5/Info00000513/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/3/1/5/Info00000513/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="171" name="Councillor Nazia Rehman" roledescription="Substitute" attendance="Not required" representing="Wigan Council" politicalparty="Labour" ward="WMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=171</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/1/7/1/Info00000171/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/1/7/1/Info00000171/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="1700" name="Councillor Tracy Kelly" roledescription="Substitute" attendance="Not required" representing="Salford City Council" politicalparty="Labour" ward="SCC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=1700</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/0/0/7/Info00001700/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/0/0/7/Info00001700/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="1664" name="Councillor Joanna Midgley" roledescription="Substitute" attendance="Not required" representing="Manchester" politicalparty="Labour" ward="MCC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=1664</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/4/6/6/Info00001664/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/4/6/6/Info00001664/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="2006" name="Councillor Lucy Smith" roledescription="Substitute" attendance="Not required" representing="Bury Council" politicalparty="Labour" ward="BMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=2006</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/6/0/0/Info00002006/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/6/0/0/Info00002006/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="1888" name="Councillor Mark Roberts" roledescription="Committee Member" attendance="Expected" representing="Stockport" politicalparty="Liberal Democrats" ward="SMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=1888</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/8/8/8/Info00001888/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/8/8/8/Info00001888/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="2360" name="Cllr Andrew McLaren" roledescription="Substitute" attendance="Not required" representing="Tameside" politicalparty="Labour" ward="TMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=2360</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/0/6/3/Info00002360/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/0/6/3/Info00002360/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="1439" name="Councillor Elizabeth Patel" roledescription="Substitute" attendance="Not required" politicalparty="Labour" ward="TMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=1439</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/9/3/4/Info00001439/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/9/3/4/Info00001439/bigpic.jpg</photobigurl>
+    </attendee>
+    <attendee membertype="U" memberid="2134" name="Councillor Jilly Julian" roledescription="Substitute" attendance="Not required" representing="Stockport Council" politicalparty="Liberal Democrats" ward="SMBC">
+      <url>https://democracy.greatermanchester-ca.gov.uk/mgUserInfo.aspx?UID=2134</url>
+      <photosmallurl>https://democracy.greatermanchester-ca.gov.uk/UserData/4/3/1/Info00002134/smallpic.jpg</photosmallurl>
+      <photobigurl>https://democracy.greatermanchester-ca.gov.uk/UserData/4/3/1/Info00002134/bigpic.jpg</photobigurl>
+    </attendee>
+  </attendees>
+</meeting>

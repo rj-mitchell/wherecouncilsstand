@@ -1,0 +1,271 @@
+"""Council and vote pages as the server sends them: their own title, description, canonical link, structured data and
+readable text for readers without scripts and search engines (api/plaintext.py), and the sitemap."""
+
+import json
+import re
+from datetime import date
+from pathlib import Path
+
+import pytest
+from fastapi.testclient import TestClient
+from test_pipeline import BARNSLEY, GUILDFORD, settings  # noqa: F401 - the fixture
+
+from councils import store
+from councils.api.app import create_app
+from councils.api.plaintext import page_with_meta, with_text
+from councils.state import open_state
+
+SHELL = """<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta property="og:image" content="https://wherecouncilsstand.com/family/card.png">
+    <title>{title}</title>
+    <meta name="description" content="A generic description." />
+  </head>
+  <body>
+    <main id="main">
+      <div id="app"></div>
+      <noscript><p>This page needs JavaScript. The minutes themselves are on each council's own website.</p></noscript>
+    </main>
+  </body>
+</html>"""
+VOTE = f"{BARNSLEY}:1:10:0"
+
+
+@pytest.fixture
+def site(settings, tmp_path):  # noqa: F811
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    for name, title in (("index", "Where Councils Stand"), ("councils", "Councils"), ("council", "Council"),
+                        ("vote", "Named vote")):
+        (dist / f"{name}.html").write_text(SHELL.format(title=title))
+    for name in ("about", "methodology", "press", "status", "named", "404"):
+        (dist / f"{name}.html").write_text(f"<!doctype html><title>{name}</title>")
+    settings.raw.setdefault("paths", {})["web_dist"] = str(dist)
+    store.parquet.write(settings.parquet_dir, "votes", BARNSLEY, [
+        {"vote_id": VOTE, "item_id": f"{BARNSLEY}:1:10", "meeting_id": f"{BARNSLEY}:1", "gss": BARNSLEY,
+         "date": date(2025, 2, 26), "year": 2025, "question": "motion", "outcome": "lost", "member_id": m,
+         "name": n, "vote": side, "excerpt": "Upon being put to the vote the motion was <lost>."}
+        for m, n, side in (("1", "Kitching", "for"), ("2", "Houghton", "against"), ("3", "Franklin", "against"))])
+    return TestClient(create_app(settings, state=open_state(settings)))
+
+
+def ld(html: str) -> dict:
+    return json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', html).group(1))
+
+
+def test_a_council_page_carries_its_own_details_and_readable_text(site):
+    r = site.get(f"/councils/{BARNSLEY.lower()}")
+    html = r.text
+    assert r.status_code == 200
+    assert "<title>Barnsley Metropolitan Borough Council | Where Councils Stand</title>" in html
+    assert html.count("<title>") == 1 and "A generic description" not in html
+    assert f'<link rel="canonical" href="https://wherecouncilsstand.com/councils/{BARNSLEY}" />' in html
+    assert re.search(r'<meta name="description" content="Barnsley [^"]*In overall control: Labour', html)
+    assert 'property="og:image"' in html and 'property="og:title"' in html and "noindex" not in html
+    data = ld(html)
+    assert data["about"]["@type"] == "GovernmentOrganization" and data["about"]["identifier"]["value"] == BARNSLEY
+    # the readable text is in the app's root, where the app draws the page, and the "needs JavaScript" note is gone
+    app = html[html.index('<div id="app">'):html.index("</main>")]
+    assert "<h1>Barnsley Metropolitan Borough Council</h1>" in app and "Members by party" in app
+    assert "Labour: 2" in app and "Liberal Democrats: 1" in app and "Latest meetings" in app
+    assert f'<a href="/votes/{VOTE}">Notice of Motion - Weekly Bin Collections</a>' in app
+    assert "For 1, Against 2, Abstained 0" in app
+    assert "needs JavaScript" not in html
+
+
+def test_a_vote_page_names_each_councillor_and_their_party(site):
+    html = site.get(f"/votes/{VOTE}").text
+    assert "<title>Notice of Motion - Weekly Bin Collections, Barnsley Metropolitan Borough Council | Where Councils " \
+           "Stand</title>" in html
+    assert f'href="https://wherecouncilsstand.com/votes/{VOTE}"' in html
+    assert "Hannah Kitching (Liberal Democrats)" in html and "<h2>Against (2)</h2>" in html
+    assert "the motion was &lt;lost&gt;." in html and "<lost>" not in html    # every value escaped
+    assert ld(html)["about"][1]["startDate"] == "2025-02-26"
+
+
+def test_unknown_councils_and_votes_are_404_and_not_indexed(site):
+    r = site.get("/councils/E99999999")
+    assert r.status_code == 404 and "Council not found" in r.text and 'content="noindex"' in r.text
+    r = site.get(f"/votes/{GUILDFORD}:9:9:0")
+    assert r.status_code == 404 and "Named vote not found" in r.text
+
+
+def test_the_list_of_councils_and_the_home_page_can_be_read_without_scripts(site):
+    html = site.get("/councils").text
+    assert f'<a href="/councils/{BARNSLEY}">Barnsley Metropolitan Borough Council</a>' in html
+    assert "Not covered yet" in html and 'rel="canonical" href="https://wherecouncilsstand.com/councils"' in html
+    home = site.get("/").text
+    assert "<h1>Council decisions, from the minutes</h1>" in home and ld(home)["@type"] == "WebSite"
+    assert 'rel="canonical" href="https://wherecouncilsstand.com/"' in home
+
+
+def test_sitemap_lists_every_council_and_vote(site):
+    r = site.get("/sitemap.xml")
+    assert r.status_code == 200 and r.headers["content-type"].startswith("application/xml")
+    locs = re.findall(r"<loc>(.*?)</loc>", r.text)
+    base = "https://wherecouncilsstand.com"
+    assert locs[:2] == [f"{base}/", f"{base}/councils"]
+    assert {f"{base}/about", f"{base}/press", f"{base}/status", f"{base}/named"} <= set(locs)
+    assert f"{base}/404" not in locs
+    assert f"{base}/councils/{BARNSLEY}" in locs and len([u for u in locs if "/councils/" in u]) > 300
+    assert f"{base}/votes/{VOTE}" in locs
+
+
+def test_a_page_is_sent_as_it_is_if_the_record_cannot_be_read(site, monkeypatch):
+    from councils.api import data
+
+    monkeypatch.setattr(data.Data, "council", lambda self, gss: 1 / 0)
+    r = site.get(f"/councils/{BARNSLEY}")
+    assert r.status_code == 200 and "<title>Council</title>" in r.text and '<div id="app"></div>' in r.text
+
+
+def test_shell_helpers_escape_and_replace():
+    page = page_with_meta(SHELL.format(title="Old"), title='A "quoted" <title>', description="D & E",
+                          url="https://x/y", data={"name": "</script><b>"})
+    assert "<title>A &quot;quoted&quot; &lt;title&gt;</title>" in page and "Old" not in page
+    assert 'content="D &amp; E"' in page and "</script><b>" not in page and "<\\/script>" in page
+    assert with_text(page, None) == page and "needs JavaScript" not in with_text(page, "<p>x</p>")
+
+
+def test_the_pages_dates_are_written_as_the_sites_own_function_wrote_them_every_day_of_every_month():
+    """The readable pages write a date with the package's ``wts_core.dates.long_date`` (wts-core 0.3.0), where
+    api/plaintext.py had a function of its own. The site's own is copied here as it was, and the two give the same
+    text, byte for byte, for every day from the earliest a council's record can reach (25 February 2014) to the end
+    of 2030, given as a date, as a day's text and as a time's text (a statement's `shown_on`, a correction's day, a
+    vote's or a meeting's date); and nothing for nothing. The pages recorded from the site before the package
+    (tests/golden/pages.json, tests/test_parity.py) are unchanged. The one difference is where the server's
+    language is not English: the site's own then wrote the month in that language, and the package's never does.
+    The server's image sets no language, so it wrote English there too."""
+    from datetime import timedelta
+
+    from councils.api.plaintext import long_date
+
+    def the_sites_own(iso):                                 # api/plaintext.py before wts-core 0.3.0
+        if not iso:
+            return ""
+        d = iso if isinstance(iso, date) else date.fromisoformat(str(iso)[:10])
+        return f"{d.day} {d.strftime('%B %Y')}"
+
+    day, months = date(2014, 2, 25), set()
+    while day <= date(2030, 12, 31):
+        for given in (day, day.isoformat(), f"{day.isoformat()}T10:41:07+00:00"):
+            assert long_date(given) == the_sites_own(given), given
+        months.add((day.year, day.month))
+        day += timedelta(days=1)
+    assert len(months) == 203 and {m for _, m in months} == set(range(1, 13))
+    for nothing in (None, ""):
+        assert long_date(nothing) == the_sites_own(nothing) == ""
+    assert long_date("2026-11-16") == "16 November 2026" and long_date(date(2024, 2, 29)) == "29 February 2024"
+
+
+SOUTH_YORKSHIRE = "E47000002"
+
+
+def test_an_authority_page_and_its_councils_pages_link_both_ways(site, settings):  # noqa: F811
+    """South Yorkshire's board with Barnsley's leader on it (made-up rows): the authority's page names its kind,
+    mayor, constituent councils and members by role; Barnsley's page says it is part of the authority."""
+    from test_pipeline import item, meeting
+
+    d = date(2025, 3, 19)
+    m = {**meeting(SOUTH_YORKSHIRE, 5, d), "kind": "board", "committee_title": "Mayoral Combined Authority Board"}
+    store.parquet.write(settings.parquet_dir, "meetings", SOUTH_YORKSHIRE, [m])
+    store.parquet.write(settings.parquet_dir, "items", SOUTH_YORKSHIRE, [item(
+        SOUTH_YORKSHIRE, 5, 50, d, "Budget", "RESOLVED that the mayor's budget be approved.")])
+    base = {"meeting_id": f"{SOUTH_YORKSHIRE}:5", "gss": SOUTH_YORKSHIRE, "date": d, "year": 2025, "member_type": "U",
+            "attendance": "Present, as expected", "ward": ""}
+    store.parquet.write(settings.parquet_dir, "attendance", SOUTH_YORKSHIRE, [
+        {**base, "member_id": "1", "name": "Mayor Oliver Coppard", "role": "Chair", "party_label": "LAB",
+         "party": "LAB", "member_role": "mayor", "party_source": "as elected", "representing": "SYMCA"},
+        {**base, "member_id": "2", "name": "Councillor Sir Steve Houghton", "role": "Committee Member",
+         "party_label": "LAB", "party": "LAB", "member_role": "constituent", "party_source": "home council",
+         "home_gss": BARNSLEY, "representing": "Barnsley Council"},
+        {**base, "member_id": "", "name": "[name removed]", "role": "Committee Member", "party_label": "",
+         "party": "", "member_role": "appointed", "representing": "Business Advisory Board"}])
+    store.parquet.write(settings.parquet_dir, "votes", SOUTH_YORKSHIRE, [])
+
+    page = site.get(f"/api/councils/{SOUTH_YORKSHIRE}").json()
+    assert page["loaded"] and page["kind_name"] == "Mayoral combined authority"
+    assert page["control"]["name"] == "Mayor: Labour" and page["control"]["mayor"] == "Oliver Coppard"
+    assert [c["name"] for c in page["constituents"]][0] == "Barnsley Metropolitan Borough Council"
+    members = page["members"]["members"]
+    assert [x["role"] for x in members] == ["mayor", "constituent", "appointed"]
+    assert members[1]["name"] == "Sir Steve Houghton" and members[1]["home"]["gss"] == BARNSLEY
+    assert members[2]["name"] is None
+    html = site.get(f"/councils/{SOUTH_YORKSHIRE}").text
+    app = html[html.index('<div id="app">'):html.index("</main>")]
+    assert "Mayoral combined authority" in app and "<dt>Mayor</dt><dd>Oliver Coppard (Labour)" in app
+    assert f'<a href="/councils/{BARNSLEY}">Barnsley Metropolitan Borough Council</a>' in app
+    assert "Name not shown (not a councillor)" in app and "Business Advisory" not in app
+    assert ld(html)["about"]["additionalType"] == "Mayoral combined authority"
+    barnsley = site.get(f"/councils/{BARNSLEY}").text
+    assert f'Part of: <a href="/councils/{SOUTH_YORKSHIRE}">South Yorkshire Mayoral Combined Authority</a>' in barnsley
+    assert ld(barnsley)["about"]["memberOf"][0]["name"] == "South Yorkshire Mayoral Combined Authority"
+    listing = site.get("/councils").text
+    assert "<h2>Strategic authorities</h2>" in listing and "Greater London Authority" in listing
+    totals = site.get("/api/status").json()
+    assert totals["authorities"] == 20 and totals["authorities_loaded"] == 1
+    assert f"/councils/{SOUTH_YORKSHIRE}" in site.get("/sitemap.xml").text
+
+
+WEB = Path(__file__).resolve().parents[1] / "web"
+TIMES = "We reply within 5 working days, and decide within 20 working days."
+
+
+def test_if_youre_named_is_linked_from_about_and_corrections_and_built():
+    """The page for people named on the site (decision 22), linked as the charity's glossary says: from the
+    Corrections and About pages, and beside what names someone, not from the footer."""
+    link = '<a href="/named">If you\u2019re named on this site</a>'
+    for page in ("about.html", "corrections.html"):
+        assert link in (WEB / page).read_text(), page
+    assert '"/named"' not in (WEB / "partials" / "footer.html").read_text()
+    assert '"corrections", "named"' in (WEB / "vite.config.ts").read_text()
+
+
+def test_if_youre_named_uses_the_familys_words():
+    page = (WEB / "named.html").read_text()
+    assert "<h1>If you\u2019re named</h1>" in page and "<title>If you\u2019re named | Where Councils Stand</title>" in page
+    for route in ("Errors", "Unfair descriptions", "Statements in your own words"):
+        assert f"<h3>{route}</h3>" in page
+    for kind in ("error", "unfair", "statement", "takedown"):
+        assert f"/corrections?kind={kind}" in page
+    assert "Statement from [your name], [date]" in page and TIMES in page
+    assert "In their own words. Not checked or endorsed by Where Councils Stand." in page
+    assert not re.search(r"right to reply|rebuttal", page, re.I)
+
+
+def test_the_corrections_page_gives_the_response_times_and_links_to_if_youre_named():
+    page = (WEB / "corrections.html").read_text()
+    assert TIMES in page and '<a href="/named">If you\u2019re named on this site</a>' in page
+
+
+def test_the_privacy_notice_says_what_is_kept_in_the_sentences_the_owner_accepted():
+    """The sentences of the shared package's decisions (wts-core docs/adr/0012 and 0008, accepted by the owner on
+    13 November 2026), word for word, for what this site has turned on; and what the notice says is deleted is
+    what the code deletes (tests/test_observe.py, tests/test_statements.py)."""
+    from wts_core.observe import OWNER_ACCEPTED
+
+    from councils.replies import RULES
+    from councils.state import BACKUPS, BACKUPS_KEPT_DAYS
+
+    notice = (WEB / "privacy.html").read_text()
+    # the record of each briefing (ADR 0012)
+    assert ("For each briefing the site also notes how long each step took, what it cost and what the automatic "
+            "checks found, so that slow or poorly checked briefings can be found and fixed. These notes hold "
+            "nothing that identifies you; they are kept for 13 months, and the question of a briefing that could "
+            "not be written is removed from them after 90 days.") in notice
+    assert (OWNER_ACCEPTED.months, OWNER_ACCEPTED.failed_question_days) == (13, 90)
+    # the confirming address of a statement, and backups (ADR 0008, questions 3 and 4)
+    kept = ("kept while the statement is waiting or shown, and deleted three months after it is withdrawn, "
+            "declined or removed")
+    assert kept in notice and kept.replace("the statement", "your statement") in (WEB / "named.html").read_text()
+    assert RULES.email_kept_months == 3
+    assert ("Backups of the site\u2019s database are kept for up to two months, so a deleted address can remain in a "
+            "backup until then.") in notice
+    assert BACKUPS.keep_offsite == BACKUPS_KEPT_DAYS == 60 and BACKUPS.keep <= 60       # one a night: two months
+    # nothing the site has not turned on: it keeps no note of failed questions apart from the record, counts no
+    # reader's reports or statements, and has no "useful or not" buttons
+    for not_here in ("not useful", "failed questions", "per day for reports"):
+        assert not_here not in notice
+    assert "Requests aren\u2019t logged." in notice      # still true: the log of briefings holds nothing from a request

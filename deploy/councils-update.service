@@ -1,0 +1,21 @@
+# Bring Where Councils Stand's data up to date: new and recently changed meetings from every council's meetings
+# site, their named votes, the search index, and up to an hour of meaning search. Installed by deploy/update.sh with
+# councils-update.timer (docs/OPERATIONS.md).
+[Unit]
+Description=Where Councils Stand: update data
+After=docker.service
+Requires=docker.service
+# Emails the alerts address if this fails (deploy/alert@.service in Where MPs Stand, docs/HOSTING.md there)
+OnFailure=alert@%n.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/wherecouncilsstand/deploy
+# Exits 1 when something needs attention; each run's summary is appended to /data/updates.jsonl.
+# One data job at a time on the shared server: every site's update takes the same lock, and waits for it rather than
+# failing, so two sites' heavy jobs never run into each other. The time limit allows for waiting on another site's
+# job (Where MPs Stand's can take six hours) as well as this one's four.
+ExecStart=/usr/bin/flock /var/lock/wheretheystand-update.lock \
+  /usr/bin/docker compose run --rm -T app councils update --embed-minutes 60
+Nice=10
+TimeoutStartSec=10h

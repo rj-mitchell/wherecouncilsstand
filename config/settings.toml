@@ -1,0 +1,150 @@
+# Where Councils Stand settings. Paths are relative to the repository root unless absolute.
+# Environment overrides: COUNCILS_DATA_DIR, COUNCILS_CONFIG.
+
+[paths]
+data_dir = "data"
+
+[archive]
+# The record starts in May 2018 for every council (docs/DECISIONS.md, 4).
+start_date = "2018-05-01"
+# Briefings default to this many most recent years unless the question gives dates.
+default_years = 4
+
+[modgov]
+# Identifies the crawler to councils' servers, with a page explaining what it does.
+user_agent = "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+# At least this many seconds between requests to the same council.
+min_interval_seconds = 1.0
+timeout_seconds = 40
+retries = 3
+# Stop loading a council after this many meetings in a row time out: its service isn't answering in time, and
+# nothing is stored, so the next load or update tries again (sources/streak.py). 0 never stops.
+timeouts_in_a_row = 2
+# Minutes of a meeting newer than this are fetched again: they are approved, and sometimes corrected, at the
+# next meeting.
+refetch_days = 120
+# Read minutes published only as a document (sources/documents.py).
+read_documents = true
+
+[robots]
+# Whether every reader (Modern.gov, CMIS, CoINS) obeys sites' robots.txt rules. Off, as decided on
+# 6 November 2026 (docs/DECISIONS.md, 21), that robots.txt shouldn't be a blanket barrier to councils' public
+# records. Crawl-delay is still honoured where the file can be read; the crawler still names itself and keeps
+# min_interval_seconds; a site that refuses requests (403, a bot check) is still asked, never worked around.
+obey = false
+
+[ranking]
+candidates_bm25 = 300
+candidates_vector = 300
+vector_refine_factor = 5
+# Weight of normalised BM25 vs cosine similarity in the relevance score.
+bm25_weight = 0.5
+# Recency factor = floor + (1 - floor) * 0.5 ** (age_years / half_life); half_life = min_half_life_years / slider.
+recency_floor = 0.35
+min_half_life_years = 3.0
+default_recency = 0.4
+# Evidence selection for briefings: balance across councils and the groups chosen (rank/evidence.py).
+max_per_council = 2
+max_per_meeting = 1
+min_relevance_ratio = 0.25
+
+[answer]
+# As Where MPs Stand and Where Countries Stand: Sonnet writes briefings, Haiku reads the question.
+model = "claude-sonnet-5-5"
+query_parse_model = "claude-haiku-5-5"
+summary_sources = 24
+comprehensive_sources = 40
+summary_effort = "medium"
+comprehensive_effort = "high"
+query_parse_effort = "low"
+max_tokens = 16000
+use_fallbacks = true
+# The instructions are the same for every request (but for the date), so the provider may cache them: "short" is
+# its ordinary cache (five minutes), "long" an hour's, "off" none. The record of each briefing shows whether it pays.
+cache_instructions = "short"
+
+[embedding]
+# "fastembed" (local ONNX model; weights fetched once from Hugging Face and pinned)
+# or "hashing" (deterministic, offline; for tests only).
+backend = "fastembed"
+model = "snowflake/snowflake-arctic-embed-xs"
+dim = 384
+passage_words = 250
+batch_size = 8
+# How alike two questions must be to count as one theme in the weekly report (cosine similarity, for this model,
+# which scores unrelated text around 0.5 and a strong match around 0.85). A first figure, to be looked at again
+# once there is a few weeks' worth of questions.
+theme_similarity = 0.8
+
+[usage]
+# The site is public; each new model-written briefing costs money. As Where MPs Stand.
+per_visitor_daily_questions = 30   # a backstop against automated use (visitors keyed by a salted hash of their IP)
+requests_per_minute = 20           # questions and searches per visitor
+answer_cache_hours = 168           # an identical question is answered from the cache until the data changes, or a week
+daily_spend_cap_usd = 3.0          # over this, briefings stop for the day and the sources are shown instead
+monthly_spend_cap_usd = 50.0
+# A briefing's cost is known only when it finishes, so each one being written is counted against the caps at this
+# estimate meanwhile; and only so many are written at once, per visitor and in all (as Where MPs Stand).
+briefing_estimate_usd = 0.15
+briefings_at_once_per_visitor = 2
+briefings_at_once = 8
+# USD per million tokens, for spend tracking only.
+price_input_per_mtok = 2.0
+price_output_per_mtok = 10.0
+price_cache_read_per_mtok = 0.2
+cache_write_multiplier = 1.25
+
+# Each model the site may call has its prices here: the site will not start with a model that has none, so a new
+# model is never costed at another's prices (and the caps never bite late). A model whose name equals a name
+# here, or starts with it, takes these figures; anything a table leaves out is the figure above.
+#
+# These are the two models [answer] names, and the only two any Where They Stand site's settings name. To use
+# another on the server, name it in /data/settings.local.toml AND give it a table of its own there, with all three
+# prices: a table there adds to these, and the site says which model has none if one is forgotten
+# (docs/OPERATIONS.md, "Costs and limits"). No figure is ever guessed here.
+#
+# The briefing model. The figures are those of Where MPs Stand's config/settings.toml, [usage.models."claude-sonnet-5-5"]
+# (and this file's own base prices above, which were this model's before it had a table).
+[usage.models."claude-sonnet-5-5"]
+price_input_per_mtok = 2.0
+price_output_per_mtok = 10.0
+price_cache_read_per_mtok = 0.2
+
+# The model that reads questions. This site's own figures since its first day; the same as Where MPs Stand's and
+# Where Countries Stand's config/settings.toml, [usage.models."claude-haiku-5-5"].
+[usage.models."claude-haiku-5-5"]
+price_input_per_mtok = 0.1
+price_output_per_mtok = 0.5
+price_cache_read_per_mtok = 0.01
+
+[site]
+name = "Where Councils Stand"
+url = "https://wherecouncilsstand.com"
+# the donation page, once the charity is registered; nothing is shown while it is empty
+donate_url = ""
+
+[logs]
+# The structured log of briefings (data/logs/briefings.jsonl): one line for each stage a briefing reached and one
+# for how it ended, with the record's id, a stage's name, a time in milliseconds and an error's class name. Never a
+# question, an address or a visitor's code. A new file each day or at max_bytes; keep files, and none older than
+# days: at most 14 days and about 48 MB.
+max_bytes = 3000000
+keep = 15
+days = 14
+
+[alerts]
+# What the weekly report and `councils stats --check` warn about. Thresholds start unset: the first weekly report
+# proposes them from that week's figures, and the owner writes them here (or in data/settings.local.toml). The
+# names are p95_full_briefing_ms, error_rate, check_failure_rate, not_useful_rate, daily_cost_usd.
+
+[eval]
+# The most a run of the briefing test set may spend on the model, in US dollars (`councils eval run`): no run
+# starts without a limit, and it stops cleanly once spending reaches it.
+max_cost_usd = 2.0
+
+[eval.thresholds]
+# What a run is held to (a threshold is min_ or max_ and the name of a figure). Citations and quotations must all
+# check; the rest are loose until the first run on the server's record gives a baseline to set them from.
+max_invalid_citations = 0
+max_unverified_quotations = 0
+max_errors = 0

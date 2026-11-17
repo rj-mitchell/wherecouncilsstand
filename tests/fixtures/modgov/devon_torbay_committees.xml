@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<committees>
+  <committeescount> 8</committeescount>
+  <committee>
+    <committeeid>138</committeeid>
+    <committeetitle>Audit and Governance Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Audit and Governance Committee</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>139</committeeid>
+    <committeetitle>Devon and Torbay Combined County Authority Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Devon and Torbay Combined County Authority Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>143</committeeid>
+    <committeetitle>DTCCA Business Advisory Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>DTCCA Advisory Groups</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>145</committeeid>
+    <committeetitle>DTCCA Climate Change and Net Zero Advisory Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>DTCCA Advisory Groups</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>141</committeeid>
+    <committeetitle>DTCCA Housing Advisory Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>DTCCA Advisory Groups</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>144</committeeid>
+    <committeetitle>DTCCA Skills and Employment Advisory Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>DTCCA Advisory Groups</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>142</committeeid>
+    <committeetitle>DTCCA Transport Advisory Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>DTCCA Advisory Groups</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>140</committeeid>
+    <committeetitle>Overview and Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Overview and Scrutiny Committee</committeecategory>
+  </committee>
+</committees>

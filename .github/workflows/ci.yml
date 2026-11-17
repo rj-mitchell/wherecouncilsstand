@@ -1,0 +1,75 @@
+name: CI
+
+# Lint, tests, the Docker image and an accessibility check, on every push and pull request.
+# The jobs shared by every Where They Stand site come from wts-core's workflows, called at the same tag as the
+# package in pyproject.toml (tests/test_dependencies.py keeps the two in step; docs/OPERATIONS.md,
+# "A newer wts-core"). The family kit in web/public/family is checked by tests/test_family.py.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  # The family's toolchain (Python 3.12, uv 0.11.32): uv sync --frozen, ruff check, pytest.
+  python:
+    uses: rj-mitchell/wts-core/.github/workflows/python.yml@v0.3.1
+
+  # Node 22: npm ci, the type check, the tests, the build.
+  web:
+    uses: rj-mitchell/wts-core/.github/workflows/web.yml@v0.3.1
+    with:
+      working-directory: web
+
+  # The image the server runs, built as the server builds it, and one command run in it: a broken image is found
+  # here, before the server finds it.
+  docker:
+    uses: rj-mitchell/wts-core/.github/workflows/docker.yml@v0.3.1
+    with:
+      tag: wherecouncilsstand:ci
+      run: councils --help
+
+  # The built site, served on a small made-up record (scripts/fixture_site.py), checked with axe in Chromium: light
+  # and dark, desktop and phone, and the pages the server sends with readable text with their scripts blocked. Fails
+  # on any serious or critical WCAG 2.2 AA problem, or a page that scrolls sideways.
+  accessibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rj-mitchell/wts-core/.github/actions/setup@v0.3.1
+        with:
+          node: "22"
+          node-cache-path: web/package-lock.json
+      - run: uv sync --frozen --python 3.12
+      - name: Build the pages
+        working-directory: web
+        run: npm ci && npm run build
+      - name: Start the site on the made-up record
+        run: |
+          uv run python scripts/fixture_site.py "$RUNNER_TEMP/fixture"
+          # Started directly from .venv: a background `uv run` holds uv's cache and stalls the job's cache clean-up.
+          COUNCILS_DATA_DIR="$RUNNER_TEMP/fixture" nohup .venv/bin/councils serve --port 8000 > "$RUNNER_TEMP/serve.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/site.pid"
+          for i in $(seq 1 60); do
+            curl -fsS http://127.0.0.1:8000/api/health && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8000/councils/E08000038 | grep -q "Members by party"
+          curl -fsS http://127.0.0.1:8000/councils/E47000002 | grep -q "Constituent councils"
+          curl -fsS http://127.0.0.1:8000/sitemap.xml | grep -q "/votes/E08000038:1:10:0"
+          curl -fsS http://127.0.0.1:8000/corrections | grep -q "Briefing withdrawn"
+      # axe, WCAG 2.2 AA, light and dark, desktop and phone: this site's scripts/a11y.mjs, with Playwright and
+      # axe-core at the family's versions
+      - name: Accessibility check
+        uses: rj-mitchell/wts-core/.github/actions/a11y@v0.3.1
+        with:
+          url: http://127.0.0.1:8000
+      - name: Show the site's log if anything failed
+        if: failure()
+        run: cat "$RUNNER_TEMP/serve.log" || true
+      - name: Stop the site
+        if: always()
+        run: kill "$(cat "$RUNNER_TEMP/site.pid")" 2>/dev/null || true

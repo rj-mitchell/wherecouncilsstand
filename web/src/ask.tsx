@@ -1,0 +1,230 @@
+/** The home page: ask a question, read a sourced briefing. A saved briefing (/b/<id>) is shown the same way. */
+import { StrictMode, useEffect, useRef, useState, type FormEvent } from "react";
+import { createRoot } from "react-dom/client";
+import "./styles.css";
+import { ask, getBriefing, getCouncils, getMeta, type Answer, type AskEvent, type Meta, type Plan, type SourceCard } from "./api";
+import { BriefingText, CheckNotices } from "./components/Briefing";
+import { Statements } from "./components/Statements";
+import { AskSister } from "./components/Sister";
+import { PlanChips } from "./components/PlanChips";
+import { Sources } from "./components/Sources";
+import { Why } from "./components/Why";
+import { longDate, markNav, monthYear, number, setTitle } from "./format";
+
+type State = {
+  question: string;
+  phase: "idle" | "reading" | "finding" | "writing" | "done" | "error";
+  plan: Plan | null;
+  sources: SourceCard[];
+  text: string;
+  answer: Answer | null;
+  note: string | null;
+  error: string | null;
+  briefingId: string | null;
+  cached: boolean;
+  savedAt: string | null;
+};
+
+const EMPTY: State = { question: "", phase: "idle", plan: null, sources: [], text: "", answer: null, note: null, error: null,
+  briefingId: null, cached: false, savedAt: null };
+
+function apply(s: State, ev: AskEvent): State {
+  switch (ev.type) {
+    case "plan":
+      return { ...s, plan: ev.plan, phase: "finding" };
+    case "sources":
+      return { ...s, sources: ev.sources, phase: "writing" };
+    case "text":
+      return { ...s, text: s.text + ev.text };
+    case "final":
+      return { ...s, answer: ev.answer, note: ev.note || null, briefingId: ev.briefing_id || s.briefingId,
+        cached: !!ev.cached, phase: "done" };
+    case "error":
+      return { ...s, error: ev.message, phase: "error" };
+    default:
+      return s;
+  }
+}
+
+function App() {
+  const [meta, setMeta] = useState<Meta | null>(null);
+  const [names, setNames] = useState<Record<string, string>>({});
+  const [question, setQuestion] = useState(() => new URLSearchParams(location.search).get("q") || "");
+  const [sourcesOnly, setSourcesOnly] = useState(false);
+  const [detailed, setDetailed] = useState(false);
+  const [s, setS] = useState<State>(EMPTY);
+  const abort = useRef<AbortController | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    getMeta().then(setMeta).catch(() => setMeta(null));
+    getCouncils()
+      .then((d) => setNames(Object.fromEntries(d.councils.map((c) => [c.gss, c.name]))))
+      .catch(() => undefined);
+    const shared = location.pathname.match(/^\/b\/([\w-]+)/);
+    if (shared) {
+      getBriefing(shared[1])
+        .then((b) => {
+          let st: State = { ...EMPTY, question: b.question, phase: "reading", savedAt: b.at };
+          for (const ev of b.events) st = apply(st, ev);
+          setS({ ...st, briefingId: b.id });
+          setQuestion(b.question);
+          setTitle(b.question);
+        })
+        .catch((e: Error) => setS({ ...EMPTY, phase: "error", error: e.message }));
+    }
+  }, []);
+
+  async function run(q: string) {
+    if (q.trim().length < 3) return;
+    abort.current?.abort();
+    const ctrl = new AbortController();
+    abort.current = ctrl;
+    let st: State = { ...EMPTY, question: q, phase: "reading" };
+    setS(st);
+    setTitle(q);
+    if (location.pathname !== "/") history.replaceState(null, "", "/");
+    requestAnimationFrame(() => resultRef.current?.focus());
+    try {
+      await ask({ question: q, mode: detailed ? "comprehensive" : "summary", sources_only: sourcesOnly }, (ev) => {
+        st = apply(st, ev);
+        setS(st);
+      }, ctrl.signal);
+    } catch (e) {
+      if ((e as Error).name !== "AbortError") setS({ ...st, phase: "error", error: (e as Error).message });
+    }
+  }
+
+  function submit(e: FormEvent) {
+    e.preventDefault();
+    run(question);
+  }
+
+  const t = meta?.totals;
+  const busy = ["reading", "finding", "writing"].includes(s.phase);
+  const shareUrl = s.briefingId ? `${location.origin}/b/${s.briefingId}` : null;
+
+  return (
+    <>
+      <div className="split">
+        <div>
+          <h1>Council decisions, from the minutes</h1>
+          <p className="lede">
+            Ask about anything councils across the UK have discussed, decided or voted on at full council and cabinet, and
+            England’s strategic authorities at their boards and scrutiny committees.
+          </p>
+          <form className="ask-form" onSubmit={submit}>
+            <label htmlFor="question" className="visually-hidden">
+              Your question
+            </label>
+            <textarea id="question" value={question} maxLength={500} onChange={(e) => setQuestion(e.target.value)}
+              placeholder="For example: what have councils decided about weekly bin collections?"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  run(question);
+                }
+              }} />
+            <div className="ask-options">
+              <button className="button" type="submit" disabled={busy || question.trim().length < 3}>
+                {busy ? "Asking" : "Ask"}
+              </button>
+              <label>
+                <input type="checkbox" checked={detailed} onChange={(e) => setDetailed(e.target.checked)} /> Detailed briefing
+              </label>
+              <label>
+                <input type="checkbox" checked={sourcesOnly} onChange={(e) => setSourcesOnly(e.target.checked)} /> Sources only
+              </label>
+            </div>
+          </form>
+          {t && (
+            <p className="small record">
+              The record holds {number(t.meetings)} meetings and {number(t.named_votes)} named votes from{" "}
+              {number(t.loaded)} councils since {monthYear(meta?.start)}
+              {meta?.last_update ? <>, and was last updated on {longDate(meta.last_update.finished)}</> : null}.{" "}
+              <a href="/councils">Which councils are covered</a>
+            </p>
+          )}
+        </div>
+        <Why />
+      </div>
+
+      <div ref={resultRef} tabIndex={-1} aria-live="polite" aria-busy={busy}>
+        {s.phase === "idle" && meta && (
+          <>
+            <h2>Questions to try</h2>
+            <ul className="examples">
+              {meta.examples.map((q) => (
+                <li key={q}>
+                  <button type="button" onClick={() => { setQuestion(q); run(q); }}>
+                    {q}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+        {s.phase !== "idle" && (
+          <article className="briefing">
+            <p className="briefing-head">
+              <span>
+                Briefing: <em>{s.question}</em>
+              </span>
+              <span>{longDate(s.savedAt || new Date().toISOString())}</span>
+            </p>
+            {s.plan && <PlanChips plan={s.plan} meta={meta} councilNames={names} />}
+            {busy && (
+              <p className="progress">
+                {s.phase === "reading" ? "Reading the question" : s.phase === "finding" ? "Finding the minutes" : "Writing the briefing"}
+              </p>
+            )}
+            {s.answer ? (
+              <BriefingText segments={s.answer.segments} />
+            ) : (
+              s.text && <BriefingText text={s.text} />
+            )}
+            {s.note && <p className="notice info">{s.note}</p>}
+            {s.error && <p className="notice">{s.error}</p>}
+            {s.answer && !s.answer.no_records && (
+              <>
+                <CheckNotices answer={s.answer} />
+                {(s.answer.loaded_words || 0) > 0 && (
+                  <p className="notice">
+                    {s.answer.loaded_words === 1 ? "One word" : `${s.answer.loaded_words} words`} in the briefing’s own voice
+                    may be loaded. Briefings are meant to report what the minutes record, in neutral words.
+                  </p>
+                )}
+                <p className="small">
+                  Minutes are summaries of each meeting written by council officers. Briefings are written by AI from the
+                  minutes shown below and checked automatically against them, and they can still be wrong. The{" "}
+                  <a href="/methodology">methodology</a> explains how they are made.
+                </p>
+                {shareUrl && (
+                  <>
+                    <p className="small">
+                      Link to this briefing: <a href={shareUrl}>{shareUrl}</a>
+                    </p>
+                    <p className="small">
+                      <a href={`/corrections?page=${encodeURIComponent(shareUrl)}`}>Report a problem with this briefing</a>
+                    </p>
+                  </>
+                )}
+              </>
+            )}
+            {s.phase === "done" && s.question && <AskSister site="mps" question={s.question} />}
+          </article>
+        )}
+        {/* statements in their authors' own words beside a saved briefing (decision 22), after it, never in it */}
+        {s.savedAt && s.briefingId && <Statements page={`/b/${s.briefingId}`} />}
+        <Sources sources={s.sources} />
+      </div>
+    </>
+  );
+}
+
+markNav();
+createRoot(document.getElementById("app")!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);

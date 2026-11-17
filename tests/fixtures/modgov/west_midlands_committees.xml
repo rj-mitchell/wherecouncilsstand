@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="utf-8"?>
+<committees>
+  <committeescount> 108</committeescount>
+  <committee>
+    <committeeid>140</committeeid>
+    <committeetitle>Apologies for Absence (if any)</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>217</committeeid>
+    <committeetitle>ARAC agenda meeting</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>262</committeeid>
+    <committeetitle>Asset Management Panel</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>207</committeeid>
+    <committeetitle>ATF Test</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>136</committeeid>
+    <committeetitle>Audit, Risk &amp; Assurance Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Audit &amp; Scrutiny Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>346</committeeid>
+    <committeetitle>Birmingham East MDC Shadow Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>332</committeeid>
+    <committeetitle>Bus Reform Steering Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Transport for West Midlands Directorate Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>309</committeeid>
+    <committeetitle>Business Management Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>154</committeeid>
+    <committeetitle>Check the latest advice on Covid-19 including national restrictions ?</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>324</committeeid>
+    <committeetitle>Constitution</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Constitution</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>263</committeeid>
+    <committeetitle>Corporate Equalities Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>342</committeeid>
+    <committeetitle>Corporate Landlord Officer Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Other Officer Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>343</committeeid>
+    <committeetitle>Corporate Services Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Executive Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>241</committeeid>
+    <committeetitle>Councillor Ed Potter</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>206</committeeid>
+    <committeetitle>CRSTS Test</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>209</committeeid>
+    <committeetitle>CWGLF</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>308</committeeid>
+    <committeetitle>Delivery Panel</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>312</committeeid>
+    <committeetitle>Delivery Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>339</committeeid>
+    <committeetitle>Directors of Employment and Skills</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Political Liaison</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>249</committeeid>
+    <committeetitle>DSO (Employment, Skills, Health and Communities &amp; Strategy, Economy and Net Zero)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Designated Sign Off Meetings for Executive Directors</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>323</committeeid>
+    <committeetitle>DSO (Finance and Business Hub)</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>250</committeeid>
+    <committeetitle>DSO (Housing, Property and Regeneration)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Designated Sign Off Meetings for Executive Directors</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>248</committeeid>
+    <committeetitle>DSO (Strategy, Economy and Net Zero)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Designated Sign Off Meetings for Executive Directors</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>251</committeeid>
+    <committeetitle>DSO (TfWM - Transport)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Designated Sign Off Meetings for Executive Directors</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>156</committeeid>
+    <committeetitle>Economic Growth Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>247</committeeid>
+    <committeetitle>Elections 2024 Working Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>155</committeeid>
+    <committeetitle>Employment Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Boards/Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>254</committeeid>
+    <committeetitle>Enabling Services Panel</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>152</committeeid>
+    <committeetitle>Environment &amp; Energy Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>245</committeeid>
+    <committeetitle>ESC Payment and Performance Meeting (DSO)</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>334</committeeid>
+    <committeetitle>ESHC and Economy - Director Decision Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Other Officer Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>337</committeeid>
+    <committeetitle>ESHC Commissioning &amp; Mobilisation</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Other Officer Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>338</committeeid>
+    <committeetitle>ESHC Strategy and Engagement Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>341</committeeid>
+    <committeetitle>ESHC Whistleblowing</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Other Officer Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>158</committeeid>
+    <committeetitle>Executive Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Executive Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>265</committeeid>
+    <committeetitle>Executive Board - Managing Change</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Executive Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>301</committeeid>
+    <committeetitle>Forward Plan of all Upcoming Key Decisions</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>202</committeeid>
+    <committeetitle>Governance Managers</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>316</committeeid>
+    <committeetitle>Health Equity Advisory Council</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>148</committeeid>
+    <committeetitle>Housing &amp; Land Delivery Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>150</committeeid>
+    <committeetitle>Housing &amp; Land Delivery Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>238</committeeid>
+    <committeetitle>Housing &amp; Land Delivery Steering Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>147</committeeid>
+    <committeetitle>Housing and Land Delivery Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>149</committeeid>
+    <committeetitle>Housing and Land Delivery Board 2</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>225</committeeid>
+    <committeetitle>Information Governance Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>261</committeeid>
+    <committeetitle>Innovation, Productivity &amp; Efficiency Panel</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>135</committeeid>
+    <committeetitle>Investment Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Boards/Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>214</committeeid>
+    <committeetitle>Investment Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Other Officer Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>305</committeeid>
+    <committeetitle>Investment Zone Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Boards/Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>266</committeeid>
+    <committeetitle>Joint Overview &amp; Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>330</committeeid>
+    <committeetitle>Leader Briefing</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>356</committeeid>
+    <committeetitle>Local Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Audit &amp; Scrutiny Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>302</committeeid>
+    <committeetitle>Mayor &amp; Met Leaders Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Political Liaison</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>193</committeeid>
+    <committeetitle>Mayor &amp; Portfolio Leads Liaison</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>347</committeeid>
+    <committeetitle>Mayor's Strategic Health Partnership Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Political Liaison</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>269</committeeid>
+    <committeetitle>Mayoral Decision</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>359</committeeid>
+    <committeetitle>Office for Public Service Innovation Strategic Steering Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Other Officer Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>345</committeeid>
+    <committeetitle>Organisational Design Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Other Officer Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>210</committeeid>
+    <committeetitle>Other Funding</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>138</committeeid>
+    <committeetitle>Overview &amp; Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>236</committeeid>
+    <committeetitle>Overview &amp; Scrutiny Committee Agenda Briefing</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>237</committeeid>
+    <committeetitle>Payments Meeting (Economy, Skills &amp; Communities)</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>260</committeeid>
+    <committeetitle>People and Culture Panel</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>310</committeeid>
+    <committeetitle>People Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>307</committeeid>
+    <committeetitle>Place Development Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>255</committeeid>
+    <committeetitle>Policy Working Group</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>306</committeeid>
+    <committeetitle>Policy, Strategy and Intelligence Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>159</committeeid>
+    <committeetitle>Programme Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Boards/Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>256</committeeid>
+    <committeetitle>Programme Steering Panel</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>151</committeeid>
+    <committeetitle>Public Service Reform Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>259</committeeid>
+    <committeetitle>Research and Intelligence Community of Practice</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>258</committeeid>
+    <committeetitle>Research, Intelligence, Analysis and Data Steering  Group</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>233</committeeid>
+    <committeetitle>Skills Advisory Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>192</committeeid>
+    <committeetitle>Statutory Officers Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>320</committeeid>
+    <committeetitle>Strategic Health &amp; Safety Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Other Officer Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>252</committeeid>
+    <committeetitle>Strategic Transport Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Transport for West Midlands Directorate Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>296</committeeid>
+    <committeetitle>Strategic Transport Officers Group</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Boards/Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>304</committeeid>
+    <committeetitle>Strategic Transport Officers' Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Transport for West Midlands Directorate Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>344</committeeid>
+    <committeetitle>Strategy &amp; Policy Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Executive Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>352</committeeid>
+    <committeetitle>Strategy and Energy - Director Decision Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Other Officer Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>257</committeeid>
+    <committeetitle>Technical Governance Panel</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Internal Panel Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>222</committeeid>
+    <committeetitle>TfWM Away Day</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Transport for West Midlands Directorate Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>221</committeeid>
+    <committeetitle>TfWM Corporate Stakeholder &amp; Decision Making Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>213</committeeid>
+    <committeetitle>TfWM Corporate Stakeholder &amp; Decision-Making Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>273</committeeid>
+    <committeetitle>TfWM Delivery Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>275</committeeid>
+    <committeetitle>TfWM Operations &amp; Customer Experience Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Transport for West Midlands Directorate Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>274</committeeid>
+    <committeetitle>TfWM Planning Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>212</committeeid>
+    <committeetitle>TfWM Strategic Operations &amp; Customer Experience Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>211</committeeid>
+    <committeetitle>TfWM Strategy Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>353</committeeid>
+    <committeetitle>TfWM Transport Capital Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Transport for West Midlands Directorate Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>361</committeeid>
+    <committeetitle>Transport Capital Pressures Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Transport for West Midlands Directorate Meetings</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>134</committeeid>
+    <committeetitle>Transport Delivery Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>240</committeeid>
+    <committeetitle>Transport Delivery Overview &amp; Scrutiny Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>244</committeeid>
+    <committeetitle>Transport Delivery Overview &amp; Scrutiny Committee - Agenda</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>318</committeeid>
+    <committeetitle>Transport Operations Forum</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>153</committeeid>
+    <committeetitle>Transport Scrutiny Sub-Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>157</committeeid>
+    <committeetitle>Wednesbury - Brierley Hill Project Board</committeetitle>
+    <committeedeleted>True</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Boards/Committees</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>317</committeeid>
+    <committeetitle>Wednesbury to Brierley Hill Project Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>139</committeeid>
+    <committeetitle>Wellbeing Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>291</committeeid>
+    <committeetitle>West Midlands Combined Authority - Overview Briefings</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>348</committeeid>
+    <committeetitle>West Midlands Delivery &amp; Commissioning Partnership Group</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>Executive Board</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>264</committeeid>
+    <committeetitle>West Midlands Investment Zone Joint Committee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>True</committeeexpired>
+    <committeecategory>Archived / Historic</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>355</committeeid>
+    <committeetitle>West Midlands Works Partnership Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>137</committeeid>
+    <committeetitle>WMCA Board</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+    <committeecategory>West Midlands Combined Authority</committeecategory>
+  </committee>
+  <committee>
+    <committeeid>200</committeeid>
+    <committeetitle>WMCA Non Consituent Chief Executives Meeting</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>132</committeeid>
+    <committeetitle>zzTest Committee (Please do not delete)</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>331</committeeid>
+    <committeetitle>zzTestHubCommittee</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+  <committee>
+    <committeeid>295</committeeid>
+    <committeetitle>zzTestUpgrade</committeetitle>
+    <committeedeleted>False</committeedeleted>
+    <committeeexpired>False</committeeexpired>
+  </committee>
+</committees>

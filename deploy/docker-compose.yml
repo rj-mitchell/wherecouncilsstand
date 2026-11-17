@@ -1,0 +1,47 @@
+# Where Councils Stand on the charity's shared server: the website and its API. Where MPs Stand's web server is the
+# front door (HTTPS, Cloudflare): it passes this site's visitors to the app over the shared "sites" network.
+# Updates and backups run on a timer, each in a one-off container (deploy/councils-update.timer,
+# deploy/councils-backup.timer). Install or update with: bash /opt/wherecouncilsstand/deploy/update.sh (docs/DEPLOY.md)
+
+# Its own name: every site keeps this file in a folder called "deploy", and Compose would otherwise mix them up
+name: wherecouncilsstand
+
+# Logs are capped (three files of 10 MB per container) so they never fill the disk.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  app:
+    build:
+      context: ..
+    env_file: .env
+    logging: *logging
+    volumes:
+      - councils-data:/data
+      # nightly copies of the database that cannot be rebuilt (/opt/wherecouncilsstand/deploy/backups)
+      - ./backups:/backups
+    restart: unless-stopped
+    # the server is shared with the charity's other sites: a runaway update stops itself rather than slowing them
+    mem_limit: 4g
+    expose:
+      - "8000"
+    networks:
+      default:
+      sites:
+        aliases:
+          - wherecouncilsstand
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  sites:
+    external: true  # made by Where MPs Stand's update.sh (or: docker network create sites)
+
+volumes:
+  councils-data:

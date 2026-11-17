@@ -1,0 +1,317 @@
+"""Client for Civica Modern.gov's public web service, ``<site>/mgWebService.asmx``.
+
+The service is undocumented; what it returns was read from its WSDL and responses (docs/DATA.md). It needs no key.
+Every response is cached under ``raw/modgov/<council>/``, gzipped (``committees.xml.gz``), so a council is fetched
+once and parsed as often as needed. Copies cached before November 2026 are plain XML; they are read as they are and
+replaced by a gzipped copy when next fetched (docs/OPERATIONS.md has the command that compresses them all at once). Requests to one council are spaced at least ``min_interval_seconds`` apart.
+
+Dates in requests and responses are day/month/year.
+
+Every request is checked against the site's robots.txt first (sources/robots.py; decision 21), and any Crawl-delay is
+honoured. The check obeys robots.txt's rules only when ``[robots] obey`` is on (off by decision 21 of
+6 November 2026, so every page is allowed). With it on, a site whose robots.txt forbids the web service is not read:
+``Refused`` stops the council's load, nothing is written, and the cache is not used in its place. With it on, a
+robots.txt that can't be fetched is treated as a server that is
+down: the cached copy is used where there is one, and the council is tried again the next day.
+"""
+
+from __future__ import annotations
+
+import gzip
+import html
+import logging
+import re
+import threading
+import time
+from dataclasses import dataclass
+from datetime import date, datetime
+from pathlib import Path
+from urllib.parse import urlparse
+
+import httpx
+from lxml import etree
+
+from councils.config import Settings
+from councils.sources import robots, tls
+
+log = logging.getLogger(__name__)
+
+_PARSER = etree.XMLParser(recover=True, huge_tree=True, resolve_entities=False, no_network=True)
+
+
+@dataclass(frozen=True)
+class Committee:
+    id: int
+    title: str
+    expired: bool
+    deleted: bool
+
+
+@dataclass(frozen=True)
+class MeetingRef:
+    id: int
+    committee_id: int
+    date: date
+    status: str
+
+
+class ModgovError(RuntimeError):
+    pass
+
+
+ROBOTS_ERROR = "robots.txt forbids crawling"
+
+
+class Refused(ModgovError):
+    """The site's robots.txt forbids this crawler (decision 21): the council isn't read, and its cache isn't used."""
+
+
+def ddmmyyyy(d: date) -> str:
+    return d.strftime("%d/%m/%Y")
+
+
+def parse_date(text: str | None) -> date | None:
+    text = (text or "").strip()
+    for fmt in ("%d/%m/%Y", "%d/%m/%Y %H:%M:%S", "%Y-%m-%d", "%Y-%m-%dT%H:%M:%S", "%d/%m/%Y %H:%M"):
+        try:
+            return datetime.strptime(text, fmt).date()
+        except ValueError:
+            continue
+    return None
+
+
+def xml(text: str) -> etree._Element:
+    """Parse a web service response. Some councils' responses carry stray control characters."""
+    cleaned = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", text)
+    root = etree.fromstring(cleaned.encode("utf-8"), _PARSER)
+    if root is None:
+        raise ModgovError("unreadable response")
+    return root
+
+
+def _t(el: etree._Element, path: str) -> str:
+    found = el.find(path)
+    return (found.text or "").strip() if found is not None and found.text else ""
+
+
+class Client:
+    """One council's Modern.gov web service."""
+
+    _locks: dict[str, threading.Lock] = {}
+
+    def __init__(self, settings: Settings, council: str, base_url: str):
+        cfg = settings.modgov
+        self.council = council
+        self.base = base_url.rstrip("/") + "/mgWebService.asmx"
+        self.cache = settings.raw_dir / "modgov" / council
+        self.interval = float(cfg.get("min_interval_seconds", 1.0))
+        self.retries = int(cfg.get("retries", 3))
+        self.refetch_days = int(cfg.get("refetch_days", 120))
+        self._http_options = {"headers": {"User-Agent": cfg.get("user_agent", "WhereCouncilsStand")},
+                              "timeout": float(cfg.get("timeout_seconds", 40)), "follow_redirects": True}
+        self.user_agent = self._http_options["headers"]["User-Agent"]
+        self.http = httpx.Client(**self._http_options)
+        self._chain_completed = False
+        self._last = 0.0
+        self._lock = self._locks.setdefault(council, threading.Lock())
+
+    def close(self) -> None:
+        self.http.close()
+
+    def __enter__(self) -> Client:
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self.close()
+
+    # Transport
+    def robots(self, url: str) -> None:
+        """Raise ``Refused`` if robots.txt forbids the address, or ``ModgovError`` if it couldn't be fetched."""
+        verdict = robots.check(url, self.user_agent)
+        if verdict == "forbidden":
+            raise Refused(f"{ROBOTS_ERROR}: {url}")
+        if verdict == "unknown":
+            raise ModgovError(f"{self.council}: its robots.txt couldn't be read")
+
+    def _get(self, op: str, **params: str | int) -> str:
+        url = f"{self.base}/{op}"
+        self.robots(url)
+        interval = max(self.interval, robots.crawl_delay(url, self.user_agent))
+        with self._lock:
+            last_error: Exception | None = None
+            for attempt in range(self.retries):
+                wait = interval - (time.monotonic() - self._last)
+                if wait > 0:
+                    time.sleep(wait)
+                try:
+                    r = self.http.get(url, params=params)
+                    self._last = time.monotonic()
+                    if r.status_code == 200:
+                        return r.text
+                    last_error = ModgovError(f"{self.council} {op}: HTTP {r.status_code}")
+                    if r.status_code in (400, 403, 404):
+                        break
+                except httpx.HTTPError as e:
+                    self._last = time.monotonic()
+                    last_error = e
+                    if self._complete_chain(e):
+                        continue                     # verified with the intermediates the site left out
+                time.sleep(2 * (attempt + 1))
+            raise ModgovError(str(last_error)) from last_error
+
+    def _complete_chain(self, error: Exception) -> bool:
+        """A site whose certificate chain lacks an intermediate (tls.py): fetch it, as a browser would, and connect
+        again, still verifying. True if the client was rebuilt."""
+        if self._chain_completed or not tls.is_incomplete_chain(error):
+            return False
+        self._chain_completed = True
+        ctx = tls.completed_context(urlparse(self.base).hostname or "")
+        if ctx is None:
+            return False
+        self.http.close()
+        self.http = httpx.Client(verify=ctx, **self._http_options)
+        return True
+
+    def _cached(self, name: str, op: str, refresh: bool = False, max_age_days: float | None = None,
+                **params: str | int) -> str:
+        """A cached response, fetched if it isn't cached, if ``refresh``, or if older than ``max_age_days`` (by the
+        file's modification time). If fetching again fails, the cached copy is used: a server that is down mustn't
+        lose what is already known."""
+        plain = self.cache / name
+        path = cached_path(plain)
+        if path and max_age_days is not None:
+            refresh = refresh or (time.time() - path.stat().st_mtime) > max_age_days * 86_400
+        if path and not refresh:
+            return read_cached(path)
+        try:
+            text = self._get(op, **params)
+        except Refused:
+            raise                            # forbidden now: what was cached isn't read in its place
+        except ModgovError as e:
+            if not path:
+                raise
+            log.warning("%s: %s; using the copy cached %s", self.council, e,
+                        datetime.fromtimestamp(path.stat().st_mtime).date())
+            return read_cached(path)
+        plain.parent.mkdir(parents=True, exist_ok=True)
+        tmp = plain.with_name(plain.name + ".gz.tmp")
+        tmp.write_bytes(gzip.compress(text.encode("utf-8"), compresslevel=6))
+        tmp.replace(plain.with_name(plain.name + ".gz"))
+        plain.unlink(missing_ok=True)      # a plain copy from before the cache was gzipped
+        return text
+
+    # Operations
+    def committees(self, refresh: bool = False, max_age_days: float | None = None) -> list[Committee]:
+        root = xml(self._cached("committees.xml", "GetCommittees", refresh=refresh, max_age_days=max_age_days))
+        out = []
+        for c in root.iter("committee"):
+            cid = _t(c, "committeeid")
+            if not cid.isdigit():
+                continue
+            out.append(Committee(
+                id=int(cid),
+                title=html.unescape(_t(c, "committeetitle")),
+                expired=_t(c, "committeeexpired").lower() == "true",
+                deleted=_t(c, "committeedeleted").lower() == "true",
+            ))
+        return out
+
+    def meetings(self, committee_id: int, start: date, end: date, refresh: bool = False) -> list[MeetingRef]:
+        """A committee's meetings in a date range. A range running to today is kept as one file and fetched again
+        once a day, so new meetings appear; a range wholly in the past is fetched once."""
+        current = end >= date.today()
+        name = f"meetings/{committee_id}_{start:%Y%m%d}_{'latest' if current else f'{end:%Y%m%d}'}.xml"
+        text = self._cached(name, "GetMeetings", refresh=refresh, max_age_days=0.9 if current else None,
+                            lCommitteeId=committee_id, sFromDate=ddmmyyyy(start), sToDate=ddmmyyyy(end))
+        out = []
+        for m in xml(text).iter("meeting"):
+            mid, d = _t(m, "meetingid"), parse_date(_t(m, "meetingdate"))
+            if mid.isdigit() and d:
+                out.append(MeetingRef(int(mid), committee_id, d, _t(m, "meetingstatus")))
+        return out
+
+    def document(self, url: str) -> bytes | None:
+        """A document (usually a PDF) linked from a meeting, cached by its Modern.gov id; None if the site refuses
+        to serve documents to automated requests (many do, behind a browser check)."""
+        doc_id = re.search(r"ID=(\d+)", url) or re.search(r"/s(\d+)/", url)
+        name = doc_id.group(1) if doc_id else re.sub(r"\W+", "_", url)[-80:]
+        path = self.cache / "documents" / f"{name}.pdf"
+        if path.exists():
+            return path.read_bytes()
+        if robots.check(url, self.user_agent) != "allowed":
+            return None                      # robots.txt forbids the site's documents (or couldn't be read)
+        with self._lock:
+            wait = self.interval - (time.monotonic() - self._last)
+            if wait > 0:
+                time.sleep(wait)
+            try:
+                r = self.http.get(url)
+            except httpx.HTTPError as e:
+                raise ModgovError(f"{self.council} document: {e}") from e
+            finally:
+                self._last = time.monotonic()
+        if r.status_code in (401, 403, 429, 503) or not r.content.startswith(b"%PDF"):
+            return None
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(r.content)
+        return r.content
+
+    def meeting(self, meeting_id: int, meeting_date: date | None = None, refresh: bool = False) -> etree._Element:
+        """The whole meeting: agenda items with their minutes, attendance and documents. Recent meetings are fetched
+        again until their minutes have had time to be approved."""
+        recent = meeting_date is not None and (date.today() - meeting_date).days < self.refetch_days
+        text = self._cached(f"meeting/{meeting_id}.xml", "GetMeeting", refresh=refresh,
+                            max_age_days=0.9 if recent else None, lMeetingId=meeting_id)
+        return xml(text)
+
+
+_REFUSAL = re.compile(r"has been blocked|request rejected|connection denied|incapsula|_Incapsula_Resource|"
+                      r"access denied|captcha|just a moment|attention required|bot (?:check|protection)", re.I)
+
+
+def probe(settings: Settings, council: str, base_url: str) -> tuple[str, int]:
+    """("ok", number of committees), ("robots", 0) when the site's robots.txt forbids the web service (it isn't
+    asked), ("blocked", HTTP status), ("unreachable", 0) when the connection fails, or ("none", HTTP status) when the
+    site answers without a Modern.gov web service. Not cached."""
+    cfg = settings.modgov
+    url = base_url.rstrip("/") + "/mgWebService.asmx/GetCommittees"
+    ua = cfg.get("user_agent", "WhereCouncilsStand")
+    if robots.check(url, ua) == "forbidden":
+        return "robots", 0
+    try:
+        r = httpx.get(url, headers={"User-Agent": ua},
+                      timeout=float(cfg.get("timeout_seconds", 40)), follow_redirects=True)
+    except httpx.ConnectError:
+        return "unreachable", 0
+    except httpx.HTTPError:
+        return "unreachable", 0
+    if r.status_code == 200 and "<committees" in r.text:
+        m = re.search(r"<committeescount>\s*(\d+)", r.text)
+        return "ok", int(m.group(1)) if m else 0
+    if r.status_code in (401, 403, 429, 503):
+        return "blocked", r.status_code
+    # a firewall or bot check, not the absence of a site: "The URL you requested has been blocked" (with 500),
+    # Imperva's check (with 200), "Connection denied by Geolocation", "Request Rejected"
+    if _REFUSAL.search(r.text[:5000]):
+        return "blocked", r.status_code
+    if r.status_code in (502, 504, 520, 521, 522, 523, 524):
+        return "unreachable", r.status_code           # a proxy (Cloudflare) couldn't reach the site
+    return "none", r.status_code
+
+
+def cached_path(plain: Path) -> Path | None:
+    """The cached copy of a response: gzipped, or plain if it was cached before November 2026; None if neither."""
+    packed = plain.with_name(plain.name + ".gz")
+    if packed.exists():
+        return packed
+    return plain if plain.exists() else None
+
+
+def read_cached(path: Path) -> str:
+    data = path.read_bytes()
+    return (gzip.decompress(data) if path.suffix == ".gz" else data).decode("utf-8")
+
+
+def cached_meeting(cache_root: Path, council: str, meeting_id: int) -> etree._Element | None:
+    path = cached_path(cache_root / "modgov" / council / "meeting" / f"{meeting_id}.xml")
+    return xml(read_cached(path)) if path else None

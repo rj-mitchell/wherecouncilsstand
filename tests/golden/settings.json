@@ -1,0 +1,1376 @@
+[
+ {
+  "config": "real",
+  "env": {},
+  "gives": {
+   "answer": {
+    "comprehensive_effort": "high",
+    "comprehensive_sources": 40,
+    "max_tokens": 16000,
+    "model": "claude-sonnet-5-5",
+    "query_parse_effort": "low",
+    "query_parse_model": "claude-haiku-5-5",
+    "summary_effort": "medium",
+    "summary_sources": 24,
+    "use_fallbacks": true
+   },
+   "archive": {
+    "default_years": 4,
+    "start_date": "2018-05-01"
+   },
+   "config_path": "<root>/config/settings.toml",
+   "data_dir": "<root>/data",
+   "embedding": {
+    "backend": "fastembed",
+    "batch_size": 8,
+    "dim": 384,
+    "model": "snowflake/snowflake-arctic-embed-xs",
+    "passage_words": 250
+   },
+   "index_dir": "<root>/data/index",
+   "models_dir": "<root>/data/models",
+   "modgov": {
+    "min_interval_seconds": 1.0,
+    "read_documents": true,
+    "refetch_days": 120,
+    "retries": 3,
+    "timeout_seconds": 40,
+    "timeouts_in_a_row": 2,
+    "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+   },
+   "no_such_section": {},
+   "overrides": {},
+   "parquet_dir": "<root>/data/parquet",
+   "ranking": {
+    "bm25_weight": 0.5,
+    "candidates_bm25": 300,
+    "candidates_vector": 300,
+    "default_recency": 0.4,
+    "max_per_council": 2,
+    "max_per_meeting": 1,
+    "min_half_life_years": 3.0,
+    "min_relevance_ratio": 0.25,
+    "recency_floor": 0.35,
+    "vector_refine_factor": 5
+   },
+   "raw": {
+    "answer": {
+     "comprehensive_effort": "high",
+     "comprehensive_sources": 40,
+     "max_tokens": 16000,
+     "model": "claude-sonnet-5-5",
+     "query_parse_effort": "low",
+     "query_parse_model": "claude-haiku-5-5",
+     "summary_effort": "medium",
+     "summary_sources": 24,
+     "use_fallbacks": true
+    },
+    "archive": {
+     "default_years": 4,
+     "start_date": "2018-05-01"
+    },
+    "embedding": {
+     "backend": "fastembed",
+     "batch_size": 8,
+     "dim": 384,
+     "model": "snowflake/snowflake-arctic-embed-xs",
+     "passage_words": 250
+    },
+    "modgov": {
+     "min_interval_seconds": 1.0,
+     "read_documents": true,
+     "refetch_days": 120,
+     "retries": 3,
+     "timeout_seconds": 40,
+     "timeouts_in_a_row": 2,
+     "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+    },
+    "paths": {
+     "data_dir": "data"
+    },
+    "ranking": {
+     "bm25_weight": 0.5,
+     "candidates_bm25": 300,
+     "candidates_vector": 300,
+     "default_recency": 0.4,
+     "max_per_council": 2,
+     "max_per_meeting": 1,
+     "min_half_life_years": 3.0,
+     "min_relevance_ratio": 0.25,
+     "recency_floor": 0.35,
+     "vector_refine_factor": 5
+    },
+    "robots": {
+     "obey": false
+    },
+    "site": {
+     "donate_url": "",
+     "name": "Where Councils Stand",
+     "url": "https://wherecouncilsstand.com"
+    },
+    "usage": {
+     "answer_cache_hours": 168,
+     "briefing_estimate_usd": 0.15,
+     "briefings_at_once": 8,
+     "briefings_at_once_per_visitor": 2,
+     "cache_write_multiplier": 1.25,
+     "daily_spend_cap_usd": 3.0,
+     "models": {
+      "claude-haiku-5-5": {
+       "price_cache_read_per_mtok": 0.01,
+       "price_input_per_mtok": 0.1,
+       "price_output_per_mtok": 0.5
+      }
+     },
+     "monthly_spend_cap_usd": 50.0,
+     "per_visitor_daily_questions": 30,
+     "price_cache_read_per_mtok": 0.2,
+     "price_input_per_mtok": 2.0,
+     "price_output_per_mtok": 10.0,
+     "requests_per_minute": 20
+    }
+   },
+   "raw_dir": "<root>/data/raw",
+   "site": {
+    "donate_url": "",
+    "name": "Where Councils Stand",
+    "url": "https://wherecouncilsstand.com"
+   },
+   "start_date": "2018-05-01",
+   "usage": {
+    "answer_cache_hours": 168,
+    "briefing_estimate_usd": 0.15,
+    "briefings_at_once": 8,
+    "briefings_at_once_per_visitor": 2,
+    "cache_write_multiplier": 1.25,
+    "daily_spend_cap_usd": 3.0,
+    "models": {
+     "claude-haiku-5-5": {
+      "price_cache_read_per_mtok": 0.01,
+      "price_input_per_mtok": 0.1,
+      "price_output_per_mtok": 0.5
+     }
+    },
+    "monthly_spend_cap_usd": 50.0,
+    "per_visitor_daily_questions": 30,
+    "price_cache_read_per_mtok": 0.2,
+    "price_input_per_mtok": 2.0,
+    "price_output_per_mtok": 10.0,
+    "requests_per_minute": 20
+   }
+  },
+  "name": "the real settings file"
+ },
+ {
+  "config": "real",
+  "env": {
+   "COUNCILS_DATA_DIR": "<tmp>/elsewhere"
+  },
+  "gives": {
+   "answer": {
+    "comprehensive_effort": "high",
+    "comprehensive_sources": 40,
+    "max_tokens": 16000,
+    "model": "claude-sonnet-5-5",
+    "query_parse_effort": "low",
+    "query_parse_model": "claude-haiku-5-5",
+    "summary_effort": "medium",
+    "summary_sources": 24,
+    "use_fallbacks": true
+   },
+   "archive": {
+    "default_years": 4,
+    "start_date": "2018-05-01"
+   },
+   "config_path": "<root>/config/settings.toml",
+   "data_dir": "<tmp>/elsewhere",
+   "embedding": {
+    "backend": "fastembed",
+    "batch_size": 8,
+    "dim": 384,
+    "model": "snowflake/snowflake-arctic-embed-xs",
+    "passage_words": 250
+   },
+   "index_dir": "<tmp>/elsewhere/index",
+   "models_dir": "<tmp>/elsewhere/models",
+   "modgov": {
+    "min_interval_seconds": 1.0,
+    "read_documents": true,
+    "refetch_days": 120,
+    "retries": 3,
+    "timeout_seconds": 40,
+    "timeouts_in_a_row": 2,
+    "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+   },
+   "no_such_section": {},
+   "overrides": {},
+   "parquet_dir": "<tmp>/elsewhere/parquet",
+   "ranking": {
+    "bm25_weight": 0.5,
+    "candidates_bm25": 300,
+    "candidates_vector": 300,
+    "default_recency": 0.4,
+    "max_per_council": 2,
+    "max_per_meeting": 1,
+    "min_half_life_years": 3.0,
+    "min_relevance_ratio": 0.25,
+    "recency_floor": 0.35,
+    "vector_refine_factor": 5
+   },
+   "raw": {
+    "answer": {
+     "comprehensive_effort": "high",
+     "comprehensive_sources": 40,
+     "max_tokens": 16000,
+     "model": "claude-sonnet-5-5",
+     "query_parse_effort": "low",
+     "query_parse_model": "claude-haiku-5-5",
+     "summary_effort": "medium",
+     "summary_sources": 24,
+     "use_fallbacks": true
+    },
+    "archive": {
+     "default_years": 4,
+     "start_date": "2018-05-01"
+    },
+    "embedding": {
+     "backend": "fastembed",
+     "batch_size": 8,
+     "dim": 384,
+     "model": "snowflake/snowflake-arctic-embed-xs",
+     "passage_words": 250
+    },
+    "modgov": {
+     "min_interval_seconds": 1.0,
+     "read_documents": true,
+     "refetch_days": 120,
+     "retries": 3,
+     "timeout_seconds": 40,
+     "timeouts_in_a_row": 2,
+     "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+    },
+    "paths": {
+     "data_dir": "data"
+    },
+    "ranking": {
+     "bm25_weight": 0.5,
+     "candidates_bm25": 300,
+     "candidates_vector": 300,
+     "default_recency": 0.4,
+     "max_per_council": 2,
+     "max_per_meeting": 1,
+     "min_half_life_years": 3.0,
+     "min_relevance_ratio": 0.25,
+     "recency_floor": 0.35,
+     "vector_refine_factor": 5
+    },
+    "robots": {
+     "obey": false
+    },
+    "site": {
+     "donate_url": "",
+     "name": "Where Councils Stand",
+     "url": "https://wherecouncilsstand.com"
+    },
+    "usage": {
+     "answer_cache_hours": 168,
+     "briefing_estimate_usd": 0.15,
+     "briefings_at_once": 8,
+     "briefings_at_once_per_visitor": 2,
+     "cache_write_multiplier": 1.25,
+     "daily_spend_cap_usd": 3.0,
+     "models": {
+      "claude-haiku-5-5": {
+       "price_cache_read_per_mtok": 0.01,
+       "price_input_per_mtok": 0.1,
+       "price_output_per_mtok": 0.5
+      }
+     },
+     "monthly_spend_cap_usd": 50.0,
+     "per_visitor_daily_questions": 30,
+     "price_cache_read_per_mtok": 0.2,
+     "price_input_per_mtok": 2.0,
+     "price_output_per_mtok": 10.0,
+     "requests_per_minute": 20
+    }
+   },
+   "raw_dir": "<tmp>/elsewhere/raw",
+   "site": {
+    "donate_url": "",
+    "name": "Where Councils Stand",
+    "url": "https://wherecouncilsstand.com"
+   },
+   "start_date": "2018-05-01",
+   "usage": {
+    "answer_cache_hours": 168,
+    "briefing_estimate_usd": 0.15,
+    "briefings_at_once": 8,
+    "briefings_at_once_per_visitor": 2,
+    "cache_write_multiplier": 1.25,
+    "daily_spend_cap_usd": 3.0,
+    "models": {
+     "claude-haiku-5-5": {
+      "price_cache_read_per_mtok": 0.01,
+      "price_input_per_mtok": 0.1,
+      "price_output_per_mtok": 0.5
+     }
+    },
+    "monthly_spend_cap_usd": 50.0,
+    "per_visitor_daily_questions": 30,
+    "price_cache_read_per_mtok": 0.2,
+    "price_input_per_mtok": 2.0,
+    "price_output_per_mtok": 10.0,
+    "requests_per_minute": 20
+   }
+  },
+  "name": "the real file, the data folder from the environment (absolute)"
+ },
+ {
+  "config": "real",
+  "env": {
+   "COUNCILS_DATA_DIR": "other/data"
+  },
+  "gives": {
+   "answer": {
+    "comprehensive_effort": "high",
+    "comprehensive_sources": 40,
+    "max_tokens": 16000,
+    "model": "claude-sonnet-5-5",
+    "query_parse_effort": "low",
+    "query_parse_model": "claude-haiku-5-5",
+    "summary_effort": "medium",
+    "summary_sources": 24,
+    "use_fallbacks": true
+   },
+   "archive": {
+    "default_years": 4,
+    "start_date": "2018-05-01"
+   },
+   "config_path": "<root>/config/settings.toml",
+   "data_dir": "<root>/other/data",
+   "embedding": {
+    "backend": "fastembed",
+    "batch_size": 8,
+    "dim": 384,
+    "model": "snowflake/snowflake-arctic-embed-xs",
+    "passage_words": 250
+   },
+   "index_dir": "<root>/other/data/index",
+   "models_dir": "<root>/other/data/models",
+   "modgov": {
+    "min_interval_seconds": 1.0,
+    "read_documents": true,
+    "refetch_days": 120,
+    "retries": 3,
+    "timeout_seconds": 40,
+    "timeouts_in_a_row": 2,
+    "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+   },
+   "no_such_section": {},
+   "overrides": {},
+   "parquet_dir": "<root>/other/data/parquet",
+   "ranking": {
+    "bm25_weight": 0.5,
+    "candidates_bm25": 300,
+    "candidates_vector": 300,
+    "default_recency": 0.4,
+    "max_per_council": 2,
+    "max_per_meeting": 1,
+    "min_half_life_years": 3.0,
+    "min_relevance_ratio": 0.25,
+    "recency_floor": 0.35,
+    "vector_refine_factor": 5
+   },
+   "raw": {
+    "answer": {
+     "comprehensive_effort": "high",
+     "comprehensive_sources": 40,
+     "max_tokens": 16000,
+     "model": "claude-sonnet-5-5",
+     "query_parse_effort": "low",
+     "query_parse_model": "claude-haiku-5-5",
+     "summary_effort": "medium",
+     "summary_sources": 24,
+     "use_fallbacks": true
+    },
+    "archive": {
+     "default_years": 4,
+     "start_date": "2018-05-01"
+    },
+    "embedding": {
+     "backend": "fastembed",
+     "batch_size": 8,
+     "dim": 384,
+     "model": "snowflake/snowflake-arctic-embed-xs",
+     "passage_words": 250
+    },
+    "modgov": {
+     "min_interval_seconds": 1.0,
+     "read_documents": true,
+     "refetch_days": 120,
+     "retries": 3,
+     "timeout_seconds": 40,
+     "timeouts_in_a_row": 2,
+     "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+    },
+    "paths": {
+     "data_dir": "data"
+    },
+    "ranking": {
+     "bm25_weight": 0.5,
+     "candidates_bm25": 300,
+     "candidates_vector": 300,
+     "default_recency": 0.4,
+     "max_per_council": 2,
+     "max_per_meeting": 1,
+     "min_half_life_years": 3.0,
+     "min_relevance_ratio": 0.25,
+     "recency_floor": 0.35,
+     "vector_refine_factor": 5
+    },
+    "robots": {
+     "obey": false
+    },
+    "site": {
+     "donate_url": "",
+     "name": "Where Councils Stand",
+     "url": "https://wherecouncilsstand.com"
+    },
+    "usage": {
+     "answer_cache_hours": 168,
+     "briefing_estimate_usd": 0.15,
+     "briefings_at_once": 8,
+     "briefings_at_once_per_visitor": 2,
+     "cache_write_multiplier": 1.25,
+     "daily_spend_cap_usd": 3.0,
+     "models": {
+      "claude-haiku-5-5": {
+       "price_cache_read_per_mtok": 0.01,
+       "price_input_per_mtok": 0.1,
+       "price_output_per_mtok": 0.5
+      }
+     },
+     "monthly_spend_cap_usd": 50.0,
+     "per_visitor_daily_questions": 30,
+     "price_cache_read_per_mtok": 0.2,
+     "price_input_per_mtok": 2.0,
+     "price_output_per_mtok": 10.0,
+     "requests_per_minute": 20
+    }
+   },
+   "raw_dir": "<root>/other/data/raw",
+   "site": {
+    "donate_url": "",
+    "name": "Where Councils Stand",
+    "url": "https://wherecouncilsstand.com"
+   },
+   "start_date": "2018-05-01",
+   "usage": {
+    "answer_cache_hours": 168,
+    "briefing_estimate_usd": 0.15,
+    "briefings_at_once": 8,
+    "briefings_at_once_per_visitor": 2,
+    "cache_write_multiplier": 1.25,
+    "daily_spend_cap_usd": 3.0,
+    "models": {
+     "claude-haiku-5-5": {
+      "price_cache_read_per_mtok": 0.01,
+      "price_input_per_mtok": 0.1,
+      "price_output_per_mtok": 0.5
+     }
+    },
+    "monthly_spend_cap_usd": 50.0,
+    "per_visitor_daily_questions": 30,
+    "price_cache_read_per_mtok": 0.2,
+    "price_input_per_mtok": 2.0,
+    "price_output_per_mtok": 10.0,
+    "requests_per_minute": 20
+   }
+  },
+  "name": "the real file, the data folder from the environment (relative)"
+ },
+ {
+  "config": "real",
+  "env": {
+   "COUNCILS_DATA_DIR": ""
+  },
+  "gives": {
+   "answer": {
+    "comprehensive_effort": "high",
+    "comprehensive_sources": 40,
+    "max_tokens": 16000,
+    "model": "claude-sonnet-5-5",
+    "query_parse_effort": "low",
+    "query_parse_model": "claude-haiku-5-5",
+    "summary_effort": "medium",
+    "summary_sources": 24,
+    "use_fallbacks": true
+   },
+   "archive": {
+    "default_years": 4,
+    "start_date": "2018-05-01"
+   },
+   "config_path": "<root>/config/settings.toml",
+   "data_dir": "<root>/data",
+   "embedding": {
+    "backend": "fastembed",
+    "batch_size": 8,
+    "dim": 384,
+    "model": "snowflake/snowflake-arctic-embed-xs",
+    "passage_words": 250
+   },
+   "index_dir": "<root>/data/index",
+   "models_dir": "<root>/data/models",
+   "modgov": {
+    "min_interval_seconds": 1.0,
+    "read_documents": true,
+    "refetch_days": 120,
+    "retries": 3,
+    "timeout_seconds": 40,
+    "timeouts_in_a_row": 2,
+    "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+   },
+   "no_such_section": {},
+   "overrides": {},
+   "parquet_dir": "<root>/data/parquet",
+   "ranking": {
+    "bm25_weight": 0.5,
+    "candidates_bm25": 300,
+    "candidates_vector": 300,
+    "default_recency": 0.4,
+    "max_per_council": 2,
+    "max_per_meeting": 1,
+    "min_half_life_years": 3.0,
+    "min_relevance_ratio": 0.25,
+    "recency_floor": 0.35,
+    "vector_refine_factor": 5
+   },
+   "raw": {
+    "answer": {
+     "comprehensive_effort": "high",
+     "comprehensive_sources": 40,
+     "max_tokens": 16000,
+     "model": "claude-sonnet-5-5",
+     "query_parse_effort": "low",
+     "query_parse_model": "claude-haiku-5-5",
+     "summary_effort": "medium",
+     "summary_sources": 24,
+     "use_fallbacks": true
+    },
+    "archive": {
+     "default_years": 4,
+     "start_date": "2018-05-01"
+    },
+    "embedding": {
+     "backend": "fastembed",
+     "batch_size": 8,
+     "dim": 384,
+     "model": "snowflake/snowflake-arctic-embed-xs",
+     "passage_words": 250
+    },
+    "modgov": {
+     "min_interval_seconds": 1.0,
+     "read_documents": true,
+     "refetch_days": 120,
+     "retries": 3,
+     "timeout_seconds": 40,
+     "timeouts_in_a_row": 2,
+     "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+    },
+    "paths": {
+     "data_dir": "data"
+    },
+    "ranking": {
+     "bm25_weight": 0.5,
+     "candidates_bm25": 300,
+     "candidates_vector": 300,
+     "default_recency": 0.4,
+     "max_per_council": 2,
+     "max_per_meeting": 1,
+     "min_half_life_years": 3.0,
+     "min_relevance_ratio": 0.25,
+     "recency_floor": 0.35,
+     "vector_refine_factor": 5
+    },
+    "robots": {
+     "obey": false
+    },
+    "site": {
+     "donate_url": "",
+     "name": "Where Councils Stand",
+     "url": "https://wherecouncilsstand.com"
+    },
+    "usage": {
+     "answer_cache_hours": 168,
+     "briefing_estimate_usd": 0.15,
+     "briefings_at_once": 8,
+     "briefings_at_once_per_visitor": 2,
+     "cache_write_multiplier": 1.25,
+     "daily_spend_cap_usd": 3.0,
+     "models": {
+      "claude-haiku-5-5": {
+       "price_cache_read_per_mtok": 0.01,
+       "price_input_per_mtok": 0.1,
+       "price_output_per_mtok": 0.5
+      }
+     },
+     "monthly_spend_cap_usd": 50.0,
+     "per_visitor_daily_questions": 30,
+     "price_cache_read_per_mtok": 0.2,
+     "price_input_per_mtok": 2.0,
+     "price_output_per_mtok": 10.0,
+     "requests_per_minute": 20
+    }
+   },
+   "raw_dir": "<root>/data/raw",
+   "site": {
+    "donate_url": "",
+    "name": "Where Councils Stand",
+    "url": "https://wherecouncilsstand.com"
+   },
+   "start_date": "2018-05-01",
+   "usage": {
+    "answer_cache_hours": 168,
+    "briefing_estimate_usd": 0.15,
+    "briefings_at_once": 8,
+    "briefings_at_once_per_visitor": 2,
+    "cache_write_multiplier": 1.25,
+    "daily_spend_cap_usd": 3.0,
+    "models": {
+     "claude-haiku-5-5": {
+      "price_cache_read_per_mtok": 0.01,
+      "price_input_per_mtok": 0.1,
+      "price_output_per_mtok": 0.5
+     }
+    },
+    "monthly_spend_cap_usd": 50.0,
+    "per_visitor_daily_questions": 30,
+    "price_cache_read_per_mtok": 0.2,
+    "price_input_per_mtok": 2.0,
+    "price_output_per_mtok": 10.0,
+    "requests_per_minute": 20
+   }
+  },
+  "name": "the real file, an empty data folder in the environment"
+ },
+ {
+  "config": "real",
+  "env": {
+   "COUNCILS_DATA_DIR": "<tmp>/with-local"
+  },
+  "gives": {
+   "answer": {
+    "comprehensive_effort": "high",
+    "comprehensive_sources": 40,
+    "max_tokens": 16000,
+    "model": "claude-sonnet-5-5",
+    "query_parse_effort": "low",
+    "query_parse_model": "claude-haiku-5-5",
+    "summary_effort": "medium",
+    "summary_sources": 24,
+    "use_fallbacks": true
+   },
+   "archive": {
+    "default_years": 4,
+    "start_date": "2018-05-01"
+   },
+   "config_path": "<root>/config/settings.toml",
+   "data_dir": "<tmp>/with-local",
+   "embedding": {
+    "backend": "fastembed",
+    "batch_size": 8,
+    "dim": 384,
+    "model": "snowflake/snowflake-arctic-embed-xs",
+    "passage_words": 250
+   },
+   "index_dir": "<tmp>/with-local/index",
+   "models_dir": "<tmp>/with-local/models",
+   "modgov": {
+    "min_interval_seconds": 1.0,
+    "read_documents": true,
+    "refetch_days": 120,
+    "retries": 3,
+    "timeout_seconds": 40,
+    "timeouts_in_a_row": 2,
+    "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+   },
+   "no_such_section": {},
+   "overrides": {},
+   "parquet_dir": "<tmp>/with-local/parquet",
+   "ranking": {
+    "bm25_weight": 0.5,
+    "candidates_bm25": 300,
+    "candidates_vector": 300,
+    "default_recency": 0.4,
+    "max_per_council": 2,
+    "max_per_meeting": 1,
+    "min_half_life_years": 3.0,
+    "min_relevance_ratio": 0.25,
+    "recency_floor": 0.35,
+    "vector_refine_factor": 5
+   },
+   "raw": {
+    "answer": {
+     "comprehensive_effort": "high",
+     "comprehensive_sources": 40,
+     "max_tokens": 16000,
+     "model": "claude-sonnet-5-5",
+     "query_parse_effort": "low",
+     "query_parse_model": "claude-haiku-5-5",
+     "summary_effort": "medium",
+     "summary_sources": 24,
+     "use_fallbacks": true
+    },
+    "archive": {
+     "default_years": 4,
+     "start_date": "2018-05-01"
+    },
+    "embedding": {
+     "backend": "fastembed",
+     "batch_size": 8,
+     "dim": 384,
+     "model": "snowflake/snowflake-arctic-embed-xs",
+     "passage_words": 250
+    },
+    "modgov": {
+     "min_interval_seconds": 1.0,
+     "read_documents": true,
+     "refetch_days": 120,
+     "retries": 3,
+     "timeout_seconds": 40,
+     "timeouts_in_a_row": 2,
+     "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+    },
+    "of_this_server": {
+     "only": true
+    },
+    "paths": {
+     "data_dir": "data"
+    },
+    "ranking": {
+     "bm25_weight": 0.5,
+     "candidates_bm25": 300,
+     "candidates_vector": 300,
+     "default_recency": 0.4,
+     "max_per_council": 2,
+     "max_per_meeting": 1,
+     "min_half_life_years": 3.0,
+     "min_relevance_ratio": 0.25,
+     "recency_floor": 0.35,
+     "vector_refine_factor": 5
+    },
+    "robots": {
+     "obey": false
+    },
+    "site": {
+     "donate_url": "https://example.org/give",
+     "name": "Where Councils Stand",
+     "url": "https://wherecouncilsstand.com"
+    },
+    "usage": {
+     "answer_cache_hours": 168,
+     "briefing_estimate_usd": 0.15,
+     "briefings_at_once": 8,
+     "briefings_at_once_per_visitor": 2,
+     "cache_write_multiplier": 1.25,
+     "daily_spend_cap_usd": 1.5,
+     "models": {
+      "claude-opus-5-5": {
+       "price_input_per_mtok": 5.0
+      }
+     },
+     "monthly_spend_cap_usd": 50.0,
+     "per_visitor_daily_questions": 30,
+     "price_cache_read_per_mtok": 0.2,
+     "price_input_per_mtok": 2.0,
+     "price_output_per_mtok": 10.0,
+     "requests_per_minute": 20
+    }
+   },
+   "raw_dir": "<tmp>/with-local/raw",
+   "site": {
+    "donate_url": "https://example.org/give",
+    "name": "Where Councils Stand",
+    "url": "https://wherecouncilsstand.com"
+   },
+   "start_date": "2018-05-01",
+   "usage": {
+    "answer_cache_hours": 168,
+    "briefing_estimate_usd": 0.15,
+    "briefings_at_once": 8,
+    "briefings_at_once_per_visitor": 2,
+    "cache_write_multiplier": 1.25,
+    "daily_spend_cap_usd": 1.5,
+    "models": {
+     "claude-opus-5-5": {
+      "price_input_per_mtok": 5.0
+     }
+    },
+    "monthly_spend_cap_usd": 50.0,
+    "per_visitor_daily_questions": 30,
+    "price_cache_read_per_mtok": 0.2,
+    "price_input_per_mtok": 2.0,
+    "price_output_per_mtok": 10.0,
+    "requests_per_minute": 20
+   }
+  },
+  "local": "[usage]\ndaily_spend_cap_usd = 1.5\n\n[usage.models.\"claude-opus-5-5\"]\nprice_input_per_mtok = 5.0\n\n[site]\ndonate_url = \"https://example.org/give\"\n\n[of_this_server]\nonly = true\n",
+  "name": "the real file, with a local settings file in the data folder"
+ },
+ {
+  "config": "real",
+  "env": {
+   "COUNCILS_DATA_DIR": "<tmp>/elsewhere"
+  },
+  "gives": {
+   "answer": {
+    "comprehensive_effort": "high",
+    "comprehensive_sources": 40,
+    "max_tokens": 16000,
+    "model": "claude-sonnet-5-5",
+    "query_parse_effort": "low",
+    "query_parse_model": "claude-haiku-5-5",
+    "summary_effort": "medium",
+    "summary_sources": 24,
+    "use_fallbacks": true
+   },
+   "archive": {
+    "default_years": 4,
+    "start_date": "2018-05-01"
+   },
+   "config_path": "<root>/config/settings.toml",
+   "data_dir": "<tmp>/elsewhere",
+   "embedding": {
+    "backend": "hashing",
+    "batch_size": 8,
+    "dim": 64,
+    "model": "snowflake/snowflake-arctic-embed-xs",
+    "passage_words": 250
+   },
+   "index_dir": "<tmp>/elsewhere/index",
+   "models_dir": "<tmp>/elsewhere/models",
+   "modgov": {
+    "min_interval_seconds": 1.0,
+    "read_documents": true,
+    "refetch_days": 120,
+    "retries": 3,
+    "timeout_seconds": 40,
+    "timeouts_in_a_row": 2,
+    "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+   },
+   "no_such_section": {},
+   "overrides": {
+    "embedding.backend": "hashing",
+    "embedding.dim": 64,
+    "made_up.key": "value",
+    "usage.daily_spend_cap_usd": 0.0
+   },
+   "parquet_dir": "<tmp>/elsewhere/parquet",
+   "ranking": {
+    "bm25_weight": 0.5,
+    "candidates_bm25": 300,
+    "candidates_vector": 300,
+    "default_recency": 0.4,
+    "max_per_council": 2,
+    "max_per_meeting": 1,
+    "min_half_life_years": 3.0,
+    "min_relevance_ratio": 0.25,
+    "recency_floor": 0.35,
+    "vector_refine_factor": 5
+   },
+   "raw": {
+    "answer": {
+     "comprehensive_effort": "high",
+     "comprehensive_sources": 40,
+     "max_tokens": 16000,
+     "model": "claude-sonnet-5-5",
+     "query_parse_effort": "low",
+     "query_parse_model": "claude-haiku-5-5",
+     "summary_effort": "medium",
+     "summary_sources": 24,
+     "use_fallbacks": true
+    },
+    "archive": {
+     "default_years": 4,
+     "start_date": "2018-05-01"
+    },
+    "embedding": {
+     "backend": "hashing",
+     "batch_size": 8,
+     "dim": 64,
+     "model": "snowflake/snowflake-arctic-embed-xs",
+     "passage_words": 250
+    },
+    "made_up": {
+     "key": "value"
+    },
+    "modgov": {
+     "min_interval_seconds": 1.0,
+     "read_documents": true,
+     "refetch_days": 120,
+     "retries": 3,
+     "timeout_seconds": 40,
+     "timeouts_in_a_row": 2,
+     "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+    },
+    "paths": {
+     "data_dir": "data"
+    },
+    "ranking": {
+     "bm25_weight": 0.5,
+     "candidates_bm25": 300,
+     "candidates_vector": 300,
+     "default_recency": 0.4,
+     "max_per_council": 2,
+     "max_per_meeting": 1,
+     "min_half_life_years": 3.0,
+     "min_relevance_ratio": 0.25,
+     "recency_floor": 0.35,
+     "vector_refine_factor": 5
+    },
+    "robots": {
+     "obey": false
+    },
+    "site": {
+     "donate_url": "",
+     "name": "Where Councils Stand",
+     "url": "https://wherecouncilsstand.com"
+    },
+    "usage": {
+     "answer_cache_hours": 168,
+     "briefing_estimate_usd": 0.15,
+     "briefings_at_once": 8,
+     "briefings_at_once_per_visitor": 2,
+     "cache_write_multiplier": 1.25,
+     "daily_spend_cap_usd": 0.0,
+     "models": {
+      "claude-haiku-5-5": {
+       "price_cache_read_per_mtok": 0.01,
+       "price_input_per_mtok": 0.1,
+       "price_output_per_mtok": 0.5
+      }
+     },
+     "monthly_spend_cap_usd": 50.0,
+     "per_visitor_daily_questions": 30,
+     "price_cache_read_per_mtok": 0.2,
+     "price_input_per_mtok": 2.0,
+     "price_output_per_mtok": 10.0,
+     "requests_per_minute": 20
+    }
+   },
+   "raw_dir": "<tmp>/elsewhere/raw",
+   "site": {
+    "donate_url": "",
+    "name": "Where Councils Stand",
+    "url": "https://wherecouncilsstand.com"
+   },
+   "start_date": "2018-05-01",
+   "usage": {
+    "answer_cache_hours": 168,
+    "briefing_estimate_usd": 0.15,
+    "briefings_at_once": 8,
+    "briefings_at_once_per_visitor": 2,
+    "cache_write_multiplier": 1.25,
+    "daily_spend_cap_usd": 0.0,
+    "models": {
+     "claude-haiku-5-5": {
+      "price_cache_read_per_mtok": 0.01,
+      "price_input_per_mtok": 0.1,
+      "price_output_per_mtok": 0.5
+     }
+    },
+    "monthly_spend_cap_usd": 50.0,
+    "per_visitor_daily_questions": 30,
+    "price_cache_read_per_mtok": 0.2,
+    "price_input_per_mtok": 2.0,
+    "price_output_per_mtok": 10.0,
+    "requests_per_minute": 20
+   }
+  },
+  "name": "the real file, with overrides",
+  "overrides": {
+   "embedding.backend": "hashing",
+   "embedding.dim": 64,
+   "made_up.key": "value",
+   "usage.daily_spend_cap_usd": 0.0
+  }
+ },
+ {
+  "config": "real",
+  "env": {
+   "COUNCILS_DATA_DIR": "<tmp>/with-local"
+  },
+  "gives": {
+   "answer": {
+    "comprehensive_effort": "high",
+    "comprehensive_sources": 40,
+    "max_tokens": 16000,
+    "model": "claude-sonnet-5-5",
+    "query_parse_effort": "low",
+    "query_parse_model": "claude-haiku-5-5",
+    "summary_effort": "medium",
+    "summary_sources": 24,
+    "use_fallbacks": true
+   },
+   "archive": {
+    "default_years": 4,
+    "start_date": "2018-05-01"
+   },
+   "config_path": "<root>/config/settings.toml",
+   "data_dir": "<tmp>/with-local",
+   "embedding": {
+    "backend": "fastembed",
+    "batch_size": 8,
+    "dim": 384,
+    "model": "snowflake/snowflake-arctic-embed-xs",
+    "passage_words": 250
+   },
+   "index_dir": "<tmp>/with-local/index",
+   "models_dir": "<tmp>/with-local/models",
+   "modgov": {
+    "min_interval_seconds": 1.0,
+    "read_documents": true,
+    "refetch_days": 120,
+    "retries": 3,
+    "timeout_seconds": 40,
+    "timeouts_in_a_row": 2,
+    "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+   },
+   "no_such_section": {},
+   "overrides": {
+    "site.donate_url": "",
+    "usage.daily_spend_cap_usd": 9.0
+   },
+   "parquet_dir": "<tmp>/with-local/parquet",
+   "ranking": {
+    "bm25_weight": 0.5,
+    "candidates_bm25": 300,
+    "candidates_vector": 300,
+    "default_recency": 0.4,
+    "max_per_council": 2,
+    "max_per_meeting": 1,
+    "min_half_life_years": 3.0,
+    "min_relevance_ratio": 0.25,
+    "recency_floor": 0.35,
+    "vector_refine_factor": 5
+   },
+   "raw": {
+    "answer": {
+     "comprehensive_effort": "high",
+     "comprehensive_sources": 40,
+     "max_tokens": 16000,
+     "model": "claude-sonnet-5-5",
+     "query_parse_effort": "low",
+     "query_parse_model": "claude-haiku-5-5",
+     "summary_effort": "medium",
+     "summary_sources": 24,
+     "use_fallbacks": true
+    },
+    "archive": {
+     "default_years": 4,
+     "start_date": "2018-05-01"
+    },
+    "embedding": {
+     "backend": "fastembed",
+     "batch_size": 8,
+     "dim": 384,
+     "model": "snowflake/snowflake-arctic-embed-xs",
+     "passage_words": 250
+    },
+    "modgov": {
+     "min_interval_seconds": 1.0,
+     "read_documents": true,
+     "refetch_days": 120,
+     "retries": 3,
+     "timeout_seconds": 40,
+     "timeouts_in_a_row": 2,
+     "user_agent": "Mozilla/5.0 (compatible; WhereCouncilsStand/0.1; +https://github.com/rj-mitchell/wherecouncilsstand)"
+    },
+    "of_this_server": {
+     "only": true
+    },
+    "paths": {
+     "data_dir": "data"
+    },
+    "ranking": {
+     "bm25_weight": 0.5,
+     "candidates_bm25": 300,
+     "candidates_vector": 300,
+     "default_recency": 0.4,
+     "max_per_council": 2,
+     "max_per_meeting": 1,
+     "min_half_life_years": 3.0,
+     "min_relevance_ratio": 0.25,
+     "recency_floor": 0.35,
+     "vector_refine_factor": 5
+    },
+    "robots": {
+     "obey": false
+    },
+    "site": {
+     "donate_url": "",
+     "name": "Where Councils Stand",
+     "url": "https://wherecouncilsstand.com"
+    },
+    "usage": {
+     "answer_cache_hours": 168,
+     "briefing_estimate_usd": 0.15,
+     "briefings_at_once": 8,
+     "briefings_at_once_per_visitor": 2,
+     "cache_write_multiplier": 1.25,
+     "daily_spend_cap_usd": 9.0,
+     "models": {
+      "claude-opus-5-5": {
+       "price_input_per_mtok": 5.0
+      }
+     },
+     "monthly_spend_cap_usd": 50.0,
+     "per_visitor_daily_questions": 30,
+     "price_cache_read_per_mtok": 0.2,
+     "price_input_per_mtok": 2.0,
+     "price_output_per_mtok": 10.0,
+     "requests_per_minute": 20
+    }
+   },
+   "raw_dir": "<tmp>/with-local/raw",
+   "site": {
+    "donate_url": "",
+    "name": "Where Councils Stand",
+    "url": "https://wherecouncilsstand.com"
+   },
+   "start_date": "2018-05-01",
+   "usage": {
+    "answer_cache_hours": 168,
+    "briefing_estimate_usd": 0.15,
+    "briefings_at_once": 8,
+    "briefings_at_once_per_visitor": 2,
+    "cache_write_multiplier": 1.25,
+    "daily_spend_cap_usd": 9.0,
+    "models": {
+     "claude-opus-5-5": {
+      "price_input_per_mtok": 5.0
+     }
+    },
+    "monthly_spend_cap_usd": 50.0,
+    "per_visitor_daily_questions": 30,
+    "price_cache_read_per_mtok": 0.2,
+    "price_input_per_mtok": 2.0,
+    "price_output_per_mtok": 10.0,
+    "requests_per_minute": 20
+   }
+  },
+  "local": "[usage]\ndaily_spend_cap_usd = 1.5\n\n[usage.models.\"claude-opus-5-5\"]\nprice_input_per_mtok = 5.0\n\n[site]\ndonate_url = \"https://example.org/give\"\n\n[of_this_server]\nonly = true\n",
+  "name": "the real file, a local settings file and overrides over it",
+  "overrides": {
+   "site.donate_url": "",
+   "usage.daily_spend_cap_usd": 9.0
+  }
+ },
+ {
+  "config": "[paths]\ndata_dir = \"{data_dir}\"\n\n[answer]\nmodel = \"sample-model\"\n\n[usage]\nrequests_per_minute = 5\nprice_input_per_mtok = 1.0\n\n[usage.models.\"sample-model\"]\nprice_input_per_mtok = 9.0\n",
+  "data_dir": "<tmp>/sample-data",
+  "env": {},
+  "gives": {
+   "answer": {
+    "model": "sample-model"
+   },
+   "archive": {},
+   "config_path": "<tmp>/sample.toml",
+   "data_dir": "<tmp>/sample-data",
+   "embedding": {},
+   "index_dir": "<tmp>/sample-data/index",
+   "models_dir": "<tmp>/sample-data/models",
+   "modgov": {},
+   "no_such_section": {},
+   "overrides": {},
+   "parquet_dir": "<tmp>/sample-data/parquet",
+   "ranking": {},
+   "raw": {
+    "answer": {
+     "model": "sample-model"
+    },
+    "paths": {
+     "data_dir": "<tmp>/sample-data"
+    },
+    "usage": {
+     "models": {
+      "sample-model": {
+       "price_input_per_mtok": 9.0
+      }
+     },
+     "price_input_per_mtok": 1.0,
+     "requests_per_minute": 5
+    }
+   },
+   "raw_dir": "<tmp>/sample-data/raw",
+   "site": {},
+   "start_date": "2018-05-01",
+   "usage": {
+    "models": {
+     "sample-model": {
+      "price_input_per_mtok": 9.0
+     }
+    },
+    "price_input_per_mtok": 1.0,
+    "requests_per_minute": 5
+   }
+  },
+  "name": "a sample file named by COUNCILS_CONFIG, with none of this site's sections"
+ },
+ {
+  "config": "[paths]\ndata_dir = \"{data_dir}\"\n\n[answer]\nmodel = \"sample-model\"\n\n[usage]\nrequests_per_minute = 5\nprice_input_per_mtok = 1.0\n\n[usage.models.\"sample-model\"]\nprice_input_per_mtok = 9.0\n",
+  "data_dir": "var/data",
+  "env": {},
+  "gives": {
+   "answer": {
+    "model": "sample-model"
+   },
+   "archive": {},
+   "config_path": "<tmp>/sample.toml",
+   "data_dir": "<root>/var/data",
+   "embedding": {},
+   "index_dir": "<root>/var/data/index",
+   "models_dir": "<root>/var/data/models",
+   "modgov": {},
+   "no_such_section": {},
+   "overrides": {},
+   "parquet_dir": "<root>/var/data/parquet",
+   "ranking": {},
+   "raw": {
+    "answer": {
+     "model": "sample-model"
+    },
+    "paths": {
+     "data_dir": "var/data"
+    },
+    "usage": {
+     "models": {
+      "sample-model": {
+       "price_input_per_mtok": 9.0
+      }
+     },
+     "price_input_per_mtok": 1.0,
+     "requests_per_minute": 5
+    }
+   },
+   "raw_dir": "<root>/var/data/raw",
+   "site": {},
+   "start_date": "2018-05-01",
+   "usage": {
+    "models": {
+     "sample-model": {
+      "price_input_per_mtok": 9.0
+     }
+    },
+    "price_input_per_mtok": 1.0,
+    "requests_per_minute": 5
+   }
+  },
+  "name": "a sample file with a relative data folder"
+ },
+ {
+  "config": "[paths]\ndata_dir = \"{data_dir}\"\n\n[answer]\nmodel = \"sample-model\"\n\n[usage]\nrequests_per_minute = 5\nprice_input_per_mtok = 1.0\n\n[usage.models.\"sample-model\"]\nprice_input_per_mtok = 9.0\n",
+  "data_dir": "var/data",
+  "env": {
+   "COUNCILS_DATA_DIR": "<tmp>/from-env"
+  },
+  "gives": {
+   "answer": {
+    "model": "sample-model"
+   },
+   "archive": {},
+   "config_path": "<tmp>/sample.toml",
+   "data_dir": "<tmp>/from-env",
+   "embedding": {},
+   "index_dir": "<tmp>/from-env/index",
+   "models_dir": "<tmp>/from-env/models",
+   "modgov": {},
+   "no_such_section": {},
+   "overrides": {},
+   "parquet_dir": "<tmp>/from-env/parquet",
+   "ranking": {},
+   "raw": {
+    "answer": {
+     "model": "sample-model"
+    },
+    "paths": {
+     "data_dir": "var/data"
+    },
+    "usage": {
+     "models": {
+      "sample-model": {
+       "price_input_per_mtok": 9.0
+      }
+     },
+     "price_input_per_mtok": 1.0,
+     "requests_per_minute": 5
+    }
+   },
+   "raw_dir": "<tmp>/from-env/raw",
+   "site": {},
+   "start_date": "2018-05-01",
+   "usage": {
+    "models": {
+     "sample-model": {
+      "price_input_per_mtok": 9.0
+     }
+    },
+    "price_input_per_mtok": 1.0,
+    "requests_per_minute": 5
+   }
+  },
+  "name": "a sample file, the data folder from the environment over the file's"
+ },
+ {
+  "as_argument": true,
+  "config": "[paths]\ndata_dir = \"{data_dir}\"\n\n[answer]\nmodel = \"sample-model\"\n\n[usage]\nrequests_per_minute = 5\nprice_input_per_mtok = 1.0\n\n[usage.models.\"sample-model\"]\nprice_input_per_mtok = 9.0\n",
+  "data_dir": "var/data",
+  "env": {},
+  "gives": {
+   "answer": {
+    "model": "sample-model"
+   },
+   "archive": {},
+   "config_path": "<tmp>/sample.toml",
+   "data_dir": "<root>/var/data",
+   "embedding": {},
+   "index_dir": "<root>/var/data/index",
+   "models_dir": "<root>/var/data/models",
+   "modgov": {},
+   "no_such_section": {},
+   "overrides": {},
+   "parquet_dir": "<root>/var/data/parquet",
+   "ranking": {},
+   "raw": {
+    "answer": {
+     "model": "sample-model"
+    },
+    "paths": {
+     "data_dir": "var/data"
+    },
+    "usage": {
+     "models": {
+      "sample-model": {
+       "price_input_per_mtok": 9.0
+      }
+     },
+     "price_input_per_mtok": 1.0,
+     "requests_per_minute": 5
+    }
+   },
+   "raw_dir": "<root>/var/data/raw",
+   "site": {},
+   "start_date": "2018-05-01",
+   "usage": {
+    "models": {
+     "sample-model": {
+      "price_input_per_mtok": 9.0
+     }
+    },
+    "price_input_per_mtok": 1.0,
+    "requests_per_minute": 5
+   }
+  },
+  "name": "a sample file given as an argument"
+ }
+]
