@@ -27,7 +27,7 @@ again with deploy/redo-wts-core.sql, should the old code have run meanwhile), bu
 the site has promised to delete (``OLD_TABLES``): every night ``councils tidy`` takes
 out of them what the package has deleted from its own (a statement's confirming address, a report's contact, a
 visitor's code after its day, yesterday's secret, answers past their week in the cache), and from 1 February 2027
-it drops them. docs/OPERATIONS.md, "The state database", says how to go back, and until when.
+it drops them. docs/OPERATIONS.md, "The move onto wts-core, and going back", says how to go back, and until when.
 """
 
 from __future__ import annotations
@@ -89,7 +89,8 @@ OLD_TABLE_NAMES = ("kv", "usage", "questions", "answer_cache", "briefings", "rep
 # came with the right of reply on 12 November 2026, so a backup made before then has none.
 ALWAYS_THERE = ("kv", "usage", "questions", "answer_cache", "briefings", "reports")
 # The day the old tables are dropped. After it, going back to the code before the shared package means putting
-# back a backup made before the move, while one is still kept (docs/OPERATIONS.md, "The state database").
+# back a backup made before the move, while one is still kept (docs/OPERATIONS.md, "Going back, and coming forward
+# again").
 OLD_TABLES_GO_ON = date(2027, 2, 1)
 
 

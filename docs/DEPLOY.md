@@ -1,34 +1,34 @@
-# Putting the site on the server
+# Deployment
 
-Where Councils Stand runs on the charity's shared server in London, beside the charity's other sites, in its own
-folder (`/opt/wherecouncilsstand`) with its own container, data, settings and spending caps. Everything the sites on
-the server share is described once, in Where MPs Stand's
-[`docs/HOSTING.md`](https://github.com/rj-mitchell/wherempsstand/blob/main/docs/HOSTING.md), the manual for the
-server until the family has an operations document of its own:
+How the maintainer installs Where Councils Stand on the charity's shared server and deploys new code. Running it
+day to day is in [`OPERATIONS.md`](OPERATIONS.md).
+
+The site runs on the charity's shared server in London, beside the charity's other sites, in its own folder
+(`/opt/wherecouncilsstand`) with its own container, data, settings and spending caps. What the sites on the server
+share is described once, in Where MPs Stand's
+[`docs/HOSTING.md`](https://github.com/rj-mitchell/wherempsstand/blob/main/docs/HOSTING.md):
 
 | Shared part | Where it is described |
 |---|---|
-| The front door (Caddy, in Where MPs Stand's checkout at `/opt/hansardgpt`, its original name), which answers every domain through Cloudflare and passes visitors to each site's container over the `sites` network | HOSTING.md, "Other sites on this server" |
+| The front door (Caddy, in Where MPs Stand's checkout at `/opt/hansardgpt`), which answers every domain through Cloudflare and passes visitors to each site's container over the `sites` network | HOSTING.md, "Other sites on this server" |
 | Cloudflare: DNS, the proxy, Full (strict) and the origin certificate, the `www` redirect | HOSTING.md, "Cloudflare protection" |
-| Email from the server, and the failure alerts the update and backup timers send | HOSTING.md, "Email from the server" |
+| Email from the server, and the failure alerts the timers send | HOSTING.md, "Email from the server" |
 | The charity's Backblaze B2 bucket for off-site backups | HOSTING.md, "Backups" |
 | The server-wide update lock, and each site's update time | HOSTING.md, "Other sites on this server" |
 | Disk space across the sites | HOSTING.md, "Disk space" |
 
-This page has only this site's own steps.
-
 ## Requirements
 
 About 2 GB of memory while serving (the container is limited to 4 GB, so a runaway update stops itself rather than
-slowing the other sites), and roughly 10–12 GB of disk for all 383 councils, judging by the pilot (20 councils:
-339 MB of cached responses and 18 MB of stored meetings), plus the search index. An Anthropic API key for written
-briefings (without one, the site shows the sources only).
+slowing the other sites), and roughly 10 to 12 GB of disk for the full record (when 213 councils were loaded in
+October 2026: 3.3 GB of cached responses, 180 MB of stored meetings and 3.5 GB of search index). An Anthropic API key
+for written briefings; without one, the site shows the sources only.
 
-## Steps
+## Installing
 
-1. Cloudflare, for wherecouncilsstand.com, as for any site on the server (HOSTING.md, "Cloudflare protection"):
-   the domain proxied to the server, `www` redirected to it, and an origin certificate.
-2. Code and settings, on the server, as root:
+1. In Cloudflare, set up wherecouncilsstand.com as for any site on the server (HOSTING.md, "Cloudflare
+   protection"): the domain proxied to the server, `www` redirected to it, and an origin certificate.
+2. On the server, as root, get the code and fill in the settings:
    ```bash
    git clone https://github.com/rj-mitchell/wherecouncilsstand /opt/wherecouncilsstand
    cd /opt/wherecouncilsstand/deploy
@@ -39,13 +39,14 @@ briefings (without one, the site shows the sources only).
    ```bash
    bash /opt/wherecouncilsstand/deploy/update.sh
    ```
-   It builds and starts the site, and installs its timers: the update, the backup (with the nightly tidy after
-   it), the daily check of the backups, and the weekly report. With no data yet, it finds nothing.
-4. The front door: `wherecouncilsstand.com=wherecouncilsstand` in `SITES` in `/opt/hansardgpt/deploy/.env`, and
-   the origin certificate pasted with `bash /opt/hansardgpt/deploy/cloudflare.sh site wherecouncilsstand.com`
-   (HOSTING.md, "Other sites on this server").
-5. First load, in the background, at a quiet time (overnight): every council since May 2018, then the keyword
-   index, then four hours of meaning search (the daily update carries on with whatever is left):
+   This builds and starts the site, and installs its timers: the nightly update, the nightly backup (with the
+   deletion after it), the daily check of the backups, and the weekly report.
+4. Add the site to the front door: `wherecouncilsstand.com=wherecouncilsstand` in `SITES` in
+   `/opt/hansardgpt/deploy/.env`, then paste the origin certificate with
+   `bash /opt/hansardgpt/deploy/cloudflare.sh site wherecouncilsstand.com` (HOSTING.md, "Other sites on this
+   server").
+5. Load the record, in the background, overnight: every council since May 2018, then the keyword index, then four
+   hours of meaning search (the nightly update carries on with whatever is left):
    ```bash
    cd /opt/wherecouncilsstand/deploy
    nohup docker compose run --rm -T app sh -c \
@@ -53,57 +54,49 @@ briefings (without one, the site shows the sources only).
      > /var/log/councils-load.log 2>&1 &
    tail -f /var/log/councils-load.log     # Ctrl-C stops watching, not the load
    ```
-   It takes hours: councils' servers are slow, and each is asked one thing at a time. If it stops, run
+   It takes hours, because councils' servers are slow and each is asked one thing at a time. If it stops, run
    `councils load --workers 20 --resume` the same way; councils already loaded are kept.
-6. Check: visit the site, ask a question, and run `bash /opt/hansardgpt/deploy/check.sh`, which lists every site
+6. Set up the off-site backups ("Backups", below) and the family's nightly check
+   ([`OPERATIONS.md`](OPERATIONS.md), "The family's nightly check").
+7. Check: visit the site, ask a question, and run `bash /opt/hansardgpt/deploy/check.sh`, which lists every site
    on the server.
 
-The site went live this way in November 2026, replacing a holding page that ran as a Cloudflare Worker.
+## New code
 
-## Running it
-
-Commands are run in `/opt/wherecouncilsstand/deploy`. Any `councils` command runs in a one-off container:
-`docker compose run --rm -T app councils <command>`.
-
-* Updates run once a day (`councils-update.timer`, 03:17 UTC; [`OPERATIONS.md`](OPERATIONS.md)).
-* New code: merge it into `main` on GitHub, then `bash /opt/wherecouncilsstand/deploy/update.sh`. Not while one
-  of the site's own jobs is running (the nightly update from 03:17 UTC, for some hours; the backup at 04:30; the
-  check of the backups at 11:47; the weekly report on Mondays at 06:23): the script refuses, and says which. It
-  holds the timers while it works, builds, brings the new site up, and only then installs the timers' units, so
-  that no timer runs a command the running image does not have. The one deploy that moves the site onto the
-  shared package has steps of its own first: [`OPERATIONS.md`](OPERATIONS.md), "Deploying the move (once)".
-* Backups: everything but the state database can be rebuilt. That database (spending, saved briefings,
-  reports, statements, the record of each briefing) is copied every night (`councils-backup.timer`) to `/opt/wherecouncilsstand/deploy/backups`, the last 7
-  kept, and to the charity's B2 bucket as `councils-state-….sqlite.gz`, the last 60 kept there (each site deletes
-  only its own old copies). To set up the off-site copy, once, copy the bucket and key from Where MPs Stand's
-  settings (its `HANSARD_B2_*` variables) and check them:
-  ```bash
-  cd /opt/wherecouncilsstand/deploy
-  for k in BUCKET KEY_ID APPLICATION_KEY; do v=$(grep "^HANSARD_B2_$k=" /opt/hansardgpt/deploy/.env | cut -d= -f2-); \
-    sed -i "/^COUNCILS_B2_$k=/d" .env; echo "COUNCILS_B2_$k=$v" >> .env; done
-  docker compose run --rm -T app councils offsite                  # "ok": true
-  docker compose run --rm -T app councils backup --to /backups     # ends "Off-site copy: stored in ..."
-  ```
-  Every day `councils-backup-check.timer` checks the backups are up to date, and fails (sending the usual alert)
-  if the last backup or off-site copy is over two days old ([`OPERATIONS.md`](OPERATIONS.md)).
-  To get a backup back: put the `councils-state-….sqlite.gz` wanted in `/opt/wherecouncilsstand/deploy/backups`
-  (download it from the bucket if it is no longer there), stop the site, and run `councils restore` on it
-  ([`OPERATIONS.md`](OPERATIONS.md), "The state database", which also covers a backup made before November 2026's
-  move onto the shared package).
-* After the backup, the nightly tidy (`councils tidy`, run by the backup's unit) deletes what the privacy
-  notice says is deleted in time, and **every Monday the weekly report** on how briefings went is written
-  (`councils-weekly-report.timer`): [`OPERATIONS.md`](OPERATIONS.md), "Briefing statistics" and "Deletion
-  schedule".
-* The family's nightly check needs `COUNCILS_CHECK_TOKEN` in `.env` ([`OPERATIONS.md`](OPERATIONS.md), "The
-  family's nightly check"). Without it the site runs as before, and that check reports the site as not set up.
-* The privacy notice (`web/privacy.html`) names Cloudflare, which carries the site's visits, and says requests
-  are not logged (`councils serve` turns the access log off, and the front door keeps none). Keep it true when
-  changing either.
-
-## On your own computer
+Merge it into `main` on GitHub, then on the server run:
 
 ```bash
-cd web && npm ci && npm run build && cd ..
-uv sync
-COUNCILS_ANTHROPIC_API_KEY=... uv run councils serve   # http://127.0.0.1:8000
+bash /opt/wherecouncilsstand/deploy/update.sh
 ```
+
+It pulls the latest code, holds the site's timers, rebuilds and restarts the site (a few seconds of downtime), checks
+that it answers, and only then installs the timers' new units, so that no timer runs a command the running image
+doesn't have. It refuses to start while one of the site's jobs is running, and says which: the nightly update (from
+03:17 UTC, for some hours), the backup (04:30), the check of the backups (11:47) and the weekly report (Mondays at
+06:23).
+
+## Backups
+
+Everything but the state database can be rebuilt from councils' sites. That database (spending, saved briefings,
+reports, statements, the record of each briefing) is copied every night by `councils-backup.timer` to
+`/opt/wherecouncilsstand/deploy/backups`, where the last 7 are kept, and to the charity's B2 bucket as
+`councils-state-….sqlite.gz`, where the last 60 are kept (each site deletes only its own old copies).
+
+To set up the off-site copy, once, copy the bucket and key from Where MPs Stand's settings (its `HANSARD_B2_*`
+variables) and check them:
+
+```bash
+cd /opt/wherecouncilsstand/deploy
+for k in BUCKET KEY_ID APPLICATION_KEY; do v=$(grep "^HANSARD_B2_$k=" /opt/hansardgpt/deploy/.env | cut -d= -f2-); \
+  sed -i "/^COUNCILS_B2_$k=/d" .env; echo "COUNCILS_B2_$k=$v" >> .env; done
+docker compose run --rm -T app councils offsite                  # "ok": true
+docker compose run --rm -T app councils backup --to /backups     # ends "Off-site copy: stored in ..."
+```
+
+Putting a backup back is in [`OPERATIONS.md`](OPERATIONS.md), "The state database".
+
+## Privacy on the server
+
+The privacy notice (`web/privacy.html`) names Cloudflare, which carries the site's visits, and says requests are
+not logged: `councils serve` turns its access log off, and the front door keeps none. Keep both true when changing
+either.

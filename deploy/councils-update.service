@@ -1,4 +1,4 @@
-# Bring Where Councils Stand's data up to date: new and recently changed meetings from every council's Modern.gov
+# Bring Where Councils Stand's data up to date: new and recently changed meetings from every council's meetings
 # site, their named votes, the search index, and up to an hour of meaning search. Installed by deploy/update.sh with
 # councils-update.timer (docs/OPERATIONS.md).
 [Unit]

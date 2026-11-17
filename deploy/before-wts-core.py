@@ -2,7 +2,7 @@
 
 It only reads (the database is opened read-only), needs nothing but Python, and prints no address, name or word of
 what anyone sent: numbers, dates and ages. Run it on the server while the old site is still running
-(docs/OPERATIONS.md, "The state database", says when):
+(docs/OPERATIONS.md, "Deploying the move (once)", says when):
 
     cd /opt/wherecouncilsstand
     git fetch origin

@@ -14,7 +14,8 @@
 --
 --   docker compose stop app
 --   docker compose run --rm --no-deps -T app python -c "import sqlite3, sys; con = sqlite3.connect('/data/state.db'); con.executescript(sys.stdin.read())" < undo-wts-core.sql
---   (then check out the version before the move, and: docker compose up -d --build)
+--   (then check out the code from before the move, from the archived repository, and start it: docs/OPERATIONS.md,
+--   "Going back, and coming forward again", has every step)
 --
 -- Run it BEFORE the old code is started, and once: a second run stops at its first step ("CHECK constraint
 -- failed") and changes nothing.
