@@ -62,12 +62,12 @@ export function Statements(props: { page: string } | { council: string; here: st
   if ("page" in props) return <>{rows.map((s) => <StatementCard key={s.id} s={s} />)}</>;
   return (
     <section className="statements" aria-labelledby="statements-heading">
-      <h2 id="statements-heading" className="minute-heading">
+      <h2 id="statements-heading">
         Statements in their own words
       </h2>
       <p className="small">
         From councillors, or people acting for them or the council, about this page or an item on the site.{" "}
-        <a href="/named">If you're named on this site</a>.
+        <a href="/named">If you’re named on this site</a>.
       </p>
       {rows.map((s) => (
         <StatementCard key={s.id} s={s} level={3} here={props.here} />

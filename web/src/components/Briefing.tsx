@@ -144,7 +144,7 @@ export function BriefingText({ segments, text }: { segments?: Segment[]; text?: 
       }))
     : [{ text: text || "", sources: [], status: "connective", misquotes: [] }];
   const all = lines(runs);
-  // blocks: headings, bullet lists and paragraphs; the "In brief" section is boxed, like a resolution
+  // blocks: headings, bullet lists and paragraphs; the "In brief" section is set on a panel
   const sections: { heading: Run[] | null; blocks: ReactNode[] }[] = [{ heading: null, blocks: [] }];
   let list: ReactNode[] | null = null;
   const flush = () => {
@@ -204,7 +204,7 @@ export function CheckNotices({ answer }: { answer: Answer }) {
     <>
       {flagged > 0 && (
         <p className="notice">
-          Text <span className="unsupported">marked like this</span> isn't supported by a cited source. Treat it with care,
+          Text <span className="unsupported">marked like this</span> isn’t supported by a cited source. Treat it with care,
           and check the minutes.
           {failed === 1 && " One passage gave a source, but its citation failed the check against the minutes and was removed."}
           {failed > 1 &&

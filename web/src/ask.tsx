@@ -106,50 +106,54 @@ function App() {
 
   return (
     <>
-      <h1>What has your council decided?</h1>
-      <p className="lede">
-        Ask about anything councils across the UK have discussed, decided or voted on at full council and cabinet, and
-        England's strategic authorities at their boards and scrutiny committees.
-      </p>
-      <form className="ask-form" onSubmit={submit}>
-        <label htmlFor="question" className="visually-hidden">
-          Your question
-        </label>
-        <textarea id="question" value={question} maxLength={500} onChange={(e) => setQuestion(e.target.value)}
-          placeholder="For example: what have councils decided about weekly bin collections?"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              run(question);
-            }
-          }} />
-        <div className="ask-options">
-          <button className="button" type="submit" disabled={busy || question.trim().length < 3}>
-            {busy ? "Working" : "Ask"}
-          </button>
-          <label>
-            <input type="checkbox" checked={detailed} onChange={(e) => setDetailed(e.target.checked)} /> Detailed briefing
-          </label>
-          <label>
-            <input type="checkbox" checked={sourcesOnly} onChange={(e) => setSourcesOnly(e.target.checked)} /> Sources only
-          </label>
+      <div className="split">
+        <div>
+          <h1>What has your council decided?</h1>
+          <p className="lede">
+            Ask about anything councils across the UK have discussed, decided or voted on at full council and cabinet, and
+            England’s strategic authorities at their boards and scrutiny committees.
+          </p>
+          <form className="ask-form" onSubmit={submit}>
+            <label htmlFor="question" className="visually-hidden">
+              Your question
+            </label>
+            <textarea id="question" value={question} maxLength={500} onChange={(e) => setQuestion(e.target.value)}
+              placeholder="For example: what have councils decided about weekly bin collections?"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  run(question);
+                }
+              }} />
+            <div className="ask-options">
+              <button className="button" type="submit" disabled={busy || question.trim().length < 3}>
+                {busy ? "Asking" : "Ask"}
+              </button>
+              <label>
+                <input type="checkbox" checked={detailed} onChange={(e) => setDetailed(e.target.checked)} /> Detailed briefing
+              </label>
+              <label>
+                <input type="checkbox" checked={sourcesOnly} onChange={(e) => setSourcesOnly(e.target.checked)} /> Sources only
+              </label>
+            </div>
+          </form>
+          {t && (
+            <p className="small record">
+              The record holds {number(t.meetings)} meetings and {number(t.named_votes)} named votes from{" "}
+              {number(t.loaded)} councils since {monthYear(meta?.start)}
+              {meta?.last_update ? <>, and was last updated on {longDate(meta.last_update.finished)}</> : null}.{" "}
+              <a href="/councils">Which councils are covered</a>
+            </p>
+          )}
         </div>
-      </form>
-      <Why />
-      {t && (
-        <p className="coverage">
-          {number(t.loaded)} councils · {number(t.meetings)} meetings · {number(t.named_votes)} named votes · since{" "}
-          {monthYear(meta?.start)}
-          {meta?.last_update && <> · updated {longDate(meta.last_update.finished)}</>}.{" "}
-          <a href="/councils">Which councils are covered</a>
-        </p>
-      )}
+        <Why />
+      </div>
 
       <div ref={resultRef} tabIndex={-1} aria-live="polite" aria-busy={busy}>
         {s.phase === "idle" && meta && (
           <>
-            <h2 className="minute-heading">Questions to try</h2>
-            <ol className="agenda">
+            <h2>Questions to try</h2>
+            <ul className="examples">
               {meta.examples.map((q) => (
                 <li key={q}>
                   <button type="button" onClick={() => { setQuestion(q); run(q); }}>
@@ -157,17 +161,17 @@ function App() {
                   </button>
                 </li>
               ))}
-            </ol>
+            </ul>
           </>
         )}
         {s.phase !== "idle" && (
           <article className="briefing">
-            <div className="briefing-head">
+            <p className="briefing-head">
               <span>
-                <strong>Briefing</strong> · <em>{s.question}</em>
+                Briefing: <em>{s.question}</em>
               </span>
               <span>{longDate(s.savedAt || new Date().toISOString())}</span>
-            </div>
+            </p>
             {s.plan && <PlanChips plan={s.plan} meta={meta} councilNames={names} />}
             {busy && (
               <p className="progress">
@@ -186,21 +190,24 @@ function App() {
                 <CheckNotices answer={s.answer} />
                 {(s.answer.loaded_words || 0) > 0 && (
                   <p className="notice">
-                    {s.answer.loaded_words === 1 ? "One word" : `${s.answer.loaded_words} words`} in the briefing's own voice
-                    may be loaded rather than neutral. Briefings are meant to report what the minutes record, in neutral words.
+                    {s.answer.loaded_words === 1 ? "One word" : `${s.answer.loaded_words} words`} in the briefing’s own voice
+                    may be loaded. Briefings are meant to report what the minutes record, in neutral words.
                   </p>
                 )}
                 <p className="small">
-                  Minutes are summaries written by council officers, not word-for-word records. Briefings are written by an AI
-                  model (Claude) from the minutes shown below, and checked automatically against them; they can still be
-                  wrong. <a href="/methodology">How briefings are made</a>.
+                  Minutes are summaries of each meeting written by council officers. Briefings are written by AI from the
+                  minutes shown below and checked automatically against them, and they can still be wrong. The{" "}
+                  <a href="/methodology">methodology</a> explains how they are made.
                 </p>
                 {shareUrl && (
-                  <p className="small">
-                    Link to this briefing: <a href={shareUrl}>{shareUrl}</a>
-                    {" · "}
-                    <a href={`/corrections?page=${encodeURIComponent(shareUrl)}`}>Report a problem with it</a>
-                  </p>
+                  <>
+                    <p className="small">
+                      Link to this briefing: <a href={shareUrl}>{shareUrl}</a>
+                    </p>
+                    <p className="small">
+                      <a href={`/corrections?page=${encodeURIComponent(shareUrl)}`}>Report a problem with this briefing</a>
+                    </p>
+                  </>
                 )}
               </>
             )}

@@ -46,8 +46,8 @@ pages.push(`/b/${SAMPLE}`);
 
 // what each page must show once its script has drawn it, so a page that never loads isn't passed as accessible
 // (the made-up record has a statement beside Barnsley's vote, so the vote's page and Barnsley's wait for it: decision 22)
-const ready = { "/councils": "table", "/councils/E08000038": ".statements", "/councils/W06000015": ".cards",
-  "/councils/E47000002": ".cards", "/corrections?kind=statement": "#st-text",
+const ready = { "/councils": "table", "/councils/E08000038": ".statements", "/councils/W06000015": ".facts",
+  "/councils/E47000002": ".facts", "/corrections?kind=statement": "#st-text",
   [VOTE]: ".statement", "/status": ".status-list", "/corrections": ".corrections-log", [HIDDEN]: ".notice",
   [`/b/${SAMPLE}`]: ".answer .misquote" };
 

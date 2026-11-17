@@ -1,4 +1,4 @@
-/** The sources a briefing drew on: minutes, numbered in the margin, grouped as the evidence was balanced. */
+/** The sources a briefing drew on: minutes, numbered as the briefing cites them, grouped as the evidence was balanced. */
 import type { SourceCard } from "../api";
 import { KIND_LABEL, longDate } from "../format";
 
@@ -14,8 +14,8 @@ export function Sources({ sources }: { sources: SourceCard[] }) {
   const Heading = groups.length > 1 ? "h4" : "h3";
   return (
     <section aria-labelledby="sources-heading" className="briefing">
-      <h2 id="sources-heading" className="minute-heading">
-        Sources: the councils' own minutes ({sources.length})
+      <h2 id="sources-heading">
+        Sources: the councils’ own minutes ({sources.length})
       </h2>
       {groups.map((g) => (
         <div key={g.name}>
@@ -32,7 +32,7 @@ export function Sources({ sources }: { sources: SourceCard[] }) {
                     </a>
                   </Heading>
                   <p className="meta">
-                    <a href={`/councils/${s.gss}`}>{s.council_name}</a> · {KIND_LABEL[s.kind] || s.committee} ({s.committee}) ·{" "}
+                    <a href={`/councils/${s.gss}`}>{s.council_name}</a>, {KIND_LABEL[s.kind] || s.committee} ({s.committee}),{" "}
                     {longDate(s.date)}
                   </p>
                   <details>
@@ -42,9 +42,12 @@ export function Sources({ sources }: { sources: SourceCard[] }) {
                   {s.votes?.length > 0 && (
                     <p className="small">
                       {s.votes.map((v, i) => (
-                        <a key={v.vote_id} href={`/votes/${encodeURIComponent(v.vote_id)}`}>
-                          {i ? " · " : ""}Named vote{s.votes.length > 1 ? ` ${i + 1}` : ""}: who voted which way
-                        </a>
+                        <span key={v.vote_id}>
+                          {i ? ", " : ""}
+                          <a href={`/votes/${encodeURIComponent(v.vote_id)}`}>
+                            Named vote{s.votes.length > 1 ? ` ${i + 1}` : ""}: who voted which way
+                          </a>
+                        </span>
                       ))}
                     </p>
                   )}

@@ -26,12 +26,12 @@ function Authorities({ rows }: { rows: CouncilRow[] }) {
   const covered = rows.filter((r) => r.loaded).length;
   return (
     <>
-      <h2 className="minute-heading" id="strategic-authorities">
+      <h2 id="strategic-authorities">
         Strategic authorities ({number(covered)} of {number(rows.length)} covered)
       </h2>
       <p>
-        England's combined authorities, combined county authorities and the Greater London Authority: their boards, and
-        their overview and scrutiny committees. Each is shown with its mayor's party, which isn't control of the authority
+        England’s combined authorities, combined county authorities and the Greater London Authority: their boards, and
+        their overview and scrutiny committees. Each is shown with its mayor’s party, which isn’t control of the authority
         or of its councils; one without a mayor has no single party.
       </p>
       <div className="table-wrap">
@@ -51,7 +51,7 @@ function Authorities({ rows }: { rows: CouncilRow[] }) {
                 <th scope="row" role="rowheader">
                   <a href={`/councils/${encodeURIComponent(r.gss)}`}>{r.name}</a>
                   <div className="muted">
-                    {r.kind_name} · {(r.regions || []).map((x) => x.name).join(" and ") || r.region_name}
+                    {r.kind_name}, {(r.regions || []).map((x) => x.name).join(" and ") || r.region_name}
                   </div>
                 </th>
                 <td role="cell" data-label="Mayor">
@@ -92,10 +92,10 @@ function App() {
     return (
       <>
         <h1>Councils</h1>
-        <p className="notice">The list of councils couldn't be loaded: {error}</p>
+        <p className="notice">The list of councils couldn’t be loaded: {error}</p>
       </>
     );
-  if (!rows) return <p className="progress">Loading the councils</p>;
+  if (!rows) return <p className="progress">Getting the list of councils</p>;
   const match = (r: CouncilRow) =>
     (!q || r.name.toLowerCase().includes(q.toLowerCase())) &&
     (!nation || r.nation === nation) &&
@@ -114,16 +114,16 @@ function App() {
       <p>
         Coverage: {(["full", "partial", "not_yet"] as const).map((k, i) => (
           <span key={k}>
-            {i > 0 && " · "}
+            {i > 0 && ", "}
             <CoverageLabel c={k} /> {number(count(k))}
           </span>
         ))}
-        . Coverage says how much of each council's record the site can read, not how well the council works. It is
-        worked out from what is loaded, and kept up to date by the nightly update.
+        . Coverage describes how much of each council’s record the site can read. It is worked out from what is loaded,
+        and kept up to date by the nightly update.
         {authorities.length > 0 && (
           <>
             {" "}
-            England's <a href="#strategic-authorities">strategic authorities</a> are listed after the councils.
+            England’s <a href="#strategic-authorities">strategic authorities</a> are listed after the councils.
           </>
         )}
       </p>
@@ -161,7 +161,7 @@ function App() {
           </select>
         </div>
       </div>
-      <h2 className="minute-heading">Covered ({number(covered.length)})</h2>
+      <h2>Covered ({number(covered.length)})</h2>
       {/* On a phone each row is a block: the council as its heading, then the rest as labelled pairs (data-label;
           docs/DESIGN.md, "Tables"). The roles keep it a table for screen readers once the display changes. */}
       <div className="table-wrap">
@@ -181,7 +181,7 @@ function App() {
               <tr key={r.gss} role="row">
                 <th scope="row" role="rowheader">
                   <a href={`/councils/${r.gss}`}>{r.name}</a>
-                  <div className="muted">{r.type_name} · {r.region_name}</div>
+                  <div className="muted">{r.type_name}, {r.region_name}</div>
                 </th>
                 <td role="cell" data-label="In overall control">{r.control?.name || "Not recorded"}</td>
                 <td role="cell" className="num wide-only">{number(r.meetings)}</td>
@@ -196,12 +196,12 @@ function App() {
         </table>
       </div>
       <p className="small">
-        "In overall control" is read from the councillors listed at the council's latest full council meeting: a party with
-        more than half of them, otherwise no overall control. It is as the council recorded it, not a judgement.
+        “In overall control” is read from the councillors listed at the council’s latest full council meeting: a party with
+        more than half of them, otherwise no overall control. It is reported as the council recorded it.
       </p>
       {!control && missing.length > 0 && (
         <>
-          <h2 className="minute-heading">Not covered yet ({number(missing.length)})</h2>
+          <h2>Not covered yet ({number(missing.length)})</h2>
           <div className="table-wrap">
             <table>
               <thead>

@@ -1,20 +1,10 @@
 /*
- * Where Councils Stand — styles (docs/DESIGN.md).
+ * Where Councils Stand: styles (docs/DESIGN.md).
  *
- * The look of a council's minute book: typed minutes on a faintly warm white page, numbered in the margin,
- * headings in capitals between rules, decisions introduced by RESOLVED. Bound in Buckram brown, the site's cloth in
- * the Where They Stand family, which also brown marks full council; slate grey marks cabinet. Headings are in Source
- * Serif 4 from the family kit (public/family). Shared with Where MPs Stand: OKLCH tokens holding light and dark
- * values, one fluid type scale, logical properties, square corners, hover only where hover exists, and motion only
- * when it is welcome.
+ * The Where They Stand family kit 2.0 (public/family/family.css) gives the colours, the fonts (Source Serif 4 for
+ * headings, Source Sans 3 for everything else) and the footer shelf. The site's cloth, Buckram brown, is the header
+ * band and the colour of its buttons, and its text shade colours the links.
  */
-
-@import "@fontsource-variable/literata/opsz.css";
-@import "@fontsource-variable/literata/opsz-italic.css";
-@import "@fontsource-variable/public-sans/wght.css";
-/* Public Sans in italic too: the vote's side labels and a briefing's question are set in it, and without the italic
-   the browser would slant the upright letters */
-@import "@fontsource-variable/public-sans/wght-italic.css";
 
 /* ---- reset ---------------------------------------------------------------------------------- */
 
@@ -35,6 +25,12 @@
 body {
   margin: 0;
   min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+body > footer {
+  margin-block-start: auto;
 }
 
 h1,
@@ -59,7 +55,6 @@ button {
   font-size: max(16px, 1rem);
 }
 
-/* a tap acts at once (no double-tap zoom wait); a button's label isn't selected by a long press */
 a,
 button,
 summary,
@@ -81,34 +76,26 @@ button {
 :root {
   color-scheme: light dark;
 
-  /* dark mode is a near-neutral slate black, close to the family shelf's (public/family/family.css) */
-  --paper: light-dark(oklch(98.6% 0.006 85), oklch(19% 0.008 230));
-  --paper-raised: light-dark(oklch(100% 0 0), oklch(22.5% 0.009 230));
-  --paper-sunk: light-dark(oklch(95.8% 0.009 85), oklch(16% 0.007 230));
-  --ink: light-dark(oklch(21% 0.012 255), oklch(93% 0.01 85));
-  --ink-soft: color-mix(in oklab, var(--ink) 74%, var(--paper));
-  --ink-faint: color-mix(in oklab, var(--ink) 58%, var(--paper));
-  --rule: color-mix(in oklab, var(--ink) 14%, var(--paper));
-  --rule-strong: color-mix(in oklab, var(--ink) 78%, var(--paper));
+  --paper: var(--wts-paper-light);
+  --paper-raised: var(--wts-paper-light);
+  --panel: var(--wts-paper);
+  --ink: var(--wts-ink);
+  --ink-soft: var(--wts-ink-muted);
+  --ink-faint: var(--wts-ink-muted);
+  --rule: var(--wts-rule-faint);
+  --rule-strong: color-mix(in oklab, var(--ink) 55%, var(--paper));
 
-  /* the binding: Buckram brown, the site's cloth in the Where They Stand family (#6E4A2A; in dark mode the family's
-     lifted cloth #865A33 as a fill, and its tan #D8AE84 for text). It is the identity colour: the mark, the phase
-     tag, links, focus rings, buttons, and full council. */
-  --binding: light-dark(oklch(44.2% 0.0675 61.3), oklch(50.7% 0.079 61));
-  --on-binding: oklch(96% 0.01 85);
-  --council: light-dark(oklch(44.2% 0.0675 61.3), oklch(77.9% 0.0745 66.4));
-  /* the second kind of meeting: cabinet and policy committees, in slate grey, well away from the brown in hue and
-     from every party's colour */
-  --cabinet: light-dark(oklch(46% 0.035 240), oklch(80% 0.035 240));
+  /* the cloth: Buckram brown (#6E4A2A; in dark mode #865A33 as a fill and #D8AE84 for text) */
+  --binding: var(--wts-cloth-councils);
+  --on-binding: var(--wts-on-cloth);
+  --council: var(--wts-cloth-councils-text);
 
   --accent: var(--council);
   --accent-subtle: color-mix(in oklab, var(--accent) 10%, var(--paper));
-  --on-accent: light-dark(oklch(98% 0.005 85), oklch(19% 0.008 230));
-  /* notices and unsupported text: amber, yellower than the brown so a warning never reads as the site's own colour */
   --warn: light-dark(oklch(55% 0.125 82), oklch(84% 0.12 88));
   --warn-subtle: color-mix(in oklab, var(--warn) 13%, var(--paper));
 
-  /* the colours readers associate with each party, for charts only (docs/DESIGN.md) */
+  /* party colours, for charts only (docs/DESIGN.md) */
   --party-LAB: light-dark(#c8102e, #ff7a85);
   --party-CON: light-dark(#0063a8, #6fb8f0);
   --party-LD: light-dark(#b85f00, #ffb257);
@@ -117,35 +104,33 @@ button {
   --party-PC: light-dark(#2f6b3a, #9be0a4);
   --party-other: light-dark(#6b6b6b, #a8a8a8);
 
-  --serif: "Literata Variable", "Iowan Old Style", Charter, Georgia, serif;
-  --sans: "Public Sans Variable", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  --measure: 46rem;
+  --serif: var(--wts-serif);
+  --sans: var(--wts-sans);
   --wide: 72rem;
+  --gutter: clamp(1rem, 0.5rem + 3.5vw, 2.5rem);
+  --measure: 46rem;
 
-  /* one fluid scale (good-css): 1rem at 320px rising to 1.1875rem at 1240px */
-  --step--1: clamp(0.84rem, 0.8rem + 0.18vw, 0.95rem);
-  --step-0: clamp(1rem, 0.94rem + 0.27vw, 1.1875rem);
-  --step-1: clamp(1.2rem, 1.1rem + 0.45vw, 1.45rem);
-  --step-2: clamp(1.45rem, 1.3rem + 0.8vw, 1.9rem);
-  --step-3: clamp(1.75rem, 1.5rem + 1.3vw, 2.6rem);
-  --space-xs: clamp(0.3rem, 0.28rem + 0.1vw, 0.4rem);
-  --space-s: clamp(0.6rem, 0.55rem + 0.2vw, 0.75rem);
-  --space-m: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
-  --space-l: clamp(1.5rem, 1.35rem + 0.7vw, 2rem);
-  --space-xl: clamp(2.25rem, 2rem + 1.2vw, 3.25rem);
+  --step--1: clamp(0.9rem, 0.87rem + 0.15vw, 1rem);
+  --step-0: clamp(1.0625rem, 1.03rem + 0.15vw, 1.125rem);
+  --step-1: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem);
+  --step-2: clamp(1.5rem, 1.3rem + 0.9vw, 1.875rem);
+  --step-3: clamp(2rem, 1.6rem + 1.6vw, 2.75rem);
+  --space-xs: 0.375rem;
+  --space-s: 0.75rem;
+  --space-m: 1.25rem;
+  --space-l: 2rem;
+  --space-xl: 3rem;
 
-  /* the family's shared conventions (public/family/family.css): the footer shelf's focus ring wears the site's own
-     colour, and the site's rings take the family's width and offset, so the keyboard feels the same on every site */
   --wts-focus: var(--accent);
   --focus-ring: var(--wts-focus-width, 3px) solid var(--accent);
   --focus-offset: var(--wts-focus-offset, 3px);
   --target-min: var(--wts-target-min, 24px);
   --target: var(--wts-target, 44px);
-  --ease-out: var(--wts-ease-out, cubic-bezier(0.23, 1, 0.32, 1));
-  --duration: var(--wts-duration, 160ms);
-  /* the footer shelf lines up with the page's column: the same gutter and width as the masthead and main */
-  --wts-gutter: var(--space-m);
-  --wts-shelf-width: calc(var(--wide) - 2 * var(--space-m));
+  --ease-out: var(--wts-ease-out, ease-out);
+  --duration: var(--wts-duration, 150ms);
+  /* the footer shelf lines up with the header and main column */
+  --wts-gutter: var(--gutter);
+  --wts-shelf-width: calc(var(--wide) - 2 * var(--gutter));
 }
 
 /* ---- page --------------------------------------------------------------------------------------- */
@@ -153,21 +138,20 @@ button {
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: var(--step-0);
   line-height: 1.55;
 }
 
 a {
   color: var(--accent);
-  text-decoration-thickness: 0.07em;
-  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
 }
 
-/* a firmer underline under the pointer, and on a press for touch, as the family kit's links do */
 @media (hover: hover) and (pointer: fine) {
   a:hover {
-    text-decoration-thickness: 0.12em;
+    text-decoration-thickness: 2px;
   }
 }
 
@@ -185,128 +169,193 @@ a:active {
   z-index: 10;
   inset-inline-start: var(--space-s);
   inset-block-start: -10rem;
-  background: var(--paper-raised);
+  background: var(--paper);
+  color: var(--ink);
   padding: var(--space-xs) var(--space-s);
-  font-family: var(--sans);
   font-weight: 600;
-  border: 1px solid var(--rule-strong);
+  border: 2px solid var(--ink);
 }
 
 .skip-link:focus {
   inset-block-start: var(--space-s);
 }
 
+.wrap,
 main {
+  width: 100%;
   max-width: var(--wide);
   margin-inline: auto;
-  padding: var(--space-l) var(--space-m) var(--space-xl);
+  padding-inline: var(--gutter);
 }
 
-.prose {
+main {
+  padding-block: var(--space-l) var(--space-xl);
+}
+
+/* running text is held to about two-thirds of the column; panels, tables and lists use all of it */
+.prose > *,
+main p,
+main blockquote {
   max-width: var(--measure);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 h1 {
   font-size: var(--step-3);
-  line-height: 1.15;
   margin-block: 0 var(--space-s);
-  font-weight: 650;
 }
 
 h2 {
-  font-size: var(--step-1);
-  margin-block: var(--space-l) var(--space-s);
+  font-size: var(--step-2);
+  margin-block: var(--space-xl) var(--space-s);
 }
 
-/* a minute's heading: capitals between rules */
-.minute-heading {
-  font-size: var(--step--1);
-  font-weight: 650;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  border-block: 1px solid var(--rule-strong);
-  padding-block: var(--space-xs);
-  margin-block: var(--space-l) var(--space-s);
+h3 {
+  font-size: var(--step-1);
+  margin-block: var(--space-l) var(--space-xs);
 }
 
 .lede {
   font-size: var(--step-1);
-  color: var(--ink-soft);
+  line-height: 1.45;
   max-width: var(--measure);
   margin-block: 0 var(--space-m);
 }
 
 .meta,
 .small {
-  font-family: var(--sans);
   font-size: var(--step--1);
   color: var(--ink-soft);
 }
 
 .muted {
-  color: var(--ink-faint);
+  color: var(--ink-soft);
 }
 
-/* a quotation from the minutes, ruled in the margin as a source's passage is (the browser's own indent is too deep
-   for a phone) */
 blockquote {
   margin: var(--space-s) 0;
   padding-inline-start: var(--space-m);
   border-inline-start: 2px solid var(--rule-strong);
 }
 
-/* ---- masthead --------------------------------------------------------------------------------- */
-
-/* full width, its words lined up with the masthead's below (the same column as .masthead-inner) */
-.phase-banner {
-  margin: 0;
-  padding: var(--space-xs) max(var(--space-m), calc((100% - var(--wide)) / 2 + var(--space-m)));
-  font-family: var(--sans);
-  font-size: var(--step--1);
-  background: var(--paper-sunk);
-  border-block-end: 1px solid var(--rule);
+.panel {
+  background: var(--panel);
+  padding: var(--space-m) clamp(1rem, 0.8rem + 1vw, 1.5rem);
 }
 
-.phase-tag {
-  display: inline-block;
-  padding-inline: 0.4em;
-  margin-inline-end: 0.4em;
+.panel > :first-child {
+  margin-block-start: 0;
+}
+
+.panel > :last-child {
+  margin-block-end: 0;
+}
+
+/* two blocks side by side, the first wider, so the row fills the column */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-m) var(--space-xl);
+  align-items: start;
+}
+
+@media (min-width: 56rem) {
+  .split {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+
+  .split.even {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.split > * > :first-child {
+  margin-block-start: 0;
+}
+
+.split.even {
+  margin-block-start: var(--space-xl);
+}
+
+/* ---- header: the cloth as a band across the page ------------------------------------------------ */
+
+.masthead {
   background: var(--binding);
   color: var(--on-binding);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;  /* ALPHA, as on the sister sites' banners */
-  /* invisible, but drawn as a box in forced colours, where the background goes */
-  border: 1px solid transparent;
 }
 
 .masthead-inner {
-  max-width: var(--wide);
-  margin-inline: auto;
-  padding: var(--space-m) var(--space-m) var(--space-s);
   display: flex;
   flex-wrap: wrap;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-s) var(--space-l);
-  border-block-end: 3px double var(--rule-strong);
+  padding-block: var(--space-s);
+}
+
+.masthead a {
+  color: inherit;
+}
+
+.masthead :focus-visible {
+  outline-color: var(--on-binding);
 }
 
 .home-link,
 .home-mark {
-  color: inherit;
   text-decoration: none;
 }
 
-/* the site's mark (partials/mark.html, and public/mark.svg for others to use): a town hall, with a clock tower, a
-   pediment, four columns and a gilt step, on a tile of the cloth inside a gilt edge (the owner's choice: DECISIONS.md).
-   In dark mode the tile is the family's lifted brown, at 3:1 against the page; the stone and gilt keep their colours.
-   In forced colours it is drawn in the system's two colours. */
+.masthead-brand {
+  --mark-size: 52px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "mark name"
+    "mark endorse";
+  justify-items: start;
+  align-items: center;
+  column-gap: var(--space-s);
+}
+
+.home-mark {
+  grid-area: mark;
+}
+
+.masthead-brand .home-link {
+  grid-area: name;
+}
+
+.masthead-brand .wts-endorse {
+  grid-area: endorse;
+  font-size: 0.9375rem;
+}
+
+/* the endorsement's spine is the site's own cloth, so on the band it is drawn a shade darker to stay visible */
+.masthead .wts-endorse .wts-spine__cloth {
+  fill: color-mix(in srgb, var(--binding) 62%, #000);
+}
+
+@media (width < 30rem) {
+  .masthead-brand {
+    --mark-size: 44px;
+  }
+}
+
+/* the site's mark (partials/mark.html): a town hall on a tile of the cloth inside a gilt edge */
 .site-mark {
   flex: none;
   inline-size: var(--mark-size, 52px);
   block-size: var(--mark-size, 52px);
 }
+
 .site-mark__cloth,
 .site-mark__ink {
   fill: var(--binding);
@@ -332,155 +381,110 @@ blockquote {
 
 .wordmark {
   display: block;
-  font-family: var(--wts-serif, var(--serif));
+  font-family: var(--serif);
   font-size: var(--step-2);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.1;
-  letter-spacing: 0.005em;
 }
 
-/* the mark, and beside it the site's name and under that the family's endorsement (public/family: "A Where They
-   Stand project"), as on the sister sites; then the tagline, lined up with the name */
-.masthead-brand {
-  --mark-size: 52px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-areas:
-    "mark name"
-    "mark endorse"
-    ". tagline";
-  justify-items: start;
-  align-items: center;
-  gap: var(--space-xs) var(--space-s);
-}
-
-.home-mark {
-  grid-area: mark;
-}
-
-.masthead-brand .home-link {
-  grid-area: name;
-}
-
-.masthead-brand .wts-endorse {
-  grid-area: endorse;
-}
-
-.masthead-brand .tagline {
-  grid-area: tagline;
-}
-
-@media (width < 30rem) {
-  .masthead-brand {
-    --mark-size: 44px;
+@media (hover: hover) and (pointer: fine) {
+  .home-link:hover .wordmark {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.15em;
   }
 }
 
-.tagline {
-  display: block;
-  font-style: italic;
-  color: var(--ink-soft);
-  font-size: var(--step--1);
-  margin: 0;
-}
-
 .site-nav {
-  max-width: var(--wide);
-  margin-inline: auto;
-  padding: var(--space-xs) var(--space-m);
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs) var(--space-m);
-  font-family: var(--sans);
-  font-size: var(--step--1);
+  gap: 0 var(--space-m);
 }
 
 .site-nav a {
   display: inline-flex;
   align-items: center;
-  min-block-size: var(--target-min);
-  color: var(--ink);
-  text-decoration: none;
-  padding-block: var(--space-xs);
+  min-block-size: var(--target);
+  font-size: 1.0625rem;
 }
 
 .site-nav a[aria-current="page"] {
-  font-weight: 650;
-  box-shadow: inset 0 -2px 0 var(--accent);
+  font-weight: 600;
+  text-decoration-thickness: 3px;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .site-nav a:hover {
-    color: var(--accent);
-  }
+/* the phase banner: a grey strip under the band, its words on the page's column */
+.phase-banner {
+  background: var(--panel);
+  font-size: var(--step--1);
 }
 
-.site-nav a:active {
-  color: var(--accent);
+.phase-banner p {
+  margin-block: 0;
+  padding-block: var(--space-xs);
 }
 
-/* on a touch screen the four links are a comfortable tap apart */
-@media (pointer: coarse) {
-  .site-nav a {
-    min-block-size: var(--target);
-    padding-block: 0;
-  }
+.phase-tag {
+  display: inline-block;
+  margin-inline-end: 0.5em;
+  padding: 0 0.45em 0.05em;
+  border-radius: 3px;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  /* invisible, but drawn as a box in forced colours, where the background goes */
+  border: 1px solid transparent;
 }
 
-/* forced colours drop the box-shadow, so the current page is underlined instead */
 @media (forced-colors: active) {
-  .site-nav a[aria-current="page"] {
-    text-decoration: underline 2px;
-    text-underline-offset: 0.3em;
+  .masthead {
+    border-block-end: 1px solid CanvasText;
   }
 }
 
-/* ---- footer ----------------------------------------------------------------------------------- */
+/* ---- footer: the family shelf, then the site's own links ------------------------------------------- */
 
-/* the site's own footer, then the family's shelf (public/family/shelf.html), which runs the full width */
-.site-footer {
-  margin-block-start: var(--space-l);
+.site-footer .wts-shelf {
+  margin-block-start: var(--space-xl);
 }
 
 .footer {
-  max-width: var(--wide);
-  margin-inline: auto;
-  padding: var(--space-m) var(--space-m) 0;
-  border-block-start: 1px solid var(--rule-strong);
-  font-family: var(--sans);
-  font-size: var(--step--1);
+  background: var(--panel);
   color: var(--ink-soft);
+  font-size: var(--step--1);
 }
 
-.footer .independence {
-  border: 1px solid var(--rule-strong);
-  padding: var(--space-s) var(--space-m);
+.footer .wrap {
+  padding-block: 0 var(--space-l);
+}
+
+.footer p {
+  margin: 0;
   max-width: var(--measure);
 }
 
-.footer-nav {
+.footer-nav ul {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs) var(--space-m);
-  margin-block: var(--space-m);
+  gap: 0 var(--space-m);
+  margin: 0 0 var(--space-xs);
+  padding: 0;
+  list-style: none;
 }
 
-/* each link at least 24px tall (WCAG 2.5.8), and a comfortable tap apart on a touch screen */
 .footer-nav a {
   display: inline-flex;
   align-items: center;
   min-block-size: var(--target-min);
+  color: inherit;
 }
 
 @media (pointer: coarse) {
-  .footer-nav {
-    gap: 0 var(--space-m);
-  }
-
   .footer-nav a {
     min-block-size: var(--target);
   }
 }
+
 
 /* ---- the status page ----------------------------------------------------------------------- */
 
@@ -489,11 +493,10 @@ blockquote {
   grid-template-columns: minmax(8rem, max-content) 1fr;
   gap: var(--space-xs) var(--space-m);
   margin-block: var(--space-m);
-  font-family: var(--sans);
 }
 
 .status-list dt {
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .status-list dd {
@@ -538,23 +541,23 @@ blockquote {
   font-weight: 600;
   line-height: 1.3;
   padding: 0.55em 1.1em;
-  border: 1px solid var(--accent);
-  background: var(--accent);
-  color: var(--on-accent);
+  border: 1px solid var(--binding);
+  background: var(--binding);
+  color: var(--on-binding);
   cursor: pointer;
-  border-radius: 0;
+  border-radius: 3px;
   text-decoration: none;
-  transition: background-color var(--duration) var(--ease-out);
 }
 
 .button.secondary {
   background: transparent;
+  border-color: var(--accent);
   color: var(--accent);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .button:not(:disabled):hover {
-    background: color-mix(in oklch, var(--accent) 86%, var(--ink));
+    background: color-mix(in oklab, var(--binding) 82%, #000);
   }
 
   .button.secondary:not(:disabled):hover {
@@ -563,7 +566,7 @@ blockquote {
 }
 
 .button:not(:disabled):active {
-  background: color-mix(in oklch, var(--accent) 78%, var(--ink));
+  background: color-mix(in oklab, var(--binding) 72%, #000);
 }
 
 .button.secondary:not(:disabled):active {
@@ -572,13 +575,7 @@ blockquote {
 
 @media (prefers-reduced-motion: no-preference) {
   .button {
-    transition:
-      background-color var(--duration) var(--ease-out),
-      scale var(--duration) var(--ease-out);
-  }
-
-  .button:not(:disabled):active {
-    scale: 0.97;
+    transition: background-color var(--duration) var(--ease-out);
   }
 }
 
@@ -588,7 +585,6 @@ blockquote {
 }
 
 .ask-form {
-  max-width: var(--measure);
   display: grid;
   gap: var(--space-s);
 }
@@ -602,8 +598,7 @@ blockquote {
   border: 1px solid var(--rule-strong);
   background: var(--paper-raised);
   color: var(--ink);
-  border-radius: 0;
-  font-family: var(--serif);
+  border-radius: 3px;
 }
 
 .ask-form textarea {
@@ -627,7 +622,6 @@ blockquote {
   flex-wrap: wrap;
   gap: var(--space-xs) var(--space-m);
   align-items: center;
-  font-family: var(--sans);
   font-size: var(--step--1);
 }
 
@@ -656,7 +650,6 @@ input[type="checkbox"] {
 .field {
   display: grid;
   gap: var(--space-xs);
-  font-family: var(--sans);
   font-size: var(--step--1);
 }
 
@@ -673,88 +666,71 @@ input[type="checkbox"] {
   flex: 1 1 12rem;
 }
 
-/* example questions, numbered like a meeting's agenda */
-.agenda {
+.examples {
   list-style: none;
-  counter-reset: item;
   padding: 0;
   margin: 0;
-  max-width: var(--measure);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--space-xl);
 }
 
-.agenda li {
-  counter-increment: item;
-  display: grid;
-  grid-template-columns: 2.5rem 1fr;
+@media (min-width: 48rem) {
+  .examples {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.examples li {
   border-block-end: 1px solid var(--rule);
   padding-block: var(--space-xs);
 }
 
-.agenda li::before {
-  content: counter(item) ".";
-  font-family: var(--sans);
-  color: var(--ink-faint);
-}
-
-.agenda button {
+.examples button {
   all: unset;
+  display: inline-block;
+  min-block-size: var(--target-min);
   cursor: pointer;
   color: var(--accent);
   text-align: start;
   touch-action: manipulation;
-  text-decoration-thickness: 0.07em;
-  text-underline-offset: 0.18em;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
 }
 
-.agenda button:focus-visible {
+.examples button:focus-visible {
   outline: var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .agenda button:hover {
-    text-decoration-line: underline;
+  .examples button:hover {
+    text-decoration-thickness: 2px;
   }
 }
 
-.agenda button:active {
-  text-decoration-line: underline;
+.examples button:active {
   text-decoration-thickness: 2px;
 }
 
-/* "Why use this rather than a chatbot?" (components/Why.tsx): one line under the question box, always shown, and a
-   disclosure that opens to five points. It sits below the box, so the box never moves down for it. */
+/* the line about the briefings beside the question box, and the disclosure under it (components/Why.tsx) */
 .why {
-  max-width: var(--measure);
-  margin-block: var(--space-s) 0;
-  font-family: var(--sans);
   font-size: var(--step--1);
-  color: var(--ink-soft);
 }
 
 .why p {
   margin: 0;
 }
 
-.why > p {
-  color: var(--ink);
-  font-weight: 600;
-}
-
 .why summary {
   cursor: pointer;
   color: var(--accent);
+  font-weight: 600;
   inline-size: fit-content;
   min-block-size: var(--target-min);
+  margin-block-start: var(--space-xs);
   padding-block: 0.15em;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .why summary:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 0.07em;
-    text-underline-offset: 0.18em;
-  }
 }
 
 .why ul {
@@ -764,20 +740,8 @@ input[type="checkbox"] {
   padding-inline-start: 1.2em;
 }
 
-.why strong {
-  color: var(--ink);
-}
-
-/* "How it works" stays in one piece at the end of the last line */
-.why details a {
-  white-space: nowrap;
-}
-
-.coverage {
-  font-family: var(--sans);
-  font-size: var(--step--1);
-  color: var(--ink-soft);
-  margin-block: var(--space-s) var(--space-l);
+.record {
+  margin-block: var(--space-s) 0;
 }
 
 /* chips: the filters the question was read as */
@@ -788,12 +752,11 @@ input[type="checkbox"] {
   padding: 0;
   margin: 0;
   list-style: none;
-  font-family: var(--sans);
   font-size: var(--step--1);
 }
 
 .chips li {
-  border: 1px solid var(--rule-strong);
+  background: var(--panel);
   padding: 0.1em 0.55em;
 }
 
@@ -812,12 +775,12 @@ input[type="checkbox"] {
 .briefing-head {
   display: flex;
   justify-content: space-between;
-  gap: var(--space-s);
+  gap: var(--space-xs) var(--space-m);
   flex-wrap: wrap;
   align-items: baseline;
-  border-block: 1px solid var(--rule-strong);
+  margin: 0;
+  border-block-end: 1px solid var(--rule-strong);
   padding-block: var(--space-xs);
-  font-family: var(--sans);
   font-size: var(--step--1);
 }
 
@@ -827,19 +790,14 @@ input[type="checkbox"] {
 
 .answer h2,
 .answer h3 {
-  font-size: var(--step--1);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  border-block-end: 1px solid var(--rule);
-  padding-block-end: var(--space-xs);
-  margin-block: var(--space-l) var(--space-s);
+  font-size: var(--step-1);
+  margin-block: var(--space-l) var(--space-xs);
 }
 
-/* "In brief" set like a resolution */
+/* "In brief", on a panel */
 .answer .resolved {
-  border: 1px solid var(--rule-strong);
   padding: var(--space-s) var(--space-m);
-  background: var(--paper-raised);
+  background: var(--panel);
 }
 
 .answer .resolved > h2:first-child,
@@ -852,7 +810,6 @@ input[type="checkbox"] {
 }
 
 .cite {
-  font-family: var(--sans);
   font-size: 0.72em;
   vertical-align: super;
   line-height: 0;
@@ -905,35 +862,37 @@ input[type="checkbox"] {
 }
 
 .notice {
-  border-inline-start: 4px solid var(--warn);
   background: var(--warn-subtle);
   padding: var(--space-s) var(--space-m);
-  font-family: var(--sans);
   font-size: var(--step--1);
   max-width: var(--measure);
 }
 
 .notice.info {
-  border-color: var(--accent);
-  background: var(--accent-subtle);
+  background: var(--panel);
 }
 
-/* a statement under the right of reply (decision 22): its author's words, not the site's, so set apart from the
-   record and the briefing as a letter laid in the minute book would be: a sunk panel with a dashed edge, in the sans
-   face the site keeps for its own controls, never in the book face of the record. Its heading names the author */
+@media (forced-colors: active) {
+  .notice,
+  .statement,
+  .panel,
+  .routes > li,
+  .answer .resolved {
+    border: 1px solid CanvasText;
+  }
+}
+
+/* a statement under the right of reply (decision 22): its author's words, set apart on a panel */
 .statement {
-  max-width: var(--measure);
   margin-block: var(--space-m);
   padding: var(--space-s) var(--space-m);
-  background: var(--paper-sunk);
-  border: 1px dashed var(--rule-strong);
-  font-family: var(--sans);
+  background: var(--panel);
 }
 
 .statement .statement-head {
   font-family: var(--sans);
   font-size: var(--step-0);
-  font-weight: 650;
+  font-weight: 600;
   margin-block: 0;
 }
 
@@ -955,14 +914,12 @@ input[type="checkbox"] {
 }
 
 .statement-note {
-  font-style: italic;
   margin-block-start: var(--space-s);
   padding-block-start: var(--space-xs);
   border-block-start: 1px solid var(--rule);
 }
 
-/* the corrections log (the impartiality policy, 7.1), on the corrections page: an entry to a rule, as the minute
-   book's entries are, with the date and what it was in the sans face of the site's own labels */
+/* the corrections log (the impartiality policy, 7.1), on the corrections page */
 .corrections-log {
   list-style: none;
   padding: 0;
@@ -974,12 +931,16 @@ input[type="checkbox"] {
   border-block-start: 1px solid var(--rule);
 }
 
+.corrections-log h3 {
+  margin: 0;
+  font-size: var(--step-0);
+}
+
 .corrections-log p {
   margin-block: var(--space-xs) 0;
 }
 
 .corrections-log .corrections-when {
-  font-family: var(--sans);
   font-size: var(--step--1);
   color: var(--ink-soft);
   margin-block: 0;
@@ -991,23 +952,33 @@ input[type="checkbox"] {
 }
 
 .statement-example figcaption {
-  font-family: var(--sans);
   font-size: var(--step--1);
   color: var(--ink-soft);
 }
 
-/* the page for people who are named: its three routes, each with a way to start it */
+/* the page for people who are named: its routes, side by side, each with a way to start it */
+.prose > .routes {
+  max-width: none;
+}
+
 .routes {
   display: grid;
-  gap: var(--space-s);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--space-m);
   padding: 0;
   list-style: none;
-  max-width: var(--measure);
 }
 
 .routes > li {
-  border-inline-start: 4px solid var(--accent);
-  padding: var(--space-xs) var(--space-m);
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  padding: var(--space-m);
+}
+
+.routes > li > :last-child {
+  margin-block: auto 0;
+  padding-block-start: var(--space-xs);
 }
 
 .routes h3 {
@@ -1021,50 +992,20 @@ input[type="checkbox"] {
 
 .word-count[data-over] {
   color: var(--ink);
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .progress {
-  font-family: var(--sans);
   font-size: var(--step--1);
   color: var(--ink-soft);
 }
 
-.progress::after {
-  content: " …";
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .progress::after {
-    animation: dots 1.4s steps(4) infinite;
-  }
-
-  @keyframes dots {
-    0% {
-      content: " ";
-    }
-
-    25% {
-      content: " .";
-    }
-
-    50% {
-      content: " ..";
-    }
-
-    75% {
-      content: " ...";
-    }
-  }
-}
-
-/* ---- sources: minutes, numbered in the margin --------------------------------------------- */
+/* ---- sources: minutes, numbered as the briefing cites them ------------------------------------- */
 
 .sources {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-width: var(--measure);
 }
 
 .source {
@@ -1081,21 +1022,11 @@ input[type="checkbox"] {
 }
 
 .source-n {
-  font-family: var(--sans);
-  font-weight: 650;
-  color: var(--ink-faint);
-  border-inline-end: 3px solid var(--council);
-  padding-inline-end: var(--space-xs);
+  font-weight: 600;
+  color: var(--ink-soft);
   text-align: end;
   white-space: nowrap;
-}
-
-.source.cabinet .source-n,
-.source.policy .source-n,
-.source.board .source-n,
-.source.mayor .source-n,
-.source.scrutiny .source-n {
-  border-color: var(--cabinet);
+  font-variant-numeric: tabular-nums;
 }
 
 .source h3,
@@ -1109,8 +1040,11 @@ input[type="checkbox"] {
   margin: 0.15em 0 var(--space-xs);
 }
 
+.source > div > * {
+  max-width: var(--measure);
+}
+
 .source details summary {
-  font-family: var(--sans);
   font-size: var(--step--1);
   cursor: pointer;
   color: var(--accent);
@@ -1135,24 +1069,17 @@ input[type="checkbox"] {
 }
 
 .group-heading {
-  font-size: var(--step--1);
-  font-weight: 650;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-block: var(--space-l) 0;
+  font-size: var(--step-1);
+  margin-block: var(--space-l) var(--space-xs);
 }
 
-/* ---- a sister site's links (components/Sister.tsx): quiet, under the sister's name and spine ---------------------- */
+/* ---- a sister site's links (components/Sister.tsx), under the sister's name and spine ------------------------- */
 
 .sister {
   display: flex;
   gap: var(--space-s);
   align-items: start;
-  max-width: var(--measure);
   margin-block: var(--space-m);
-  padding-block: var(--space-s);
-  border-block: 1px solid var(--rule);
-  font-family: var(--sans);
   font-size: var(--step--1);
 }
 
@@ -1162,7 +1089,8 @@ input[type="checkbox"] {
 
 .sister-name {
   margin: 0 0 var(--space-xs);
-  font-family: var(--wts-serif, var(--serif));
+  font-family: var(--serif);
+  font-size: var(--step-0);
   font-weight: 600;
 }
 
@@ -1182,7 +1110,6 @@ input[type="checkbox"] {
 }
 
 .sister-ask {
-  font-family: var(--sans);
   font-size: var(--step--1);
   margin-block: var(--space-s) 0;
 }
@@ -1220,10 +1147,7 @@ input[type="checkbox"] {
 }
 
 .vote-side h2 {
-  font-family: var(--sans);
-  font-size: var(--step--1);
-  font-style: italic;
-  font-weight: 600;
+  font-size: var(--step-1);
   margin: 0 0 var(--space-xs);
 }
 
@@ -1238,13 +1162,11 @@ input[type="checkbox"] {
   padding-block: 0.15em;
 }
 
-/* "For 2  Against 3  Abstained 0": each side kept together, the sides wrapping on a narrow phone (a Scottish
-   division's "For the motion" and "For the amendment" are long) */
+/* each side kept together, the sides wrapping on a narrow phone */
 .vote-tally {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 0.15em 0.9em;
-  font-family: var(--sans);
   font-size: var(--step--1);
 }
 
@@ -1260,17 +1182,13 @@ input[type="checkbox"] {
   max-width: 100%;
 }
 
-/* a table of a few short figures (meetings by year), kept narrow so each row's numbers sit close enough to follow
-   across, as the members-by-party list is */
 .table-wrap.narrow {
-  max-inline-size: 40rem;
   font-variant-numeric: tabular-nums;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
-  font-family: var(--sans);
   font-size: var(--step--1);
 }
 
@@ -1283,7 +1201,7 @@ td {
 }
 
 th {
-  font-weight: 650;
+  font-weight: 600;
   border-block-end: 1px solid var(--rule-strong);
 }
 
@@ -1410,7 +1328,6 @@ th.num {
   list-style: none;
   padding: 0;
   margin: 0;
-  font-family: var(--sans);
   font-size: var(--step--1);
 }
 
@@ -1441,8 +1358,6 @@ th.num {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-width: 28rem;
-  font-family: var(--sans);
   font-size: var(--step--1);
 }
 
@@ -1460,33 +1375,31 @@ th.num {
   flex: none;
 }
 
-.cards {
+/* a council's figures: a short list of terms and values */
+.facts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
-  gap: var(--space-s);
-  margin-block: var(--space-m);
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
+  gap: var(--space-xs) var(--space-m);
+  margin: 0;
 }
 
-.card {
-  border: 1px solid var(--rule-strong);
-  padding: var(--space-s) var(--space-m);
-  background: var(--paper-raised);
-}
-
-.card .figure {
-  font-size: var(--step-2);
-  font-weight: 650;
-  display: block;
-  line-height: 1.2;
-}
-
-.card .label {
-  display: block;
-  margin-block-start: 0.2em;
-  font-family: var(--sans);
-  font-size: var(--step--1);
-  line-height: 1.4;
+.facts dt {
   color: var(--ink-soft);
+}
+
+.facts dd {
+  margin: 0;
+}
+
+@media (width < 30rem) {
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .facts dd {
+    margin-block-end: var(--space-xs);
+  }
 }
 
 .form-grid {
@@ -1516,7 +1429,7 @@ th.num {
 }
 
 /* Printed: the site's name and address, and its independence statement, stay on the page, so a printout can't pass
-   for a council document (docs/DESIGN.md). Only what can't be used on paper goes. */
+   for a council document (docs/DESIGN.md). */
 @media print {
   :root {
     color-scheme: light;
@@ -1527,6 +1440,11 @@ th.num {
     background: #fff;
   }
 
+  .masthead {
+    background: none;
+    color: #000;
+  }
+
   .skip-link,
   .phase-banner,
   .site-nav,
@@ -1534,31 +1452,25 @@ th.num {
   .wts-shelf,
   .ask-form,
   .why,
-  .agenda {
+  .examples {
     display: none;
   }
 
-  .masthead-inner {
-    padding-inline: 0;
-  }
-
   .wordmark::after {
-    content: " · wherecouncilsstand.com";
+    content: " (wherecouncilsstand.com)";
     font-weight: 400;
     font-size: var(--step-0);
   }
 
   .footer {
-    padding-inline: 0;
+    background: none;
     border-block-start: 1px solid #999;
   }
 }
 
-/* Coverage (councils page): how much of a council's record the site reads, never a judgement of the council. Neutral
-   square marks, like the votes': filled for full, half filled for partial, outlined for not yet. A word as well as
-   the mark, and no colour. (Not .coverage: that is the home page's line of totals, which must wrap.) */
+/* Coverage (councils page): how much of a council's record the site reads. Neutral square marks, like the votes':
+   filled for full, half filled for partial, outlined for not yet, with a word beside each. */
 .coverage-status {
-  font-family: var(--sans);
   font-size: var(--step--1);
   font-weight: 600;
   white-space: nowrap;

@@ -98,7 +98,7 @@ described in the charity's family overview.
 |---|---|
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Product decisions made by the owner. They override everything else |
 | [`docs/DATA.md`](docs/DATA.md) | Data sources, what the councils' web services return, and the links to Where Landlords Stand |
-| [`docs/DESIGN.md`](docs/DESIGN.md) | The website's look: the minute book, in the family's binding |
+| [`docs/DESIGN.md`](docs/DESIGN.md) | The website's look: the Where They Stand family design (kit 2.0) |
 | [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | The nightly update, and running the website: limits, costs, reports, statements, the corrections log, hiding a page, how briefings went, the state database |
 | [`docs/DEPLOY.md`](docs/DEPLOY.md) | This site's steps on the charity's shared server |
 | [`docs/PILOT.md`](docs/PILOT.md) | The 20-council pilot, the full load, and hand checks of the votes |
