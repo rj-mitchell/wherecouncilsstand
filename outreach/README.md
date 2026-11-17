@@ -1,15 +1,11 @@
 # Letters to councils
 
-**7 November 2026: the letters asking permission because of robots.txt are withdrawn, unsent.** Since decision 21
-(the owner's decision of 6 November 2026), robots.txt isn't treated as a barrier, and those councils' sites are read,
-so 25 letters in `2026-11/` that said "we have left you out" were deleted (they are in git history). Only councils
-whose sites refuse or don't answer the server are still asked (`scripts/outreach.py`, `needs_asking`). Hull's letter
-now asks about its site not answering the server: if its earlier, robots.txt letter was already sent, send this
-one with `--again`.
-
-Requests for permission to read councils' meetings sites, where robots.txt forbids it or the site refuses the
-crawler (docs/DECISIONS.md, 2: asked, not worked around). `scripts/outreach.py` writes them from the registry and the
-addresses each council publishes; they are kept here as the record of who was asked, and when.
+Requests for permission to read councils' meetings sites where the site refuses or doesn't answer the server
+(docs/DECISIONS.md, 2: such sites are asked for permission). `scripts/outreach.py` writes them from the
+registry and the addresses each council publishes (`needs_asking`); they are kept here as the record of who was
+asked, and when. Since decision 21 (6 November 2026) robots.txt isn't treated as a barrier, so councils whose
+robots.txt forbids crawling are read and are not written to. Hull's letter asks about its site not answering the
+server: if its earlier letter about robots.txt was already sent, send this one with `--again`.
 
 Each starts with its To: and Subject: lines, and is sent from the charity's Gmail account by Where MPs Stand's
 `deploy/mail.sh` (its `docs/HOSTING.md`, "Email from the server"), so the links arrive as written:
