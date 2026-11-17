@@ -17,7 +17,7 @@ server until the family has an operations document of its own:
 
 This page has only this site's own steps.
 
-## What it needs
+## Requirements
 
 About 2 GB of memory while serving (the container is limited to 4 GB, so a runaway update stops itself rather than
 slowing the other sites), and roughly 10–12 GB of disk for all 383 councils, judging by the pilot (20 councils:
@@ -26,25 +26,25 @@ briefings (without one, the site shows the sources only).
 
 ## Steps
 
-1. **Cloudflare**, for wherecouncilsstand.com, as for any site on the server (HOSTING.md, "Cloudflare protection"):
+1. Cloudflare, for wherecouncilsstand.com, as for any site on the server (HOSTING.md, "Cloudflare protection"):
    the domain proxied to the server, `www` redirected to it, and an origin certificate.
-2. **Code and settings**, on the server, as root:
+2. Code and settings, on the server, as root:
    ```bash
    git clone https://github.com/rj-mitchell/wherecouncilsstand /opt/wherecouncilsstand
    cd /opt/wherecouncilsstand/deploy
    cp .env.example .env && nano .env    # COUNCILS_ANTHROPIC_API_KEY
    ```
    Spending caps are in `config/settings.toml`, `[usage]`.
-3. **Start it:**
+3. Start it:
    ```bash
    bash /opt/wherecouncilsstand/deploy/update.sh
    ```
    It builds and starts the site, and installs its timers: the update, the backup (with the nightly tidy after
    it), the daily check of the backups, and the weekly report. With no data yet, it finds nothing.
-4. **The front door:** `wherecouncilsstand.com=wherecouncilsstand` in `SITES` in `/opt/hansardgpt/deploy/.env`, and
+4. The front door: `wherecouncilsstand.com=wherecouncilsstand` in `SITES` in `/opt/hansardgpt/deploy/.env`, and
    the origin certificate pasted with `bash /opt/hansardgpt/deploy/cloudflare.sh site wherecouncilsstand.com`
    (HOSTING.md, "Other sites on this server").
-5. **First load**, in the background, at a quiet time (overnight): every council since May 2018, then the keyword
+5. First load, in the background, at a quiet time (overnight): every council since May 2018, then the keyword
    index, then four hours of meaning search (the daily update carries on with whatever is left):
    ```bash
    cd /opt/wherecouncilsstand/deploy
@@ -55,7 +55,7 @@ briefings (without one, the site shows the sources only).
    ```
    It takes hours: councils' servers are slow, and each is asked one thing at a time. If it stops, run
    `councils load --workers 20 --resume` the same way; councils already loaded are kept.
-6. **Check:** visit the site, ask a question, and run `bash /opt/hansardgpt/deploy/check.sh`, which lists every site
+6. Check: visit the site, ask a question, and run `bash /opt/hansardgpt/deploy/check.sh`, which lists every site
    on the server.
 
 The site went live this way in November 2026, replacing a holding page that ran as a Cloudflare Worker.
@@ -65,14 +65,14 @@ The site went live this way in November 2026, replacing a holding page that ran 
 Commands are run in `/opt/wherecouncilsstand/deploy`. Any `councils` command runs in a one-off container:
 `docker compose run --rm -T app councils <command>`.
 
-* **Updates** run once a day (`councils-update.timer`, 03:17 UTC; [`OPERATIONS.md`](OPERATIONS.md)).
-* **New code:** merge it into `main` on GitHub, then `bash /opt/wherecouncilsstand/deploy/update.sh`. Not while one
+* Updates run once a day (`councils-update.timer`, 03:17 UTC; [`OPERATIONS.md`](OPERATIONS.md)).
+* New code: merge it into `main` on GitHub, then `bash /opt/wherecouncilsstand/deploy/update.sh`. Not while one
   of the site's own jobs is running (the nightly update from 03:17 UTC, for some hours; the backup at 04:30; the
   check of the backups at 11:47; the weekly report on Mondays at 06:23): the script refuses, and says which. It
   holds the timers while it works, builds, brings the new site up, and only then installs the timers' units, so
   that no timer runs a command the running image does not have. The one deploy that moves the site onto the
   shared package has steps of its own first: [`OPERATIONS.md`](OPERATIONS.md), "Deploying the move (once)".
-* **Backups:** everything but the state database can be rebuilt. That database (spending, saved briefings,
+* Backups: everything but the state database can be rebuilt. That database (spending, saved briefings,
   reports, statements, the record of each briefing) is copied every night (`councils-backup.timer`) to `/opt/wherecouncilsstand/deploy/backups`, the last 7
   kept, and to the charity's B2 bucket as `councils-state-….sqlite.gz`, the last 60 kept there (each site deletes
   only its own old copies). To set up the off-site copy, once, copy the bucket and key from Where MPs Stand's
@@ -90,13 +90,13 @@ Commands are run in `/opt/wherecouncilsstand/deploy`. Any `councils` command run
   (download it from the bucket if it is no longer there), stop the site, and run `councils restore` on it
   ([`OPERATIONS.md`](OPERATIONS.md), "The state database", which also covers a backup made before November 2026's
   move onto the shared package).
-* **After the backup, the nightly tidy** (`councils tidy`, run by the backup's unit) deletes what the privacy
+* After the backup, the nightly tidy (`councils tidy`, run by the backup's unit) deletes what the privacy
   notice says is deleted in time, and **every Monday the weekly report** on how briefings went is written
-  (`councils-weekly-report.timer`): [`OPERATIONS.md`](OPERATIONS.md), "How briefings went" and "What is deleted,
-  and when".
-* **The family's nightly check** needs `COUNCILS_CHECK_TOKEN` in `.env` ([`OPERATIONS.md`](OPERATIONS.md), "The
+  (`councils-weekly-report.timer`): [`OPERATIONS.md`](OPERATIONS.md), "Briefing statistics" and "Deletion
+  schedule".
+* The family's nightly check needs `COUNCILS_CHECK_TOKEN` in `.env` ([`OPERATIONS.md`](OPERATIONS.md), "The
   family's nightly check"). Without it the site runs as before, and that check reports the site as not set up.
-* **The privacy notice** (`web/privacy.html`) names Cloudflare, which carries the site's visits, and says requests
+* The privacy notice (`web/privacy.html`) names Cloudflare, which carries the site's visits, and says requests
   are not logged (`councils serve` turns the access log off, and the front door keeps none). Keep it true when
   changing either.
 

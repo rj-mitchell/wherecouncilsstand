@@ -6,7 +6,9 @@ Serif 4 for headings and Source Sans 3 for everything else. It replaced an earli
 paper, Literata body text, headings in small capitals between rules, a double rule under the masthead, a numbered
 list of example questions and coloured edges on sources).
 
-## The rule: like the record, never like a council
+## Independence from councils
+
+The site must look like a record of councils' decisions. Nothing on it should resemble a council's own site.
 
 - No council's crest, coat of arms or logo, and nothing that resembles them: no shields, mantling or mural crowns.
   No council's colours.
@@ -29,7 +31,7 @@ list of example questions and coloured edges on sources).
   the briefings on the home page, a council's introduction beside its figures, members by party beside the party
   in control, meetings by year beside the latest meetings.
 - Panels (`.panel`, notices, statements, the routes on the page for people who are named) are light grey with no
-  border or coloured edge. A council's figures are a short list of terms and values, not cards.
+  border or coloured edge. A council's figures are a short list of terms and values.
 - The footer is the family shelf, then six links (About, Methodology, Corrections, Accessibility, Privacy, Source
   code) and one short paragraph with the independence line and the licence notice. Terms, Press, Status and the page
   for people who are named are linked from the About page.
@@ -65,7 +67,7 @@ band the endorsement's spine is drawn a shade darker than the cloth so that it s
 A town hall on a tile of Buckram brown with rounded corners and a fine gilt edge (`#D9BC72`, the family's spine
 gilt, so the edge still shows at 16 pixels), drawn in the same manner as Where MPs Stand's mark: a clock tower with a
 spire behind a pediment, four columns on a stylobate, and a gilt step (`web/partials/mark.html`, drawn inline at
-52 px, 44 px on a phone). The owner chose it from seven drawings (decision 16). In dark mode the tile and the clock
+52 px, 44 px on a phone). It was chosen from seven drawings (decision 16). In dark mode the tile and the clock
 face are the family's lifted cloth, at 3:1 against the page; the stone and gilt keep their colours. In forced colours
 it is redrawn in the system's two colours. It is the site's page mark (family decision 4).
 
@@ -84,14 +86,14 @@ sits on the band of the same brown, so its gilt edge frames it.
 
 ## Tables and citations
 
-- **On a phone (below 30rem) the councils page's tables become blocks**, one per council (`.stack-table`): the
+- On a phone (below 30rem) the councils page's tables become blocks, one per council (`.stack-table`): the
   council's name and type, its row heading, on top, then each other column as a pair, its name (`data-label`) beside
   its value. The column headings stay for screen readers, and explicit table roles keep it a table for them once its
   display changes. Columns marked `wide-only` (meetings, from) are left out there, as before.
-- **A table of a few short figures** (`.table-wrap.narrow`, figures in tabular numerals), a council's meetings by
+- A table of a few short figures (`.table-wrap.narrow`, figures in tabular numerals), a council's meetings by
   year, shares its row with the latest meetings, so it stays narrow enough to read across on a wide screen.
-- **Dates in a timeline** take the width of the longest, but never more than 16rem or 45% of the line, so on a narrow
+- Dates in a timeline take the width of the longest, but never more than 16rem or 45% of the line, so on a narrow
   phone a long date range wraps rather than squeezing the names.
-- **Citation marks** ("[1]") keep their small size, with an invisible area to tap or click around each: 24 px tall,
+- Citation marks ("[1]") keep their small size, with an invisible area to tap or click around each: 24 px tall,
   28 px on a touch screen, reaching a little either side but never into a citation next to it. Each mark is kept on
   one line.

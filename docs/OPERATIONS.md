@@ -1,7 +1,7 @@
 # Operations
 
-Two things run on the server: the nightly update, which keeps the data current, and the website. This page covers
-both. Putting the site on the server is in [`DEPLOY.md`](DEPLOY.md).
+This page covers the nightly update, which keeps the data current, and running the website. Putting the site on
+the server is in [`DEPLOY.md`](DEPLOY.md).
 
 ## Keeping the data current
 
@@ -9,20 +9,20 @@ both. Putting the site on the server is in [`DEPLOY.md`](DEPLOY.md).
 explains what it does, how it keeps working when councils' servers misbehave, how to schedule it, and what to do when
 it reports a problem.
 
-### What a run does
+### The steps of a run
 
 For every council already loaded, 20 at a time and one request at a time to each council's server:
 
-1. **The committee list** is fetched again if the cached one is more than a week old. A new or renamed full council
+1. The committee list is fetched again if the cached one is more than a week old. A new or renamed full council
    or cabinet is picked up by the rules in `committees.py`.
-2. **Each committee's meetings** since May 2018 are listed again, once a day, so new meetings appear.
-3. **New meetings are fetched**, and so are **meetings from the last 120 days** (`[modgov] refetch_days`), because
+2. Each committee's meetings since May 2018 are listed again, once a day, so new meetings appear.
+3. New meetings are fetched, and so are **meetings from the last 120 days** (`[modgov] refetch_days`), because
    their minutes can change or be published late until they are approved at the next meeting. Everything older
    comes from the cache, so it costs nothing.
-4. **Minutes published only as a document** are read for meetings older than three weeks, where the council serves
+4. Minutes published only as a document are read for meetings older than three weeks, where the council serves
    documents.
-5. **Named votes and declarations** are read again for each council whose stored meetings changed.
-6. **The search index** is rewritten for each council that changed. Passages whose text is unchanged keep their
+5. Named votes and declarations are read again for each council whose stored meetings changed.
+6. The search index is rewritten for each council that changed. Passages whose text is unchanged keep their
    vectors and only have their tags updated (party in control, parties named). New and changed passages are then
    embedded for meaning search, for up to `--embed-minutes`. Anything left is embedded on the next run. The new
    rows are merged into the keyword and meaning-search indices, and superseded versions of the index files older
@@ -30,7 +30,7 @@ For every council already loaded, 20 at a time and one request at a time to each
    meaning search's again once it has a fifth more vectors than it was trained on. If no council changed and
    nothing was embedded, the index isn't touched. Building from scratch every night, as the site first did, left a
    copy of the old indices on disk each time.
-7. **A summary** is printed and appended to `data/updates.jsonl`:
+7. A summary is printed and appended to `data/updates.jsonl`:
 
    ```json
    {"finished": "2026-10-25T21:05:01", "minutes": 51.7, "councils": 214, "changed": 17, "new_meetings": 23,
@@ -88,16 +88,16 @@ It is also clear of the other sites' updates on the shared server. In case a job
 the same lock (`/var/lock/wheretheystand-update.lock`) and waits for it, so only one runs at a time. A run can
 therefore start late: while it waits, `systemctl status councils-update` shows it as "activating".
 
-### When it reports a problem
+### Problems a run reports
 
-- **One or a few councils under `failed`, day after day.** Their server is down or refusing requests. Check by hand:
+- One or a few councils under `failed`, day after day. Their server is down or refusing requests. Check by hand:
   `councils list --status ok` shows the site's address. A council that has moved to a new Modern.gov address needs
   `data_static/councils.csv` updated (`scripts/build_councils.py`).
-- **`needs_attention`.** Check the network from the server, then the disk (`df -h`), then the log.
-- **`still_to_embed` keeps growing.** Raise `--embed-minutes`, or run `councils embed` on its own.
-- **A council under `robots` in the summary.** Only with `[robots] obey` switched on (it is off, decision 21): its
+- `needs_attention`. Check the network from the server, then the disk (`df -h`), then the log.
+- `still_to_embed` keeps growing. Raise `--embed-minutes`, or run `councils embed` on its own.
+- A council under `robots` in the summary. Only with `[robots] obey` switched on (it is off, decision 21): its
   site's robots.txt has started to forbid reading it. Nothing was read or changed.
-- **A council's meetings suddenly drop to zero.** Its committees have probably been renamed. Look at its committee
+- A council's meetings suddenly drop to zero. Its committees have probably been renamed. Look at its committee
   list (`zcat data/raw/modgov/<GSS>/committees.xml.gz`) and add the new titles to `data_static/committees.csv`.
 
 ### Loading the strategic authorities (once)
@@ -122,30 +122,30 @@ flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app \
 systemctl start councils-update.service && journalctl -u councils-update.service -n 30
 ```
 
-- **Time:** about an hour. Each authority is read one request at a time, at least a second apart, all 20 side by
+- Time: about an hour. Each authority is read one request at a time, at least a second apart, all 20 side by
   side, so the longest record sets the pace: Greater Manchester's (nine committees in scope, three of them expired
   scrutiny committees, about 300 meetings, and minutes mostly as documents) at 2 to 25 seconds a meeting on a slow
   server. The four created in 2024–25 take a few minutes each. The four on their own websites take about 5 minutes
   in all (about 150 requests: Tees Valley's 4 pages and about 75 minutes documents, Hull and East Yorkshire's about 30
   pages and 13 documents, Cumbria's 10 and 7, Hampshire and the Solent's 2 and 3; about 20 MB of cache under
   `/data/raw/docsite`). Step 3 is an ordinary nightly run (about 50 minutes).
-- **Requests and disk:** about 2,100 meetings and 2,500 requests (the GLA's about 500 of them) in all, with up to a few hundred minutes documents.
+- Requests and disk: about 2,100 meetings and 2,500 requests (the GLA's about 500 of them) in all, with up to a few hundred minutes documents.
   Each meeting's response is 250–350 KB of XML, about 80 KB gzipped: about **150 MB for the cache, 100 MB for
   documents**, and a few MB of Parquet and index. Check with `docker compose run --rm -T app du -sh /data/raw/modgov`
   before and after.
-- **What to check:** each line of `/tmp/authorities-load.jsonl` has `"error": ""` and the committees expected
+- What to check: each line of `/tmp/authorities-load.jsonl` has `"error": ""` and the committees expected
   (`data_static/committees.csv`). For the four on their own websites, expect about 81 meetings for Tees Valley (from
   April 2019), 23 for Hull and East Yorkshire, 7 for Cumbria and 3 for Hampshire and the Solent (6 November 2026; more
   as meetings are held). Their members' councils and parties come from the constituent councils' stored records, so
   load them after the councils (as here, once the councils are loaded); a member matched to no council shows as a
   non-constituent member with no party until the next update reads them again. One that failed is simply run again: `councils ingest E47000001`. Cheshire and Warrington's line should list committees named for it ("Cheshire and Warrington Combined Authority ..."); if it lists none, send its line on: its committees' titles differ from the rule. Then
   the councils page lists them under "Strategic authorities", and `/councils/E47000003` shows West Yorkshire's.
-- **After that,** the nightly update reads them like any council. Members' parties come from their home councils'
+- After that, the nightly update reads them like any council. Members' parties come from their home councils'
   stored records, so they are read again each night as the councils' are.
 
 ### Loading the 26 CMIS councils (once)
 
-Left out under the earlier robots.txt rule and read again at the owner's request (decision 21, 6 November 2026):
+Left out under the earlier robots.txt rule and read again under decision 21 (6 November 2026):
 Birmingham, Braintree, Cambridgeshire, Castle Point, Colchester, Derby, Dudley, East Suffolk, Essex, Fylde, Great
 Yarmouth, Harborough, Hull, Norfolk, South Derbyshire, South Staffordshire, Walsall, Warrington, Mid Ulster,
 Midlothian, North Ayrshire, North Lanarkshire, Perth and Kinross, Renfrewshire, South Lanarkshire and West
@@ -160,22 +160,22 @@ flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app counci
 systemctl start councils-update.service && journalctl -u councils-update.service -n 30
 ```
 
-- **Time:** two to three hours. A CMIS site is read page by page, as a browser would, at least a second apart; a
+- Time: two to three hours. A CMIS site is read page by page, as a browser would, at least a second apart; a
   trial on 6 November 2026 (Birmingham, Essex and South Lanarkshire, four months each) took 25 to 40 seconds a
   meeting with its minutes. Birmingham's full record, about 175 meetings, sets the pace; all 26 run side by side.
-- **What to check:** each line of `/tmp/cmis-load.jsonl` has `"error": ""`. A site that refuses (403, a bot check)
+- What to check: each line of `/tmp/cmis-load.jsonl` has `"error": ""`. A site that refuses (403, a bot check)
   says so and is left for a letter, not worked around. One that failed is run again on its own:
   `councils ingest E08000025`.
 
 ### Disk space
 
 The data folder holds the stored meetings (Parquet), the search index and a cache of every response from councils'
-servers, so that each meeting is fetched once. Two things keep it from growing for no reason:
+servers, so that each meeting is fetched once. It is kept from growing for no reason:
 
-- **The search index cleans up after itself.** Each update merges its new rows into the indices and deletes
+- The search index cleans up after itself. Each update merges its new rows into the indices and deletes
   superseded versions of the index files over an hour old. `councils optimize` does the same clean-up by hand,
   while the site keeps serving.
-- **The cache is gzipped.** Responses from CMIS and CoINS sites always were. Modern.gov responses have been since
+- The cache is gzipped. Responses from CMIS and CoINS sites always were. Modern.gov responses have been since
   November 2026, which saves about three quarters of their size. Older Modern.gov responses are plain XML and are
   still read; each is replaced by a gzipped copy when next fetched. Meeting documents (PDFs) are stored as they
   come, because they barely compress.
@@ -211,8 +211,8 @@ It can be stopped and run again: files already compressed are skipped.
 | `councils hide`, `unhide`, `hidden` | Hide a page, with a note in its place, while a concern about it is decided ("Hiding a page", below) |
 | `councils waiting` | How many reports and statements are waiting for a decision, how many pages are hidden, and how long the oldest has waited |
 | `councils would-lapse` | Which statements and reports the next tidy would decline or lapse as undecided, by number, with the day each was sent. It changes nothing |
-| `councils stats`, `weekly-report`, `propose-questions` | How briefings went: speed, cost, what the checks found; and test questions proposed from readers' own ("How briefings went", below) |
-| `councils tidy` | The nightly housekeeping, after each backup ("What is deleted, and when", below) |
+| `councils stats`, `weekly-report`, `propose-questions` | How briefings went: speed, cost, what the checks found; and test questions proposed from readers' own ("Briefing statistics", below) |
+| `councils tidy` | The nightly housekeeping, after each backup ("Deletion schedule", below) |
 | `councils backup`, `backup-check`, `offsite`, `restore` | The state database's backups ([`DEPLOY.md`](DEPLOY.md), "Backups"; "The state database", below) |
 | `councils evaluate`, `councils eval run`, `eval compare`, `eval replay` | The briefing test set ([`EVALUATION.md`](EVALUATION.md)) |
 | `councils optimize` | Compact the search index and delete superseded versions (the update does this itself) |
@@ -239,7 +239,7 @@ the day's spending rows only, to count a visitor's briefings, and is forgotten f
 time of day each row was made: a spending row of a day gone by keeps its day, its model, its token counts and its
 cost, and nothing that says who it was for or when in the day (wts-core 0.3.0; its decision record 0012).
 
-**Costs and limits** are in `config/settings.toml`, `[usage]`. Each new briefing is counted against a visitor's daily
+Costs and limits are in `config/settings.toml`, `[usage]`. Each new briefing is counted against a visitor's daily
 allowance (`per_visitor_daily_questions`) and the site's daily and monthly caps (`daily_spend_cap_usd`,
 `monthly_spend_cap_usd`). A briefing's cost is known only when it finishes, so while one is being written it counts against the caps at an estimate (`briefing_estimate_usd`), and only a few are written at once (`briefings_at_once`, `briefings_at_once_per_visitor`). Many questions at once therefore can't all pass the daily cap before any is counted. Over a limit, readers still get the sources, which cost nothing. With "Sources only" ticked no briefing is written, but the model still reads the question (a fraction of a penny) while the daily and monthly caps allow it; once a cap is reached the built-in rules read it, which costs nothing. An identical question is
 answered from the cache until the data changes. Spending so far:
@@ -249,7 +249,7 @@ docker compose run --rm -T app python -c "import sqlite3; [print(*r) for r in sq
   'select substr(at, 1, 10) as day, round(sum(cost_usd), 2) from wts_spending group by day order by day desc limit 14')]"
 ```
 
-**The models' prices** are in the same section, one table for each model (`[usage.models."…"]`): the two the
+The models' prices are in the same section, one table for each model (`[usage.models."…"]`): the two the
 site calls, the one that writes briefings (`[answer] model`) and the one that reads questions
 (`query_parse_model`). The site will not start if either has no prices of its own: it says which model is
 missing and which file to look in. That is on purpose: a model costed at another's prices undercounts the
@@ -273,7 +273,7 @@ Take the three figures from the provider's price list: no other model's prices a
 repository, and none is guessed. Then restart (`docker compose up -d app`). With the name and no table, the site
 does not start, and `docker compose logs app` says "no price for the-new-model", naming the local file.
 
-**Reports and takedown requests** are in the same database. Commands are run in `/opt/wherecouncilsstand/deploy`:
+Reports and takedown requests are in the same database. Commands are run in `/opt/wherecouncilsstand/deploy`:
 
 ```bash
 docker compose run --rm -T app councils reports list           # open reports, takedown requests first (--all for every one)
@@ -287,7 +287,7 @@ docker compose run --rm -T app councils waiting                # what is waiting
 Closing a report deletes the reporter's email address (privacy notice). Withdrawing a saved briefing (the `<id>` in
 its address, `/b/<id>`) keeps it in the database, but its address then says it has been withdrawn, with the reason.
 
-**An id that begins with "-".** A command line reads a word that begins with "-" as an option, so `councils
+An id that begins with "-". A command line reads a word that begins with "-" as an option, so `councils
 withdraw -vPeHLp1u54 --reason "…"` stops with "No such option" and withdraws nothing. About one briefing in 64
 saved before 16 November 2026 (wts-core 0.3.0) has such an id; none saved since has. Write `--` before the id,
 after the options:
@@ -296,7 +296,7 @@ after the options:
 docker compose run --rm -T app councils withdraw --reason "It named the wrong council." -- -vPeHLp1u54
 ```
 
-**The corrections log** is public, on the corrections page (`/corrections#log`) and at `/api/corrections`: every
+The corrections log is public, on the corrections page (`/corrections#log`) and at `/api/corrections`: every
 withdrawn briefing, with the reason given, and every report closed with `--public-note`, newest first (the
 impartiality policy, 7.1: "a public note saying what changed and when"). So write a reason or a public note for
 the public: say what was wrong and what was done, and name nobody who reported it, and no one who is not a
@@ -334,7 +334,7 @@ kinds of page can be hidden, and nothing else:
 Statements beside a hidden page are hidden with it. Hiding takes effect at once, and so does showing again. An
 answer written before something was hidden is not replayed from the answer cache while anything is hidden.
 
-**A briefing written before a page was hidden is hidden with it.** A saved briefing that has a hidden council's
+A briefing written before a page was hidden is hidden with it. A saved briefing that has a hidden council's
 minutes, or a hidden vote, among its sources shows that page's note in its place until the page is shown again
 (statements beside the briefing are hidden with it), and a briefing that is itself hidden is dropped from the
 answer cache, so a reader who asks the same question gets one written afresh. A withdrawn briefing is dropped
@@ -349,7 +349,7 @@ Reports come in on the policy's routes (decision 22): `error` ("Something is wro
 characterised unfairly"), `takedown` (someone who isn't a councillor: deal with these first) and `other`. Reply within
 5 working days, and decide within 20 working days; log the decision and its reasons for the trustees.
 
-**Statements under the right of reply** (decision 22; the impartiality policy, section 7.2) arrive as waiting, from
+Statements under the right of reply (decision 22; the impartiality policy, section 7.2) arrive as waiting, from
 the form at `/corrections?kind=statement`. Before publishing one, confirm who sent it: write to its address, which
 should be the councillor's or council's own (one the council publishes) or the party group's. Check it against the
 rules on `/named` (150 words, about the item, nothing defamatory, abusive, about a private individual or another
@@ -388,7 +388,7 @@ put in the search index, and a search engine is told never to quote one as the s
 When the update has changed the data, the service notices within a request or two: the councils' directory is rebuilt
 when the stored meetings change. The search index is opened afresh for each search.
 
-## How briefings went
+## Briefing statistics
 
 For every question the site keeps one row in **the record of briefings** (the shared package's; its decision
 record 0012): how the question ended (a briefing written, replayed from the cache, no records, sources only, a
@@ -413,7 +413,7 @@ theme is `[embedding] theme_similarity` in `config/settings.toml` (0.8: a first 
 questions. If the weekly report's themes are too many and too small, lower it; if unrelated questions are grouped,
 raise it).
 
-**The weekly report** is written every Monday at 06:23 UTC (`councils-weekly-report.timer`, installed by
+The weekly report is written every Monday at 06:23 UTC (`councils-weekly-report.timer`, installed by
 `deploy/update.sh`) to `/data/reports/` as a page (`2026-W46.md`) and as JSON:
 
 ```bash
@@ -421,7 +421,7 @@ docker compose run --rm -T app cat /data/reports/2026-W46.md
 docker compose run --rm -T app councils weekly-report --week 2026-W45      # write an earlier week's again
 ```
 
-**Alerts.** The thresholds are in `[alerts]` in `config/settings.toml`, and start empty: nothing alerts on a
+Alerts. The thresholds are in `[alerts]` in `config/settings.toml`, and start empty: nothing alerts on a
 guessed number. The first weekly reports print proposed thresholds from that week's figures. Once there are a few
 weeks of figures, write the ones you want into `[alerts]` (in the repository, or in the server's
 `/data/settings.local.toml`); the names are `p95_full_briefing_ms`, `error_rate`, `check_failure_rate`,
@@ -430,7 +430,7 @@ the weekly report fails when a figure is over its threshold, after saving the re
 sent (`OnFailure=alert@…`, as for the update and the backup). A name in `[alerts]` that isn't one of these stops
 the report with a message, rather than being ignored.
 
-**Test questions proposed from readers' own.** `councils propose-questions --since 7d` writes a file in
+Test questions proposed from readers' own. `councils propose-questions --since 7d` writes a file in
 `/data/proposed-questions/` of questions from the period that found no records, or whose briefings the checks
 flagged most, in the shape of `eval/questions.toml`. It adds nothing to the test set: read it, take out anything
 personal, and copy what is worth keeping into `eval/questions.toml` by hand ([`EVALUATION.md`](EVALUATION.md)).
@@ -439,13 +439,13 @@ a report still open names, or that is hidden while a concern is decided, by its 
 a named vote it was written from is hidden. The file quotes readers' questions: delete it once read. The nightly
 tidy deletes it in any case once the oldest question it could hold is 13 months old.
 
-**The structured log** of briefings is `/data/logs/briefings.jsonl`: one line for each step a briefing reached and
+The structured log of briefings is `/data/logs/briefings.jsonl`: one line for each step a briefing reached and
 one for how it ended, with the record's id, the step's name, a time in milliseconds and, for a failure, the kind of
 error. Never a question, an address or a visitor's code, so the privacy notice's "requests aren't logged" stays
 true. It is kept for 14 days and about 48 MB at most (`[logs]`). To follow one failed briefing, find its id in
 `councils stats --json` or the record, and look for it in the log.
 
-## What is deleted, and when
+## Deletion schedule
 
 `councils tidy` runs every night after the backup (`councils-backup.service`, whether or not the backup worked).
 It prints a line for each thing it did, in the order it does them (wts-core 0.3.0):
@@ -478,7 +478,7 @@ nights running." and fails, so the alert email is sent. If anything else fails, 
 alert email is sent too. It also fails, after doing everything else, if the old tables were due to go and could
 not (it says why).
 
-**The backup forgets first.** Since wts-core 0.3.0 `councils backup` does, in the database, the forgetting of
+The backup forgets first. Since wts-core 0.3.0 `councils backup` does, in the database, the forgetting of
 step 2 and the deletion of earlier days' secrets before it copies it, so a night's backup holds nothing of the day
 before that the live file does not. It does hold the day's own rows so far (from midnight to the backup at 04:30),
 with their visitors' codes and times, for as long as that backup is kept. If it finds spending that the new code
@@ -493,7 +493,7 @@ whose names start `wts_`: `wts_spending` (each model call's cost), `wts_answer_c
 briefings), `wts_briefing_log` (the record of each briefing), `wts_reports`, `wts_statements` and
 `wts_statement_log`, `wts_hidden`, and `wts_schema` (which changes to the tables have been made).
 
-**The one-off import.** Until November 2026 the site kept its own tables (`usage`, `questions`, `answer_cache`,
+The one-off import. Until November 2026 the site kept its own tables (`usage`, `questions`, `answer_cache`,
 `briefings`, `reports`, `statements`, `kv`). The first time the new code opens the database, **whichever command
 that is** (the web service starting, or any `councils` command that reads reports, statements or spending), it:
 
@@ -505,13 +505,13 @@ that is** (the web service starting, or any `councils` command that reads report
 
 Nothing needs running by hand: `deploy/update.sh` brings the new site up, and the import runs as it starts.
 
-**Deploying the move (once).** In this order:
+Deploying the move (once). In this order:
 
-1. **Choose the hour.** Not while one of the site's jobs is running or about to: the nightly update starts at
+1. Choose the hour. Not while one of the site's jobs is running or about to: the nightly update starts at
    03:17 UTC and can run for hours, the backup at 04:30, the check of the backups at 11:47, and the weekly report
    on Mondays at 06:23. An afternoon is safe. `update.sh` refuses to start while a job is running, and holds the
    timers until the new site is up, so that none starts in between.
-2. **Look first, on the old code.** While the old site is still running:
+2. Look first, on the old code. While the old site is still running:
 
    ```bash
    cd /opt/wherecouncilsstand
@@ -527,17 +527,17 @@ Nothing needs running by hand: `deploy/update.sh` brings the new site up, and th
    the command that would decide one is itself the first listing. So decide them now, on the old code
    (`councils publish-statement`, `decline-statement`, `close-report`), or let them lapse. It also says **what
    would stop the import**, and how to mend it (below).
-3. **Run no `councils` command by hand** between fetching the new code and the new site being up. The import runs
+3. Run no `councils` command by hand between fetching the new code and the new site being up. The import runs
    on whichever command first opens the database on the new code. If that were a command run while the old site
    was still up, whatever the old site wrote afterwards (a report, a briefing, spending) would be in the old
    tables only, and never brought across.
 4. `bash /opt/wherecouncilsstand/deploy/update.sh`. It builds, brings the new site up, checks it answers, and
    only then installs the timers' units (so a build that fails leaves the old units, which run commands the old
    image has).
-5. **Check** that `councils reports list --all`, `councils statements list --all` and the spending query above show
+5. Check that `councils reports list --all`, `councils statements list --all` and the spending query above show
    what they showed before.
 
-**If the new site does not start**, `docker compose logs app` says why. If it says the old tables hold rows newer
+If the new site does not start, `docker compose logs app` says why. If it says the old tables hold rows newer
 than the import, see "Going back, and coming forward again", below. If it is a row the new tables could not
 take (`malformed JSON`, or a `NOT NULL constraint failed`: the look in step 2 names it beforehand), then nothing
 was half copied: the import is one transaction. The old tables are as they were, the copy of step 1 above was
@@ -553,7 +553,7 @@ docker compose up -d app
 would try it again.) Or put the old code back, which finds its tables untouched: `git -C /opt/wherecouncilsstand
 checkout <the commit before>` and `docker compose up -d --build app`.
 
-**The old tables are kept until 1 February 2027, and no longer.** The import leaves them as they were, so that the
+The old tables are kept until 1 February 2027, and no longer. The import leaves them as they were, so that the
 move can be undone. But left alone they would keep what the site has promised to delete (a sender's address
 after its three months, a closed report's contact, visitors' codes, the day's secret), and so would every night's
 backup. So each night `councils tidy` takes out of the old tables whatever the new ones no longer hold ("What is
@@ -561,7 +561,7 @@ deleted, and when", above), and from 1 February 2027 it drops them. Nothing read
 
 ### Going back, and coming forward again
 
-**The rule for going back** to the code as it was before the move, **until 1 February 2027**: run the undo
+The rule for going back to the code as it was before the move, **until 1 February 2027**: run the undo
 script first, then check out the old code. Never the old code alone.
 
 ```bash
@@ -585,19 +585,19 @@ day's and month's total, and both caps, are as they were), but with no visitor's
 as its time; today's rows come back whole. It runs once, and only on a database that has been moved: run again,
 or after 1 February 2027, it stops at once and changes nothing.
 
-**Coming forward again:** check out `main` and run `deploy/update.sh` as for any deploy. The new code makes the
+Coming forward again: check out `main` and run `deploy/update.sh` as for any deploy. The new code makes the
 move afresh from the old tables, with whatever the old code took in meanwhile, and counts nothing twice.
 
-**If the old code was started without the undo script,** what it wrote went to the old tables only. The new code
+If the old code was started without the undo script, what it wrote went to the old tables only. The new code
 then refuses to start, changing nothing: "the site's old tables hold rows that are newer than the import that
 copied them", naming the tables. `docker compose logs app` shows it. Two scripts mend it, and each discards
 something:
 
-- **The old code did run after the move:** `deploy/redo-wts-core.sql`. It forgets the move and touches nothing
+- The old code did run after the move: `deploy/redo-wts-core.sql`. It forgets the move and touches nothing
   else, so the next start brings everything the old tables hold across, what the old code wrote included. It
   discards what the new code wrote between the move and the day the old code was started (its spending, saved
   briefings, reports and statements), which the old tables do not hold.
-- **The old code never ran after the move** (a false alarm: the server's clock was put back about the time of the
+- The old code never ran after the move (a false alarm: the server's clock was put back about the time of the
   move): `deploy/undo-wts-core.sql`, which loses nothing then.
 
 Do not run `undo-wts-core.sql` to keep what the old code wrote: it writes the old tables afresh from the new ones,
@@ -605,7 +605,7 @@ and discards exactly those rows. Either script is run as the undo script is, abo
 `redo-wts-core.sql` in place of `undo-wts-core.sql`); then `docker compose up -d`. After 1 February 2027, when the
 old tables are gone, each script refuses ("no such table") and changes nothing.
 
-**What the new code cannot see,** and so cannot refuse on: a row the old code wrote in the very second the move
+What the new code cannot see, and so cannot refuse on: a row the old code wrote in the very second the move
 was made; a row with no time (the old `kv` and `questions` tables keep none); and what the old code changed in a
 row already there (a report closed, a statement decided, a briefing withdrawn): only rows added are seen.
 

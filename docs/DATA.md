@@ -4,7 +4,7 @@
 
 Built by `scripts/build_councils.py` from:
 
-- **England:** MHCLG's [local-authority register](https://www.planning.data.gov.uk/dataset/local-authority) on
+- England: MHCLG's [local-authority register](https://www.planning.data.gov.uk/dataset/local-authority) on
   planning.data.gov.uk (Open Government Licence): current entries, with each council's type, GSS code and region.
   Combined authorities and the Greater London Authority are left out: strategic authorities are listed by hand (below,
   "Strategic authorities"). 317 councils.
@@ -12,14 +12,14 @@ Built by `scripts/build_councils.py` from:
   between them moved (E08000016, E08000019); `build_councils.py` uses the current ones (E08000038, E08000039), as ONS
   and the Regulator of Social Housing do (`SUPERSEDED`). A data folder loaded before this change is moved to the new
   codes by `scripts/recode_councils.py`.
-- **Wales:** the 22 unitary authorities from mySociety's [MapIt](https://mapit.mysociety.org/).
-- **Scotland and Northern Ireland** (in scope from 5 November 2026, decision 2): Scotland's 32 councils (MapIt's
+- Wales: the 22 unitary authorities from mySociety's [MapIt](https://mapit.mysociety.org/).
+- Scotland and Northern Ireland (in scope from 5 November 2026, decision 2): Scotland's 32 councils (MapIt's
   unitary authorities) and Northern Ireland's 11 district councils (MapIt's local government districts). Their
   websites and meetings systems were found by research, November 2026: Modern.gov at 9 (Aberdeen City,
   Aberdeenshire, Argyll and Bute, City of Edinburgh, Dumfries and Galloway, East Dunbartonshire, Scottish Borders,
   Belfast, and Derry City and Strabane), CMIS at 8, CoINS at 4 (Falkirk, Glasgow, Shetland, West Lothian), Public
   Minutes at 2 (Armagh City, Banbridge and Craigavon; Fermanagh and Omagh), and the council's own pages at 20.
-- **Modern.gov sites:** [Local Democracy UK](https://www.local-democracy.uk/data)'s council list (CC BY 4.0), then a
+- Modern.gov sites: [Local Democracy UK](https://www.local-democracy.uk/data)'s council list (CC BY 4.0), then a
   probe of the usual host names (`democracy.`, `moderngov.`, `modgov.`, `committees.` …) on each remaining council's
   own domain.
 
@@ -58,37 +58,37 @@ yet.
 
 What was found:
 
-- **Party is recorded as at the meeting.** A councillor who changed party shows the old party at earlier meetings.
+- Party is recorded as at the meeting. A councillor who changed party shows the old party at earlier meetings.
   Councils also relabel parties over time ("LAB", then "Labour"), so labels are mapped to codes
   (`parse/parties.py`).
-- **Attendance lists can be incomplete for older meetings.** Some councillors who left the council are missing from
+- Attendance lists can be incomplete for older meetings. Some councillors who left the council are missing from
   older meetings' lists even though the minutes name them in votes. Names are matched to the meeting's attendance
   first, then to anyone recorded at the council's meetings within a year either side.
-- **Some sites serve two councils** that share services (Babergh and Mid Suffolk; Broadland and South Norfolk; Adur
+- Some sites serve two councils that share services (Babergh and Mid Suffolk; Broadland and South Norfolk; Adur
   and Worthing; Lewes and Eastbourne). Each committee's title starts with its council's name. High Peak and
   Staffordshire Moorlands share one site under two host names, with titles such as "Council (HPBC)" and an
   unprefixed "Cabinet" and "The Executive". Which is whose is set in `data_static/committees.csv`, from the wards of
   the members who attend. Councils sharing a site were found by comparing their committee lists.
-- **Successor councils can host their predecessors' committees.** Westmorland and Furness's site still holds
+- Successor councils can host their predecessors' committees. Westmorland and Furness's site still holds
   Cumbria County Council's and Barrow Borough Council's committees, with their names as a prefix.
-- **Some councils split full council into several committees** in Modern.gov, for example Lewisham's
+- Some councils split full council into several committees in Modern.gov, for example Lewisham's
   "Full Council - Council questions".
-- **Servers can be slow.** `GetMeeting` took 7–24 seconds on some councils' servers, which is why the pilot loads
+- Servers can be slow. `GetMeeting` took 7–24 seconds on some councils' servers, which is why the pilot loads
   councils side by side.
-- **A meeting's minutes are attached to the next meeting's agenda**, at the item that approves them. Where a council
+- A meeting's minutes are attached to the next meeting's agenda, at the item that approves them. Where a council
   publishes minutes only as a document, that's where they're found (`sources/documents.py`). Documents come from
   `mgConvert2PDF.aspx?ID=…`, which many sites, especially Civica-hosted `*.moderngov.co.uk` ones, put behind a
   browser check that refuses automated requests, although the web service itself answers.
-- **A committee whose meetings can't be listed** (East Hampshire's council meetings, once, November 2026) is tried
+- A committee whose meetings can't be listed (East Hampshire's council meetings, once, November 2026) is tried
   again; if it fails twice, nothing is stored for the council, so the next load or update tries again, rather than
   storing it with a committee missing.
-- **A meeting record without a readable date** (six councils, November 2026) takes the date the committee's list of
+- A meeting record without a readable date (six councils, November 2026) takes the date the committee's list of
   meetings gave; one with no date at all is skipped and counted as failed, rather than stopping the council.
-- **Certificates.** Some councils' servers leave out the intermediate certificate linking theirs to a trusted root
+- Certificates. Some councils' servers leave out the intermediate certificate linking theirs to a trusted root
   (Newham, Plymouth, Boston, East Lindsey, South Holland, Torridge, November 2026). Browsers fetch it from the
   address in the site's certificate, and so does `sources/tls.py`, once, when a connection fails for that reason;
   the chain must still end at a trusted root and the name must still match.
-- **Minutes can change** until approved at the next meeting, so meetings newer than 120 days are fetched again
+- Minutes can change until approved at the next meeting, so meetings newer than 120 days are fetched again
   (`refetch_days`).
 
 ## Strategic authorities (decisions 17 to 20)
@@ -102,43 +102,43 @@ most of its people live), its meetings site and status, and, where the status al
 the reason. `build_councils.py` leaves combined authorities and the GLA out of `councils.csv`; this file is checked by
 hand each quarter against legislation.gov.uk.
 
-- **`data_static/authority_councils.csv`**: each authority's constituent councils (and non-constituent councils where
+- `data_static/authority_councils.csv`: each authority's constituent councils (and non-constituent councils where
   confirmed: York on West Yorkshire's board), with from and to dates where a council joined or left after the
   authority was created. In a two-tier area the county is the constituent council, except in Cambridgeshire and
   Peterborough, whose districts are constituent too.
-- **`data_static/mayors.csv`**: each mayor, the party they were elected for, and from the day of their election to the
+- `data_static/mayors.csv`: each mayor, the party they were elected for, and from the day of their election to the
   day they left office (from Wikipedia's list of metro mayors, as of June 2026, and the research note; the dates
   before 2024 should be checked against the authorities' own records). Between two mayors (Greater Manchester, 18 June
   to 30 July 2026) there is none.
-- **Committees** (decision 18): each authority's board, overview and scrutiny committees and any committee of
+- Committees (decision 18): each authority's board, overview and scrutiny committees and any committee of
   the mayor's decisions are named in `committees.csv`, with the reason, and checked against their committee lists as
   their web services gave them on 6 November 2026 (`tests/fixtures/modgov/`), or, for the four read from their own
   websites, as those sites list them ("Meetings: authorities' own websites", below). None of the 13 lists the mayor's
   decisions as a live committee: West Midlands' "Mayoral Decision" is marked deleted, so nothing is read from it unless
   it returns. Lancashire's are on Lancashire County Council's site, so only the committees named are taken, and the
   county's own are unaffected.
-- **Members** (decision 20, `authority.py`): Modern.gov's attendance for an authority names the body each member
+- Members (decision 20, `authority.py`): Modern.gov's attendance for an authority names the body each member
   represents ("Bradford Council", "Tameside MBC"), which is matched to the council. Each member is the mayor, a
   constituent or non-constituent member, a substitute, a co-opted member, or an appointed member who isn't a
   councillor (named nowhere: name and member id dropped, and removed from the minutes). A councillor's party on the date
   is their home council's record where the site has it (first initial and surname, one match within a year), otherwise
   the authority's; `party_source` says which.
-- **The GLA's members** (decision 20): every member listed at its meetings, other than the Mayor, is an elected London
+- The GLA's members (decision 20): every member listed at its meetings, other than the Mayor, is an elected London
   Assembly member (`assembly_member`), named, with the GLA's record of their party. Names drop the letters after them
   and a peer's designation ("Hina Bokhari OBE AM" -> "Hina Bokhari", "Baron Duvall of Woolwich, in the Royal Borough
   of Greenwich AM" -> "Lord Duvall", as the minutes write him), and the vote reader ignores "AM", so recorded votes
   ("For the amendment: Hina Bokhari OBE AM, ...") are read by name: a trial of November 2025 to February 2026 read
   20 meetings and 11 named votes, every name matched. Constituency codes aren't kept ("E&H" is two constituencies).
-- **Control** (decision 19): the mayor's party on the date, as `MAYOR:LAB`, or `SA:NONE` (no single party) with no
+- Control (decision 19): the mayor's party on the date, as `MAYOR:LAB`, or `SA:NONE` (no single party) with no
   mayor, never a council's party in overall control.
-- **What was seen** (two meetings, 6 November 2026): West Yorkshire's board minutes are in the web service, with votes
+- What was seen (two meetings, 6 November 2026): West Yorkshire's board minutes are in the web service, with votes
   as counts ("For: 8 Against: 0 Abstentions: 2") and no names; Greater Manchester's are published only as a document
   on the next agenda, and its attendance wasn't updated after the meeting (everyone "Expected"). Expect few named votes:
   the one the law requires is on a mayor's budget when it is challenged.
 
 ## Robots.txt (decision 21)
 
-**Not obeyed, by the owner's decision of 6 November 2026**: robots.txt isn't treated as a blanket barrier to
+Not obeyed, by decision 21 of 6 November 2026: robots.txt isn't treated as a blanket barrier to
 councils' public records. `[robots] obey` in `config/settings.toml` is `false`, and every reader (Modern.gov, CMIS,
 CoINS, the authorities' own websites) asks `sources/robots.py`, which then allows every page without reading the file's rules. Whatever the
 setting, any `Crawl-delay` the site's robots.txt asks for is honoured where the file can be read, the crawler names
@@ -154,8 +154,8 @@ robots.txt can't be fetched are treated as forbidding. `scripts/build_councils.p
 On 6 November 2026, 44 Modern.gov sites (44 councils and the Greater London Authority) were found to forbid reading,
 nearly all with Civica's usual file ("Disallow all webbot searching BUT allow Google access to mgRss for calendar
 sync"). They are read as before. The **26 councils on CMIS** marked `robots` under the earlier rule (every Civica-hosted site,
-and Derby, Essex, Harborough, Hull, Walsall, Warrington and West Dunbartonshire's own) are `ok` again, at the owner's
-request of 6 November 2026, and are loaded once on the server (docs/OPERATIONS.md). Hull's (`cmis.hullcc.gov.uk`) accepts connections but never completes the secure handshake, from the
+and Derby, Essex, Harborough, Hull, Walsall, Warrington and West Dunbartonshire's own) are `ok` again, as decided on
+6 November 2026, and are loaded once on the server (docs/OPERATIONS.md). Hull's (`cmis.hullcc.gov.uk`) accepts connections but never completes the secure handshake, from the
 server as from elsewhere (7 November 2026), so it is marked `unreachable` until it answers again. A council marked `robots` (`Council.withheld`)
 isn't asked, and anything stored for it is kept but not shown, searched or updated; none that is loaded is marked.
 
@@ -166,7 +166,7 @@ Civica's CMIS (and Nottinghamshire's variant of it, "DMS") is an ASP.NET (DotNet
 `data/raw/cmis/<council>/`. Councils on CMIS have `system` `cmis` in `councils.csv`; `modgov_url` holds the site's
 base address.
 
-**Robots and refusals.** Every page is checked with `sources/robots.py` before it is fetched, and any `Crawl-delay`
+Robots and refusals. Every page is checked with `sources/robots.py` before it is fetched, and any `Crawl-delay`
 is honoured. With `[robots] obey` off (decision 21) every page is allowed. With it on, a site whose robots.txt forbids
 its pages gets "robots.txt forbids crawling" and nothing is read: every Civica-hosted site (`*.cmis.uk.com`,
 `*.cmis-ni.org`), whose robots.txt is `Disallow: /`, which is why 26 councils were left out until November 2026; and
@@ -184,38 +184,38 @@ Nottinghamshire's documents (`Disallow: /DMS/Document.ashx`), which are read now
 
 What was found:
 
-- **Minutes are documents.** A meeting's own minutes are usually on its own page ("Minutes of the Full Council meeting
+- Minutes are documents. A meeting's own minutes are usually on its own page ("Minutes of the Full Council meeting
   held on 27 January 2026", Norwich; "Minutes Additonal Council 15 July 2026", Warwick), or at the next meeting's
   item approving them (Sunderland: "02 - Minutes of the last ordinary meeting of the Council held on 30 January
   2019"). Titles may be written as one word ("02-MinutesOfLastMeetingHeldOn3March2021") or without the year ("Public
   Minutes of 9 February Cabinet meeting"); both are read. The document is split into the agenda's items where the
   site has an agenda (`documents.split_into_items`), and otherwise kept whole as one "Minutes" item.
-- **Some CMIS PDFs have cross-reference offsets a few bytes out**, from an update CMIS appends (Sunderland). pdfminer
+- Some CMIS PDFs have cross-reference offsets a few bytes out, from an update CMIS appends (Sunderland). pdfminer
   reads none of their text; the offsets are corrected (`cmis.repair_pdf`) and the document read again.
-- **Some minutes are scanned images** (Warwick's 2018–19 minutes), with no text to read; they aren't read (there is
+- Some minutes are scanned images (Warwick's 2018–19 minutes), with no text to read; they aren't read (there is
   no OCR).
-- **Attendance** comes from the meeting's grids, with CMIS's own id for each councillor as `member_id`. Roles aren't
+- Attendance comes from the meeting's grids, with CMIS's own id for each councillor as `member_id`. Roles aren't
   in the grids: "the Mayor" or "the Chair" is taken from the minutes' "Present:" list ("The Mayor (Councillor L
   Scanlan) in the Chair", "Kendrick (Lord Mayor)"). Where a meeting's grids are empty, the attendance is read from that
   list, with an id made from the name as written ("sands-m") and no party.
-- **Party on the date** comes from each councillor's party history, which CMIS keeps with dates for former
+- Party on the date comes from each councillor's party history, which CMIS keeps with dates for former
   councillors too. Where no entry covers the meeting's date, the party is left blank, never guessed. Labels are the
   party's name ("Labour", "Liberal Democrats"), mapped to codes as for Modern.gov.
-- **Votes**: Sunderland prints its recorded votes one member to a line ("Atkinson", "Gibson, E."), which flattening
+- Votes: Sunderland prints its recorded votes one member to a line ("Atkinson", "Gibson, E."), which flattening
   the text would run together, so the reader turns such lists into commas (`votes.line_lists`) before storing the
   minutes; only for CMIS, since Modern.gov's text breaks single names over lines ("H" / "Blagbrough"). Sunderland's
   PDFs also run columns together ("And 1 abstention:- Councillor Bewick Guy, Heron, ..."), so a vote is kept only
   where the count printed before each list ("with 55 Members voting in favour:-", "Nine Members voted against") is
   the number of names read: about half its recorded votes (45 of about 100, 2018–2026). Norwich mostly records
   counts ("with 31 members voting in favour"), with its few named votes in brackets.
-- **A committee page that lists only one council year** (Luton) until its own "meetings from" filter is set has the
+- A committee page that lists only one council year (Luton) until its own "meetings from" filter is set has the
   filter set to the start date, as a person would, and is then paged as usual. Only the "from" date is set, so
   meetings already arranged stay listed; a committee that began later keeps its own first date
   (Nottinghamshire's Cabinet, 2022), and its page is used as first shown.
-- **A committee whose meetings can't be listed** (paging failed: Sunderland's council meetings, once, November
+- A committee whose meetings can't be listed (paging failed: Sunderland's council meetings, once, November
   2026) is tried again; if it fails twice, nothing is stored for the council, so the next load or update tries again,
   rather than storing it with a committee missing.
-- **Slow pages**: each page is 100–200 KB of ASP.NET form, and a council of eight years takes about 1,000 requests
+- Slow pages: each page is 100–200 KB of ASP.NET form, and a council of eight years takes about 1,000 requests
   (half an hour at a request a second).
 
 ## Meetings: CoINS
@@ -235,11 +235,11 @@ retries and refetching of recent meetings as Modern.gov.
 | `submissiondocuments.asp?submissionid=…` | A paper's documents, where a meeting's minutes are a paper on a later agenda |
 | `allMembers.asp`, `political.asp`, `partyMembers.asp` | Current members, their wards, and their parties |
 
-* **Committees.** Full council is named as the council ("Glasgow City Council", "West Lothian Council"), which
+* Committees. Full council is named as the council ("Glasgow City Council", "West Lothian Council"), which
   `committees.py` recognises. The main committees are Glasgow's City Administration Committee, Falkirk's Executive
   (under three titles since 2018, in `committees.csv`), Shetland's Policy and Resources Committee and West
   Lothian's Council Executive.
-* **Minutes.** Glasgow, Shetland and West Lothian attach a "Public Minutes" pack to each meeting. Falkirk doesn't:
+* Minutes. Glasgow, Shetland and West Lothian attach a "Public Minutes" pack to each meeting. Falkirk doesn't:
   its minutes are a paper on a later agenda ("Minute of Meeting of Falkirk Council held on 28 February 2024", or an
   item "Minute" with that line under it), found by the meeting's date, as on Modern.gov. The committee's own next
   agendas are searched first, then the other committees' in scope, whose paper must name the committee: Falkirk's
@@ -249,7 +249,7 @@ retries and refetching of recent meetings as Modern.gov.
   (without "- Report by …") where at least half are found, as `sources/documents.py` does; otherwise it is kept whole
   as one "Minutes" item. Glasgow's minutes head each item with a summary ("Minutes approved.") rather than the
   agenda's title, so its minutes are mostly kept whole.
-* **Attendance from the sederunt.** Meeting pages don't list attendance, so it is read from the list at the top of
+* Attendance from the sederunt. Meeting pages don't list attendance, so it is read from the list at the top of
   the minutes. The layouts differ: "Present:" and a sentence of names (Glasgow's committees, West Lothian), one
   name a line in capitals (Glasgow's council), "Councillors:" (Falkirk), initials and surnames, with "Present via
   Remote Link:" (Shetland). "Present" sections give `Present`, "Apologies" gives `Apologies`, and "Also present" or
@@ -261,10 +261,10 @@ retries and refetching of recent meetings as Modern.gov.
   isn't on the members pages is kept only if full council's sederunts list it too (decision 9). Only the first
   sederunt is read: a meeting that resumes may take it again. Roles come from the list: "(Chair)", "(substitute for
   …)", "Provost", "Bailie".
-* **Member ids.** A name is matched to the members pages by full name, or by initials and surname where only one
+* Member ids. A name is matched to the members pages by full name, or by initials and surname where only one
   current member fits, and takes CoINS's member id. Otherwise (former councillors) the id is the name as a slug
   ("allan-casey"), the same wherever the minutes write the name the same way.
-* **Party limits.** CoINS gives only each current councillor's current party; there is no party on the date. So a
+* Party limits. CoINS gives only each current councillor's current party; there is no party on the date. So a
   party is recorded only for a current councillor, and only at meetings in the last year (and since the last
   ordinary election, 5 May 2022). Earlier, and for former councillors, the party is left blank: it is never guessed.
   The year limits the risk of showing a councillor who changed party with the new party at earlier meetings (it does
@@ -273,7 +273,7 @@ retries and refetching of recent meetings as Modern.gov.
   Party in control is therefore read only for the last year. Labels are mapped as for Modern.gov; a site's
   abbreviation in brackets ("Scottish Green Party (SGP)") is dropped, and `parties.csv` maps Shetland's "- None"
   (no party), Falkirk's "Scottish Labour and Co-operative Party" and "Non-Aligned Independent".
-* **Named votes** (November 2026). Scottish councils vote on a motion against an amendment, not for against
+* Named votes (November 2026). Scottish councils vote on a motion against an amendment, not for against
   against. Falkirk lists each side by name ("For the motion (15) – Depute Provost Balfour; and Councillors Binnie,
   … For the amendment (12) – Provost Bissett; and Councillors …"), which `parse/votes.py` reads as two votes, one
   with the motion's supporters "for" and one with the amendment's supporters "for", the outcome after them going to
@@ -299,7 +299,7 @@ scope, the pages that list its meetings, and their layout. Every response is cac
 
 What was found:
 
-- **Minutes.** A meeting's minutes are the document titled as minutes that carries its date, in its link or its file
+- Minutes. A meeting's minutes are the document titled as minutes that carries its date, in its link or its file
   name ("Cabinet-minutes-25-July-2025.pdf", "Minutes-280619.pdf", "20250926-heyca-executive-board-minutes", and
   Hampshire and the Solent's "260928_Board-Minutes-Final.pdf", year first). Approved or final minutes are preferred to
   drafts; a meeting without its own takes the draft attached to the committee's next meeting. A link to a file with
@@ -307,11 +307,11 @@ What was found:
   An annual meeting held the same day as an ordinary one (Tees Valley's AGM) is read with it. The minutes are kept
   whole as one "Minutes" item: there is no agenda to split them by, and their numbering ("TVCA 32/25") doesn't survive
   the PDFs' columns.
-- **Not every meeting has minutes on the site.** Hull and East Yorkshire publishes most of its scrutiny committee's
+- Not every meeting has minutes on the site. Hull and East Yorkshire publishes most of its scrutiny committee's
   minutes, and three of its board's, only inside the next meeting's agenda pack, and Tees Valley its scrutiny
   committee's since 2026 and a few of its cabinet's; these meetings are kept without minutes or attendance. Tees
   Valley's site has nothing before April 2019 (the archive starts with the 2019/20 council year).
-- **Attendance** is read from the list at the top of the minutes: "Present:" or "ATTENDEES", with sections for
+- Attendance is read from the list at the top of the minutes: "Present:" or "ATTENDEES", with sections for
   members, associate members, apologies, and those in attendance or officers (only councillors and mayors are kept
   from the last three: Tees Valley lists officers' apologies with the members', with nothing to tell them apart).
   The layouts differ: a name a line with the council in brackets ("Councillor Ian Blades (Middlesbrough Council)
@@ -323,15 +323,15 @@ What was found:
   surname and first name or initial, within a year (`authority.find_member`), and takes that council and its record's
   full name; one not matched (a council the site doesn't hold, or two who fit) is a non-constituent member with no
   party. A body or office is never read as a person.
-- **Members** are then classed as on Modern.gov (`authority.classify`, decision 20): the mayor, councillors (constituent
+- Members are then classed as on Modern.gov (`authority.classify`, decision 20): the mayor, councillors (constituent
   or non-constituent members, substitutes), and appointed members who aren't councillors (business board chairs,
   members of the old local enterprise partnership, the police and crime commissioner), counted with their names
   removed from the attendance and the minutes. Party is the home council's record on the date, where the site holds
   it; these minutes give none of their own.
-- **Coverage** (loaded on 6 November 2026, from a cloud network): Tees Valley 81 meetings from April 2019 (68 with
+- Coverage (loaded on 6 November 2026, from a development machine): Tees Valley 81 meetings from April 2019 (68 with
   minutes), Hull and East Yorkshire 23 from March 2025 (13), Cumbria 7 from March 2026 (all), Hampshire and the Solent
   3 from July 2026 (all). Mayor's decisions aren't published as meetings on any of the four sites.
-- **Named votes.** None are read yet. Most decisions are by consensus. The minutes record two named votes, in
+- Named votes. None are read yet. Most decisions are by consensus. The minutes record two named votes, in
   layouts `parse/votes.py` doesn't read: Tees Valley's scrutiny committee on 14 October 2022 lists a roll call one
   member to a line ("Cllr Branson (Middlesbrough) - For"), and Hampshire and the Solent's board's budget vote on 13
   July 2026 is a table whose columns come apart in the PDF. Declarations of interest are read (71 at Tees Valley).

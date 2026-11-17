@@ -18,26 +18,26 @@ proportion to the number of English councils of each type, and 3 Welsh councils,
 | County (1) | Staffordshire |
 | Welsh unitary (3) | Blaenau Gwent, Bridgend, Neath Port Talbot |
 
-## What was loaded
+## Data loaded
 
-- **3,349 meetings:** 1,389 full council, 1,848 cabinet, and 112 policy committee meetings. Sutton and Wirral are run
+- 3,349 meetings: 1,389 full council, 1,848 cabinet, and 112 policy committee meetings. Sutton and Wirral are run
   by committees: Sutton since before 2018, Wirral since 2020, so Wirral has cabinet meetings before its change and
   policy and resources meetings after.
-- **37,822 agenda items**, 32,882 of them with minutes text (46 million characters, about 12 million tokens), and
+- 37,822 agenda items, 32,882 of them with minutes text (46 million characters, about 12 million tokens), and
   88,922 attendance records of councillors (staff, guests and members of the public in the lists are not stored).
-- **No failures:** every meeting listed was fetched.
-- **Time:** councils' servers took 7–24 seconds per meeting. With each council fetched one request at a time, the
+- No failures: every meeting listed was fetched.
+- Time: councils' servers took 7–24 seconds per meeting. With each council fetched one request at a time, the
   20 ran side by side in 26 minutes. Reloading from the cache takes 30 seconds.
-- **Size:** 339 MB of cached responses and 18 MB of Parquet.
+- Size: 339 MB of cached responses and 18 MB of Parquet.
 
-### How far back
+### Dates covered
 
 14 of the 20 councils' records go back to May 2018. Of the six that start later:
 
-- **Westmorland and Furness** was created in April 2023. Its site still holds its predecessors' committees.
-- **Hart** starts in May 2020, **Northumberland** in February 2021, **Blaenau Gwent** in October 2019 and
-  **Rother** in May 2019: their Modern.gov history begins then.
-- **Manchester**, from September 2018, is close enough.
+- Westmorland and Furness was created in April 2023. Its site still holds its predecessors' committees.
+- Hart starts in May 2020, **Northumberland** in February 2021, **Blaenau Gwent** in October 2019 and
+  Rother in May 2019: their Modern.gov history begins then.
+- Manchester, from September 2018, is close enough.
 
 That's slightly behind the earlier survey's 79% for 2018. Each council's page will need to show its own start date
 (docs/DECISIONS.md, 4), and the gaps would need another source.
@@ -59,10 +59,10 @@ minutes document. By year:
 | 2025 | 431 | 87% | 3% | 13% |
 | 2026 | 332 | 79% | 1% | 21% |
 
-- **2020** dips because of remote meetings during Covid.
-- **2026** dips because recent minutes aren't approved yet.
+- 2020 dips because of remote meetings during Covid.
+- 2026 dips because recent minutes aren't approved yet.
 
-**Minutes published only as a document.** A meeting's minutes are attached to the agenda of the committee's next
+Minutes published only as a document. A meeting's minutes are attached to the agenda of the committee's next
 meeting, at the item that approves them ("02 Minutes 011123" on the January agenda is November's minutes). An
 earlier version of this note counted those attachments as the meeting's own minutes, which overstated how many
 councils publish minutes only as a document; the table above corrects that.
@@ -71,7 +71,7 @@ councils publish minutes only as a document; the table above corrects that.
 splits it into the meeting's agenda items. In the pilot this added minutes for 65 meetings: 347 agenda items, plus
 36 meetings kept as one whole document where the item titles couldn't be found.
 
-**Most councils on Civica's hosted `moderngov.co.uk` sites refuse documents** to automated requests from the network
+Most councils on Civica's hosted `moderngov.co.uk` sites refuse documents to automated requests from the network
 this ran on: a browser check answers instead, though the web service itself works. 7 of the 16 councils tested
 served documents. The councils with the most meetings still without minutes are all among those that refuse:
 Northumberland (96 meetings, since it moved to documents in 2024), Neath Port Talbot (65) and Lewisham (40). Reading
@@ -79,7 +79,7 @@ them needs a different network, or the councils' agreement to allow the crawler.
 
 ## Named votes
 
-**473 named votes**, with 19,480 names: 11,833 for, 6,743 against and 904 abstaining. **97% of names were matched
+473 named votes, with 19,480 names: 11,833 for, 6,743 against and 904 abstaining. **97% of names were matched
 to a member.**
 
 - Almost all are from full council (463). Cabinets vote by name very rarely (10).
@@ -105,14 +105,14 @@ Councils write named votes in at least nine ways, and the parser now reads all o
 Sutton records that a named vote was taken, but the names aren't in the minutes text; they're in an attached
 document. Elections of a person ("For Councillor Bigmore (19 votes): …") are left out: they aren't votes on a motion.
 
-### How accurate
+### Accuracy
 
 Three random samples of 15 votes were checked by hand against the minutes, each drawn with a different seed. The
 first two found errors, which were fixed. The third was checked before the last fixes:
 
-- **12 of 15 were right, or within one name of right, with every member on the right side.**
-- **2 were elections of a person read as votes.** This is now fixed.
-- **1 missed one abstainer**, because the list ran into a "(Voting figures …)" note. This is now fixed.
+- 12 of 15 were right, or within one name of right, with every member on the right side.
+- 2 were elections of a person read as votes. This is now fixed.
+- 1 missed one abstainer, because the list ran into a "(Voting figures …)" note. This is now fixed.
 
 Errors found and fixed along the way:
 
@@ -146,10 +146,10 @@ Outcomes were wrong in at least 4 of the 50, where the parser took the result of
 
 The three wrong-side errors:
 
-- **Wirral:** counts first, then one list ("For - 65 Against - 0 Abstentions - 0 Avis, Banks, …"). All 65 were put
+- Wirral: counts first, then one list ("For - 65 Against - 0 Abstentions - 0 Avis, Banks, …"). All 65 were put
   under abstentions.
-- **Merton:** a "Not voting:" list read as part of the "against" list before it, putting 7 non-voters against.
-- **Harrow:** an "Absent:" list read the same way.
+- Merton: a "Not voting:" list read as part of the "against" list before it, putting 7 non-voters against.
+- Harrow: an "Absent:" list read the same way.
 
 Fixes, each with a test built from the real wording:
 
@@ -178,9 +178,9 @@ A second sample of 20 (seed 777) found one more wrong-side error. Southend wrote
 ("For the Motion (31) Against the Motion (13) Councillors …"), and all 44 were read as against. This is the case that
 the count rule above now leaves out. That sample also found Crawley's block votes and a missed "[7]" count.
 
-**A final sample of 20 (seed 4242), drawn after every fix and checked without changing anything:**
+A final sample of 20 (seed 4242), drawn after every fix and checked without changing anything:
 
-- **17 right, 2 within one name, 1 with one side's list missed. No member on the wrong side.** The two near
+- 17 right, 2 within one name, 1 with one side's list missed. No member on the wrong side. The two near
   misses are the minutes' own slips: "J, Phipps", and a member listed twice. The missed list was "AGAINST the
   Amendment (22). Bayliss, …", with a full stop after the count; this has been fixed since.
 - The result was read in 18 of the 20, and was right wherever the minutes give it.
@@ -210,30 +210,30 @@ their passages, name by name. The target was still no member on the wrong side.
 
 The wrong-side errors had five causes, each now fixed with a test built from the real wording:
 
-- **The side after the names.** "Councillor Gunner voted against the recommendations (1). Councillors Andy Cooper,
+- The side after the names. "Councillor Gunner voted against the recommendations (1). Councillors Andy Cooper,
   Alison Cooper, and Greenway abstained from voting (3)." (Arun, four votes; Ipswich). The parser gave each side
   word the names after it, so the abstainers went against. Such a side now takes the names before it.
-- **A heading that ran on.** "Against the motion None Abstentions Councillor Paul Gray Absent: Councillors Denton, …"
+- A heading that ran on. "Against the motion None Abstentions Councillor Paul Gray Absent: Councillors Denton, …"
   (Havant) was read as one heading, putting six absent members against. A heading's words now stop at another
   side's words or a name.
-- **"Abstentions" with no colon.** "… and Kate Walsh Abstentions Patrick McGinley" (Hyndburn).
-- **A table inside a table.** Lincoln's table repeats its names in rows after a cell that holds whole lists, so
+- "Abstentions" with no colon. "… and Kate Walsh Abstentions Patrick McGinley" (Hyndburn).
+- A table inside a table. Lincoln's table repeats its names in rows after a cell that holds whole lists, so
   members appeared on both sides. Those rows are skipped, and a table that puts one name in two columns is left out.
-- **A count read as names.** "with 46 members voting for" (Bury) gave "for" to the motion's sponsors named before it.
+- A count read as names. "with 46 members voting for" (Bury) gave "for" to the motion's sponsors named before it.
 
 Two safeguards cover what the patterns miss:
 
-- **Counts must agree.** Where the minutes print a count for a side ("(24)", "Total 36", "With 37 in favour and 3
+- Counts must agree. Where the minutes print a count for a side ("(24)", "Total 36", "With 37 in favour and 3
   voting against"), the names read must match it, or the vote is left out. In the check, most of the votes with a
   member on the wrong side printed a count that disagreed with the names read.
-- **A vote needs a "for" side** (an empty one, "For: None", is fine). In the check, a missing "for" side always meant
+- A vote needs a "for" side (an empty one, "For: None", is fine). In the check, a missing "for" side always meant
   a list that hadn't been read.
 
 Names run together without a comma ("W Drew A Garratt", "Dorn: Farmer") are now split where each part is a
 different member. "The Chair of Council, Councillor Ian Pearson" and "the Mayor of Doncaster, Ros Jones" count as
 one member each, and a full stop for a comma ("Holroyd. Howarth") no longer ends a list.
 
-**A fresh 100 (seed 9090, 49 councils), drawn after those fixes:**
+A fresh 100 (seed 9090, 49 councils), drawn after those fixes:
 
 | Second 100 (seed 9090) | Votes |
 |---|---|
@@ -250,7 +250,7 @@ The check also found councillors removed from excerpts as if they were members o
 "Councillor Miss Phillipa Tatham BA (Hons)" gave the surnames "td" and "hons", so the councillor wasn't recognised.
 191 of 10,829 attendance names were affected; letters, bracketed words and styles are now passed over.
 
-**A third 100 (seed 31337, 50 councils, 93 of them votes not seen before), drawn after those fixes:**
+A third 100 (seed 31337, 50 councils, 93 of them votes not seen before), drawn after those fixes:
 
 | Third 100 (seed 31337) | Votes |
 |---|---|
@@ -274,7 +274,7 @@ corrections route covers what slips through.
 Across the 88 councils loaded at the time, all these changes read 9.7% fewer named votes (2,489 to 2,248), mostly
 votes now left out by the three rules, and cut names matched to no member from 3,034 to 2,520.
 
-**Counts before the lists (November 2026).** A count printed just before a heading ("carried with 55 Members voting
+Counts before the lists (November 2026). A count printed just before a heading ("carried with 55 Members voting
 in favour:-", "And 13 Members voting against", "Nine Members voted against", "lost by: 13 votes in favour:") is now
 that side's count, and the vote is left out unless it is the number of names read; spelled counts are read
 ("forty-two"). The next side's count at the end of a list ("Tunnacliffe To 24 votes against") is no longer taken as
@@ -295,7 +295,7 @@ Other faults the checks found, which lose information but don't misplace anyone:
 
 ## Declarations of interest
 
-**1,116 declarations, 95% matched to a member.** The kind of interest is as the minutes give it: mostly "personal"
+1,116 declarations, 95% matched to a member. The kind of interest is as the minutes give it: mostly "personal"
 (532), then "non-pecuniary", "disclosable pecuniary", "prejudicial" and others; 164 don't say.
 
 15 sampled at random were all attributed to the right councillor with the right kind of interest. One excerpt was cut
@@ -313,7 +313,7 @@ Councils use 86 different labels in these 20 councils alone. Many are their own 
 party. It maps a code only where at least two members are found and at least two-thirds agree, and records the
 evidence in `data_static/parties.csv`. Three were decided by hand, with the reason recorded.
 
-**99% of attendance records now have a recognised party.** 20 small labels are left, covering 766 records. Most are
+99% of attendance records now have a recognised party. 20 small labels are left, covering 766 records. Most are
 one-member groups or mixed groups ("Independent partnership"), which need a person to decide.
 
 ## Privacy findings
@@ -338,7 +338,7 @@ one-member groups or mixed groups ("Independent partnership"), which need a pers
   since fixed). A member of the public who shares a surname with a councillor is kept. A takedown route covers what
   slips through.
 
-  **Checking for misses.** Two random samples of 100 agenda items each were read for names left in (scratch tools
+  Checking for misses. Two random samples of 100 agenda items each were read for names left in (scratch tools
   list every capitalised two- or three-word phrase that wasn't removed, for reading by hand):
   - Sample 1, 100 items from 57 councils: 4 people missed, in 2 patterns. Officers named before their role without a
     comma ("David Armiger the Chief Executive"), and questioners in a question's header ("Question 1 From: Marcus
@@ -358,41 +358,41 @@ one-member groups or mixed groups ("Independent partnership"), which need a pers
 On 24 and 25 October 2026, every council whose web service answered was loaded the same way, from May 2018. The
 per-council table and the year-by-year figures come from `councils report --all`.
 
-- **213 of the 215 councils whose web service answered** (199 English, 14 Welsh). Stevenage's server returned errors
+- 213 of the 215 councils whose web service answered (199 English, 14 Welsh). Stevenage's server returned errors
   ("502 Bad Gateway") on every try. Lewes was loaded last, once titles carrying the full council name were read.
-- **30,848 meetings**: 13,578 of full council, 16,358 of cabinets, 912 of the policy committees of councils run by
+- 30,848 meetings: 13,578 of full council, 16,358 of cabinets, 912 of the policy committees of councils run by
   committees.
-- **Minutes text for 78–90% of meetings each year**, about 4% read from a document. 2020 is lowest (78%), when
+- Minutes text for 78–90% of meetings each year, about 4% read from a document. 2020 is lowest (78%), when
   meetings moved online. 2026 (81%) includes meetings whose minutes aren't published yet. 14 councils have minutes
   text for under half their meetings. Most of them publish minutes only as documents that their sites refuse to
   automated requests: Bolton, St Helens and Tameside (under 3%), and Peterborough, Lichfield and Northumberland
   (under a quarter).
-- **7,342 named votes in 191 councils, with 279,450 names: 97.1% matched to a member.** 6,517 are at full council,
+- 7,342 named votes in 191 councils, with 279,450 names: 97.1% matched to a member. 6,517 are at full council,
   762 at cabinet and 63 at policy committees. The result (carried or lost) is read for 4,960 (68%).
-- **15,748 declarations of interest, 92.9% matched to a member.**
-- **99% of attendance records have a recognised party**, across 631 different labels. About 25 labels, each a
+- 15,748 declarations of interest, 92.9% matched to a member.
+- 99% of attendance records have a recognised party, across 631 different labels. About 25 labels, each a
   breakaway or local group sitting beside a label the council already uses for a party, are left for a person to
   decide (`scripts/party_labels.py` lists them).
-- **About 121 million tokens of minutes text** in 309,852 agenda items, indexed as 526,700 passages, every one
+- About 121 million tokens of minutes text in 309,852 agenda items, indexed as 526,700 passages, every one
   with a vector for meaning search. A hybrid (keyword and meaning) search over all of them takes a few seconds.
-- **Storage:** 3.3 GB of cached responses, 180 MB of Parquet, 3.5 GB of search index.
-- **Time:** two runs of about two hours each, then retries for the last few councils, 20 councils at a time and one
+- Storage: 3.3 GB of cached responses, 180 MB of Parquet, 3.5 GB of search index.
+- Time: two runs of about two hours each, then retries for the last few councils, 20 councils at a time and one
   request at a time to each. Slow servers set the pace: the last few councils took hours on their own. Embedding for meaning search ran on the machine's own
   processor at roughly 30 passages a second: about five hours for the whole archive, in resumable runs, newest first.
   Re-indexing keeps the vectors of passages whose text is unchanged, so later runs embed only what changed.
 
 Problems found only at this scale, now fixed:
 
-- **High Peak and Staffordshire Moorlands** share one Modern.gov site under two host names, so each council had both
+- High Peak and Staffordshire Moorlands share one Modern.gov site under two host names, so each council had both
   councils' executives. They are now separated (see docs/DATA.md).
-- **Full council under other names:** "Cornwall Council", Blackburn with Darwen's "Council Forum", and Eastbourne's
+- Full council under other names: "Cornwall Council", Blackburn with Darwen's "Council Forum", and Eastbourne's
   and Lewes's "… Borough Council Full Council".
-- **Party labels:** at first 11% of attendance records had a label the rules didn't know. Many were common codes
+- Party labels: at first 11% of attendance records had a label the rules didn't know. Many were common codes
   ("GP", "RUK", "L&C"). Learning from Open Council Data also read members who had changed party under their old
   party, so Reform UK labels were read as Conservative in three councils. Codes are now read from the year nearest
   each label's use.
 
-**AI costs depend on briefings asked for, not on how many councils are covered.** A briefing reads the same number
+AI costs depend on briefings asked for, not on how many councils are covered. A briefing reads the same number
 of sources whatever the size of the archive, so the cost per briefing will be close to Where MPs Stand's.
 
 ## Back to February 2014?
@@ -410,7 +410,7 @@ votes, as the next step. To see what that would add, the 20 pilot councils were 
 
 So extending would add about four years for roughly two councils in three, and nothing for the rest. That makes
 coverage uneven, which decision 4 chose May 2018 to avoid. Each council's page already shows its own coverage
-dates, so it can be done; whether to do it is the owner's decision.
+dates, so it can be done; whether to do it is a decision still to be made.
 
 ## Next steps
 
@@ -421,7 +421,7 @@ dates, so it can be done; whether to do it is the owner's decision.
 3. ~~Load the remaining councils~~ (213 of 215 loaded), and record each council's licence statement.
 4. ~~Check a fresh sample of 50 votes by hand against a set target.~~ Done across all councils, then twice with
    100 votes three times: 9, then 2, then 2 votes with members on the wrong side, each fixed or now left out. The
-   target of none isn't met on an untouched sample. The owner decided (6 November 2026, decision 15) that about 1
+   target of none isn't met on an untouched sample. It was decided (6 November 2026, decision 15) that about 1
    in 100 is acceptable for the alpha, said plainly on the methodology page, and that a test set of checked votes
    is built before the beta.
 5. ~~Adapt Where Countries Stand's index and briefing engine to council minutes, with "the minutes record that…"

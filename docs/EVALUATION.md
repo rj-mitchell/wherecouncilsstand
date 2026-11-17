@@ -2,23 +2,23 @@
 
 A fixed set of realistic questions, each with the reading a careful researcher would give it and, for some, what the
 evidence must contain. Every change to how questions are read or how the minutes are searched can be scored against
-it, so a change that helps one kind of question and quietly breaks another shows up. It was needed before the beta
+it, so a change that helps one kind of question but breaks another is caught. It was needed before the beta
 (the family roadmap, X8); Where MPs Stand and Where Countries Stand keep sets like it, and `councils evaluate` is
 adapted from Where Countries Stand's.
 
 This is a starter set of 31 questions. Add to it whenever a real question is read badly or finds the wrong evidence:
 the question as asked, and what it should have produced.
 
-## What is scored
+## Scoring
 
 Nothing is written: no briefing, and no cost unless `--with-model` is given.
 
-1. **Reading the question.** Each filter chosen is compared with `expect` in `eval/questions.toml`: the councils
+1. Reading the question. Each filter chosen is compared with `expect` in `eval/questions.toml`: the councils
    named, nations, kinds of council (county, district, unitary, metropolitan, London borough), kinds of meeting (full
    council, cabinet, policy committee), the party in overall control, councillors' parties, the dates (by year), and
    whether the question is about how councillors voted. A filter not listed is expected to be empty. "default" dates
    mean the site's default range, the last four years. `<field>_any` lists readings that are equally acceptable.
-2. **The evidence.** For questions marked `no_records` (for example, a year before the record starts in May 2018),
+2. The evidence. For questions marked `no_records` (for example, a year before the record starts in May 2018),
    nothing should be found, so the briefing says "No records found." For questions with `include`, the sources found
    must include at least one from each council listed (by GSS code).
 
@@ -72,12 +72,12 @@ uv run councils eval replay eval/fixtures         # the checks again over kept b
 Runs are saved under the data folder because on the server nothing else can be written to: saved beside the
 code, a run would spend its money and then fail to save.
 
-**It costs money.** A run makes two calls to the model for each question (one to read it, one to write the
+A run costs money. It makes two calls to the model for each question (one to read it, one to write the
 briefing): 31 questions is roughly the cost of 31 briefings. No run starts without a limit: `[eval] max_cost_usd`
 in `config/settings.toml` (2 US dollars), or `--max-cost`. Once the spending reaches the limit no further question
 is asked, the rest are marked as not asked, and the run does not pass. It is never run in CI.
 
-**What a run is held to** is `[eval.thresholds]` in `config/settings.toml`: no citation that does not hold, no
+A run is held to `[eval.thresholds]` in `config/settings.toml`: no citation that does not hold, no
 quotation that is not in its source word for word, and no question that ends in an error. The other figures
 (grounded ratio, unsupported sentences, loaded words, the time taken) have no threshold yet: set them from the
 first run on the full record. A run of the whole set that meets every threshold is noted in `passed.jsonl`
@@ -86,11 +86,11 @@ settings: `councils stats` shows it). Copy that file into the repository as `eva
 it: it is the only file under `eval/runs/` that git keeps, and an experiment (two configurations tried side by
 side on readers) may only start with a configuration whose pass is noted there.
 
-**Replay.** `--record-fixtures` keeps, for each briefing written, what the model was given and what it wrote, with
+For replay, `--record-fixtures` keeps, for each briefing written, what the model was given and what it wrote, with
 the checks' report. `councils eval replay` runs the checks over those again and names every difference, each as
 stricter, weaker or other; it ends with status 1 if anything that was flagged is no longer flagged. It is how a
 change to the checks (in this site's `rag/checks.py`, or a new version of the shared package) is measured before it
-ships, at no cost. Only briefings written from the test set are ever kept this way: never a reader's.
+ships, at no cost. Only briefings written from the test set are kept this way; readers' briefings are not.
 
 ### The first run, on the server
 

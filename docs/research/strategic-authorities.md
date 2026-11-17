@@ -2,31 +2,31 @@
 
 Research note, 6 November 2026. Asked for by a user organisation that wants coverage of England's strategic
 authorities "as they scramble to understand them in the run-up to greater devolution". Nothing here changes the site:
-it sets out the facts, the options and the decisions the owner would need to make. The owner's decisions
+it sets out the facts, the options and the decisions that would need to be made. The decisions taken
 (6 November 2026) are at the end, under "Decided". Today the site leaves combined
 authorities out ([`DATA.md`](../DATA.md): "Combined authorities are left out"), although the Greater London
 Authority is already listed (below, "One thing already wrong").
 
-Every fact carries a date. "Not confirmed" means I couldn't find it in a primary source. Requests to the authorities'
-own sites were made on 6 November 2026 from a cloud network (not the site's server), with the user agent
+Every fact carries a date. "Not confirmed" means it couldn't be found in a primary source. Requests to the authorities'
+own sites were made on 6 November 2026 from a development machine (not the site's server), with the user agent
 `WhereCouncilsStand-research (+https://wherecouncilsstand.com)`, after reading each site's robots.txt.
 
 ## In short
 
-- **20 strategic authorities exist** (6 November 2026): 13 combined authorities, 6 combined county authorities and
+- 20 strategic authorities exist (6 November 2026): 13 combined authorities, 6 combined county authorities and
   the Greater London Authority. 14 have a mayor. Two more (Greater Essex; Norfolk and Suffolk) are agreed but not yet
   established, and about a dozen more areas are in talks.
-- **13 can be read by the site's existing Modern.gov reader today**: 12 on their own Modern.gov sites, and
+- 13 can be read by the site's existing Modern.gov reader today: 12 on their own Modern.gov sites, and
   Lancashire's on Lancashire County Council's. A 14th (Cheshire and Warrington, on Cheshire West and Chester's site)
-  probably can from the site's server, but refused this network. Two more are on Modern.gov sites whose robots.txt
+  probably can from the site's server, but refused the development machine. Two more are on Modern.gov sites whose robots.txt
   forbids all crawling (the GLA, and Sussex and Brighton on East Sussex's site). Three publish on their own web pages
-  (Tees Valley, Hull and East Yorkshire, Cumbria), and one (Hampshire and the Solent) I couldn't find.
-- **The record is thinner than a council's.** Boards are small (often 5–15 voting members), mostly vote by consensus,
+  (Tees Valley, Hull and East Yorkshire, Cumbria), and one (Hampshire and the Solent) couldn't be found.
+- The record is thinner than a council's. Boards are small (often 5–15 voting members), mostly vote by consensus,
   and few minutes name how members voted. The one named vote the law requires is on the mayor's budget. Attendance
   in Modern.gov carries each member's party and home council.
-- **Recommended pilot:** the main decision-making meeting of the 13 readable authorities, chosen by that rule alone,
+- Recommended pilot: the main decision-making meeting of the 13 readable authorities, chosen by that rule alone,
   from May 2018 or their creation. Shown on their own pages and kept out of briefings' "party in control" grouping
-  until the owner decides how to treat a mayor.
+  until it is decided how to treat a mayor.
 
 ## 1. What exists now, and what is coming
 
@@ -44,12 +44,12 @@ own sites were made on 6 November 2026 from a cloud network (not the site's serv
 | Mayoral strategic authority | A mayoral combined authority, a mayoral combined county authority, or the GLA |
 | Established mayoral strategic authority (EMSA) | A mayoral one designated by regulations ([s. 8](https://www.legislation.gov.uk/ukpga/2026/23/section/8)), and the GLA |
 
-- **EMSAs.** Greater Manchester, West Midlands, Liverpool City Region, North East, South Yorkshire, West Yorkshire
+- EMSAs. Greater Manchester, West Midlands, Liverpool City Region, North East, South Yorkshire, West Yorkshire
   and the GLA were named as established from Royal Assent ([GOV.UK area factsheets](https://www.gov.uk/government/publications/english-devolution-area-factsheets/english-devolution-area-factsheets),
   10 July 2025). On **31 July 2026** the Cabinet Office announced four more: Cambridgeshire and Peterborough, East
   Midlands, West of England, and York and North Yorkshire ([Ward Hadaway](https://www.wardhadaway.com/insights/updates/four-mayoral-strategic-authorities-secure-established-status/)).
-  I couldn't find the designation regulations, so whether they are in force is not confirmed.
-- **Mayors** are again elected by the supplementary vote ([s. 63](https://www.legislation.gov.uk/ukpga/2026/23/section/63)),
+  The designation regulations couldn't be found, so whether they are in force is not confirmed.
+- Mayors are again elected by the supplementary vote ([s. 63](https://www.legislation.gov.uk/ukpga/2026/23/section/63)),
   and an MP can't be a mayor ([s. 17](https://www.legislation.gov.uk/ukpga/2026/23/section/17)).
 
 ### The 20 authorities (6 November 2026)
@@ -86,13 +86,13 @@ result below; their parties are as elected.
 
 Notes:
 
-- **Greater Manchester.** Andy Burnham was elected MP for Makerfield on 18 June 2026, which vacated the mayoralty.
+- Greater Manchester. Andy Burnham was elected MP for Makerfield on 18 June 2026, which vacated the mayoralty.
   Bev Craig, until then leader of Manchester City Council, won the by-election on 30 July 2026
   ([Stockport Council, results](https://www.stockport.gov.uk/news/greater-manchester-mayoral-election-results-2026)).
-- **"Created" dates** for the 2025 authorities are from Wikipedia ([Strategic authority](https://en.wikipedia.org/wiki/Strategic_authority));
+- "Created" dates for the 2025 authorities are from Wikipedia ([Strategic authority](https://en.wikipedia.org/wiki/Strategic_authority));
   the instruments are linked.
-- **Tees Valley** couldn't apply for EMSA status while under a Best Value Notice (GOV.UK factsheets, 10 July 2025).
-- **The North East** is legally the North East Mayoral Combined Authority; it calls itself the North East Combined
+- Tees Valley couldn't apply for EMSA status while under a Best Value Notice (GOV.UK factsheets, 10 July 2025).
+- The North East is legally the North East Mayoral Combined Authority; it calls itself the North East Combined
   Authority. Its predecessors, the North East and North of Tyne combined authorities (E47000010, E47000011), were
   dissolved on 6–7 May 2024 (MHCLG register).
 
@@ -132,9 +132,9 @@ Some authorities also have **non-constituent members** (neighbouring councils, a
 and crime commissioner), who vote only if the authority resolves so. West Midlands has many; West Yorkshire seats
 York and its business board's chair (seen in the attendance of 22 January 2026, below).
 
-### What is coming
+### Coming changes
 
-**Agreed, not yet established.** Both were in the Devolution Priority Programme (February 2025). On 4 December 2025
+Agreed, not yet established. Both were in the Devolution Priority Programme (February 2025). On 4 December 2025
 the government said it was minded to move their first mayoral elections from May 2026 to **May 2028**
 ([written statement HCWS1128](https://questions-statements.parliament.uk/written-statements/detail/2025-12-04/hcws1128)),
 as for Sussex and Brighton, and Hampshire and the Solent. Cumbria's and Cheshire and Warrington's moved to May 2027
@@ -145,7 +145,7 @@ at their councils' request.
 | Greater Essex CCA | Essex County E10000012, Southend-on-Sea E06000033, Thurrock E06000034 | Councils consented to the regulations in 2025. No regulations, made or draft, on legislation.gov.uk (searched 6 November 2026). Wikipedia still calls it planned (edited 25 September 2026). First mayoral election 4 May 2028 |
 | Norfolk and Suffolk CCA | Norfolk County E10000020, Suffolk County E10000029 | Councils consented in October 2025. No regulations found (6 November 2026). Its website refused automated requests (Cloudflare check). First mayoral election May 2028 |
 
-**In talks.** In February 2026 the government asked areas without devolution to propose footprints by 20 March
+In talks. In February 2026 the government asked areas without devolution to propose footprints by 20 March
 ([LGC, 12 February 2026](https://www.lgcplus.com/politics/devolution-and-economic-growth/new-wave-of-foundation-strategic-authorities-announced-12-02-2026/)).
 On 28 October 2026, at the Budget, it said ten devolution deals were in their "final stages"
 ([LGC, 28 October 2026](https://www.lgcplus.com/politics/devolution-and-economic-growth/ten-devolution-deals-in-final-stages-28-10-2026/)).
@@ -181,7 +181,7 @@ October 2026). The government's aim is for every part of England to have a strat
 ## 2. Where each authority's meetings are published
 
 Checked on 6 November 2026: robots.txt first, then one `GetCommittees` request to the Modern.gov web service, as
-`sources/modgov.py` makes it. "Answered" means the web service returned a committee list. Requests from this network
+`sources/modgov.py` makes it. "Answered" means the web service returned a committee list. Requests from the development machine
 can be refused where the site's server is allowed (as with councils, [`DATA.md`](../DATA.md)).
 
 | Authority | Meetings published at | System | robots.txt | Web service | Main meeting (committee title) |
@@ -209,17 +209,17 @@ can be refused where the site's server is allowed (as with councils, [`DATA.md`]
 
 What this means:
 
-- **13 readable now** with `sources/modgov.py` (12 own sites, plus Lancashire's on the county's). **14** if Cheshire
+- 13 readable now with `sources/modgov.py` (12 own sites, plus Lancashire's on the county's). **14** if Cheshire
   and Warrington answers the server as Cheshire West and Chester does.
-- **2 behind a robots.txt that forbids crawling**: the GLA's Modern.gov site and East Sussex's. Under decision 2's
+- 2 behind a robots.txt that forbids crawling: the GLA's Modern.gov site and East Sussex's. Under decision 2's
   approach (sites that refuse the crawler are asked, not worked around) these would need the GLA's and East Sussex's
   agreement. **But the site already loads East Sussex County Council**: `sources/modgov.py` doesn't read robots.txt,
-  only the CMIS and CoINS readers do. Decision 2 states the rule only for CMIS. The owner should say whether it applies
+  only the CMIS and CoINS readers do. Decision 2 states the rule only for CMIS. A decision is needed on whether it applies
   to Modern.gov sites too (below, decisions).
-- **3 need a reader of their own** (Tees Valley, Hull and East Yorkshire, Cumbria): each publishes PDFs on its own
+- 3 need a reader of their own (Tees Valley, Hull and East Yorkshire, Cumbria): each publishes PDFs on its own
   pages, so each would be a small scraper plus `documents.py`, with no attendance or party data beyond what the
   minutes print.
-- **Third-party coverage.** Open Council Network ([opencouncil.network](https://opencouncil.network/councils/cambridgeshire-and-peterborough-combined-authority))
+- Third-party coverage. Open Council Network ([opencouncil.network](https://opencouncil.network/councils/cambridgeshire-and-peterborough-combined-authority))
   already lists some combined authorities' meetings and members. Not assessed.
 
 ### One thing already wrong
@@ -229,7 +229,7 @@ register lists it as type `SRA` (strategic regional authority), and `build_counc
 `isles_of_scilly`. The live site's `/api/councils/E12000007` shows it as type "Council of the Isles of Scilly", not
 loaded (6 November 2026). The Isles of Scilly themselves are a unitary (`UA`) in the register. So the site's 383
 "councils" are 382 councils and the GLA, and the GLA's page is mislabelled. Its key is London's region code, which is
-also its `region`. Whatever the owner decides, the label should be fixed.
+also its `region`. Whatever is decided, the label should be fixed.
 
 ## 3. What the record looks like, and what matters
 
@@ -243,32 +243,32 @@ also its `region`. Whatever the owner decides, the label should be fixed.
 | **Audit and governance; transport, skills and business boards** | Committees and advisory boards | Not in scope for councils either |
 | **London: the Assembly** | 25 directly elected members. Scrutinises the Mayor, questions him at Mayor's Question Time, and can amend his budget or reject his strategies by a two-thirds majority | Partly full council (an elected body that votes), partly scrutiny |
 
-### How decisions are voted
+### Voting on decisions
 
-- **The default rule** (Act [s. 6](https://www.legislation.gov.uk/ukpga/2026/23/section/6), in force 29 April 2026):
+- The default rule (Act [s. 6](https://www.legislation.gov.uk/ukpga/2026/23/section/6), in force 29 April 2026):
   a simple majority of voting members present and voting; in a mayoral authority **the majority must include the
   mayor** (or a deputy acting for the mayor). Each voting member has one vote; there is **no casting vote**, and a
   tie means the motion falls. An authority's own order can say otherwise.
-- **The mayor's budget.** Constituent members can veto it, or amend it, only by a **two-thirds majority** of those
+- The mayor's budget. Constituent members can veto it, or amend it, only by a **two-thirds majority** of those
   present and voting (excluding the mayor). Straight after that vote, **the minutes must record the names** of those
   who voted for, against or abstained (Greater Manchester's budget report, [7 February 2025](https://www.greatermanchester-ca.gov.uk/media/5t2fy4y2/mayoral-general-budget-and-precept.pdf),
   paragraphs 1.11–1.12). This is the one named vote the law requires. The instrument behind it is probably the
   Combined Authorities (Finance) Order 2017 (not confirmed).
-- **Spatial development strategy:** majority including the mayor, who has a casting vote (Sch. 2, para 3).
-- **Recorded votes on request.** Some constitutions let any member have their vote recorded (South Yorkshire,
+- Spatial development strategy: majority including the mayor, who has a casting vote (Sch. 2, para 3).
+- Recorded votes on request. Some constitutions let any member have their vote recorded (South Yorkshire,
   [2021 constitution](https://www.southyorkshire-ca.gov.uk/getattachment/5460570b-415b-49ee-a649-21dbf56c3702/Constitution-September-2021-v1-rev-2.pdf?lang=en-GB);
   Cambridgeshire and Peterborough records its budget vote, 2018).
 
-### What two meetings look like in the web service
+### Two meetings in the web service
 
 Two requests each (a meeting list and one meeting), 6 November 2026:
 
-- **West Yorkshire, Combined Authority Board, 22 January 2026.** Minutes text in the web service for every item
+- West Yorkshire, Combined Authority Board, 22 January 2026. Minutes text in the web service for every item
   (35,000 characters). Attendance lists each member's role, attendance ("Present, as expected", "Apologies"), party
   code (`LAB`, `GRN`, `LBD`, `CON`) and home council ("Bradford Council"). The board includes opposition councillors
   appointed for political balance, York's two members and the business board's chair (no party). Votes are recorded
   as counts or "unanimously": "For: 8 Against: 0 Abstentions: 2". No names.
-- **Greater Manchester, 13 February 2026 (the budget meeting).** No minutes text in the web service (`minutepublished`
+- Greater Manchester, 13 February 2026 (the budget meeting). No minutes text in the web service (`minutepublished`
   false nine months later); the minutes are a document on the next meeting's agenda ("4A Draft minutes GMCA 30 January
   2026"), which `documents.py` already finds. Attendance has party and home council, but every member is still
   "Expected": attendance wasn't updated. The members were the mayor and ten leaders: nine Labour, one Liberal Democrat.
@@ -279,18 +279,18 @@ budget passes without a veto vote. Counts ("8 for, 2 abstentions") could be read
 
 ### Party on the date
 
-- **Members are councillors of other councils.** The party shown in the authority's own attendance is the authority's
+- Members are councillors of other councils. The party shown in the authority's own attendance is the authority's
   record, which can lag a defection. The home council's attendance, which the site already loads for 66 of 82
   constituent councils, is the better source. Matching needs the member's name and home council (the `representing`
   field), since Modern.gov's member ids differ between sites.
-- **Mayors** have the party they stood for. A mayor isn't a councillor of any constituent council.
-- **Non-councillor members** (business board chairs, independent persons, police and crime panel members) have no
-  party. Decision 9 limits pages to councillors' words and actions; these members are public office-holders, so the
-  owner should say whether they are named.
+- Mayors have the party they stood for. A mayor isn't a councillor of any constituent council.
+- Non-councillor members (business board chairs, independent persons, police and crime panel members) have no
+  party. Decision 9 limits pages to councillors' words and actions; these members are public office-holders, so a
+  decision is needed on whether they are named.
 
 ## 4. Options for the site
 
-### What "control" means for an authority
+### Control for an authority
 
 Decision 12 groups briefing evidence by the party in overall control, read from full council attendance. That
 doesn't transfer:
@@ -309,11 +309,11 @@ their own ("strategic authorities"), by the mayor's party when asked, never mixe
 
 ### Pages and links
 
-- **An authority page** like a council page: kind and category on the date, mayor and party over time, constituent
+- An authority page like a council page: kind and category on the date, mayor and party over time, constituent
   councils with links to their pages, board members on the date, meetings, any named votes.
-- **Each council page** gains a line: "Part of the West Yorkshire Combined Authority (since 1 April 2014)", linking
+- Each council page gains a line: "Part of the West Yorkshire Combined Authority (since 1 April 2014)", linking
   to it, and, where its leader sits on the board, the dates.
-- **Membership changes over time** (Cumbria from 2026; North Somerset joining the West of England; local government
+- Membership changes over time (Cumbria from 2026; North Somerset joining the West of England; local government
   reorganisation abolishing Essex, Norfolk, Suffolk, Hampshire and Sussex's councils in 2026–28), so the link must be
   dated: a small `data_static/strategic_authorities.csv` with authority, council GSS, from and to.
 
@@ -336,20 +336,20 @@ their own ("strategic authorities"), by the mayor's party when asked, never mixe
 
 ### Risks
 
-- **Fast change.** Eight authorities were created in the past 21 months; two more are agreed; about a dozen are in
+- Fast change. Eight authorities were created in the past 21 months; two more are agreed; about a dozen are in
   talks; four mayoralties begin in 2027–28. The registry would need checking each quarter, by hand, against
   legislation.gov.uk.
-- **Names change.** "Combined county authority" vs "strategic authority" (Sussex and Brighton uses the latter);
+- Names change. "Combined county authority" vs "strategic authority" (Sussex and Brighton uses the latter);
   "North East Combined Authority" vs its legal name; York and North Yorkshire renamed its meetings "Cabinet" in 2026.
   Keys must not depend on names. ONS codes come late (none yet for 2026's four).
-- **Records move.** York and North Yorkshire's early meetings are on North Yorkshire Council's site; Devon and
+- Records move. York and North Yorkshire's early meetings are on North Yorkshire Council's site; Devon and
   Torbay's first on Teignbridge's; Cheshire and Warrington's shadow board on two councils' sites. The rule "the
   authority's own record from its creation" will have gaps that need saying on each page.
-- **Constituent councils disappear.** Reorganisation will abolish county and district councils in several areas
+- Constituent councils disappear. Reorganisation will abolish county and district councils in several areas
   between 2026 and 2028; their pages and the authority's links need end dates.
-- **Balance.** 10 of the 14 mayors are Labour or Labour and Co-operative, two Conservative, two Reform UK. Any
+- Balance. 10 of the 14 mayors are Labour or Labour and Co-operative, two Conservative, two Reform UK. Any
   selection should be by a stated rule, not by party, as the councils' pilot was.
-- **Expectation.** Users "scrambling to understand them" may expect explanation of powers and funding. The site
+- Expectation. Users "scrambling to understand them" may expect explanation of powers and funding. The site
   reports what the minutes record; a short, sourced "what this authority is" panel would help but is new writing to
   maintain.
 
@@ -357,55 +357,55 @@ their own ("strategic authorities"), by the mayor's party when asked, never mixe
 
 ### A pilot
 
-- **Which authorities:** by one rule, as the councils' pilot was: **every strategic authority whose meetings are on a
+- Which authorities: by one rule, as the councils' pilot was: **every strategic authority whose meetings are on a
   Modern.gov web service that answers and whose robots.txt allows it**. That is 13 today: Greater Manchester, West
   Midlands, Liverpool City Region, West Yorkshire, South Yorkshire, North East, West of England, Cambridgeshire and
   Peterborough, York and North Yorkshire, East Midlands, Greater Lincolnshire, Devon and Torbay, and Lancashire
   (Cheshire and Warrington too if it answers the server). The rule happens to include Labour, Conservative and Reform
   UK mayors and two non-mayoral authorities.
-- **Which meetings:** the main decision-making meeting only (option a), all meetings including budget ones, from May
+- Which meetings: the main decision-making meeting only (option a), all meetings including budget ones, from May
   2018 or the authority's creation, whichever is later. Not scrutiny, committees or advisory boards. Mayor's decisions
   for West Midlands only, as a test of whether they're worth adding.
-- **What to measure:** meetings and minutes found by year; how many named votes and counted votes; how many members
+- What to measure: meetings and minutes found by year; how many named votes and counted votes; how many members
   match a home-council councillor; time and requests.
-- **How to show them:** on their own pages and the council pages' links, but **not in briefings** until the owner has
+- How to show them: on their own pages and the council pages' links, but **not in briefings** until it has been
   decided how they are grouped. Then as their own group.
-- **Then:** ask the GLA and East Sussex about their robots.txt; write readers for Tees Valley, Hull and East
+- Then: ask the GLA and East Sussex about their robots.txt; write readers for Tees Valley, Hull and East
   Yorkshire and Cumbria if the pilot is worth keeping.
 
-### What the owner must decide
+### Decisions needed
 
-1. **Whether to cover strategic authorities** (decision 2 covers principal councils only), and what to call them on
+1. Whether to cover strategic authorities (decision 2 covers principal councils only), and what to call them on
    the site ("strategic authorities", the legal term since 29 April 2026).
-2. **Which meetings** (decision 3 for councils): the board or cabinet; the mayor's decisions (individual decisions are
+2. Which meetings (decision 3 for councils): the board or cabinet; the mayor's decisions (individual decisions are
    left out for councils); scrutiny.
-3. **The GLA:** in or out; and if in, whether to ask the GLA to allow the crawler. Either way, its "Council of the
+3. The GLA: in or out; and if in, whether to ask the GLA to allow the crawler. Either way, its "Council of the
    Isles of Scilly" label should be fixed.
-4. **Control:** whether an authority is grouped by its mayor's party, by its board's parties, or not at all; and
+4. Control: whether an authority is grouped by its mayor's party, by its board's parties, or not at all; and
    whether authorities appear in briefings by default or only when asked.
-5. **Robots.txt on Modern.gov sites:** whether decision 2's rule (sites whose robots.txt forbids crawling are left out
+5. Robots.txt on Modern.gov sites: whether decision 2's rule (sites whose robots.txt forbids crawling are left out
    and asked) applies to Modern.gov sites as well as CMIS. It affects East Sussex today, and Sussex and Brighton and the
    GLA if covered.
-6. **Non-councillor members:** whether business board chairs and other appointed members are named in votes and
+6. Non-councillor members: whether business board chairs and other appointed members are named in votes and
    attendance (decision 9).
-7. **Keys and dates:** ONS `E47` codes where they exist; a stated, provisional key for the newest authorities; coverage
+7. Keys and dates: ONS `E47` codes where they exist; a stated, provisional key for the newest authorities; coverage
    from May 2018 or creation.
 
 ### Decided
 
-The owner decided on 6 November 2026, and the decisions are recorded in [`DECISIONS.md`](../DECISIONS.md), 17–21.
+The decisions were made on 6 November 2026 and are recorded in [`DECISIONS.md`](../DECISIONS.md), 17–21.
 Where they differ from the draft wording first suggested here:
 
-- **Meetings (18):** the mayor's decisions (where the meetings system publishes them as decisions) and overview and
+- Meetings (18): the mayor's decisions (where the meetings system publishes them as decisions) and overview and
   scrutiny committees are in, as well as the main board or cabinet.
-- **Briefings (19):** authorities are in briefings from the start, not held back. "Control" for an authority with a
+- Briefings (19): authorities are in briefings from the start, not held back. "Control" for an authority with a
   mayor is the mayor's party on the date, labelled as the mayor's; one without a mayor is "no single party".
-- **Members (20):** appointed members who aren't councillors are not named.
-- **Robots.txt (21):** the owner decided on 6 November 2026 not to treat it as a barrier to public records
+- Members (20): appointed members who aren't councillors are not named.
+- Robots.txt (21): decided on 6 November 2026 not to treat it as a barrier to public records
   (`[robots] obey` off), after a check found 44 Modern.gov sites (with the GLA's) whose robots.txt forbids reading,
   41 of them already loaded. They are read as before ([`DATA.md`](../DATA.md), "Robots.txt"). Sussex and Brighton
   joins the pilot (14), on East Sussex's site like Lancashire's.
-- **The GLA (3 above):** listed as a strategic authority, not covered yet: London Assembly members are elected but
+- The GLA (3 above): listed as a strategic authority, not covered yet: London Assembly members are elected but
   aren't councillors, and the site needs a rule for naming them. Its committees were found: the London Assembly
   plenary (and its expired predecessors), Mayor's Question Time, Budget and Performance, and GLA Oversight.
 
