@@ -229,13 +229,13 @@ questions, counts no reader's reports or statements, and sends no token counts t
 
 ## 25. wts-core 0.3.0
 
-Decided 16 November 2026: the site moves to wts-core 0.3.0 before it is first deployed on the shared package, so the
-server goes from the old code straight to this version. Readers see no change (`tests/golden/`,
-`tests/test_parity.py`), and no sentence of the privacy notice changes. What is kept narrows, within what the notice
-already says: a spending row keeps which visitor it was for, and at what time, for its own day only; the record of
-each briefing keeps only the hour; and the nightly tidy and backup delete what is due even on a night
-when nobody asks anything. Going back to the old code without the undo script is noticed, and the new code refuses
-to start until it is mended ([`OPERATIONS.md`](OPERATIONS.md), "Going back, and coming forward again").
+Decided 16 November 2026: the site moves from its old code straight to wts-core 0.3.0. Readers see no change
+(`tests/golden/`, `tests/test_parity.py`), and no sentence of the privacy notice changes. What is kept narrows,
+within what the notice already says: a spending row keeps which visitor it was for, and at what time, for its own
+day only; the record of each briefing keeps only the hour; and the nightly tidy and backup delete what is due even
+on a night when nobody asks anything. Going back to the old code without the undo script is noticed, and the new
+code refuses to start until it is mended ([`OPERATIONS.md`](OPERATIONS.md), "Going back, and coming forward
+again").
 
 ## 26. Every point to check is marked
 

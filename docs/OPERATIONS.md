@@ -397,61 +397,17 @@ docker compose up -d app
 ## The move onto wts-core, and going back
 
 Until November 2026 the site kept its state database in tables of its own (`usage`, `questions`, `answer_cache`,
-`briefings`, `reports`, `statements`, `kv`). The code that runs on wts-core copies them into the `wts_` tables once,
-and a way back to the old code is kept until 1 February 2027. After that date, this section matters only for
+`briefings`, `reports`, `statements`, `kv`). The code that runs on wts-core copied them into the `wts_` tables
+once, the first time it opened the database, after copying the database as it stood to
+`/data/state.pre-wts-core.<date>.db` (deleted by the nightly tidy after 60 days). The old tables are left in place
+so that the move can be undone. Each night `councils tidy` deletes from them whatever the new tables no longer
+hold, and on 1 February 2027 it drops them. Nothing else reads them. After that date, this section matters only for
 putting back a backup made before the move ("Putting a backup back", above).
-
-### The import
-
-The first time the new code opens the database, whichever command that is (the web service starting, or any
-`councils` command that reads reports, statements or spending), it:
-
-1. copies the database as it stands to `/data/state.pre-wts-core.<date>.db` (deleted by the nightly tidy after 60
-   days);
-2. copies every row of the old tables into the new ones, in one transaction;
-3. marks the import as done, so it never runs again.
-
-The old tables are left in place so that the move can be undone. Each night `councils tidy` deletes from them
-whatever the new tables no longer hold, and on 1 February 2027 it drops them. Nothing else reads them.
-
-### Deploying the move (once)
-
-This is needed only on a server still running the code from before the move.
-
-1. Choose an hour when none of the site's jobs is running or about to start (an afternoon is safe). `update.sh`
-   refuses to start while one is running.
-2. While the old site is still running, look at its database. This only reads, and prints numbers and dates:
-
-   ```bash
-   cd /opt/wherecouncilsstand
-   git fetch origin
-   git show origin/main:deploy/before-wts-core.py | docker compose -f deploy/docker-compose.yml exec -T app python -
-   ```
-
-   It lists what will lapse: as soon as the new code first lists or writes reports and statements, it declines
-   every statement that has waited more than three months and deletes the contact address of every report open
-   that long. To keep any, decide them now on the old code (`councils publish-statement`, `decline-statement`,
-   `close-report`). It also lists any row that would stop the import, with the statement that mends it.
-3. Run no `councils` command by hand until the new site is up. Whatever command first opens the database runs the
-   import, and anything the old site wrote after that would be left behind in the old tables.
-4. Run `bash /opt/wherecouncilsstand/deploy/update.sh`.
-5. Check that `councils reports list --all`, `councils statements list --all` and the spending query ("Costs and
-   limits", above) show what they showed before.
-
-If the new site does not start, `docker compose logs app` says why. A row the new tables could not take (`malformed
-JSON`, or `NOT NULL constraint failed`) stops the import with nothing half copied. Mend the row with the statement
-the look in step 2 gave, then start the site again, for example:
-
-```bash
-docker compose run --rm -T app python -c "import sqlite3; con = sqlite3.connect('/data/state.db'); con.execute(\"UPDATE statements SET log = '[]' WHERE id = 2\"); con.commit()"
-docker compose up -d app
-```
 
 ### Going back, and coming forward again
 
 Until 1 February 2027 the site can go back to the code from before the move. That code is no longer in this
-repository: it is in the archived repository,
-[rj-mitchell/wherecouncilsstand_old](https://github.com/rj-mitchell/wherecouncilsstand_old), at the last commit
+repository: it is in the private archived repository `rj-mitchell/wherecouncilsstand_old`, at the last commit
 before the move, titled "Why use this rather than a chatbot? (wts-core phase 1b) (#50)". Always run the undo
 script first, while the new code is still checked out, because the old code doesn't have it:
 
@@ -481,6 +437,17 @@ the old tables, with whatever the old code took in meanwhile, and counts nothing
 ```bash
 git -C /opt/wherecouncilsstand checkout main
 bash /opt/wherecouncilsstand/deploy/update.sh
+```
+
+Run no `councils` command by hand until the new site is up: whatever command first opens the database runs the
+import, and anything the old site wrote after that would be left behind in the old tables. If the new site does not
+start, `docker compose logs app` says why. A row the new tables could not take (`malformed JSON`, or `NOT NULL
+constraint failed`) stops the import with nothing half copied. Mend the row, then start the site again, for
+example:
+
+```bash
+docker compose run --rm -T app python -c "import sqlite3; con = sqlite3.connect('/data/state.db'); con.execute(\"UPDATE statements SET log = '[]' WHERE id = 2\"); con.commit()"
+docker compose up -d app
 ```
 
 If the old code was started without the undo script, what it wrote went to the old tables only. The new code then

@@ -1,6 +1,6 @@
 """The server's files (deploy/): the script that updates the site, run here with stand-ins for git, docker and
-systemctl that note what they were asked; the timers' units; and the look at the old database before the move
-(deploy/before-wts-core.py).
+systemctl that note what they were asked; and the timers' units. Also the import from the old database, and
+`councils would-lapse`, on the database as the code before the move left it.
 
 The independent review's fourth finding and the first review's tenth: the one-off import runs on whichever command
 first opens the database on the new code, and the timers run commands in the image as it is at that moment. So
@@ -129,14 +129,7 @@ def test_the_tidy_after_the_backup_has_time_to_finish():
     assert stat.S_IMODE((DEPLOY / "update.sh").stat().st_mode) & 0o111
 
 
-# The look at the old database before the move
-
-
-def look(path: Path, now: str = "2026-11-13T12:00:00+00:00") -> tuple[int, str]:
-    done = subprocess.run([sys.executable, "-", str(path), now], input=(DEPLOY / "before-wts-core.py").read_text(),
-                          capture_output=True, text=True, check=False)
-    assert done.stderr == "", done.stderr
-    return done.returncode, done.stdout
+# The database as the code before the move left it
 
 
 def old_database(folder: Path) -> Path:
@@ -147,55 +140,9 @@ def old_database(folder: Path) -> Path:
     return folder / "state.db"
 
 
-def test_the_look_before_the_move_says_what_will_lapse_as_the_package_then_lapses_it(tmp_path):
-    """Piped to Python as the document says, on the database as the old code left it: read only, no address
-    printed, and what it says will lapse is what the shared package says would (`Replies.would_lapse`) once the
-    rows are across."""
-    from test_parity import site_settings
-
-    from councils.replies import open_replies
-    from councils.state import open_archive, open_state
-
-    path = old_database(tmp_path / "old")
-    before = path.read_bytes()
-    assert look(path) == (0, "Nothing will lapse: no statement has waited, and no report with a contact address "
-                             "has been open, for more than three months.\nNothing would stop the import.\n")
-    con = sqlite3.connect(path)
-    con.execute("UPDATE statements SET at = '2026-08-13T11:59:59+00:00' WHERE id = 6")           # the one waiting
-    con.execute("UPDATE reports SET at = '2026-08-01T09:00:00+00:00' WHERE id = 4")              # open, with a contact
-    con.commit()
-    con.close()
-    before = path.read_bytes()
-    status, said = look(path)
-    assert status == 0 and path.read_bytes() == before                                           # it only reads
-    assert "Statement 6, sent 2026-08-13 (92 days ago), will be declined as undecided." in said
-    assert "Report 4, sent 2026-08-01 (104 days ago), will lose its contact address." in said
-    assert "Nothing would stop the import." in said and "@" not in said and "Guildford" not in said
-    # the same, a second after: one second inside the three months, nothing lapses
-    con = sqlite3.connect(path)
-    con.execute("UPDATE statements SET at = '2026-08-13T12:00:00+00:00' WHERE id = 6")
-    con.execute("UPDATE reports SET at = '2026-08-13T12:00:00+00:00' WHERE id = 4")
-    con.commit()
-    con.close()
-    assert look(path)[1].startswith("Nothing will lapse")
-    # and the package agrees, on the rows as they are once brought across
-    con = sqlite3.connect(path)
-    con.execute("UPDATE statements SET at = '2026-08-13T11:59:59+00:00' WHERE id = 6")
-    con.execute("UPDATE reports SET at = '2026-08-01T09:00:00+00:00' WHERE id = 4")
-    con.commit()
-    con.close()
-    clock = shared.Clock()
-    db = open_state(site_settings(tmp_path / "old"), clock)
-    would = open_replies(db, lambda: None, open_archive(db, clock), clock).would_lapse()
-    assert [(s.id, s.days) for s in would.statements] == [(6, 92)]
-    assert [(r.id, r.days) for r in would.reports] == [(4, 104)]
-    assert look(path) == (0, "This database has already been moved onto the shared package: nothing to look at.\n")
-
-
-def test_a_row_that_would_stop_the_import_is_named_and_the_import_does_stop_on_it(tmp_path):
-    """The review's sixth finding: a malformed old row stops the site from starting until it is mended. The look
-    before the move names the row and how to mend it; the import, met with it, copies nothing, keeps the copy of
-    the file it made first, and runs once the row is mended."""
+def test_a_row_that_would_stop_the_import_does_stop_it_until_it_is_mended(tmp_path):
+    """A malformed old row stops the site from starting until it is mended. The import, met with it, copies
+    nothing, keeps the copy of the file it made first, and runs once the row is mended."""
     from test_parity import site_settings
 
     from councils.state import open_state
@@ -205,9 +152,6 @@ def test_a_row_that_would_stop_the_import_is_named_and_the_import_does_stop_on_i
     con.execute("UPDATE statements SET log = 'not json' WHERE id = 2")
     con.commit()
     con.close()
-    status, said = look(path)
-    assert status == 1 and "Statement 2 would stop the import: its log is not JSON." in said
-    assert "UPDATE statements SET log = '[]' WHERE id = 2;" in said
     settings, clock = site_settings(tmp_path / "old"), shared.Clock()
     with pytest.raises(sqlite3.OperationalError, match="malformed JSON"):
         open_state(settings, clock)
@@ -216,73 +160,26 @@ def test_a_row_that_would_stop_the_import_is_named_and_the_import_does_stop_on_i
     assert con.execute("SELECT count(*) FROM wts_schema WHERE name LIKE 'import:%'").fetchone() == (0,)
     assert con.execute("SELECT count(*) FROM usage").fetchone() == (12,)                         # the old rows as they were
     assert (tmp_path / "old" / "state.pre-wts-core.2026-11-13.db").exists()
-    con.execute("UPDATE statements SET log = '[]' WHERE id = 2")                                 # mended, as it says
+    con.execute("UPDATE statements SET log = '[]' WHERE id = 2")                                 # mended
     con.commit()
     con.close()
     db = open_state(settings, clock)
     with db.connect() as con:
         assert con.execute("SELECT count(*) FROM wts_spending").fetchone()[0] == 12
         assert con.execute("SELECT count(*) FROM wts_statements").fetchone()[0] == 7
-    # an entry of a log with no time is named too
+    # an entry of a log with no time stops it too
     path = old_database(tmp_path / "other")
     con = sqlite3.connect(path)
     con.execute("""UPDATE statements SET log = '[{"action": "received"}]' WHERE id = 6""")
     con.commit()
     con.close()
-    status, said = look(path)
-    assert status == 1 and "Statement 6 would stop the import: an entry of its log has no time" in said
     with pytest.raises(sqlite3.IntegrityError):
         open_state(site_settings(tmp_path / "other"), clock)
 
 
-def test_the_looks_own_sum_of_three_months_is_the_packages_at_month_ends_and_leap_days(tmp_path):
-    """wts-core docs/UPGRADING.md, "The look before the first move, and the day something lapses": the look is
-    piped into the old image's Python, where the package is not installed, so it keeps its own copy of the sum
-    (`months_before`). It is held to the package's here: for every day of five years, at the start, the middle
-    and the last second of the day, its cutoff is `replies.lapse_cutoff`; and on the old database, each statement
-    and report it says will lapse is one `replies.has_lapsed` says has lapsed, and no other, a second either side
-    of the cutoff, at month ends and leap days."""
-    import importlib.util
-    from datetime import UTC, datetime, timedelta
-
-    from wts_core.replies import has_lapsed, lapse_cutoff
-
-    spec = importlib.util.spec_from_file_location("before_wts_core", DEPLOY / "before-wts-core.py")
-    script = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(script)
-    assert script.MONTHS == 3
-
-    day = datetime(2024, 1, 1, tzinfo=UTC)
-    while day < datetime(2029, 1, 1, tzinfo=UTC):
-        for moment in (day, day.replace(hour=12), day.replace(hour=23, minute=59, second=59)):
-            assert script.months_before(moment, 3).isoformat(timespec="seconds") == lapse_cutoff(moment, 3), moment
-        day += timedelta(days=1)
-
-    path = old_database(tmp_path / "old")
-    nows = ["2026-11-13T12:00:00+00:00", "2026-05-31T09:30:00+00:00", "2027-05-31T23:59:59+00:00",
-            "2028-05-29T00:00:00+00:00", "2028-05-31T12:00:00+00:00", "2027-03-01T00:00:01+00:00",
-            "2028-02-29T12:00:00+00:00", "2026-12-31T23:59:59+00:00"]
-    for typed in nows:
-        now = datetime.fromisoformat(typed)
-        cutoff = datetime.fromisoformat(lapse_cutoff(now, 3))
-        for step in (-1, 0, 1):
-            at = (cutoff + timedelta(seconds=step)).isoformat()
-            con = sqlite3.connect(path)
-            con.execute("UPDATE statements SET at = ? WHERE id = 6", (at,))       # the one waiting
-            con.execute("UPDATE reports SET at = ? WHERE id = 4", (at,))          # open, with a contact
-            con.commit()
-            con.close()
-            said, stops = script.look(path, now)
-            assert not stops
-            assert any(line.startswith("Statement 6, sent") for line in said) is has_lapsed(at, now, 3), (typed, at)
-            assert any(line.startswith("Report 4, sent") for line in said) is has_lapsed(at, now, 3), (typed, at)
-            assert has_lapsed(at, now, 3) is (step < 0)
-
-
-def test_would_lapse_on_the_new_code_says_what_the_look_said_on_the_old_and_changes_nothing(tmp_path, monkeypatch):
-    """wts-core 0.3.0 gives the owner `councils would-lapse` (its CHANGELOG, "A new command, `would-lapse`"), in this
-    site's words (`cli._lapsing`): the sentences the look before the move says on the old code, of the same
-    statements and reports, with "would" for "will". It only reads: what it names is still waiting afterwards."""
+def test_would_lapse_says_what_the_next_tidy_would_reach_and_changes_nothing(tmp_path, monkeypatch):
+    """wts-core gives the owner `councils would-lapse`, in this site's words (`cli._lapsing`): each statement and
+    report the next tidy would reach. It only reads: what it names is still waiting afterwards."""
     from test_parity import environment
     from typer.testing import CliRunner
 
@@ -294,9 +191,6 @@ def test_would_lapse_on_the_new_code_says_what_the_look_said_on_the_old_and_chan
     con.execute("UPDATE reports SET at = '2026-08-01T09:00:00+00:00' WHERE id = 4")
     con.commit()
     con.close()
-    _, looked = look(path)
-    assert "Statement 6, sent 2026-08-13 (92 days ago), will be declined as undecided." in looked
-    assert "Report 4, sent 2026-08-01 (104 days ago), will lose its contact address." in looked
 
     environment(monkeypatch, tmp_path / "old")
     monkeypatch.setattr(cli, "CLOCK", shared.Clock())

@@ -325,8 +325,7 @@ def _council(typed: str) -> str:
 
 def _lapsing(w: Mapping[str, Any]) -> str:
     """What `councils would-lapse` says: each statement and report the next tidy would reach, by its number, the
-    day it was sent and its age. Never an address, a name or a word of what was sent. The sentences are those
-    deploy/before-wts-core.py says of the old tables before the move."""
+    day it was sent and its age. Never an address, a name or a word of what was sent."""
     if not w["entries"]:
         return ("Nothing would lapse: no statement has waited, and no report with a contact address has been open, "
                 "for more than three months.")

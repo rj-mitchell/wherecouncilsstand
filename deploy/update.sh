@@ -81,9 +81,8 @@ for _ in $(seq 1 30); do
 done
 if [[ -z "$answered" ]]; then
   echo "✗ The site did not answer within a minute and a half: see docker compose -f $DIR/deploy/docker-compose.yml logs app"
-  echo "  Its timers are as they were. If it says a row of the state database could not be brought across, see"
-  echo "  docs/OPERATIONS.md, \"Deploying the move (once)\"; if it says the old tables hold rows newer than the"
-  echo "  import, see \"Going back, and coming forward again\" there."
+  echo "  Its timers are as they were. If it says a row of the state database could not be brought across, or that"
+  echo "  the old tables hold rows newer than the import, see docs/OPERATIONS.md, \"Going back, and coming forward again\"."
   exit 1
 fi
 
