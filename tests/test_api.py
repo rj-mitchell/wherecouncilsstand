@@ -216,8 +216,8 @@ def test_reading_a_question_is_priced_as_the_model_that_read_it(settings):  # no
 
 
 def test_a_reading_of_the_question_that_was_paid_for_and_could_not_be_read_is_counted(client):
-    """wts-core's CHANGELOG, 0.3.0, "`ModelClient.structured` raises `ports.NoStructuredAnswer` whenever an
-    answered call cannot be read into the schema": the error carries what the call cost. The model declines to
+    """wts-core 0.3.0: `ModelClient.structured` raises `ports.NoStructuredAnswer` whenever an answered call
+    cannot be read into the schema, and the error carries what the call cost. The model declines to
     read the question (it was paid for: 400 tokens in, 30 out); the built-in rules read it, as before, and the
     briefing is written. The reading's cost is now in the spending, and so counts towards the caps, where before
     0.3.0 it was counted nowhere. The reader is sent neither the cost nor why the model could not read it."""

@@ -750,7 +750,7 @@ def _the_reader_leaves(side: Side) -> list[Any]:
     return [[200, received.decode("utf-8")], side.ask(Q)]
 
 
-# The cases of wts-core's docs/adr/0009-briefing-desk.md, "Parity". Each: its name, the limits it runs under (laid
+# The parity cases of wts-core's docs/adr/0009-briefing-desk.md ("Consequences"). Each: its name, the limits it runs under (laid
 # over the site's [usage] settings), whether there is a model, and what is asked.
 ASK_CASES: list[dict[str, Any]] = [
     {"name": "a fresh question, and the same again from the cache", "usage": {},

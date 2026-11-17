@@ -284,9 +284,9 @@ def test_an_update_with_no_changes_writes_nothing_to_the_index(settings):
 
 
 def test_meaning_search_is_trained_again_once_it_has_grown_by_more_than_a_fifth(settings, tmp_path):
-    """The rule is the shared package's (wts-core docs/AS-BUILT.md, adapters: "the rule is Where Countries Stand's
-    (more than 1.2 times the rows it was trained on; an unknown count retrains once). Where Councils Stand used 'at
-    least', and rebuilt its word index at the same time"). The count it was trained on is kept where this site kept
+    """The rule is the shared package's, which was Where Countries Stand's: more than 1.2 times the rows it was
+    trained on, and an unknown count retrains once. This site used "at least", and rebuilt its word index at the
+    same time. The count it was trained on is kept where this site kept
     it (vector_index.json in the index folder), so it carries over."""
     from wts_core.adapters.lancedb import TRAINED_FILE, vector_index_due
 

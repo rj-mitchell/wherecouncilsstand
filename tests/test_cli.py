@@ -23,9 +23,8 @@ def test_reports_are_listed_closed_and_briefings_withdrawn(tmp_path, monkeypatch
     out = listing.stdout
     assert listing.stderr == ""                              # the name it has now says nothing more
     assert f"#{rid}" in out and "takedown" in out and "reply to: me@example.org" in out
-    # The name the command had before still works. wts-core's CHANGELOG, 0.3.0, "An older name for a command, kept
-    # through RepliesCommands.also, says what replaces it": on standard error, before it does its work; standard
-    # output and the exit status are unchanged.
+    # The name the command had before still works. From wts-core 0.3.0 it says what replaces it, on standard
+    # error, before it does its work; standard output and the exit status are unchanged.
     older = run(app, ["list-reports"])
     assert (older.exit_code, older.stdout) == (0, out)
     assert older.stderr == '"list-reports" is an older name for this command: it is now "reports list".\n'
@@ -46,8 +45,7 @@ def test_a_briefing_whose_id_begins_with_a_dash_is_withdrawn_with_two_dashes_bef
     """Before wts-core 0.3.0 about one saved briefing in 64 had an id beginning with "-", which a command line reads
     as an option: `councils withdraw -vPeHLp1u54` ended "No such option" and withdrew nothing (tests/test_hidden.py
     met it about one run in twelve). Such ids stay valid. The owner writes `--` before the id, after any options
-    (docs/OPERATIONS.md, "Running the website"); ids made from 0.3.0 on never begin with "-" (its CHANGELOG, "A
-    new briefing id never begins with '-'")."""
+    (docs/OPERATIONS.md, "Running the website"); ids made from wts-core 0.3.0 on never begin with "-"."""
     monkeypatch.setenv("COUNCILS_DATA_DIR", str(tmp_path))
     db = open_state(load_settings())
     archive = open_archive(db)

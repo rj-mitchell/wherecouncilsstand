@@ -189,7 +189,7 @@ def test_tidy_deletes_what_the_privacy_page_says_is_deleted(asked, monkeypatch):
 
 
 def test_propose_questions_never_proposes_a_briefing_hidden_withdrawn_or_under_an_open_report(settings, monkeypatch):  # noqa: F811
-    """wts-core 0.3.0, `councils propose-questions` (its CHANGELOG, "propose-questions"; docs/UPGRADING.md, step 8):
+    """wts-core 0.3.0, `councils propose-questions`:
     the site says which saved briefings' questions are never proposed as test questions (``cli._never_proposed``),
     as its briefing page decides what to show. Four briefings, each written and each flagged by the checks (the
     stand-in model adds a loaded word and a sentence with no citation), so each is a candidate: one is left alone,
@@ -319,7 +319,7 @@ def test_the_familys_check_gets_counts_and_ages_and_nothing_a_reader_wrote(setti
     answer = c.get("/api/check", headers=with_token)
     assert answer.status_code == 200
     body = answer.json()
-    # wts-core's CHANGELOG, 0.3.0, "cli.latest_week_figures(db) and check_route(..., weekly=…)": the answer has one
+    # wts-core 0.3.0, `cli.latest_week_figures(db)` and `check_route(..., weekly=…)`: the answer has one
     # more key, the newest weekly report's totals, from which the charity's nightly check writes the family's
     # weekly summary without reaching the server. No weekly report has been saved here yet.
     assert set(body) == {"site", "at", "versions", "waiting", "backups", "figures", "weekly"}

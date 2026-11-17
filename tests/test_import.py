@@ -37,8 +37,7 @@ from councils.state import OLD_TABLE_NAMES, open_state  # noqa: E402
 MINE, OTHER = shared.visitor_of(shared.ADDRESS), shared.visitor_of("203.0.113.7")
 ROOT = Path(__file__).resolve().parents[1]
 
-# What `councils tidy` prints before its lines for the old tables and the file, since wts-core 0.3.0 (its
-# CHANGELOG, "The nightly tidy does more, in a fixed order, and prints more lines"): the package's own deletions,
+# What `councils tidy` prints before its lines for the old tables and the file, since wts-core 0.3.0: the package's own deletions,
 # of which the notes of failed briefings (this site keeps none), the visitor secrets and the cached answers are
 # new lines, and then the site's one step, the right of reply's.
 def tidy_lines(codes: int, secrets: int, cached: int, right_of_reply: str) -> list[str]:
@@ -230,7 +229,7 @@ def test_reports_and_statements_are_kept_and_listed_as_before(moved):
     for run in golden["listed"]:
         got = command(run["args"], tmp)
         # each was recorded under the name the command had before, which now says so first, on standard error
-        # (wts-core's CHANGELOG, 0.3.0, "An older name for a command ... says what replaces it"), and nothing else
+        # (wts-core 0.3.0), and nothing else
         assert got["exit_code"] == run["exit_code"] == 0 and got["stderr"] == older_name(run["args"][0])
         if run["args"][0] == "list-statements":
             assert got["stdout"] == run["stdout"], run["args"]
@@ -240,8 +239,8 @@ def test_reports_and_statements_are_kept_and_listed_as_before(moved):
 
 
 def test_what_nobody_decided_in_three_months_lapses_at_the_first_tidy(tmp_path, monkeypatch):
-    """wts-core docs/adr/0008, the second question; AS-BUILT, replies: "The first write after the import can lapse
-    old rows at once". A statement that has waited three months is declined with the reason its sender is told, and
+    """wts-core docs/adr/0008, the second question: the first write after the import can lapse old rows at once. A
+    statement that has waited three months is declined with the reason its sender is told, and
     its address deleted; a report open that long keeps its place and loses its contact address."""
     tmp, clock = tmp_path.resolve(), shared.Clock()
     path = old_database(tmp / "old")
@@ -389,7 +388,7 @@ def written_by_the_old_code(path: Path, *tables: str) -> None:
 
 @pytest.mark.parametrize("table", sorted(OLD_CODE_WRITES))
 def test_a_row_the_old_code_wrote_after_the_move_stops_the_new_code_and_the_words_name_the_mend(moved, table):
-    """wts-core's CHANGELOG, 0.3.0, "state.StateError, and Import(written_at=…)": the site is put back on its old
+    """wts-core 0.3.0, `state.StateError` and `Import(written_at=…)`: the site is put back on its old
     code without deploy/undo-wts-core.sql, the old code writes to its own tables, and the new code is deployed
     again. The import is marked as done and would be skipped: what was written meanwhile would be silently
     missing. The new code refuses to open the database, changes nothing, and says what to run."""
@@ -468,8 +467,8 @@ def test_the_undo_script_run_in_that_state_would_discard_what_the_old_code_wrote
 
 
 def test_the_nightly_tidy_of_the_old_tables_never_looks_like_the_old_code_writing(moved):
-    """wts-core docs/UPGRADING.md, "Going back, and coming forward again": "The nightly tidy of the old tables
-    never trips this: it changes and deletes rows, and adds none." A week of nights on the new code, with readers
+    """wts-core docs/EXTENDING.md, section 6: the nightly tidy of the old tables never trips the check on rows
+    written since the import, since it changes and deletes rows and adds none. A week of nights on the new code, with readers
     and the owner at work each day: the database opens every morning."""
     from fastapi.testclient import TestClient
 
@@ -491,7 +490,7 @@ def test_the_nightly_tidy_of_the_old_tables_never_looks_like_the_old_code_writin
 
 
 def test_going_back_and_coming_forward_again_counts_nothing_twice(moved):
-    """wts-core docs/UPGRADING.md, "What the undo script must clear, on every site": the undo script ends by
+    """wts-core docs/UPGRADING.md, "Going back to the old code": the undo script ends by
     forgetting the move, with what the package keeps in summary of the spending rows (wts_account_months, and the
     month rows of wts_visitor_days). The old code then runs; the new code, started again, makes the move afresh.
     The spending, and the report of who it was for, are what they were, once."""
@@ -570,7 +569,7 @@ def everything_in(path: Path) -> str:
 
 
 def test_the_old_tables_keep_nothing_the_site_has_promised_to_delete_and_then_go(tmp_path, monkeypatch):
-    """The independent reviews' first finding (wts-core docs/NOTES; MIGRATION 1.2): left as they were, the old
+    """Left as they were, the old
     tables kept senders' addresses and reports' contacts for good, and so did every night's backup. Every night
     `councils tidy` keeps each promise on the old tables that the package keeps on its own, and from 1 February
     2027 it drops them. Then, 125 days after the move, no address is anywhere in the data folder or in a backup."""
@@ -643,8 +642,7 @@ def test_the_old_tables_keep_nothing_the_site_has_promised_to_delete_and_then_go
     assert old("SELECT key FROM kv") == [("visitor_salt:2026-11-13",)]
     # 5. answers in the old cache past their week
     assert old("SELECT min(at) >= '2026-11-06' , count(*) FROM answer_cache") == [(1, 2)]
-    # What the command says, line by line and in the order it works (wts-core's CHANGELOG, 0.3.0, "The nightly
-    # tidy does more, in a fixed order, and prints more lines"): the package's own deletions; then the site's step,
+    # What the command says, line by line and in the order it works (wts-core 0.3.0): the package's own deletions; then the site's step,
     # the right of reply's; then the old tables, AFTER it, so an address the right of reply deletes tonight is gone
     # from the old row tonight; and last the file written out afresh. The site's own second pass over the old
     # tables and its own VACUUM, which 0.2.1 needed, are gone (tidy_lines).
@@ -702,8 +700,7 @@ def test_the_old_tables_keep_nothing_the_site_has_promised_to_delete_and_then_go
 
 
 def test_the_tidy_says_each_thing_it_did_once_and_in_order_on_a_quiet_night(moved):
-    """wts-core's CHANGELOG, 0.3.0, "The nightly tidy does more, in a fixed order, and prints more lines": the
-    whole of what `councils tidy` prints, on the night of the move and the night after. Nothing is said twice:
+    """wts-core 0.3.0: the nightly tidy runs in a fixed order and says what it did. The whole of what `councils tidy` prints, on the night of the move and the night after. Nothing is said twice:
     the old tables have one line, the command's own, and the file is written out afresh once, last."""
     tmp, clock, path, app = moved
     nothing = "0 confirming addresses deleted, 0 statements lapsed undecided, 0 old reports' contact addresses deleted"

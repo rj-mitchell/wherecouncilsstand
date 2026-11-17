@@ -120,8 +120,7 @@ def _forget_old_addresses(con: sqlite3.Connection) -> tuple[str, ...]:
     return ()
 
 
-# What becomes of the old tables (wts-core docs/MIGRATION.md, 1.2; its independent reviews' first finding): left
-# as they were, they would keep what the site has promised to delete, and so would every night's backup. Each
+# What becomes of the old tables (wts-core docs/EXTENDING.md, "The old tables, after the import"): left as they were, they would keep what the site has promised to delete, and so would every night's backup. Each
 # night, while they are there (`councils tidy`, after the backup), each promise the package keeps on its own
 # tables is kept on the old ones:
 #
@@ -198,7 +197,7 @@ IMPORTS = (Import(
     # an import that needed it would be passed over on that database for good, leaving the site with no spending
     # and no saved briefings
     needs=ALWAYS_THERE,
-    # Going back is noticed (wts-core 0.3.0; its docs/UPGRADING.md, "Going back, and coming forward again"): the
+    # Going back is noticed (wts-core docs/UPGRADING.md, "Going back to the old code"): the
     # column of each old table that holds the time a row was written. If the site is put back on its old code
     # without deploy/undo-wts-core.sql being run, the old code writes to these tables again; the import is marked
     # as done and would not run a second time, so what was written meanwhile would be silently missing. With

@@ -1,8 +1,8 @@
 """The site on the shared package (wts-core) gives what its own code gave before.
 
 tests/golden/ holds what the site's code gave on 14 November 2026, before the switch, for the scenarios in
-tests/golden/shared.py. Each test here plays the same scenario to the site as it is now and compares. Where the two differ on purpose, the difference is asserted, with the entry of wts-core's
-docs/AS-BUILT.md (or docs/MIGRATION.md, or its CHANGELOG.md) that lists it: nothing is skipped.
+tests/golden/shared.py. Each test here plays the same scenario to the site as it is now and compares. Where the
+two differ on purpose, the difference is asserted and said why: nothing is skipped.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ def stored(value, tmp: Path):
     return shared.plain(value, (tmp, "<tmp>"), (REPO_ROOT, "<root>"))
 
 
-# Settings (wts-core docs/MIGRATION.md, 1.1: no difference)
+# Settings: no difference
 
 
 @pytest.mark.parametrize("case", shared.read("settings.json"), ids=lambda case: case["name"])
@@ -52,7 +52,7 @@ def test_settings_resolve_as_before(case, tmp_path):
 
 
 def a_local_table_of_prices_adds_to_the_sites(now: dict, golden: dict) -> None:
-    """wts-core's CHANGELOG, 0.2.1, "A server can price one model in its own settings": the server's local file is
+    """wts-core 0.2.1: a server can price one model in its own settings. The server's local file is
     laid over the site's two levels deep, so a local ``[usage.models."…"]`` adds that model to the site's table of
     prices, where it replaced the whole table (and, with strict prices, stopped the site from starting: the
     independent review's second finding). The recorded case has such a table: what it gave was the local model
@@ -77,7 +77,7 @@ NEW_SECTIONS = ("logs", "alerts", "eval")
 def added_to_the_settings_file(now: dict, golden: dict) -> None:
     """Take out of what the real settings file gives now what it has gained since the goldens were recorded, each
     addition checked: everything else in the file must resolve as it did."""
-    # MIGRATION 1.3, "Unknown model": "Each site's settings get an explicit entry for every model they name." The
+    # an unknown model: the site's settings have an entry of their own for every model they name. The
     # briefing model had none and took the base prices; its own entry has the same three figures.
     for usage in (now["usage"], now["raw"]["usage"]):
         base = {k: usage[k] for k in ("price_input_per_mtok", "price_output_per_mtok", "price_cache_read_per_mtok")}
@@ -87,7 +87,7 @@ def added_to_the_settings_file(now: dict, golden: dict) -> None:
     for section in NEW_SECTIONS:
         assert section not in golden["raw"]
         now["raw"].pop(section, None)
-    # MIGRATION 1.5: "prompt caching becomes a setting ([answer] cache_instructions, on as today)"; and how alike two
+    # prompt caching is a setting ([answer] cache_instructions, on as before); and how alike two
     # questions must be to be one theme in the weekly report, which is new with the record of briefings
     for section, key, value in (("answer", "cache_instructions", "short"), ("embedding", "theme_similarity", 0.8)):
         for given in (now[section], now["raw"][section]):
@@ -101,7 +101,7 @@ def test_the_settings_are_read_from_the_real_environment_too(monkeypatch, tmp_pa
     assert (s.site.env_prefix, s.site.package, s.site.name) == ("COUNCILS", "councils", "Where Councils Stand")
 
 
-# The checks on briefings (MIGRATION 1.4; AS-BUILT, checks)
+# The checks on briefings
 # This site passes its longer list of honorifics, the strict form of the "note about the evidence" rule and its own
 # loaded words (councils/rag/checks.py). Every recorded report must be given again, exactly.
 
@@ -124,7 +124,7 @@ def shown_again(answer: dict | None) -> dict | None:
 
 
 def as_before(answer: dict) -> dict:
-    """AS-BUILT, checks: "to_dict() writes today's keys and then rules": the one key a report has that it had not,
+    """The checks' to_dict() writes the keys it wrote before and then "rules": the one key a report has that it had not,
     the number of the checking rules that wrote it (1), written last. With it taken off, the report must be what
     the site's own verifier gave."""
     assert list(answer)[-1] == "rules" and answer["rules"] == 1
@@ -134,12 +134,12 @@ def as_before(answer: dict) -> dict:
 def the_same_checks(blocks: list[dict], which: str, golden: dict, name: str) -> None:
     now = checked(blocks, which)
     assert as_before(now) == golden["answer"], name
-    # AS-BUILT, checks: "Answers from before adoption carry no stamp, so recheck judges them again each time ...
-    # For those answers it gives what the site's own recheck_flags gives": the recorded answer, shown again as it
-    # was written and as older checks might have left it
+    # answers from before the package carry no stamp, so they are judged again each time they are shown, as the
+    # site's own recheck_flags did: the recorded answer, shown again as it was written and as older checks might
+    # have left it
     assert shown_again(golden["answer"]) == golden["shown_again"], name
     assert shown_again(shared.as_older_checks_left_it(golden["answer"])) == golden["older"], name
-    # AS-BUILT, checks: "Answers written after adoption are stamped and left alone": its marks on unsupported text
+    # answers written on the package are stamped and left alone: its marks on unsupported text
     # are as they were written, where the site's own code judged a just-written answer again when it was shown
     assert shown_again(now) == now, name
 
@@ -178,7 +178,7 @@ def test_the_models_own_words_are_made_british_as_before():
     assert {text: to_british(text) for text in shared.BRITISH_TEXTS} == shared.read("checks.json")["british"]
 
 
-# Backups and their off-site copies (MIGRATION 1.11: the name, what it holds and what is kept, unchanged)
+# Backups and their off-site copies (the name, what it holds and what is kept, unchanged)
 
 
 def environment(monkeypatch, data_dir: Path, **more: str) -> None:
@@ -252,7 +252,7 @@ def test_off_site_copies_are_sent_pruned_and_recorded_as_before(tmp_path):
     assert BACKUPS.keep_offsite == 60          # how many stay off site when a backup is made by the command
 
 
-# /api/ask over a scripted pipeline (MIGRATION 1.8; wts-core docs/adr/0009, "Parity")
+# /api/ask over a scripted pipeline (the parity cases of wts-core docs/adr/0009)
 
 REQUEST = __import__("types").SimpleNamespace(client=__import__("types").SimpleNamespace(host=shared.ADDRESS),
                                               headers={}, cookies={})
@@ -302,8 +302,8 @@ def rows_written(db) -> dict:
 
 def as_the_questions_table(spending: list[list]) -> list[list]:
     """Each visitor's briefings for the day as the site's own ``questions`` table held them: a row for each visitor
-    with any, counting their rows of kind "answer" (AS-BUILT, usage: "Where Councils Stand keeps that count in its
-    questions table today; the package ... counts the imported usage rows of kind answer")."""
+    with any, counting their rows of kind "answer" (the site kept that count in its questions table; the package
+    counts the imported usage rows of kind "answer")."""
     counts: dict[tuple[str, str], int] = {}
     for at, kind, _, visitor, *_ in spending:
         if kind == "answer" and visitor:
@@ -357,8 +357,8 @@ def test_every_case_of_the_briefing_flow_sends_the_same_text_and_writes_the_same
     now = {case["name"]: case for case in stored(shared.play_asks(asked), Path("/nowhere"))}
     assert list(now) == list(golden)
 
-    # AS-BUILT, briefing, "At adoption": "Where Councils Stand with answer_cache_hours = 0 stored a cache row that
-    # could never be read; the desk stores none. The bytes are the same."
+    # with answer_cache_hours = 0 the site stored a cache row that could never be read; the desk stores none. The
+    # bytes are the same.
     name = "with no hours to keep an answer, every question is written afresh"
     assert len(golden[name]["rows"]["cache"]) == 1 and now[name]["rows"]["cache"] == []
     golden[name]["rows"]["cache"] = []
@@ -370,7 +370,7 @@ def test_every_case_of_the_briefing_flow_sends_the_same_text_and_writes_the_same
         assert got["briefings_today"] == was["briefings_today"], name
 
 
-# The per-minute limit, a visitor's code, cost and the cache's key (MIGRATION 1.3: no difference)
+# The per-minute limit, a visitor's code, cost and the cache's key: no difference
 
 
 @pytest.fixture
@@ -427,7 +427,7 @@ def test_cost_and_stored_token_counts_are_the_same_for_every_usage_and_model(par
            for n, u in enumerate(shared.USAGES) for m in shared.MODELS]
     assert now == golden["cost"] and len(now) == 84
     assert [Usage.from_mapping(u).as_stored() for u in shared.USAGES] == golden["token_counts"]
-    # AS-BUILT, usage: "The four prices are required in [usage], with no fallback in code." The site's own code
+    # the four prices are required in [usage], with no fallback in code. The site's own code
     # fell back to $2 a million tokens in and $10 out where a price was missing; the real settings file has all
     # four, and a file without them now stops the site, naming them.
     assert golden["cost_with_no_prices_set"] == 12.4
@@ -452,7 +452,7 @@ def test_the_answer_caches_key_is_the_same_for_every_question_and_choice():
 
 
 def test_the_answer_caches_key_changes_with_the_model_the_instructions_and_the_record(monkeypatch):
-    """wts-core's docs/adr/0009, as amended: the site makes the key, so these three are the site's to keep in it.
+    """wts-core's docs/adr/0009: the site makes the key, so these three are the site's to keep in it.
     Change any one and an answer written before is not served again."""
     from councils.api import app as web
 
@@ -465,7 +465,7 @@ def test_the_answer_caches_key_changes_with_the_model_the_instructions_and_the_r
     assert web.answer_key(body, 1731500000.25, "claude-sonnet-5-5") != key        # new instructions
 
 
-# The daily limit, the spending caps, the briefings in progress, the answer cache (MIGRATION 1.3)
+# The daily limit, the spending caps, the briefings in progress, the answer cache
 
 
 def test_the_limit_and_the_caps_decide_the_same_over_scripted_spending(parts_of):
@@ -532,8 +532,7 @@ def test_a_cached_answer_is_given_and_dropped_as_before(parts_of):
                 gives = [r["key"] for r in con.execute("SELECT key FROM wts_answer_cache ORDER BY key")]
         now.append({"step": step, "gives": gives})
     now = json.loads(json.dumps(now, default=str))
-    # AS-BUILT, usage, "At adoption": "Where Councils Stand's cache gave an answer up a second sooner at the end
-    # of its life": an answer exactly as old as it may be kept (an hour to the second, with an hour to keep it; 168
+    # the site's own cache stopped giving an answer a second sooner at the end of its life: an answer exactly as old as it may be kept (an hour to the second, with an hour to keep it; 168
     # hours to the second, with a week) is still given, where the old code had just stopped giving it
     at_the_last_second = [n for n, (was, got) in enumerate(zip(golden, now, strict=True)) if was != got]
     assert [golden[n]["step"] for n in at_the_last_second] == [["get", "k1", 1], ["get", "k1", 168]]
@@ -604,8 +603,7 @@ def kept(replies) -> dict:
 
 
 def as_the_old_tables_kept_it(now: dict) -> dict:
-    """AS-BUILT, replies, "At adoption": "No link is stored as NULL (Where Countries Stand and Where Councils Stand
-    had "")". The same is true of a statement's address once it is deleted, and of a report's page and contact:
+    """No link is stored as NULL, where this site stored "". The same is true of a statement's address once it is deleted, and of a report's page and contact:
     what was an empty text in the site's own tables is nothing at all in the package's. Each is shown, where it is
     shown, as it was."""
     for s in now["statements"]:
@@ -636,9 +634,9 @@ def test_every_answer_to_a_report_or_a_statement_is_as_before(tmp_path):
     def said(answer: dict) -> tuple:
         return answer["status"], answer["json"]["detail"]
 
-    # 1. AS-BUILT, replies, "At adoption": "Order of checks when two things are wrong: the package's order is ...
-    #    words, name, role, link, email, address, item shown. ... the other two checked the address first (kept if
-    #    the site passes an Item). A sender with two faults may be told about a different one first." Here the
+    # 1. The order of the checks when two things are wrong: the package checks the words, name, role, link,
+    #    email, address and item shown, in that order, where this site checked the address first (kept when the
+    #    site passes an item). A sender with two faults may be told about a different one first. Here the
     #    address is still read first (the route passes the item it found); the words now come before the name and
     #    the role. Each fault alone gets the same words as before.
     told_first = {
@@ -652,8 +650,7 @@ def test_every_answer_to_a_report_or_a_statement_is_as_before(tmp_path):
         assert said(before.pop(case)) == (422, was) and said(answers.pop(case)) == (422, now)
     # 2. A report of nothing but spaces was kept (the form's own check counts characters, and seven spaces are
     #    seven); the package reads a report with the spaces around it taken off, finds nothing, and refuses it, in
-    #    words that are new (AS-BUILT, replies: "Wording the sites have no words for today ... the report
-    #    refusals"). One report fewer is kept, so each later one's number is one lower. The words are the family's,
+    #    words that are new (the site had no words of its own for the report refusals). One report fewer is kept, so each later one's number is one lower. The words are the family's,
     #    the same on every Where They Stand site; before, they were "Say what is wrong, in a few words."
     case = "a message of spaces"
     assert (before[case]["status"], before.pop(case)["json"]) == (200, {"ok": True, "id": 6})
@@ -676,8 +673,7 @@ def test_every_answer_to_a_report_or_a_statement_is_as_before(tmp_path):
     assert then["reports"][2]["contact"] == "  c@d.org  " and now["reports"][2]["contact"] == "c@d.org"
     then["reports"][2]["contact"] = "c@d.org"
     assert now["reports"] == then["reports"]
-    # 4. AS-BUILT, replies, "At adoption": "Text cleaning now closes runs of blank lines on Where Countries Stand
-    #    and Where Councils Stand": line endings are made plain and three or more in a row become one blank line.
+    # 4. Text cleaning now closes runs of blank lines: line endings are made plain and three or more in a row become one blank line.
     #    The words themselves are never changed.
     typed = "Line one <b>bold</b>\r\nline two\r\n\r\n\r\n\r\npara two & more"
     assert then["statements"][5]["text"] == typed
@@ -706,9 +702,8 @@ def owner(tmp_path, monkeypatch):
 
 
 # What can't be done is now said in the shared package's words, after "error: " and on standard error, where the
-# site printed one fixed line on standard output. AS-BUILT, cli, "At adoption": "Where each site printed one fixed
-# line when something could not be done ("no waiting statement with that number"), the owner now sees the exact
-# reason. The exit code is 1 as before."
+# site printed one fixed line on standard output when something could not be done ("no waiting statement with that
+# number"); the owner now sees the exact reason. The exit code is 1 as before.
 NO_WAITING, NOT_SHOWN = "no waiting statement with that number\n", "no waiting or published statement with that number\n"
 NOTHING = "nothing changed: no waiting or published statement with that number, or no change\n"
 NO_REPORT = "no open report with that number\n"
@@ -732,8 +727,8 @@ NOT_DONE_NOW = {
 }
 
 
-# wts-core's CHANGELOG, 0.3.0, "An older name for a command, kept through RepliesCommands.also, says what replaces
-# it": on standard error, before the command does its work. Standard output and the exit status are unchanged. The
+# wts-core 0.3.0: an older name for a command, kept through RepliesCommands.also, says what replaces it, on
+# standard error, before the command does its work. Standard output and the exit status are unchanged. The
 # goldens were recorded under the older names, so every such run now has this one line more, and nothing else.
 NOW_CALLED = {"list-reports": "reports list", "close-report": "reports close", "list-statements": "statements list",
               "publish-statement": "statements publish", "decline-statement": "statements decline",
@@ -786,7 +781,7 @@ def test_the_owners_commands_print_what_they_did(owner):
             assert now == {"args": was["args"], "exit_code": 1, "stdout": "", "stderr": f"error: {reason}\n",
                            "error": None}, typed
         elif typed.startswith("list-reports"):
-            # MIGRATION 1.9: "Takedown requests listed first: gains (O)". They were listed newest first, with a
+            # takedown requests are listed first. They were listed newest first, with a
             # request to take a person's name down among the rest; an open one now comes before everything else.
             # Each report's own lines are the same.
             assert now["exit_code"] == was["exit_code"] == 0
@@ -819,7 +814,7 @@ def test_the_owners_commands_print_what_they_did(owner):
 
 
 def test_the_owners_commands_under_their_new_names_do_the_same(owner):
-    """MIGRATION 1.9: the commands take the family's shape (`councils statements publish 3`); the old names keep
+    """The commands take the family's shape (`councils statements publish 3`); the old names keep
     working. Each pair prints the same line."""
     tmp, clock, app, _ = owner
     said = [command(args, tmp) for args in (
@@ -920,7 +915,7 @@ def test_the_real_pipeline_sends_and_writes_what_it_did(tmp_path, monkeypatch):
                                                                                  key=lambda c: c[1])]})
     now = json.loads(json.dumps(now, default=str))
 
-    # AS-BUILT, checks: "to_dict() writes today's keys and then rules". The answer the real pipeline's checks give
+    # the checks' to_dict() writes the keys it wrote before and then "rules". The answer the real pipeline's checks give
     # carries the number of the checking rules that wrote it, in every copy: sent, saved and cached. Nothing else
     # of any event is different. (The "no records" answer is the pipeline's own words, with no checks to stamp it.)
     def unstamped(events: list) -> list:
@@ -935,7 +930,7 @@ def test_the_real_pipeline_sends_and_writes_what_it_did(tmp_path, monkeypatch):
         assert got == was, was["case"]
 
 
-# What the model is sent, and an index the old code built (MIGRATION 1.5 and 1.6)
+# What the model is sent, and an index the old code built
 
 
 def test_the_model_is_sent_what_it_was_sent(tmp_path):
@@ -1001,7 +996,7 @@ def test_an_index_the_old_code_built_opens_and_searches_the_same(tmp_path):
     index, embedder = open_index(s), HashingEmbedder(64)
     assert index.stats() == golden["stats"] and index.has_word_index() is golden["has_word_index"]
     assert stored_meta(s.index_dir) is None          # opened as it stands, nothing is written
-    index = open_index(s, embedder)                  # AS-BUILT, adapters: "The first opening ... writes wts_index.json"
+    index = open_index(s, embedder)                  # the first opening writes wts_index.json
     assert stored_meta(s.index_dir).embedder_id == "hashing-64" and stored_meta(s.index_dir).dimension == 64
     assert shared.index_answers(index.search_words, index.search_meaning, embedder.embed_query) == golden["searches"]
     rows = index.rows_for_keys([f"{shared.BARNSLEY}:2025", f"{shared.GUILDFORD}:2025"])
@@ -1045,7 +1040,7 @@ def test_an_index_the_old_code_built_is_updated_and_keeps_its_vectors(tmp_path):
     assert shared.index_answers(index.search_words, index.search_meaning, embedder.embed_query) == golden["searches"]
 
 
-# Ranking, and the balanced choice of evidence (MIGRATION 1.7: no difference)
+# Ranking, and the balanced choice of evidence: no difference
 
 
 def test_candidates_are_ranked_and_the_evidence_chosen_as_before():

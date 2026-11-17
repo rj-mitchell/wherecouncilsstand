@@ -146,8 +146,8 @@ def test_a_statement_never_reaches_the_model_the_index_the_record_or_a_log(site)
 
 
 def test_once_its_day_is_over_a_briefings_record_is_tied_to_no_one(settings, monkeypatch):  # noqa: F811
-    """wts-core 0.3.0 (ADR 0012, "the record's time, the spending rows, and what can be promised"; its CHANGELOG, "A
-    spending row says who it was for, and what time of day it was made, for its own day only"). Two visitors each
+    """wts-core 0.3.0 (ADR 0012, "What is kept about spending, and what can be promised"): a spending row says who
+    it was for, and what time of day it was made, for its own day only. Two visitors each
     ask for a briefing of the same cost on one day: while that day lasts each spending row holds its visitor's
     code and its second, for the daily limit. That night the backup's unit runs `councils tidy`. From then on no
     record of that day can be tied to who asked: the record keeps its hour, the spending rows their day and no
