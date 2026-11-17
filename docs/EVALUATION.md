@@ -1,12 +1,12 @@
 # Evaluation: the briefing test set
 
-A fixed set of realistic questions, each with the reading a careful researcher would give it and, for some, what the
-evidence must contain. Every change to how questions are read or how the minutes are searched can be scored against
-it, so a change that helps one kind of question but breaks another is caught. It was needed before the beta
-(the family roadmap, X8); Where MPs Stand and Where Countries Stand keep sets like it, and `councils evaluate` is
-adapted from Where Countries Stand's.
+The briefing test set and how to score a change against it. The set (`eval/questions.toml`) is a fixed list of
+realistic questions, each with the reading a careful researcher would give it and, for some, what the evidence must
+contain. Every change to how questions are read or how the minutes are searched can be scored against it, so a
+change that helps one kind of question but breaks another is caught. Where MPs Stand and Where Countries Stand keep
+sets like it, and `councils evaluate` is adapted from Where Countries Stand's.
 
-This is a starter set of 31 questions. Add to it whenever a real question is read badly or finds the wrong evidence:
+It is a starter set of 31 questions. Add to it whenever a real question is read badly or finds the wrong evidence:
 the question as asked, and what it should have produced.
 
 ## Scoring
@@ -43,9 +43,9 @@ cd /opt/wherecouncilsstand/deploy
 docker compose run --rm -T app councils evaluate
 ```
 
-The evidence checks mean something only on the full record. On your own computer, `scripts/fixture_site.py` makes a
-small made-up record (three councils) that the questions can be read against, but the councils in `include` are
-mostly not in it.
+The evidence checks mean something only on the full record. On a development machine, `scripts/fixture_site.py` makes a
+small made-up record (three councils and a strategic authority) that the questions can be read against, but the
+councils in `include` are mostly not in it.
 
 `--with-model` makes one call per question to the model that reads questions (the `query_parse_model` in
 `config/settings.toml`), about 31 small calls. It is never run in CI.
@@ -109,7 +109,7 @@ volume, into a folder on the server:
 mkdir -p eval-out && docker compose exec -T app tar -C /data/eval -c runs fixtures | tar -x -C eval-out
 ```
 
-Then, on your own computer, copy `eval-out/runs/passed.jsonl` (if the run passed) into the repository's
+Then, on a development machine, copy `eval-out/runs/passed.jsonl` (if the run passed) into the repository's
 `eval/runs/` and `eval-out/fixtures/` into `eval/fixtures/`, and commit both. Record the run in the table below.
 Until that first run there are no kept briefings to replay: `councils eval replay` has been run only in the
 tests, on briefings a stand-in for the model wrote from the made-up record.

@@ -1,5 +1,7 @@
 # Data
 
+Where the site's data comes from, how each kind of meetings site is read, and what was found in reading them.
+
 ## Councils: `data_static/councils.csv`
 
 Built by `scripts/build_councils.py` from:
@@ -10,15 +12,15 @@ Built by `scripts/build_councils.py` from:
   "Strategic authorities"). 317 councils.
   The register still gives Barnsley and Sheffield the GSS codes ONS replaced on 1 April 2019, when the boundary
   between them moved (E08000016, E08000019); `build_councils.py` uses the current ones (E08000038, E08000039), as ONS
-  and the Regulator of Social Housing do (`SUPERSEDED`). A data folder loaded before this change is moved to the new
-  codes by `scripts/recode_councils.py`.
+  and the Regulator of Social Housing do (`SUPERSEDED`). `scripts/recode_councils.py` moves a data folder stored
+  under the old codes to the current ones.
 - Wales: the 22 unitary authorities from mySociety's [MapIt](https://mapit.mysociety.org/).
-- Scotland and Northern Ireland (in scope from 5 November 2026, decision 2): Scotland's 32 councils (MapIt's
-  unitary authorities) and Northern Ireland's 11 district councils (MapIt's local government districts). Their
-  websites and meetings systems were found by research, November 2026: Modern.gov at 9 (Aberdeen City,
-  Aberdeenshire, Argyll and Bute, City of Edinburgh, Dumfries and Galloway, East Dunbartonshire, Scottish Borders,
-  Belfast, and Derry City and Strabane), CMIS at 8, CoINS at 4 (Falkirk, Glasgow, Shetland, West Lothian), Public
-  Minutes at 2 (Armagh City, Banbridge and Craigavon; Fermanagh and Omagh), and the council's own pages at 20.
+- Scotland and Northern Ireland: Scotland's 32 councils (MapIt's unitary authorities) and Northern Ireland's 11
+  district councils (MapIt's local government districts). Their websites and meetings systems were found by research,
+  November 2026: Modern.gov at 9 (Aberdeen City, Aberdeenshire, Argyll and Bute, City of Edinburgh, Dumfries and
+  Galloway, East Dunbartonshire, Scottish Borders, Belfast, and Derry City and Strabane), CMIS at 8, CoINS at 4
+  (Falkirk, Glasgow, Shetland, West Lothian), Public Minutes at 2 (Armagh City, Banbridge and Craigavon; Fermanagh
+  and Omagh), and the council's own pages at 20.
 - Modern.gov sites: [Local Democracy UK](https://www.local-democracy.uk/data)'s council list (CC BY 4.0), then a
   probe of the usual host names (`democracy.`, `moderngov.`, `modgov.`, `committees.` …) on each remaining council's
   own domain.
@@ -38,9 +40,8 @@ networks, and some from outside the UK ("Connection denied by Geolocation"), but
 bot check's page, or a Cloudflare timeout, counts as blocked or unreachable, not as no site. Sites that refuse the
 crawler are asked, not worked around (decision 2).
 
-Councils without Modern.gov use CMIS (those hosted at `*.cmis.uk.com` and others forbid all crawling in robots.txt, so
-they are left out; councils' own CMIS sites that allow it are read, below), CoINS, Public Minutes, Jadu's meetings module, SharePoint, or their own pages. Each would need its
-own reader.
+Councils without Modern.gov use CMIS or CoINS, which are read (below), or Public Minutes, Jadu's meetings module,
+SharePoint or their own pages, each of which would need a reader of its own.
 
 ## Meetings: Modern.gov's web service
 
@@ -93,14 +94,15 @@ What was found:
 
 ## Strategic authorities (decisions 17 to 20)
 
-England's strategic authorities are listed by hand, beside the councils, in **`data_static/strategic_authorities.csv`**
-(20 on 6 November 2026), from the research note [`research/strategic-authorities.md`](research/strategic-authorities.md):
-each with its ONS `E47` code (or a provisional key, `SA-CUMBRIA` and so on, for the four created in 2026, until ONS
-publishes one; the GLA keeps London's region code, `E12000007`), its statutory kind and category under the 2026 Act,
-when it was created, the regions it spans (Greater Lincolnshire spans two; it is filed under the East Midlands, where
-most of its people live), its meetings site and status, and, where the status alone doesn't say why it isn't covered,
-the reason. `build_councils.py` leaves combined authorities and the GLA out of `councils.csv`; this file is checked by
-hand each quarter against legislation.gov.uk.
+England's strategic authorities are listed by hand, beside the councils, in
+**`data_static/strategic_authorities.csv`** (20 on 6 November 2026), from the research note
+[`research/strategic-authorities.md`](research/strategic-authorities.md): each with its ONS `E47` code (or a
+provisional key, `SA-CUMBRIA` and so on, for the four created in 2026, until ONS publishes one; the GLA keeps
+London's region code, `E12000007`), its statutory kind and category under the 2026 Act, when it was created, the
+regions it spans (Greater Lincolnshire spans two; it is filed under the East Midlands, where most of its people
+live), its meetings site and status, and, where the status alone doesn't say why it isn't covered, the reason.
+`build_councils.py` leaves combined authorities and the GLA out of `councils.csv`; this file is checked by hand each
+quarter against legislation.gov.uk.
 
 - `data_static/authority_councils.csv`: each authority's constituent councils (and non-constituent councils where
   confirmed: York on West Yorkshire's board), with from and to dates where a council joined or left after the
@@ -110,13 +112,13 @@ hand each quarter against legislation.gov.uk.
   day they left office (from Wikipedia's list of metro mayors, as of June 2026, and the research note; the dates
   before 2024 should be checked against the authorities' own records). Between two mayors (Greater Manchester, 18 June
   to 30 July 2026) there is none.
-- Committees (decision 18): each authority's board, overview and scrutiny committees and any committee of
-  the mayor's decisions are named in `committees.csv`, with the reason, and checked against their committee lists as
-  their web services gave them on 6 November 2026 (`tests/fixtures/modgov/`), or, for the four read from their own
-  websites, as those sites list them ("Meetings: authorities' own websites", below). None of the 13 lists the mayor's
-  decisions as a live committee: West Midlands' "Mayoral Decision" is marked deleted, so nothing is read from it unless
-  it returns. Lancashire's are on Lancashire County Council's site, so only the committees named are taken, and the
-  county's own are unaffected.
+- Committees (decision 18): each authority's board, overview and scrutiny committees and any committee of the mayor's
+  decisions are named in `committees.csv`, with the reason, and checked against their committee lists as their web
+  services gave them on 6 November 2026 (`tests/fixtures/modgov/`), or, for the four read from their own websites, as
+  those sites list them ("Meetings: authorities' own websites", below). None of the 13 Modern.gov committee lists
+  checked then had the mayor's decisions as a live committee: West Midlands' "Mayoral Decision" is marked deleted, so
+  nothing is read from it unless it returns. Lancashire's are on Lancashire County Council's site, so only the
+  committees named are taken, and the county's own are unaffected.
 - Members (decision 20, `authority.py`): Modern.gov's attendance for an authority names the body each member
   represents ("Bradford Council", "Tameside MBC"), which is matched to the council. Each member is the mayor, a
   constituent or non-constituent member, a substitute, a co-opted member, or an appointed member who isn't a
@@ -138,12 +140,12 @@ hand each quarter against legislation.gov.uk.
 
 ## Robots.txt (decision 21)
 
-Not obeyed, by decision 21 of 6 November 2026: robots.txt isn't treated as a blanket barrier to
-councils' public records. `[robots] obey` in `config/settings.toml` is `false`, and every reader (Modern.gov, CMIS,
-CoINS, the authorities' own websites) asks `sources/robots.py`, which then allows every page without reading the file's rules. Whatever the
-setting, any `Crawl-delay` the site's robots.txt asks for is honoured where the file can be read, the crawler names
-itself, requests to one council are one at a time at least `min_interval_seconds` apart, and a site that refuses
-requests (401, 403, 429, a bot check) is asked, never worked around.
+Robots.txt isn't treated as a blanket barrier to councils' public records (decision 21). `[robots] obey` in
+`config/settings.toml` is `false`, and every reader (Modern.gov, CMIS, CoINS, the authorities' own websites) asks
+`sources/robots.py`, which then allows every page without reading the file's rules. Whatever the setting, any
+`Crawl-delay` the site's robots.txt asks for is honoured where the file can be read, the crawler names itself,
+requests to one council are one at a time at least `min_interval_seconds` apart, and a site that refuses requests
+(401, 403, 429, a bot check) is asked, never worked around.
 
 With the setting on, the rules are read as RFC 9309 says: a rule for this crawler by name ("User-agent:
 WhereCouncilsStand") is honoured over the rule for everyone; paths are compared as written and also ignoring case
@@ -151,13 +153,13 @@ WhereCouncilsStand") is honoured over the rule for everyone; paths are compared 
 then aren't asked (the load stops with "robots.txt forbids crawling", nothing written), and CMIS and CoINS sites whose
 robots.txt can't be fetched are treated as forbidding. `scripts/build_councils.py` follows the same setting.
 
-On 6 November 2026, 44 Modern.gov sites (44 councils and the Greater London Authority) were found to forbid reading,
-nearly all with Civica's usual file ("Disallow all webbot searching BUT allow Google access to mgRss for calendar
-sync"). They are read as before. The **26 councils on CMIS** marked `robots` under the earlier rule (every Civica-hosted site,
-and Derby, Essex, Harborough, Hull, Walsall, Warrington and West Dunbartonshire's own) are `ok` again, as decided on
-6 November 2026, and are loaded once on the server (docs/OPERATIONS.md). Hull's (`cmis.hullcc.gov.uk`) accepts connections but never completes the secure handshake, from the
-server as from elsewhere (7 November 2026), so it is marked `unreachable` until it answers again. A council marked `robots` (`Council.withheld`)
-isn't asked, and anything stored for it is kept but not shown, searched or updated; none that is loaded is marked.
+On 6 November 2026, 44 Modern.gov sites (44 councils and the Greater London Authority) forbade reading, nearly all
+with Civica's usual file ("Disallow all webbot searching BUT allow Google access to mgRss for calendar sync"), and so
+did 26 councils' CMIS sites (every Civica-hosted site, and Derby, Essex, Harborough, Hull, Walsall, Warrington and
+West Dunbartonshire's own). All of them are read. Hull's (`cmis.hullcc.gov.uk`) accepts connections but never
+completes the secure handshake, from the server as from elsewhere (7 November 2026), so it is marked `unreachable`
+until it answers again. A council marked `robots` by hand (`Council.withheld`) isn't asked, and anything stored for
+it is kept but not shown, searched or updated; none that is loaded is marked.
 
 ## Meetings: CMIS sites
 
@@ -166,13 +168,13 @@ Civica's CMIS (and Nottinghamshire's variant of it, "DMS") is an ASP.NET (DotNet
 `data/raw/cmis/<council>/`. Councils on CMIS have `system` `cmis` in `councils.csv`; `modgov_url` holds the site's
 base address.
 
-Robots and refusals. Every page is checked with `sources/robots.py` before it is fetched, and any `Crawl-delay`
-is honoured. With `[robots] obey` off (decision 21) every page is allowed. With it on, a site whose robots.txt forbids
-its pages gets "robots.txt forbids crawling" and nothing is read: every Civica-hosted site (`*.cmis.uk.com`,
-`*.cmis-ni.org`), whose robots.txt is `Disallow: /`, which is why 26 councils were left out until November 2026; and
-Nottinghamshire's documents (`Disallow: /DMS/Document.ashx`), which are read now. A 401, 403,
-429 or a bot check's page stops the council's load with an error; it isn't retried or worked around. (A redirect to
-`login.aspx`, as Norwich's home page does, is a page that needs a login, not a refusal: it is skipped.)
+Robots and refusals. Every page is checked with `sources/robots.py` before it is fetched, and any `Crawl-delay` is
+honoured. With `[robots] obey` off (decision 21) every page is allowed. With it on, a site whose robots.txt forbids
+its pages gets "robots.txt forbids crawling" and nothing is read: that would stop every Civica-hosted site
+(`*.cmis.uk.com`, `*.cmis-ni.org`, whose robots.txt is `Disallow: /`) and Nottinghamshire's documents (`Disallow:
+/DMS/Document.ashx`). A 401, 403, 429 or a bot check's page stops the council's load with an error; it isn't retried
+or worked around. (A redirect to `login.aspx`, as Norwich's home page does, is a page that needs a login, not a
+refusal: it is skipped.)
 
 | Page | Used for |
 |---|---|
@@ -311,18 +313,18 @@ What was found:
   minutes, and three of its board's, only inside the next meeting's agenda pack, and Tees Valley its scrutiny
   committee's since 2026 and a few of its cabinet's; these meetings are kept without minutes or attendance. Tees
   Valley's site has nothing before April 2019 (the archive starts with the 2019/20 council year).
-- Attendance is read from the list at the top of the minutes: "Present:" or "ATTENDEES", with sections for
-  members, associate members, apologies, and those in attendance or officers (only councillors and mayors are kept
-  from the last three: Tees Valley lists officers' apologies with the members', with nothing to tell them apart).
-  The layouts differ: a name a line with the council in brackets ("Councillor Ian Blades (Middlesbrough Council)
-  (Chair)"), a name a line with the roles in a column beside them, which comes out of the PDF after the names ("Leader,
-  Hartlepool Borough Council") and is matched in order (a member written without a title whose role is a council's
-  leader or "Mayor of Middlesbrough" is that councillor or mayor), the council after a comma, or a sentence ("Councillors
-  Handley, Ross, Tock (substituting for Councillor Dad), and Tucker", "Cllr M Fryer (Chair), Cllr J Brook (Vice Chair)
-  ..."). A councillor named without their council is matched to the authority's member councils' stored records by
-  surname and first name or initial, within a year (`authority.find_member`), and takes that council and its record's
-  full name; one not matched (a council the site doesn't hold, or two who fit) is a non-constituent member with no
-  party. A body or office is never read as a person.
+- Attendance is read from the list at the top of the minutes: "Present:" or "ATTENDEES", with sections for members,
+  associate members, apologies, and those in attendance or officers (only councillors and mayors are kept from the
+  last three: Tees Valley lists officers' apologies with the members', with nothing to tell them apart). The layouts
+  differ: a name a line with the council in brackets ("Councillor Ian Blades (Middlesbrough Council) (Chair)"), a
+  name a line with the roles in a column beside them, which comes out of the PDF after the names ("Leader, Hartlepool
+  Borough Council") and is matched in order (a member written without a title whose role is a council's leader or
+  "Mayor of Middlesbrough" is that councillor or mayor), the council after a comma, or a sentence ("Councillors
+  Handley, Ross, Tock (substituting for Councillor Dad), and Tucker", "Cllr M Fryer (Chair), Cllr J Brook (Vice
+  Chair) ..."). A councillor named without their council is matched to the authority's member councils' stored
+  records by surname and first name or initial, within a year (`authority.find_member`), and takes that council and
+  its record's full name; one not matched (a council the site doesn't hold, or two who fit) is a non-constituent
+  member with no party. A body or office is never read as a person.
 - Members are then classed as on Modern.gov (`authority.classify`, decision 20): the mayor, councillors (constituent
   or non-constituent members, substitutes), and appointed members who aren't councillors (business board chairs,
   members of the old local enterprise partnership, the police and crime commissioner), counted with their names

@@ -1,4 +1,4 @@
-"""The briefing test set (``eval/questions.toml``, roadmap X8) and how the site is scored against it (adapted from
+"""The briefing test set (``eval/questions.toml``) and how the site is scored against it (adapted from
 Where Countries Stand's).
 
 It can be run in either of two ways.

@@ -1,10 +1,9 @@
 # Design
 
-Where Councils Stand uses the Where They Stand family's design (family kit 2.0, November 2026), shared with its
-sister sites: a white page, light grey panels, the site's cloth as a solid band across the top of every page, Source
-Serif 4 for headings and Source Sans 3 for everything else. It replaced an earlier "minute book" look (warm off-white
-paper, Literata body text, headings in small capitals between rules, a double rule under the masthead, a numbered
-list of example questions and coloured edges on sources).
+The site's design: how it stays independent of councils, its layout, colours, type and mark. Where Councils Stand
+uses the Where They Stand family's design (family kit 2.0), shared with its sister sites: a white page, light grey
+panels, the site's cloth as a solid band across the top of every page, Source Serif 4 for headings and Source Sans 3
+for everything else.
 
 ## Independence from councils
 
@@ -38,10 +37,11 @@ The site must look like a record of councils' decisions. Nothing on it should re
 
 ## The family binding
 
-The kit (`web/public/family`, copied in by the charity's `family/kit/sync.mjs`; README, "In the family") gives the
-colour tokens, the fonts, the endorsement, the footer shelf, the favicon, the link card and the theme colour. Its
-files are included as they are (`<!--#include family/shelf-->` in the partials) and never edited here. On the brown
-band the endorsement's spine is drawn a shade darker than the cloth so that it stays visible.
+The kit (`web/public/family`, copied in by the charity's `family/kit/sync.mjs`; README, "The Where They Stand
+family") gives the colour tokens, the fonts, the endorsement, the footer shelf, the favicon, the link card and the
+theme colour. Its files are included as they are (`<!--#include family/shelf-->` in the partials) and never
+edited here. On the brown band the endorsement's spine is drawn a shade darker than the cloth so that it stays
+visible.
 
 ## Colour and type
 
@@ -52,7 +52,7 @@ band the endorsement's spine is drawn a shade darker than the cloth so that it s
 | Page, panel, ink, rules | Text and backgrounds | The kit's `--wts-paper-light`, `--wts-paper`, `--wts-ink`, `--wts-ink-muted` and `--wts-rule-faint`, light and charcoal dark |
 | Warning (`--warn`) | Notices, text a source doesn't support | Amber, `oklch(55% 0.125 82)` (light), `oklch(84% 0.12 88)` (dark) |
 
-- Brown is the site's identity colour and the only one it uses for itself (family decision 2).
+- Brown is the site's identity colour and the only one it uses for itself.
 - Party colours are used only where a chart needs to tell parties apart (members by party on a council's page),
   with the colours readers associate with each party. Local parties and independents share one grey.
 - Votes use neutral marks: filled for "for", outlined for "against", hatched for "abstained".
@@ -69,11 +69,11 @@ gilt, so the edge still shows at 16 pixels), drawn in the same manner as Where M
 spire behind a pediment, four columns on a stylobate, and a gilt step (`web/partials/mark.html`, drawn inline at
 52 px, 44 px on a phone). It was chosen from seven drawings (decision 16). In dark mode the tile and the clock
 face are the family's lifted cloth, at 3:1 against the page; the stone and gilt keep their colours. In forced colours
-it is redrawn in the system's two colours. It is the site's page mark (family decision 4).
+it is redrawn in the system's two colours.
 
 The same drawing is in `web/public/` for others to use: `mark.svg` (light), `mark-dark.svg` (the lifted cloth), and
 `mark-small.svg` and `mark-small-dark.svg` for 16 to 32 pixels, with three columns, a heavier edge and step, and no
-clock hands. Today the favicon, the footer shelf and the link card use the family's spine. In the header the mark
+clock hands. The favicon, the footer shelf and the link card use the family's spine. In the header the mark
 sits on the band of the same brown, so its gilt edge frames it.
 
 ## Shared with the family
@@ -89,7 +89,7 @@ sits on the band of the same brown, so its gilt edge frames it.
 - On a phone (below 30rem) the councils page's tables become blocks, one per council (`.stack-table`): the
   council's name and type, its row heading, on top, then each other column as a pair, its name (`data-label`) beside
   its value. The column headings stay for screen readers, and explicit table roles keep it a table for them once its
-  display changes. Columns marked `wide-only` (meetings, from) are left out there, as before.
+  display changes. Columns marked `wide-only` (meetings, from) are left out there.
 - A table of a few short figures (`.table-wrap.narrow`, figures in tabular numerals), a council's meetings by
   year, shares its row with the latest meetings, so it stays narrow enough to read across on a wide screen.
 - Dates in a timeline take the width of the longest, but never more than 16rem or 45% of the line, so on a narrow

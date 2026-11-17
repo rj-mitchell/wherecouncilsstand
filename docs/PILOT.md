@@ -1,7 +1,8 @@
 # Pilot: 20 councils, May 2018 to October 2026
 
-Run 24 October 2026. It tests whether full council and cabinet minutes from Modern.gov can be loaded and read reliably
-enough to build Where Councils Stand on, and what that costs.
+The record of the pilot run on 24 October 2026, the full load that followed, and the hand checks of named votes and
+removed names, with what each check led to. The pilot tested whether full council and cabinet minutes from
+Modern.gov could be loaded and read reliably enough to build Where Councils Stand on, and what that would cost.
 
 ## Which councils
 
@@ -39,8 +40,8 @@ proportion to the number of English councils of each type, and 3 Welsh councils,
   Rother in May 2019: their Modern.gov history begins then.
 - Manchester, from September 2018, is close enough.
 
-That's slightly behind the earlier survey's 79% for 2018. Each council's page will need to show its own start date
-(docs/DECISIONS.md, 4), and the gaps would need another source.
+So each council's page shows its own start date ([decision 4](DECISIONS.md#4-how-far-back)); the gaps would need
+another source.
 
 ### Minutes text
 
@@ -63,9 +64,7 @@ minutes document. By year:
 - 2026 dips because recent minutes aren't approved yet.
 
 Minutes published only as a document. A meeting's minutes are attached to the agenda of the committee's next
-meeting, at the item that approves them ("02 Minutes 011123" on the January agenda is November's minutes). An
-earlier version of this note counted those attachments as the meeting's own minutes, which overstated how many
-councils publish minutes only as a document; the table above corrects that.
+meeting, at the item that approves them ("02 Minutes 011123" on the January agenda is November's minutes).
 
 `sources/documents.py` now finds each meeting's own minutes document by the date in its title, extracts the text and
 splits it into the meeting's agenda items. In the pilot this added minutes for 65 meetings: 347 agenda items, plus
@@ -265,11 +264,12 @@ by a structural rule rather than a pattern: **a vote that puts one member, or on
 entirely.** Every Kirklees vote misread this way had members on two sides. (Before, only that member was unlinked.)
 
 So the rate of votes with a member on the wrong side went from 9 in 100 to 2 in 100, and stayed at 2 in the third
-sample, each time from a wording not seen before. Each of those is now fixed or left out. The rules that don't
-depend on wording (counts must agree, a "for" side is needed, no member on two sides) would have caught at least 2 of the
-4 wrong-side votes in the last two samples (South Norfolk's printed totals, Kirklees's members on two sides). **The target of none is not yet met on an untouched sample**; at this rate
-expect about 1 vote in 100 with an error the rules don't catch. Every vote links to the council's own minutes, and the
-corrections route covers what slips through.
+sample, each time from a wording not seen before. Each of those is now fixed or left out. The rules that don't depend
+on wording (counts must agree, a "for" side is needed, no member on two sides) would have caught at least 2 of the 4
+wrong-side votes in the last two samples (South Norfolk's printed totals, Kirklees's members on two sides). **The
+target of none is not yet met on an untouched sample**; at this rate expect about 1 vote in 100 with an error the
+rules don't catch. Every vote links to the council's own minutes, and the corrections route covers what slips
+through.
 
 Across the 88 councils loaded at the time, all these changes read 9.7% fewer named votes (2,489 to 2,248), mostly
 votes now left out by the three rules, and cut names matched to no member from 3,034 to 2,520.
@@ -377,9 +377,10 @@ per-council table and the year-by-year figures come from `councils report --all`
   with a vector for meaning search. A hybrid (keyword and meaning) search over all of them takes a few seconds.
 - Storage: 3.3 GB of cached responses, 180 MB of Parquet, 3.5 GB of search index.
 - Time: two runs of about two hours each, then retries for the last few councils, 20 councils at a time and one
-  request at a time to each. Slow servers set the pace: the last few councils took hours on their own. Embedding for meaning search ran on the machine's own
-  processor at roughly 30 passages a second: about five hours for the whole archive, in resumable runs, newest first.
-  Re-indexing keeps the vectors of passages whose text is unchanged, so later runs embed only what changed.
+  request at a time to each. Slow servers set the pace: the last few councils took hours on their own. Embedding for
+  meaning search ran on the machine's own processor at roughly 30 passages a second: about five hours for the whole
+  archive, in resumable runs, newest first. Re-indexing keeps the vectors of passages whose text is unchanged, so
+  later runs embed only what changed.
 
 Problems found only at this scale, now fixed:
 
@@ -395,7 +396,7 @@ Problems found only at this scale, now fixed:
 AI costs depend on briefings asked for, not on how many councils are covered. A briefing reads the same number
 of sources whatever the size of the archive, so the cost per briefing will be close to Where MPs Stand's.
 
-## Back to February 2014?
+## Back to February 2014
 
 Decision 4 names extending back to 25 February 2014, when English councils had to start recording named budget
 votes, as the next step. To see what that would add, the 20 pilot councils were loaded for 25 February 2014 to
@@ -410,21 +411,12 @@ votes, as the next step. To see what that would add, the 20 pilot councils were 
 
 So extending would add about four years for roughly two councils in three, and nothing for the rest. That makes
 coverage uneven, which decision 4 chose May 2018 to avoid. Each council's page already shows its own coverage
-dates, so it can be done; whether to do it is a decision still to be made.
+dates, so it can be done; it has not been decided.
 
-## Next steps
+## Open items
 
-1. ~~Read minutes that are published only as PDF documents.~~ Done where councils serve documents; the rest need
-   another network or the councils' agreement.
-2. ~~Remove the names of people who aren't councillors from anything shown.~~ Done; a larger check of misses is
-   still to do.
-3. ~~Load the remaining councils~~ (213 of 215 loaded), and record each council's licence statement.
-4. ~~Check a fresh sample of 50 votes by hand against a set target.~~ Done across all councils, then twice with
-   100 votes three times: 9, then 2, then 2 votes with members on the wrong side, each fixed or now left out. The
-   target of none isn't met on an untouched sample. It was decided (6 November 2026, decision 15) that about 1
-   in 100 is acceptable for the alpha, said plainly on the methodology page, and that a test set of checked votes
-   is built before the beta.
-5. ~~Adapt Where Countries Stand's index and briefing engine to council minutes, with "the minutes record that…"
-   wording (docs/DECISIONS.md, 7).~~ Done, from the command line.
-6. Retry the 25 councils that blocked automated requests and the 45 that were unreachable, from another network.
-   Ask the ones still blocking to allow the crawler.
+- Record each council's licence statement ([decision 10](DECISIONS.md#10-reuse)).
+- Build a test set of checked votes before the beta ([decision 15](DECISIONS.md#15-vote-accuracy-in-the-alpha)).
+- Repeat the check for names that should have been removed, on the full record.
+- Councils whose sites refuse or don't answer the server are asked for permission by letter
+  ([`outreach/`](../outreach/)).
