@@ -1,4 +1,5 @@
-"""Build data_static/landlords_links.csv: for each council, its pages on Where Landlords Stand (README, "In the family").
+"""Build data_static/landlords_links.csv: for each council, its pages on Where Landlords Stand (README, "The
+Where They Stand family").
 
     uv run python scripts/landlords_links.py [--landlords ../wherelandlordsstand] [--site https://wherelandlordsstand.com]
 

@@ -1,5 +1,5 @@
-/** Links to the charity's sister sites (README, "In the family"). A link to a sister site always names it and shows
- * its spine, so the reader knows they are going to another site. The spine is drawn as the family kit draws it
+/** Links to the charity's sister sites (README, "The Where They Stand family"). A link to a sister site always
+ * names it and shows its spine, so the reader knows they are going to another site. The spine is drawn as the family kit draws it
  * (public/family: marks.mjs's bookSpine), and takes its cloth from the kit's stylesheet, light or dark. */
 import type { ReactNode } from "react";
 

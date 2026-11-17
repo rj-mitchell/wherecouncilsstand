@@ -1,4 +1,4 @@
-"""The Where They Stand family kit in web/public/family (README, "In the family").
+"""The Where They Stand family kit in web/public/family (README, "The Where They Stand family").
 
 The kit is copied in by the charity's family/kit/sync.mjs and committed; the copies must not be edited. Its VERSION
 file records a hash of every file it wrote, so this checks the copy against its own record without needing the

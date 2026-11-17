@@ -7,7 +7,8 @@ import react from "@vitejs/plugin-react";
 const here = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
 /** Pages share one head, header and footer: <!--#include header--> pulls in partials/header.html, and
- * <!--#include family/shelf--> the Where They Stand family kit's public/family/shelf.html (README, "In the family"). */
+ * <!--#include family/shelf--> the Where They Stand family kit's public/family/shelf.html (README, "The Where They
+ * Stand family"). */
 function partials(): Plugin {
   const file = (name: string) =>
     name.startsWith("family/") ? here(`./public/${name}.html`) : here(`./partials/${name}.html`);

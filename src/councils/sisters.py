@@ -1,4 +1,5 @@
-"""Links to the charity's sister sites where their records meet this one's (README, "In the family").
+"""Links to the charity's sister sites where their records meet this one's (README, "The Where They Stand
+family").
 
 Where Landlords Stand covers social landlords in England, councils among them. Both sites key councils by ONS GSS
 code, so a council's page here links to the council's own page there, where it owns homes, and to the area page
