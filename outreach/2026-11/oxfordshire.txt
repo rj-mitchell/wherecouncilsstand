@@ -7,7 +7,7 @@ I'm writing from Where Councils Stand (https://wherecouncilsstand.com), an indep
 
 Your committee site, https://mycouncil.oxfordshire.gov.uk, is public, but it doesn't answer requests from our server: the connection is refused, cut off or times out. This may be a firewall setting that turns away addresses in data centres. We have left Oxfordshire County Council out for now. We would like to include Oxfordshire, so I'm writing to ask whether you would be willing to let our server's requests through. It is at [the server's IP address, as given in the letter sent], and identifies itself as "WhereCouncilsStand" (the full user agent is below).
 
-This is how it would read your site.
+How it would read your site:
 
 - Only what is public: Modern.gov's web service for the committees, meetings, attendance and minutes of full council and cabinet, and minutes published as documents.
 - At most one request a second. Every response is kept once fetched, so nothing is read twice.

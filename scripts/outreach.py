@@ -127,8 +127,8 @@ def letter(row: dict, address: str, greeting: str, passed_on: bool, why_you: str
             f"Your committee site, {url}, refuses requests from our server: "
             + ("the web service Modern.gov provides for reading meetings (mgWebService.asmx) answers \"403 Forbidden\". "
                if modgov else "it answers \"403 Forbidden\". ")
-            + f"This may be a firewall or bot-protection setting. We have left {name} out for now and will not try "
-            f"to get round the block. We would like to include {short}, so I'm writing to "
+            + f"This may be a firewall or bot-protection setting rather than a choice about this kind of use. We have "
+            f"left {name} out rather than try to get round it. We would like to include {short}, so I'm writing to "
             f"ask whether you would be willing to let our server's requests through. It is at {SERVER_ADDRESS}, and "
             "identifies itself as \"WhereCouncilsStand\" (the full user agent is below). If you'd rather we read the "
             "published minutes some other way, I'd be glad to hear it.\n")
@@ -173,7 +173,7 @@ def letter(row: dict, address: str, greeting: str, passed_on: bool, why_you: str
                    "new meetings, re-reading only meetings from the last four months, because minutes can be "
                    "corrected when they are approved.\n")
     parts.append(
-        "This is how it would read your site.\n\n" + reading
+        "How it would read your site:\n\n" + reading
         + f"- It identifies itself as: {USER_AGENT}\n"
         "- Names of people who aren't councillors are removed before anything is shown.\n")
     parts.append(
@@ -220,7 +220,7 @@ def main() -> None:
             path.write_text(write(row))
             written += 1
         elif path.exists():
-            path.unlink()        # read now: its letter is withdrawn
+            path.unlink()        # read now: its letter is withdrawn (it stays in git history)
     print(f"{written} letters in {out.relative_to(ROOT)} (and {post.relative_to(ROOT)})")
 
 
