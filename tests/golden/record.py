@@ -1,14 +1,14 @@
 """Record what Where Councils Stand's own code gave before it moved onto wts-core (14 November 2026).
 
-Run on the code as it was (the commit this file was added in, or any before the switch):
+It was run on the code as it was before the switch:
 
     uv run python tests/golden/record.py [folder to write into; default: this one]
 
-It writes the JSON files beside it, which tests/test_parity.py compares with what the site gives now, and
+It wrote the JSON files beside it, which tests/test_parity.py compares with what the site gives now, and
 ``old-state.sql``, a state database made by the old code with rows of every kind, which the import is tested on.
 It needs the modules the switch deleted (``councils.api.state``, ``councils.api.usage``, ``councils.backup``,
-``councils.offsite``, ``councils.rag.verify`` and the rest), so it does not run on the code as it is now: check out
-the old commit to record again.
+``councils.offsite``, ``councils.rag.verify`` and the rest), so it does not run on the code as it is now. It is
+kept as the record of how the goldens were made.
 """
 
 from __future__ import annotations
@@ -86,7 +86,7 @@ def numbered_ids() -> None:
     StateDB.new_briefing_id = staticmethod(lambda: next(ids))
 
 
-# ---- settings ------------------------------------------------------------------------------------------------------
+# Settings
 
 
 def settings(tmp: Path) -> list[dict]:
@@ -111,7 +111,7 @@ def settings(tmp: Path) -> list[dict]:
     return out
 
 
-# ---- the per-minute limit, a visitor's code, cost, the cache's key, the caps ----------------------------------------
+# The per-minute limit, a visitor's code, cost, the cache's key, the caps
 
 
 def limits(tmp: Path) -> dict:
@@ -213,7 +213,7 @@ def caps(tmp: Path) -> dict:
             "cache": json.loads(json.dumps(cache, default=str))}
 
 
-# ---- /api/ask over a scripted pipeline ----------------------------------------------------------------------------
+# /api/ask over a scripted pipeline
 
 REQUEST = SimpleNamespace(client=SimpleNamespace(host=shared.ADDRESS), headers={}, cookies={})
 
@@ -263,7 +263,7 @@ def asks(tmp: Path) -> list[dict]:
         StateDB.new_briefing_id = REAL_ID
 
 
-# ---- the made-up record: the real pipeline, the pages, the other endpoints ----------------------------------------
+# The made-up record: the real pipeline, the pages, the other endpoints
 
 
 def a_site(folder: Path, limits: dict | None = None):
@@ -460,7 +460,7 @@ def pages(tmp: Path) -> list[dict]:
     return out
 
 
-# ---- the checks on briefings --------------------------------------------------------------------------------------
+# The checks on briefings
 
 
 def checked(blocks: list[dict], sources: list[Source]) -> dict:
@@ -502,7 +502,7 @@ def write_checks(out: Path) -> None:
     shared.write(out, "checks.json", recorded)
 
 
-# ---- backups -------------------------------------------------------------------------------------------------------
+# Backups
 
 
 def backups(tmp: Path) -> dict:
@@ -527,7 +527,7 @@ def offsite_copies(tmp: Path) -> list[dict]:
         check=lambda env, client: offsite.check(env=env, client=client))
 
 
-# ---- a state database made by the old code, for the import ---------------------------------------------------------
+# A state database made by the old code, for the import
 
 OTHER = shared.visitor_of("203.0.113.7")
 MINE = shared.visitor_of(shared.ADDRESS)

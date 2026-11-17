@@ -2,6 +2,9 @@
 (tests/test_parity.py, run on the code as it is now) both need: a clock that is told the time, the made-up record
 the scenarios run on, a scripted pipeline, a simulated Backblaze B2, and the scripts themselves. Nothing here
 imports the site's code, so it reads the same under either.
+
+The goldens of the pages were later edited once, by fixed text substitutions only, to match the site's move to the
+family's 2.0 design (page titles, headings, wording and curly apostrophes); every other difference still fails.
 """
 
 from __future__ import annotations
@@ -82,7 +85,7 @@ def plain(value: Any, *folders: tuple[Path, str]) -> Any:
     return json.loads(text)
 
 
-# ---- settings ------------------------------------------------------------------------------------------------------
+# Settings
 
 SAMPLE_CONFIG = """\
 [paths]
@@ -146,7 +149,7 @@ def settings_given(s: Any) -> dict[str, Any]:
             "site": s.section("site"), "no_such_section": s.section("no_such_section")}
 
 
-# ---- the per-minute limit, and a visitor's code ---------------------------------------------------------------------
+# The per-minute limit, and a visitor's code
 
 LIMITER_SCRIPT: list[list[Any]] = (
     [[0.0, "a"]] * 21 + [[0.0, "b"], [0.0, ""]] + [[30.0, "a"], [59.9, "a"], [60.0, "a"], [60.1, "a"]]
@@ -156,7 +159,7 @@ ADDRESSES: list[str | None] = [
     None, "", "testclient", "203.0.113.7", "203.0.113.8", "2001:db8:1:2::1", "2001:db8:1:2:9::9", "2001:db8:1:3::1",
     "::ffff:203.0.113.7", "::1", "not an address"]
 
-# ---- cost: a table of usages and models -----------------------------------------------------------------------------
+# Cost: a table of usages and models
 
 USAGES: list[dict[str, Any] | None] = [
     None, {},
@@ -180,7 +183,7 @@ USAGES: list[dict[str, Any] | None] = [
 MODELS: list[str | None] = [None, "claude-sonnet-5-5", "claude-haiku-5-5", "claude-haiku-5-5-20261001",
                             "claude-opus-5-5", "a-model-nobody-priced"]
 
-# ---- the answer cache's key: a table of questions and options --------------------------------------------------------
+# The answer cache's key: a table of questions and options
 
 EARLIER = [{"question": "What have councils decided about bin collections?", "answer": "Barnsley kept them weekly."}]
 KEY_BODIES: list[dict[str, Any]] = [
@@ -197,7 +200,7 @@ KEY_BODIES: list[dict[str, Any]] = [
 ]
 KEY_STAMPS: list[float] = [0.0, 1731500000.25]
 
-# ---- the caps, over scripted spending --------------------------------------------------------------------------------
+# The caps, over scripted spending
 # Each step: ["spend", kind, model, usage number (of USAGES), visitor], ["check", visitor, pending], ["paused",
 # pending], ["count", visitor], ["spent"], ["set", time]. A step of kind "answer" is also counted as one of the
 # visitor's briefings for the day, as the site's route does.
@@ -241,7 +244,7 @@ CACHE_SCRIPT: list[list[Any]] = [
 ]
 
 
-# ---- the made-up record: two councils, two meetings, one named vote --------------------------------------------------
+# The made-up record: two councils, two meetings, one named vote
 
 TODAY = date(2026, 10, 24)
 
@@ -377,7 +380,7 @@ def without_scores(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
             if e.get("type") == "sources" else e for e in events]
 
 
-# ---- what the model is sent ---------------------------------------------------------------------------------------
+# What the model is sent
 # Questions through the real pipeline on the made-up record, for the requests themselves: the instructions, the
 # sources as documents, the question as the site words it, the model, the effort, the fallback.
 
@@ -413,7 +416,7 @@ def requests_made(fake: FakeClient) -> dict[str, Any]:
     return {"briefings": [stored(k) for k in fake.calls], "questions_read": [stored(k) for k in fake.parses]}
 
 
-# ---- an index made by the old code -------------------------------------------------------------------------------
+# An index made by the old code
 # tests/fixtures/old-index is the search index the old code built from the made-up record (its tables, its
 # state.json), kept as it left it. These are the searches made on it, and what each gave.
 
@@ -454,7 +457,7 @@ def search_given(result: Any) -> dict[str, Any]:
                                   "semantic": result.semantic_available, "evidence": result.evidence}, default=str))
 
 
-# ---- ranking, and the balanced choice of evidence ------------------------------------------------------------------
+# Ranking, and the balanced choice of evidence
 
 RANKING_TODAY = date(2026, 11, 13)
 RANKING_PARAMS: list[dict[str, Any]] = [
@@ -535,7 +538,7 @@ PAGES_READ: list[str] = [
     "/api/briefings/old789",
 ]
 
-# ---- a scripted pipeline, in this site's shapes ------------------------------------------------------------------
+# A scripted pipeline, in this site's shapes
 
 Q = "What have councils said about closing public toilets since 2020?"
 Q2 = "And what did the district councils decide?"
@@ -801,7 +804,7 @@ def visitor_of(address: str, salt: str = SALT) -> str:
     return hashlib.sha256(f"{salt}|{address}".encode()).hexdigest()[:24]
 
 
-# ---- the checks on briefings: sources, blocks and saved answers ---------------------------------------------------
+# The checks on briefings: sources, blocks and saved answers
 
 SOURCES: list[dict[str, Any]] = [
     {"n": 1, "title": "Barnsley Metropolitan Borough Council, full council, 26 February 2025: Notice of Motion - "
@@ -1097,7 +1100,7 @@ BRITISH_TEXTS = [
     "A program to catalog gray areas: 40 percent traveled toward the theater.",
 ]
 
-# ---- reports and statements: what is sent ---------------------------------------------------------------------------
+# Reports and statements: what is sent
 # Each step is a request. The clock moves on 61 seconds before each, so the limit of twenty a minute never bites.
 
 WORDS = ("I voted against this motion because the council had already agreed a review of collections, and the "
@@ -1197,7 +1200,7 @@ API_STEPS: list[dict[str, Any]] = [
      "get": f"/api/statements?council={BARNSLEY}"},
 ]
 
-# ---- what the owner types ---------------------------------------------------------------------------------------
+# What the owner types
 # Sent first, one each minute: five statements and four reports. Then the owner's command lines, under the names the
 # site had before wts-core (`publish-statement 1`), one each minute. "<tmp>" is the scenario's own folder.
 
@@ -1320,7 +1323,7 @@ def command_run(result: Any, tmp: Path) -> dict[str, Any]:
                                   "error": error}).replace(json.dumps(str(tmp))[1:-1], "<tmp>"))
 
 
-# ---- backups -----------------------------------------------------------------------------------------------------
+# Backups
 
 
 def database(path: Path, damaged: bool = False) -> Path:
