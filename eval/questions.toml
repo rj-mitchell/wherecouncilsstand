@@ -16,7 +16,7 @@
 
 today = "2026-11-06"
 
-# ---- topics, no filters --------------------------------------------------------------------------------------------
+# Topics, no filters
 
 [[q]]
 id = "bins-weekly"
@@ -54,7 +54,7 @@ question = "What have councils decided about spending on potholes and road repai
 category = "topic"
 expect = { date_from = "default" }
 
-# ---- dates ---------------------------------------------------------------------------------------------------------
+# Dates
 
 [[q]]
 id = "climate-emergency"
@@ -87,7 +87,7 @@ category = "dates"
 expect = { date_from = "2012", date_to = "2012" }
 no_records = true
 
-# ---- nations -------------------------------------------------------------------------------------------------------
+# Nations
 
 [[q]]
 id = "wales-second-homes"
@@ -113,7 +113,7 @@ question = "What have English councils said about local government reorganisatio
 category = "nation"
 expect = { date_from = "default", nations = ["england"] }
 
-# ---- parties: who runs the council, and what councillors did -----------------------------------------------------
+# Parties: who runs the council, and what councillors did
 
 [[q]]
 id = "reform-budgets"
@@ -158,7 +158,7 @@ category = "party"
 # comparing councils run by different parties is a grouping, not a filter; either reading is acceptable
 expect = { date_from = "default", control_any = [[], ["CON", "LD"]] }
 
-# ---- named councils ------------------------------------------------------------------------------------------------
+# Named councils
 
 [[q]]
 id = "barnsley-libraries"
@@ -195,7 +195,7 @@ category = "council"
 expect = { date_from = "default", councils = ["W06000002"] }
 include = ["W06000002"]
 
-# ---- kinds of council ----------------------------------------------------------------------------------------------
+# Kinds of council
 
 [[q]]
 id = "county-adult-care"
@@ -215,7 +215,7 @@ question = "What have unitary authorities decided about children's homes?"
 category = "type"
 expect = { date_from = "default", council_types = ["unitary"] }
 
-# ---- outside the record --------------------------------------------------------------------------------------------
+# Outside the record
 
 [[q]]
 id = "planning-application"

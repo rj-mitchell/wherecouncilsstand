@@ -65,7 +65,7 @@ def sent(replies, page: str, council: str | None, name: str, role: str, text: st
                           email=email)
 
 
-# ---- what the form accepts ---------------------------------------------------------------------------------------
+# What the form accepts
 def test_a_statement_is_received_as_waiting_and_not_shown(site):
     c, _, state, _ = site
     r = c.post("/api/statements", json=body())
@@ -182,7 +182,7 @@ def test_the_report_form_takes_the_policys_routes_and_keeps_its_old_ones(site):
     assert [r["kind"] for r in state.reports()] == ["takedown", "other", "unfair", "error"]
 
 
-# ---- the owner's commands ----------------------------------------------------------------------------------------
+# The owner's commands
 @pytest.fixture
 def owners(tmp_path, monkeypatch, settings):  # noqa: F811
     """The owner's command line on the made-up record, and the site's reports, statements and saved briefings as
@@ -349,7 +349,7 @@ def test_the_address_is_kept_for_just_under_three_months(tmp_path, settings):  #
     assert state.statement(sid)["email"] is None
 
 
-# ---- how a statement is shown ------------------------------------------------------------------------------------
+# How a statement is shown
 def test_a_published_statement_is_shown_beside_its_item_and_on_its_councils_page(site):
     c, _, state, _ = site
     sid = c.post("/api/statements", json=body()).json()["id"]
@@ -394,7 +394,7 @@ def test_the_pages_sent_to_readers_without_scripts_carry_the_statement_after_the
     assert "Statement from" not in t.get(f"/votes/{VOTE}").text
 
 
-# ---- never part of the record ------------------------------------------------------------------------------------
+# Never part of the record
 def test_a_statement_never_reaches_the_ai_model_or_the_search(site):
     c, fake, state, _ = site
     for page in (f"/votes/{VOTE}", f"/councils/{BARNSLEY}"):

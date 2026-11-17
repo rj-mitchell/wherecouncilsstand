@@ -1,5 +1,5 @@
 """The record of each briefing, the structured log, and the commands that read them (`councils stats`,
-`councils weekly-report`, `councils tidy`): docs/OPERATIONS.md, "How briefings went"."""
+`councils weekly-report`, `councils tidy`): docs/OPERATIONS.md, "Briefing statistics"."""
 
 import json
 import logging

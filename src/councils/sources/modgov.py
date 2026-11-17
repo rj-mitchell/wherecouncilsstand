@@ -8,7 +8,7 @@ replaced by a gzipped copy when next fetched (docs/OPERATIONS.md has the command
 Dates in requests and responses are day/month/year.
 
 Every request is checked against the site's robots.txt first (sources/robots.py; decision 21), and any Crawl-delay is
-honoured. The check obeys robots.txt's rules only when ``[robots] obey`` is on (off by the owner's decision of
+honoured. The check obeys robots.txt's rules only when ``[robots] obey`` is on (off by decision 21 of
 6 November 2026, so every page is allowed). With it on, a site whose robots.txt forbids the web service is not read:
 ``Refused`` stops the council's load, nothing is written, and the cache is not used in its place. With it on, a
 robots.txt that can't be fetched is treated as a server that is
@@ -124,7 +124,7 @@ class Client:
     def __exit__(self, *exc: object) -> None:
         self.close()
 
-    # Transport -----------------------------------------------------------------
+    # Transport
     def robots(self, url: str) -> None:
         """Raise ``Refused`` if robots.txt forbids the address, or ``ModgovError`` if it couldn't be fetched."""
         verdict = robots.check(url, self.user_agent)
@@ -200,7 +200,7 @@ class Client:
         plain.unlink(missing_ok=True)      # a plain copy from before the cache was gzipped
         return text
 
-    # Operations ----------------------------------------------------------------
+    # Operations
     def committees(self, refresh: bool = False, max_age_days: float | None = None) -> list[Committee]:
         root = xml(self._cached("committees.xml", "GetCommittees", refresh=refresh, max_age_days=max_age_days))
         out = []

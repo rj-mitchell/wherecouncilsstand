@@ -6,7 +6,7 @@
  * band and the colour of its buttons, and its text shade colours the links.
  */
 
-/* ---- reset ---------------------------------------------------------------------------------- */
+/* Reset */
 
 *,
 *::before,
@@ -71,7 +71,7 @@ button {
   opacity: 1;
 }
 
-/* ---- tokens ----------------------------------------------------------------------------------- */
+/* Tokens */
 
 :root {
   color-scheme: light dark;
@@ -133,7 +133,7 @@ button {
   --wts-shelf-width: calc(var(--wide) - 2 * var(--gutter));
 }
 
-/* ---- page --------------------------------------------------------------------------------------- */
+/* Page */
 
 body {
   background: var(--paper);
@@ -284,7 +284,7 @@ blockquote {
   margin-block-start: var(--space-xl);
 }
 
-/* ---- header: the cloth as a band across the page ------------------------------------------------ */
+/* Header: the cloth as a band across the page */
 
 .masthead {
   background: var(--binding);
@@ -442,7 +442,7 @@ blockquote {
   }
 }
 
-/* ---- footer: the family shelf, then the site's own links ------------------------------------------- */
+/* Footer: the family shelf, then the site's own links */
 
 .site-footer .wts-shelf {
   margin-block-start: var(--space-xl);
@@ -486,7 +486,7 @@ blockquote {
 }
 
 
-/* ---- the status page ----------------------------------------------------------------------- */
+/* The status page */
 
 .status-list {
   display: grid;
@@ -529,7 +529,7 @@ blockquote {
   }
 }
 
-/* ---- controls ------------------------------------------------------------------------------- */
+/* Controls */
 
 .button {
   display: inline-flex;
@@ -765,7 +765,7 @@ input[type="checkbox"] {
   overflow-wrap: anywhere;
 }
 
-/* ---- the briefing -------------------------------------------------------------------------- */
+/* The briefing */
 
 .briefing {
   max-width: var(--measure);
@@ -1000,7 +1000,7 @@ input[type="checkbox"] {
   color: var(--ink-soft);
 }
 
-/* ---- sources: minutes, numbered as the briefing cites them ------------------------------------- */
+/* Sources: minutes, numbered as the briefing cites them */
 
 .sources {
   list-style: none;
@@ -1073,7 +1073,7 @@ input[type="checkbox"] {
   margin-block: var(--space-l) var(--space-xs);
 }
 
-/* ---- a sister site's links (components/Sister.tsx), under the sister's name and spine ------------------------- */
+/* A sister site's links (components/Sister.tsx), under the sister's name and spine */
 
 .sister {
   display: flex;
@@ -1120,7 +1120,7 @@ input[type="checkbox"] {
   margin-inline-end: var(--space-xs);
 }
 
-/* ---- votes: neutral marks ---------------------------------------------------------------------- */
+/* Votes: neutral marks */
 
 .mark {
   display: inline-block;
@@ -1174,7 +1174,7 @@ input[type="checkbox"] {
   white-space: nowrap;
 }
 
-/* ---- tables ----------------------------------------------------------------------------------- */
+/* Tables */
 
 .table-wrap {
   overflow-x: auto;

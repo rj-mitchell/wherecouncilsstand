@@ -68,7 +68,7 @@ class Settings(core.Settings):
     def embedding(self) -> dict[str, Any]:
         return self.section("embedding")
 
-    # Data layout -------------------------------------------------------------
+    # Data layout
     @property
     def raw_dir(self) -> Path:
         return self.data_dir / "raw"

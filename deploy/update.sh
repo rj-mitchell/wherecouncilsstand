@@ -5,13 +5,9 @@
 # It fetches the new code, rebuilds and restarts the site (a few seconds of downtime), refreshes its timers and clears
 # out old build files. Where MPs Stand's web server is the front door (docs/DEPLOY.md).
 #
-# The order matters. The site's timers run `councils` commands in the image as it is at that moment, so:
-# - nothing is deployed while one of the site's own jobs is running, and the timers are held while this runs, so
-#   that none starts a command on the new image while the old site is still up (a command on new code may change
-#   the state database for the new code, which the old site, still writing, knows nothing of);
-# - the timer units are installed only once the new site is up: put in before a build that then failed, they
-#   would run commands the old image does not have, every night.
-# If anything fails, the timers that were held are started again as they were.
+# The timers run `councils` commands in whatever image is current, so nothing is deployed while one of the site's
+# jobs is running, the timers are held until the new site is up, and their units are installed only after that.
+# If anything fails, the held timers are started again.
 set -euo pipefail
 DIR="${DIR:-/opt/wherecouncilsstand}"
 UNITS_DIR="${UNITS_DIR:-/etc/systemd/system}"

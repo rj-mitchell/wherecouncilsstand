@@ -27,7 +27,7 @@ refetch_days = 120
 read_documents = true
 
 [robots]
-# Whether every reader (Modern.gov, CMIS, CoINS) obeys sites' robots.txt rules. Off: the owner's decision of
+# Whether every reader (Modern.gov, CMIS, CoINS) obeys sites' robots.txt rules. Off, as decided on
 # 6 November 2026 (docs/DECISIONS.md, 21), that robots.txt shouldn't be a blanket barrier to councils' public
 # records. Crawl-delay is still honoured where the file can be read; the crawler still names itself and keeps
 # min_interval_seconds; a site that refuses requests (403, a bot check) is still asked, never worked around.

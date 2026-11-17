@@ -74,7 +74,7 @@ BACKUP_ALERTS = AlertWording(
 )
 
 
-# ---- the tables, and the one-off import of the site's old rows ----------------------------------------------------
+# The tables, and the one-off import of the site's old rows
 
 
 def migrations() -> tuple[Migration, ...]:

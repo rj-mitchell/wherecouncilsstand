@@ -52,7 +52,7 @@ def test_evaluate_scores_questions_and_evidence(settings, tmp_path):  # noqa: F8
     assert saved.exists() and '"plans_right": 2' in saved.read_text()
 
 
-# ---- with each briefing written: the shared package's harness (`councils eval`) -------------------------------------
+# With each briefing written: the shared package's harness (`councils eval`)
 
 QUESTIONS = '''today = "2026-10-24"
 

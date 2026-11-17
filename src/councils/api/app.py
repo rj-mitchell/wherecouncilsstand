@@ -329,7 +329,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
         return response
 
-    # ---- about the site ------------------------------------------------------------------------------
+    # About the site
     @app.get("/api/health")
     def health():
         return {"ok": True}
@@ -383,7 +383,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         status_code, body = check(authorization)
         return JSONResponse(body, status_code=status_code)
 
-    # ---- questions -----------------------------------------------------------------------------------
+    # Questions
     @app.post("/api/ask")
     def ask(body: AskBody, request: Request):
         v = visitor(request)
@@ -450,7 +450,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                 "options": {k: val for k, val in b.options.items() if k != "history"},
                 "events": rechecked(b.events)}
 
-    # ---- councils and votes --------------------------------------------------------------------------
+    # Councils and votes
     def shown_directory(now: right_of_reply.Hidden) -> dict[str, Any]:
         """The list of councils, without any whose page is hidden while a concern is decided."""
         directory = data.directory()
@@ -490,7 +490,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         """The public corrections log: what was corrected or withdrawn, and when (the impartiality policy, 7.1)."""
         return {"corrections": right_of_reply.corrections(replies, archive)}
 
-    # ---- problems and takedown requests --------------------------------------------------------------
+    # Problems and takedown requests
     @app.post("/api/report")
     def report(body: ReportBody, request: Request):
         visitor(request)      # the per-minute limit only: nobody's reports are counted, and no code is kept with one
@@ -504,7 +504,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             site_parts.log.mark(about.group(1), reported=True)      # what happened next, on that briefing's record
         return {"ok": True, "id": rid}
 
-    # ---- statements under the right of reply (decision 22) -------------------------------------------
+    # Statements under the right of reply (decision 22)
     def site_hosts(request: Request) -> tuple[str, ...]:
         own = urlsplit(site.get("url") or "").hostname
         return (*SITE.hosts, *([own, f"www.{own}"] if own else []), request.url.hostname or "")
@@ -564,7 +564,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         rows = [r for r in rows if r["council"] not in now.councils]
         return {"statements": with_about(rows) if council else rows, "note": right_of_reply.NOT_ENDORSED}
 
-    # ---- pages ---------------------------------------------------------------------------------------
+    # Pages
     def page(name: str) -> FileResponse:
         path = dist / f"{name}.html"
         if not path.exists():

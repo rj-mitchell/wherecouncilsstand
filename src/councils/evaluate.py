@@ -1,7 +1,7 @@
 """The briefing test set (``eval/questions.toml``, roadmap X8) and how the site is scored against it (adapted from
 Where Countries Stand's).
 
-Two ways of running it.
+It can be run in either of two ways.
 
 **Free, with no briefing written** (this module's ``run``):
 

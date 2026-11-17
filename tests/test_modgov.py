@@ -24,7 +24,7 @@ def test_a_firewall_page_is_a_refusal_not_no_site(monkeypatch):
         assert modgov.probe(load_settings(), "X", "https://example.org")[0] == want
 
 
-# robots.txt (decision 21) -------------------------------------------------------------------------------------------
+# Robots.txt (decision 21)
 
 def test_a_site_whose_robots_txt_forbids_the_web_service_is_not_asked(monkeypatch):
     """East Sussex's and 43 other councils' Modern.gov sites say "User-agent: * / Disallow: /" (6 November 2026)."""

@@ -83,7 +83,7 @@ class MeetingRef:
     url: str
 
 
-# Pages -------------------------------------------------------------------------------------------------------------
+# Pages
 
 def _root(text: str) -> etree._Element:
     root = lhtml.fromstring(text or "<html></html>")
@@ -407,7 +407,7 @@ def on_date(history: list[tuple[str, date | None, date | None]], d: date) -> str
     return max(hits)[1] if hits else ""
 
 
-# The minutes' "Present:" list --------------------------------------------------------------------------------------
+# The minutes' "Present:" list
 
 _PRESENT_END = re.compile(r"\n\s*(?:apologies|also (?:present|in attendance)|in attendance|officers?|absent|"
                           r"(?:\d+\.?\s+)?declarations?|\d+\.\s|\d+\s+[A-Z][a-z])", re.I)
@@ -477,7 +477,7 @@ def votes_honours(name: str) -> str:
     return _HONOURS.sub(" ", name)
 
 
-# Minutes documents ---------------------------------------------------------------------------------------------------
+# Minutes documents
 
 def repair_pdf(data: bytes) -> bytes:
     """CMIS appends an update to some PDFs whose cross-reference offsets are a few bytes out, which some readers
@@ -565,7 +565,7 @@ def earlier_minutes(page: dict, meeting_date: date) -> list[dict]:
     return uniq
 
 
-# Transport -----------------------------------------------------------------------------------------------------------
+# Transport
 
 class Client:
     """One council's CMIS site: polite, cached requests."""
@@ -696,7 +696,7 @@ class Client:
         return r.content
 
 
-# Reading a site ------------------------------------------------------------------------------------------------------
+# Reading a site
 
 def _before(url: str, start: date | None) -> bool:
     """A page of committees for council years wholly before ``start``: ".../CommitteesandNotices/2015-16.aspx"."""

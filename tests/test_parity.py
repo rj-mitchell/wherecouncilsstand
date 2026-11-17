@@ -25,7 +25,7 @@ def stored(value, tmp: Path):
     return shared.plain(value, (tmp, "<tmp>"), (REPO_ROOT, "<root>"))
 
 
-# ---- settings (wts-core docs/MIGRATION.md, 1.1: no difference) -----------------------------------------------------
+# Settings (wts-core docs/MIGRATION.md, 1.1: no difference)
 
 
 @pytest.mark.parametrize("case", shared.read("settings.json"), ids=lambda case: case["name"])
@@ -102,7 +102,7 @@ def test_the_settings_are_read_from_the_real_environment_too(monkeypatch, tmp_pa
     assert (s.site.env_prefix, s.site.package, s.site.name) == ("COUNCILS", "councils", "Where Councils Stand")
 
 
-# ---- the checks on briefings (MIGRATION 1.4; AS-BUILT, checks) -----------------------------------------------------
+# The checks on briefings (MIGRATION 1.4; AS-BUILT, checks)
 # This site passes its longer list of honorifics, the strict form of the "note about the evidence" rule and its own
 # loaded words (councils/rag/checks.py). Every recorded report must be given again, exactly.
 
@@ -179,7 +179,7 @@ def test_the_models_own_words_are_made_british_as_before():
     assert {text: to_british(text) for text in shared.BRITISH_TEXTS} == shared.read("checks.json")["british"]
 
 
-# ---- backups and their off-site copies (MIGRATION 1.11: the name, what it holds and what is kept, unchanged) -------
+# Backups and their off-site copies (MIGRATION 1.11: the name, what it holds and what is kept, unchanged)
 
 
 def environment(monkeypatch, data_dir: Path, **more: str) -> None:
@@ -253,7 +253,7 @@ def test_off_site_copies_are_sent_pruned_and_recorded_as_before(tmp_path):
     assert BACKUPS.keep_offsite == 60          # how many stay off site when a backup is made by the command
 
 
-# ---- /api/ask over a scripted pipeline (MIGRATION 1.8; wts-core docs/adr/0009, "Parity") ----------------------------
+# /api/ask over a scripted pipeline (MIGRATION 1.8; wts-core docs/adr/0009, "Parity")
 
 REQUEST = __import__("types").SimpleNamespace(client=__import__("types").SimpleNamespace(host=shared.ADDRESS),
                                               headers={}, cookies={})
@@ -371,7 +371,7 @@ def test_every_case_of_the_briefing_flow_sends_the_same_text_and_writes_the_same
         assert got["briefings_today"] == was["briefings_today"], name
 
 
-# ---- the per-minute limit, a visitor's code, cost and the cache's key (MIGRATION 1.3: no difference) ---------------
+# The per-minute limit, a visitor's code, cost and the cache's key (MIGRATION 1.3: no difference)
 
 
 @pytest.fixture
@@ -466,7 +466,7 @@ def test_the_answer_caches_key_changes_with_the_model_the_instructions_and_the_r
     assert web.answer_key(body, 1731500000.25, "claude-sonnet-5-5") != key        # new instructions
 
 
-# ---- the daily limit, the spending caps, the briefings in progress, the answer cache (MIGRATION 1.3) ---------------
+# The daily limit, the spending caps, the briefings in progress, the answer cache (MIGRATION 1.3)
 
 
 def test_the_limit_and_the_caps_decide_the_same_over_scripted_spending(parts_of):
@@ -544,7 +544,7 @@ def test_a_cached_answer_is_given_and_dropped_as_before(parts_of):
     assert now == golden
 
 
-# ---- the made-up record: reports and statements, the owner's commands, the pages, the real pipeline ---------------
+# The made-up record: reports and statements, the owner's commands, the pages, the real pipeline
 
 
 def a_site(folder: Path, clock: shared.Clock, limits: dict | None = None, state=None, model=None):
@@ -655,8 +655,7 @@ def test_every_answer_to_a_report_or_a_statement_is_as_before(tmp_path):
     #    seven); the package reads a report with the spaces around it taken off, finds nothing, and refuses it, in
     #    words that are new (AS-BUILT, replies: "Wording the sites have no words for today ... the report
     #    refusals"). One report fewer is kept, so each later one's number is one lower. The words are the family's,
-    #    the same on every Where They Stand site: the owner asked for the family's wording to be the same
-    #    (16 November 2026), where they were "Say what is wrong, in a few words."
+    #    the same on every Where They Stand site; before, they were "Say what is wrong, in a few words."
     case = "a message of spaces"
     assert (before[case]["status"], before.pop(case)["json"]) == (200, {"ok": True, "id": 6})
     assert said(answers.pop(case)) == (422, "Please say what is wrong, in a few words.")
@@ -937,7 +936,7 @@ def test_the_real_pipeline_sends_and_writes_what_it_did(tmp_path, monkeypatch):
         assert got == was, was["case"]
 
 
-# ---- what the model is sent, and an index the old code built (MIGRATION 1.5 and 1.6) -------------------------------
+# What the model is sent, and an index the old code built (MIGRATION 1.5 and 1.6)
 
 
 def test_the_model_is_sent_what_it_was_sent(tmp_path):
@@ -1047,7 +1046,7 @@ def test_an_index_the_old_code_built_is_updated_and_keeps_its_vectors(tmp_path):
     assert shared.index_answers(index.search_words, index.search_meaning, embedder.embed_query) == golden["searches"]
 
 
-# ---- ranking, and the balanced choice of evidence (MIGRATION 1.7: no difference) ---------------------------------
+# Ranking, and the balanced choice of evidence (MIGRATION 1.7: no difference)
 
 
 def test_candidates_are_ranked_and_the_evidence_chosen_as_before():

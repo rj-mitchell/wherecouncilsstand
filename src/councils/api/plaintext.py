@@ -43,7 +43,7 @@ def vote_path(vote_id: str) -> str:
     return f"/votes/{quote(vote_id, safe=':')}"
 
 
-# ---- the page shell ------------------------------------------------------------------------------------------------
+# The page shell
 
 def with_text(page: str, fragment: str | None) -> str:
     """The page with ``fragment`` in its app root (replaced by the app when it starts), and without its "needs
@@ -100,7 +100,7 @@ def _tally(counts: dict[str, int], question: str | None) -> str:
     return ", ".join(f"{side_label(s, question)} {counts.get(s, 0)}" for s in SIDES)
 
 
-# ---- a council -----------------------------------------------------------------------------------------------------
+# A council
 
 def _is_authority(c: dict[str, Any]) -> bool:
     return c.get("type") == AUTHORITY
@@ -313,7 +313,7 @@ def _landlords(c: dict[str, Any]) -> str:
     return "<h2>On Where Landlords Stand</h2><ul>" + "".join(f"<li>{x}</li>" for x in links) + "</ul>"
 
 
-# ---- a named vote --------------------------------------------------------------------------------------------------
+# A named vote
 
 def vote_title(v: dict[str, Any]) -> str:
     return f"{v.get('item') or 'Named vote'}, {v['council']}"
@@ -424,7 +424,7 @@ def vote_text(v: dict[str, Any]) -> str:
     return "".join(parts)
 
 
-# ---- the list of councils, and the home page -----------------------------------------------------------------------
+# The list of councils, and the home page
 
 COVERAGE = {"full": "Full", "partial": "Partial", "not_yet": "Not yet"}
 

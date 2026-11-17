@@ -129,7 +129,7 @@ def test_the_tidy_after_the_backup_has_time_to_finish():
     assert stat.S_IMODE((DEPLOY / "update.sh").stat().st_mode) & 0o111
 
 
-# ---- the look at the old database before the move -------------------------------------------------------------------
+# The look at the old database before the move
 
 
 def look(path: Path, now: str = "2026-11-13T12:00:00+00:00") -> tuple[int, str]:

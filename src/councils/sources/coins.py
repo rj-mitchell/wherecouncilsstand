@@ -108,7 +108,7 @@ class Client:
     def allowed(self, url: str) -> bool:
         return robots.allowed(url, self.user_agent)
 
-    # Transport -----------------------------------------------------------------
+    # Transport
     def _get(self, url: str, referer: str | None = None) -> httpx.Response:
         if not self.allowed(url):
             raise Refused(f"robots.txt forbids {url}")
@@ -189,7 +189,7 @@ def _write(path: Path, data: bytes) -> None:
     tmp.replace(path)
 
 
-# Pages -----------------------------------------------------------------------------------------------------------
+# Pages
 def _doc(text: str):
     return lxml_html.fromstring(text or "<html></html>")
 
@@ -392,7 +392,7 @@ def parse_parties(text: str) -> list[tuple[str, str]]:
     return out
 
 
-# Names -----------------------------------------------------------------------------------------------------------
+# Names
 _TITLES = re.compile(
     r"^(?:(?:the|councill?ors?|cllrs?\.?|mr|mrs|ms|miss|dr|rev(?:d)?|sir|dame|prof|"
     r"(?:right\s+hon(?:ourable)?\s+)?(?:(?:lord|depute|deputy|vice)[\s-]+)*provost|"
@@ -480,7 +480,7 @@ class Members:
         return hits[0] if len(hits) == 1 else None
 
 
-# The sederunt --------------------------------------------------------------------------------------------------
+# The sederunt
 @dataclass(frozen=True)
 class Attendee:
     name: str          # as written, tidied: "Richard Bell"
@@ -668,7 +668,7 @@ def sederunt(text: str) -> list[Attendee]:
     return unique
 
 
-# Fetching a council -------------------------------------------------------------------------------------------
+# Fetching a council
 def _members(client: Client) -> tuple[Members, date]:
     """The current members with their parties, and the date the members pages were read."""
     age = 7.0

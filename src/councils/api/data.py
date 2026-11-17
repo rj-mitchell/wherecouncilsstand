@@ -96,7 +96,7 @@ def coverage(row: dict[str, Any], attendance: int = 0, with_party: int = 0, toda
 SIDE_ORDER = ("for", "against", "abstain")
 
 
-# strategic authorities (decisions 17 to 20) ----------------------------------------------------------------------
+# Strategic authorities (decisions 17 to 20)
 
 def authority_facts(c: Council) -> dict[str, Any]:
     """What only a strategic authority has, for its row and page: its statutory kind and category, when it was
@@ -168,7 +168,7 @@ class Data:
         self._totals: dict[str, Any] = {}
         self._vote_ids: list[str] | None = None
 
-    # freshness ------------------------------------------------------------------------------------------
+    # Freshness
     def stamp(self) -> float:
         """When the store last changed: the newest meetings file."""
         files = list((self.root / "meetings").glob("*.parquet"))
@@ -193,7 +193,7 @@ class Data:
 
         return json.loads(lines[-1]) if lines else None
 
-    # the directory --------------------------------------------------------------------------------------
+    # The directory
     def _build_directory(self) -> None:
         con = duckdb.connect()
         names = store.parquet.attach(con, self.root)
@@ -279,7 +279,7 @@ class Data:
         self._fresh()
         return self._totals
 
-    # a council ------------------------------------------------------------------------------------------
+    # A council
     def council(self, gss: str) -> dict[str, Any] | None:
         self._fresh()
         c = self._council(gss)
@@ -354,7 +354,7 @@ class Data:
                                  "role_name": MEMBER_ROLES.get(m.role, m.role), "from": _iso(m.start),
                                  "to": _iso(m.end)} for m in authorities_of(gss) if m.authority in councils()]}
 
-    # named votes ----------------------------------------------------------------------------------------
+    # Named votes
     def votes(self, gss: str, c: people.Council | None = None) -> list[dict[str, Any]]:
         """Every named vote at a council, newest first: the item, the result, and the count of each side by party."""
         rows = store.parquet.read(self.root, "votes", gss)

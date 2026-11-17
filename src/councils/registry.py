@@ -138,7 +138,7 @@ def withheld_codes() -> list[str]:
     return sorted(c.gss for c in councils().values() if c.withheld)
 
 
-# Strategic authorities' constituent councils and mayors ---------------------------------------------------------
+# Strategic authorities' constituent councils and mayors
 
 @dataclass(frozen=True)
 class Membership:

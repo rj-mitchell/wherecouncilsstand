@@ -263,7 +263,7 @@ def test_what_nobody_decided_in_three_months_lapses_at_the_first_tidy(tmp_path, 
     assert report["contact"] is None and report["closed_at"] is None
 
 
-# ---- going back --------------------------------------------------------------------------------------------------
+# Going back
 
 
 def old_rows(path: Path) -> dict:
@@ -359,7 +359,7 @@ def test_going_back_later_carries_across_what_has_come_in_since(moved, monkeypat
     assert len(after["answer_cache"]) == 3
 
 
-# ---- going back without the undo script, and coming forward again (wts-core 0.3.0) --------------------------------
+# Going back without the undo script, and coming forward again (wts-core 0.3.0)
 
 # The old code's kind of write, as its own tables took one (tests/golden/old-state.sql has their shape): a model
 # call recorded, a briefing saved, a reader's report, a statement sent, an answer cached. Each a minute after the move.
@@ -556,7 +556,7 @@ def test_the_two_scripts_forget_the_move_with_the_same_statements():
                                                     "COMMIT;"]
 
 
-# ---- the old tables after the move: kept within the site's promises, then dropped ----------------------------------
+# The old tables after the move: kept within the site's promises, then dropped
 
 
 def everything_in(path: Path) -> str:

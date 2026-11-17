@@ -54,7 +54,7 @@ def given_to_the_model(fake) -> str:
     return repr(fake.calls[-1]["messages"])
 
 
-# ---- the corrections log -------------------------------------------------------------------------------------------
+# The corrections log
 
 
 def test_the_corrections_log_starts_empty_and_says_so(site):
@@ -148,7 +148,7 @@ def test_a_withdrawn_briefing_is_not_replayed_from_the_answer_cache(site):
     assert ask(c)["briefing_id"] == again["briefing_id"] and len(fake.calls) == 2
 
 
-# ---- hiding an item while a concern is decided ---------------------------------------------------------------------
+# Hiding an item while a concern is decided
 
 
 def test_only_a_page_of_the_three_kinds_can_be_hidden_and_it_is_filed_under_its_own_address(site):

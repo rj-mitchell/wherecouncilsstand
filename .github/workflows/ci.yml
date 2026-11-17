@@ -1,15 +1,9 @@
 name: CI
 
-# Lint and tests for the Python service and the web front end, on every push and pull request.
-# The family kit in web/public/family is checked by tests/test_family.py against the hash in its own VERSION file
-# (no copy edited by hand, no file missing). Whether it is the latest kit needs the charity's private repository, so
-# that is a step before merging, not here: README, "In the family".
-#
-# The jobs that are the same on every Where They Stand site are the family's shared workflows and actions, in the
-# repository of the shared package (wts-core), called at the same tag as the package this site installs
-# (pyproject.toml): one number to raise, and CI can't change under the site (tests/test_dependencies.py keeps the
-# two the same; docs/OPERATIONS.md, "A newer wts-core"). What is this site's own stays here: how it is started on
-# the made-up record for the accessibility check.
+# Lint, tests, the Docker image and an accessibility check, on every push and pull request.
+# The jobs shared by every Where They Stand site come from wts-core's workflows, called at the same tag as the
+# package in pyproject.toml (tests/test_dependencies.py keeps the two in step; docs/OPERATIONS.md,
+# "A newer wts-core"). The family kit in web/public/family is checked by tests/test_family.py.
 
 on:
   push:
@@ -56,9 +50,7 @@ jobs:
       - name: Start the site on the made-up record
         run: |
           uv run python scripts/fixture_site.py "$RUNNER_TEMP/fixture"
-          # Started with the environment's own program, not through `uv run`: a `uv run` left in the background
-          # holds uv's cache, and the toolchain step's tidying of that cache at the end of the job then waits
-          # five minutes for it and fails the job (the accessibility check itself having passed).
+          # Started directly from .venv: a background `uv run` holds uv's cache and stalls the job's cache clean-up.
           COUNCILS_DATA_DIR="$RUNNER_TEMP/fixture" nohup .venv/bin/councils serve --port 8000 > "$RUNNER_TEMP/serve.log" 2>&1 &
           echo $! > "$RUNNER_TEMP/site.pid"
           for i in $(seq 1 60); do

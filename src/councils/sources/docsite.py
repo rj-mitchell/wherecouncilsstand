@@ -73,7 +73,7 @@ class Refused(SiteError):
     """The site refused the request (401, 403, 429 or a bot check). Not retried, and never worked around."""
 
 
-# Configuration --------------------------------------------------------------------------------------------------
+# Configuration
 
 @dataclass(frozen=True)
 class Committee:
@@ -96,7 +96,7 @@ def sites() -> dict[str, list[Committee]]:
     return out
 
 
-# Dates ----------------------------------------------------------------------------------------------------------
+# Dates
 
 _MONTH = r"(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?" \
          r"|nov(?:ember)?|dec(?:ember)?)"
@@ -152,7 +152,7 @@ def document_dates(label: str, url: str) -> set[date]:
     return out
 
 
-# Pages ----------------------------------------------------------------------------------------------------------
+# Pages
 
 @dataclass(frozen=True)
 class Document:
@@ -272,7 +272,7 @@ def parse_meeting_page(text: str, page_url: str) -> list[Document]:
     return out
 
 
-# Minutes --------------------------------------------------------------------------------------------------------
+# Minutes
 
 _MINUTES = re.compile(r"minute", re.I)              # also "DraftMinutesFinal"
 _NOT_MINUTES = re.compile(r"\bextract\b|\bappendi|\baction|decision record|\bagenda\b|\bpapers?\b|\bpack\b"
@@ -321,7 +321,7 @@ def choose_minutes(meeting: Meeting, later: list[Meeting]) -> list[Document]:
     return out
 
 
-# Attendance -----------------------------------------------------------------------------------------------------
+# Attendance
 
 @dataclass(frozen=True)
 class Attendee:
@@ -616,7 +616,7 @@ def representing_council(text: str) -> str:
     return next((p for p in parts if re.search(r"\bcouncil\b", p, re.I)), t.strip(" ,"))
 
 
-# Transport ------------------------------------------------------------------------------------------------------
+# Transport
 
 class Client:
     """One authority's website: polite, cached requests."""
@@ -717,7 +717,7 @@ def _write(path: Path, data: bytes) -> None:
     tmp.replace(path)
 
 
-# Reading an authority -------------------------------------------------------------------------------------------
+# Reading an authority
 
 def list_meetings(client: Client, committee: Committee, start: date, end: date) -> list[Meeting]:
     """The committee's meetings from its pages, with their documents, oldest first. Lists are fetched again if over

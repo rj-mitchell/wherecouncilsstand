@@ -8,7 +8,7 @@ what anyone sent: numbers, dates and ages. Run it on the server while the old si
     git fetch origin
     git show origin/main:deploy/before-wts-core.py | docker compose -f deploy/docker-compose.yml exec -T app python -
 
-It says two things.
+It reports the following.
 
 1. What will lapse. Once the new code is running, the first thing that writes to or lists reports and statements
    (a report sent by a reader, any `councils reports` or `councils statements` command, the nightly tidy) declines

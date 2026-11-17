@@ -125,8 +125,8 @@ def robot_name(user_agent: str) -> str:
 
 @lru_cache(maxsize=1)
 def obeyed() -> bool:
-    """Whether robots.txt's rules are obeyed: ``[robots] obey`` in config/settings.toml. Off by the owner's decision of
-    6 November 2026 (decision 21): robots.txt isn't treated as a barrier to councils' public records. Crawl-delay is
+    """Whether robots.txt's rules are obeyed: ``[robots] obey`` in config/settings.toml. Off by decision 21 of
+    6 November 2026: robots.txt isn't treated as a barrier to councils' public records. Crawl-delay is
     still honoured where the file can be read."""
     from councils.config import load_settings
 

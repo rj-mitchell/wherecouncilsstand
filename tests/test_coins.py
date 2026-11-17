@@ -171,7 +171,7 @@ def test_members_pages():
     assert [m[1] for m in coins.parse_members(page("glasgow_party_50.html"))] == ["Audrey Dempsey", "Thomas Kerr"]
 
 
-# The whole reader, on a site made of the saved pages -------------------------------------------------------------
+# The whole reader, on a site made of the saved pages
 def _site(request: httpx.Request) -> httpx.Response:
     u = urlparse(str(request.url))
     q = {k: v[0] for k, v in parse_qs(u.query).items()}

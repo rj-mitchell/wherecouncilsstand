@@ -317,7 +317,7 @@ def test_a_committee_page_listing_one_year_has_its_date_filter_set_from_the_star
 
 
 def test_robots_txt_is_not_obeyed_when_the_setting_is_off(monkeypatch):
-    """The owner's decision of 6 November 2026 (decision 21): with [robots] obey off, as it is in
+    """Decision 21 (6 November 2026): with [robots] obey off, as it is in
     config/settings.toml, every page is allowed and robots.txt isn't even fetched for its rules."""
     def no_fetch(*a, **k):
         raise AssertionError("robots.txt fetched")

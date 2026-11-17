@@ -197,7 +197,7 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
                "new_meetings": sum(ln.get("new_meetings", 0) for ln in lines),
                "failed": sorted(ln["gss"] for ln in lines if ln.get("error")),
                # only with [robots] obey on (decision 21): sites whose robots.txt has started to forbid reading
-               # (docs/OPERATIONS.md, "When it reports a problem")
+               # (docs/OPERATIONS.md, "Problems a run reports")
                "robots": sorted(ln["gss"] for ln in lines if ln.get("error") == ROBOTS_ERROR), **indexed}
     # needs attention: many councils failing at once means something on our side, not one council's server
     summary["needs_attention"] = not lines or len(summary["failed"]) > max(5, len(lines) // 10)
@@ -274,7 +274,7 @@ def withdraw(briefing_id: str, reason: str = typer.Option(..., help="shown at it
     _done(ok, "withdrawn", "no briefing with that id")
 
 
-# ---- reports, statements and hidden items: the shared package's commands, with this site's own lines -------------
+# Reports, statements and hidden items: the shared package's commands, with this site's own lines
 
 
 def _shown_from(st: Mapping[str, Any]) -> str:
@@ -427,7 +427,7 @@ def _changed(row: Mapping[str, Any], kind: Change) -> None:
 app.add_typer(replies_commands(_replies, REPLIES_COMMANDS, REPLIES_WORDING, about=_council, changed=_changed))
 
 
-# ---- backups: the shared package's commands (wts_core.cli), with this site's own lines ----------------------------
+# Backups: the shared package's commands (wts_core.cli), with this site's own lines
 
 OPS_WORDING = OpsWording(
     backup=BackupWords(
@@ -469,7 +469,7 @@ OPS_WORDING = OpsWording(
 )
 app.add_typer(ops_commands(SITE, load_settings, BACKUPS, OPS_WORDING, clock=lambda: CLOCK))
 
-# ---- statistics, the weekly report and the nightly tidy: the shared package's commands ----------------------------
+# Statistics, the weekly report and the nightly tidy: the shared package's commands
 
 
 def _embedder() -> Any:
@@ -527,7 +527,7 @@ app.add_typer(stats_commands(
     clock=lambda: CLOCK))
 
 
-# ---- the briefing test set with each briefing written: the shared package's commands ------------------------------
+# The briefing test set with each briefing written: the shared package's commands
 
 
 def _eval_site() -> Any:
