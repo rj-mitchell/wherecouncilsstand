@@ -101,7 +101,7 @@ describe("CheckNotices", () => {
         answer={{ ...answer, citations_invalid: 1, segments: [{ text: "A claim.", sources: [], status: "invalid" }] }}
       />,
     );
-    expect(screen.getByText(/isn't supported by a cited source/)).toBeTruthy();
+    expect(screen.getByText(/isn’t supported by a cited source/)).toBeTruthy();
     expect(screen.getByText(/One passage gave a source, but its citation failed the check against the minutes/)).toBeTruthy();
   });
 

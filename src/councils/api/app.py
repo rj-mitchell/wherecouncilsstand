@@ -622,7 +622,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         def build():
             directory = shown_directory(hidden())
             t = directory["totals"]
-            return (200, "Councils — Where Councils Stand",
+            return (200, "Councils | Where Councils Stand",
                     f"The {t['councils']:,} principal councils in the UK and England's {t.get('authorities', 0):,} "
                     f"strategic authorities: which {t['loaded']:,} councils and {t.get('authorities_loaded', 0):,} "
                     "authorities are covered, from when, and which party is in overall control (or, for an "
@@ -638,7 +638,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         def build():
             c = data.council(gss.upper())
             if c is None:
-                return (404, "Council not found — Where Councils Stand", "There is no council at this address.",
+                return (404, "Council not found | Where Councils Stand", "There is no council at this address.",
                         base + plaintext.council_path(gss), None,
                         "<h1>Council not found</h1><p>There is no council at this address. See the "
                         '<a href="/councils">list of councils</a>.</p>')
@@ -646,11 +646,11 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             now = hidden()
             instead = now.instead(plaintext.council_path(c["gss"]))
             if instead is not None:     # hidden while a concern is decided: the note, and nothing of the record
-                return (403, "Council — Where Councils Stand", right_of_reply.HIDDEN_LEAD, url, None,
+                return (403, "Council | Where Councils Stand", right_of_reply.HIDDEN_LEAD, url, None,
                         plaintext.hidden_text("Council", instead))
             c = shown_council(c, now)
             # statements are shown after the record, never in its description or structured data (decision 22)
-            return (200, f"{c['name']} — Where Councils Stand", plaintext.council_description(c), url,
+            return (200, f"{c['name']} | Where Councils Stand", plaintext.council_description(c), url,
                     plaintext.council_data(c, url, base), plaintext.council_text(c) + plaintext.statements_text(
                         with_about(right_of_reply.published(replies, council=c["gss"])),
                         here=plaintext.council_path(c["gss"])))
@@ -664,17 +664,17 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         def build():
             v = data.vote(vote_id)
             if v is None:
-                return (404, "Named vote not found — Where Councils Stand", "There is no named vote at this address.",
+                return (404, "Named vote not found | Where Councils Stand", "There is no named vote at this address.",
                         base + plaintext.vote_path(vote_id), None,
                         "<h1>Named vote not found</h1><p>There is no named vote at this address. Each council's "
                         'named votes are listed on its page: see the <a href="/councils">list of councils</a>.</p>')
             url = base + plaintext.vote_path(vote_id)
             instead = hidden().instead(plaintext.vote_path(vote_id))
             if instead is not None:     # hidden while a concern is decided: the note, and nothing of the record
-                return (403, "Named vote — Where Councils Stand", right_of_reply.HIDDEN_LEAD, url, None,
+                return (403, "Named vote | Where Councils Stand", right_of_reply.HIDDEN_LEAD, url, None,
                         plaintext.hidden_text("Named vote", instead))
             mine = right_of_reply.published(replies, items.resolve(plaintext.vote_path(vote_id)))
-            return (200, f"{plaintext.vote_title(v)} — Where Councils Stand", plaintext.vote_description(v), url,
+            return (200, f"{plaintext.vote_title(v)} | Where Councils Stand", plaintext.vote_description(v), url,
                     plaintext.vote_data(v, url, base),
                     plaintext.vote_text(v) + plaintext.statements_text(mine, here=plaintext.vote_path(vote_id)))
 

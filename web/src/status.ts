@@ -73,7 +73,7 @@ async function showStatus(el: HTMLElement) {
   } catch {
     const p = document.createElement("p");
     p.className = "notice";
-    p.textContent = "The service isn't answering just now, so its status can't be shown. Please try again in a few minutes.";
+    p.textContent = "The service isn’t answering just now, so its status can’t be shown. Please try again in a few minutes.";
     el.replaceChildren(p);
   }
 }

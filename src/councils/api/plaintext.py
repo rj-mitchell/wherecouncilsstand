@@ -192,8 +192,8 @@ def _mayors(c: dict[str, Any]) -> str:
 
 
 def authority_text(c: dict[str, Any]) -> str:
-    parts = [f'<p class="meta"><a href="/councils">Councils</a> · Strategic authority · {e(_region(c))}</p>',
-             f"<h1>{e(c['name'])}</h1>",
+    parts = ['<p class="meta"><a href="/councils">All councils</a></p>',
+             f"<h1>{e(c['name'])}</h1>", f'<p class="meta">Strategic authority, {e(_region(c))}</p>',
              f"<p>{e(c.get('kind_name') or '')}"
              + (f"; {e(c['category_name'][0].lower() + c['category_name'][1:])}" if c.get("category_name") else "")
              + (f". Created {e(c['created'])}" if c.get("created") else "") + ".</p>",
@@ -234,8 +234,8 @@ def _source(source: str | None) -> str:
 def council_text(c: dict[str, Any]) -> str:
     if _is_authority(c):
         return authority_text(c)
-    parts = [f'<p class="meta"><a href="/councils">Councils</a> · {e(c.get("type_name") or "")} · '
-             f'{e(c.get("region_name") or "")}</p>', f"<h1>{e(c['name'])}</h1>", _part_of(c)]
+    parts = ['<p class="meta"><a href="/councils">All councils</a></p>', f"<h1>{e(c['name'])}</h1>",
+             f'<p class="meta">{e(c.get("type_name") or "")}, {e(c.get("region_name") or "")}</p>', _part_of(c)]
     if not c.get("loaded"):
         parts.append(f"<p>This council isn't covered yet. {e(' '.join(c.get('reasons') or []))} Councils are covered "
                      "when their minutes are published through a system the site can read (Modern.gov, CMIS or CoINS) "
@@ -342,8 +342,8 @@ def corrections_text(entries: list[dict[str, Any]]) -> str:
     items = []
     for c in entries:
         note = f"<p>{e(c['note'])}</p>" if c.get("note") else ""
-        items.append(f'<li><p class="corrections-when"><time datetime="{e(c["date"])}">{e(long_date(c["date"]))}'
-                     f'</time> · <strong>{e(c["heading"])}</strong></p>{note}</li>')
+        items.append(f'<li><h3>{e(c["heading"])}</h3><p class="corrections-when"><time datetime="{e(c["date"])}">'
+                     f'{e(long_date(c["date"]))}</time></p>{note}</li>')
     return f'<ol class="corrections-log">{"".join(items)}</ol>'
 
 
@@ -386,7 +386,7 @@ def statements_text(rows: list[dict[str, Any]], here: str) -> str:
 
 def vote_text(v: dict[str, Any]) -> str:
     what = KIND_LABEL.get(v.get("kind", ""), v.get("committee") or "")
-    parts = [f'<p class="meta"><a href="/councils">Councils</a> · {_link(council_path(v["gss"]), v["council"])}</p>',
+    parts = [f'<p class="meta">{_link(council_path(v["gss"]), v["council"])}</p>',
              f"<h1>{e(v.get('item') or 'Named vote')}</h1>",
              f"<p>{e(what)}, {e(long_date(v.get('date')))}: a named vote{e(vote_on(v.get('question')))}"
              f"{', ' + e(v['outcome']) if v.get('outcome') else ''}.</p>",
@@ -463,13 +463,13 @@ def councils_text(directory: dict[str, Any]) -> str:
 def home_text(totals: dict[str, Any], examples: list[str]) -> str:
     return ("<h1>What has your council decided?</h1>"
             "<p>Ask about anything councils across the UK have discussed, decided or voted on at full council and "
-            "cabinet. Answers only from the official record, every point linked and checked. "
-            '<a href="/methodology#why">Why use this rather than a chatbot?</a></p>'
+            "cabinet. Briefings are written by AI from the official record only, and every citation is checked. "
+            '<a href="/methodology#ai-briefings">How the briefings are checked</a></p>'
             f"<p>The record holds {totals.get('meetings', 0):,} meetings and {totals.get('named_votes', 0):,} named "
             f"votes from {totals.get('loaded', 0):,} of the {totals.get('councils', 0):,} councils in the UK"
             + (f" and {totals['authorities_loaded']:,} of England's {totals['authorities']:,} strategic authorities"
                if totals.get("authorities_loaded") else "")
             + ", since May 2018. Asking a question needs JavaScript; every council's page, with its named votes, can "
             "be read without it, from the <a href=\"/councils\">list of councils</a>.</p>"
-            "<h2>For example</h2><ul>" + "".join(f"<li>{e(q)}</li>" for q in examples) + "</ul>"
-            '<p><a href="/methodology">How it works</a></p>')
+            "<h2>Questions to try</h2><ul>" + "".join(f"<li>{e(q)}</li>" for q in examples) + "</ul>"
+            '<p><a href="/methodology">Methodology</a></p>')

@@ -59,7 +59,7 @@ def test_a_council_page_carries_its_own_details_and_readable_text(site):
     r = site.get(f"/councils/{BARNSLEY.lower()}")
     html = r.text
     assert r.status_code == 200
-    assert "<title>Barnsley Metropolitan Borough Council — Where Councils Stand</title>" in html
+    assert "<title>Barnsley Metropolitan Borough Council | Where Councils Stand</title>" in html
     assert html.count("<title>") == 1 and "A generic description" not in html
     assert f'<link rel="canonical" href="https://wherecouncilsstand.com/councils/{BARNSLEY}" />' in html
     assert re.search(r'<meta name="description" content="Barnsley [^"]*In overall control: Labour', html)
@@ -77,7 +77,7 @@ def test_a_council_page_carries_its_own_details_and_readable_text(site):
 
 def test_a_vote_page_names_each_councillor_and_their_party(site):
     html = site.get(f"/votes/{VOTE}").text
-    assert "<title>Notice of Motion - Weekly Bin Collections, Barnsley Metropolitan Borough Council — Where Councils " \
+    assert "<title>Notice of Motion - Weekly Bin Collections, Barnsley Metropolitan Borough Council | Where Councils " \
            "Stand</title>" in html
     assert f'href="https://wherecouncilsstand.com/votes/{VOTE}"' in html
     assert "Hannah Kitching (Liberal Democrats)" in html and "<h2>Against (2)</h2>" in html
@@ -213,17 +213,20 @@ WEB = Path(__file__).resolve().parents[1] / "web"
 TIMES = "We reply within 5 working days, and decide within 20 working days."
 
 
-def test_if_youre_named_is_in_every_footer_beside_corrections_and_built():
-    """The page for people named on the site (decision 22), in the family's words (the charity's glossary)."""
-    assert ('<a href="/corrections">Corrections</a>\n      <a href="/named">If you\'re named</a>'
-            in (WEB / "partials" / "footer.html").read_text())
+def test_if_youre_named_is_linked_from_about_and_corrections_and_built():
+    """The page for people named on the site (decision 22), linked as the charity's glossary says: from the
+    Corrections and About pages, and beside what names someone, not from the footer."""
+    link = '<a href="/named">If you\u2019re named on this site</a>'
+    for page in ("about.html", "corrections.html"):
+        assert link in (WEB / page).read_text(), page
+    assert '"/named"' not in (WEB / "partials" / "footer.html").read_text()
     assert '"corrections", "named"' in (WEB / "vite.config.ts").read_text()
 
 
 def test_if_youre_named_uses_the_familys_words():
     page = (WEB / "named.html").read_text()
-    assert "<h1>If you're named</h1>" in page and "<title>If you're named — Where Councils Stand</title>" in page
-    for route in ("Something is wrong", "You've been characterised unfairly", "Add a statement in your own words"):
+    assert "<h1>If you\u2019re named</h1>" in page and "<title>If you\u2019re named | Where Councils Stand</title>" in page
+    for route in ("Errors", "Unfair descriptions", "Statements in your own words"):
         assert f"<h3>{route}</h3>" in page
     for kind in ("error", "unfair", "statement", "takedown"):
         assert f"/corrections?kind={kind}" in page
@@ -234,7 +237,7 @@ def test_if_youre_named_uses_the_familys_words():
 
 def test_the_corrections_page_gives_the_response_times_and_links_to_if_youre_named():
     page = (WEB / "corrections.html").read_text()
-    assert TIMES in page and '<a href="/named">If you\'re named on this site</a>' in page
+    assert TIMES in page and '<a href="/named">If you\u2019re named on this site</a>' in page
 
 
 def test_the_privacy_notice_says_what_is_kept_in_the_sentences_the_owner_accepted():
@@ -258,11 +261,11 @@ def test_the_privacy_notice_says_what_is_kept_in_the_sentences_the_owner_accepte
             "declined or removed")
     assert kept in notice and kept.replace("the statement", "your statement") in (WEB / "named.html").read_text()
     assert RULES.email_kept_months == 3
-    assert ("Backups of the site's database are kept for up to two months, so a deleted address can remain in a "
+    assert ("Backups of the site\u2019s database are kept for up to two months, so a deleted address can remain in a "
             "backup until then.") in notice
     assert BACKUPS.keep_offsite == BACKUPS_KEPT_DAYS == 60 and BACKUPS.keep <= 60       # one a night: two months
     # nothing the site has not turned on: it keeps no note of failed questions apart from the record, counts no
     # reader's reports or statements, and has no "useful or not" buttons
     for not_here in ("not useful", "failed questions", "per day for reports"):
         assert not_here not in notice
-    assert "Requests aren't logged." in notice      # still true: the log of briefings holds nothing from a request
+    assert "Requests aren\u2019t logged." in notice      # still true: the log of briefings holds nothing from a request

@@ -69,7 +69,7 @@ describe("ReportForm", () => {
     const options = [...(screen.getByLabelText("What is it about?") as HTMLSelectElement).options];
     expect(options.map((o) => [o.value, o.textContent])).toEqual([
       ["error", "Something is wrong"],
-      ["unfair", "You've been characterised unfairly"],
+      ["unfair", "You’ve been characterised unfairly"],
       ["statement", "Add a statement in your own words"],
       ["takedown", "A takedown request"],
       ["other", "Something else"],
@@ -88,18 +88,18 @@ describe("ReportForm", () => {
 
   it("shows the statement form for ?kind=statement, counts words and refuses more than 150", () => {
     render(<ReportForm search="?kind=statement&page=/votes/E08000038:1:10:0" />);
-    expect((screen.getByLabelText("Address of the page it's about") as HTMLInputElement).value).toBe(
+    expect((screen.getByLabelText("Address of the page it’s about") as HTMLInputElement).value).toBe(
       "/votes/E08000038:1:10:0",
     );
     fireEvent.change(screen.getByLabelText("Your name, as it should be shown"), { target: { value: "A Councillor" } });
     fireEvent.change(screen.getByLabelText("Your role"), { target: { value: "Councillor" } });
-    fireEvent.change(screen.getByLabelText("Your email address, to confirm it's you"), { target: { value: "a@b.gov.uk" } });
+    fireEvent.change(screen.getByLabelText("Your email address, to confirm it’s you"), { target: { value: "a@b.gov.uk" } });
     const send = screen.getByRole("button", { name: "Send the statement" }) as HTMLButtonElement;
     const text = screen.getByLabelText("Your statement");
     fireEvent.change(text, { target: { value: Array(150).fill("word").join(" ") } });
     expect(screen.getByText("150 of 150 words")).not.toBeNull();
     expect(send.disabled).toBe(true); // not yet confirmed as acting for them
-    fireEvent.click(screen.getByLabelText(/I'm the councillor or council this is about/));
+    fireEvent.click(screen.getByLabelText(/I’m the councillor or council this is about/));
     expect(send.disabled).toBe(false);
     fireEvent.change(text, { target: { value: Array(151).fill("word").join(" ") } });
     expect(screen.getByText("151 of 150 words: 1 too many")).not.toBeNull();
@@ -111,12 +111,12 @@ describe("ReportForm", () => {
     const fetch = vi.fn(async () => new Response(JSON.stringify({ ok: true, id: 12 }), { status: 200 }));
     vi.stubGlobal("fetch", fetch);
     render(<ReportForm search="?kind=statement" />);
-    fireEvent.change(screen.getByLabelText("Address of the page it's about"), { target: { value: "/councils/E08000038" } });
+    fireEvent.change(screen.getByLabelText("Address of the page it’s about"), { target: { value: "/councils/E08000038" } });
     fireEvent.change(screen.getByLabelText("Your name, as it should be shown"), { target: { value: "A Councillor" } });
     fireEvent.change(screen.getByLabelText("Your role"), { target: { value: "Councillor" } });
     fireEvent.change(screen.getByLabelText("Your statement"), { target: { value: "My view." } });
-    fireEvent.change(screen.getByLabelText("Your email address, to confirm it's you"), { target: { value: "a@b.gov.uk" } });
-    fireEvent.click(screen.getByLabelText(/I'm the councillor or council this is about/));
+    fireEvent.change(screen.getByLabelText("Your email address, to confirm it’s you"), { target: { value: "a@b.gov.uk" } });
+    fireEvent.click(screen.getByLabelText(/I’m the councillor or council this is about/));
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: "Send the statement" }));
     });

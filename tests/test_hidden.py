@@ -100,7 +100,7 @@ def test_the_log_lists_withdrawn_briefings_and_public_notes_and_nothing_a_reader
     listed = page[page.index('<ol class="corrections-log">'):]
     listed = listed[:listed.index("</ol>")]
     assert listed.count("<li>") == 3 and "<a " not in listed and bid not in page and VOTE not in page
-    assert "<strong>Briefing withdrawn</strong>" in page and "<strong>Correction</strong>" in page
+    assert "<h3>Briefing withdrawn</h3>" in page and "<h3>Correction</h3>" in page
     # never the withdrawn briefing's question, what a reporter wrote or pasted, their address, the owner's
     # private note, or anything of a statement
     for kept_back in (secret, "Acacia", "reporter@example.org", "Private:", "Nothing to change", "voted for, not",

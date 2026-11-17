@@ -23,7 +23,7 @@ export const KIND_LABEL: Record<string, string> = {
   policy: "Policy committee",
   // a strategic authority's meetings (decision 18)
   board: "Board",
-  mayor: "Mayor's decisions",
+  mayor: "Mayor’s decisions",
   scrutiny: "Overview and scrutiny",
 };
 
@@ -57,7 +57,7 @@ export function partyColour(code: string): string {
 }
 
 export function setTitle(title: string) {
-  document.title = title ? `${title} — Where Councils Stand` : "Where Councils Stand";
+  document.title = title ? `${title} | Where Councils Stand` : "Where Councils Stand";
 }
 
 export function markNav() {

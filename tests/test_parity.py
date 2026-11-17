@@ -817,7 +817,7 @@ def test_the_owners_commands_print_what_they_did(owner):
                 entry[1] = ", ".join(part for part in entry[1].split(", ") if part != "shown_on")
     assert now_kept == then
     reads = [shared.send(client, {"get": path}) for path in shared.OWNER_READS]
-    assert statements_marked(reads, golden["reads"], at_least=1) == golden["reads"]
+    assert statements_marked(reads, golden["reads"], at_least=1) == in_kit_two_words(golden["reads"])
 
 
 def test_the_owners_commands_under_their_new_names_do_the_same(owner):
@@ -860,6 +860,53 @@ def statements_marked(now, golden, at_least: int):
     return json.loads(is_now.replace(marked, plain))
 
 
+# The wording and markup the pages took on with the family kit 2.0 (17 November 2026), each change asserted to be
+# in the goldens before it is applied to them: titles with "|", details separated by commas rather than middle dots,
+# the home page's words about the briefings, and each correction headed by what it was.
+KIT_TWO = [
+    (" \u2014 Where Councils Stand", " | Where Councils Stand"),
+    ('<p class="meta"><a href="/councils">Councils</a> \u00b7 (<a href="/councils/[^"]+">[^<]+</a>)</p>',
+     r'<p class="meta">\1</p>'),
+    ('<p class="meta"><a href="/councils">Councils</a> \u00b7 Strategic authority \u00b7 ([^<]*)</p>(<h1>[^<]*</h1>)',
+     r'<p class="meta"><a href="/councils">All councils</a></p>\2<p class="meta">Strategic authority, \1</p>'),
+    ('<p class="meta"><a href="/councils">Councils</a> \u00b7 ([^<]*) \u00b7 ([^<]*)</p>(<h1>[^<]*</h1>)',
+     r'<p class="meta"><a href="/councils">All councils</a></p>\3<p class="meta">\1, \2</p>'),
+    (r"Answers only from the official record, every point linked and checked. "
+     r'<a href="/methodology#why">Why use this rather than a chatbot\?</a>',
+     "Briefings are written by AI from the official record only, and every citation is checked. "
+     '<a href="/methodology#ai-briefings">How the briefings are checked</a>'),
+    ("<h2>For example</h2>", "<h2>Questions to try</h2>"),
+    ('<p><a href="/methodology">How it works</a></p>', '<p><a href="/methodology">Methodology</a></p>'),
+    ('<li><p class="corrections-when">(<time [^>]*>[^<]*</time>) \u00b7 <strong>([^<]*)</strong></p>',
+     r'<li><h3>\2</h3><p class="corrections-when">\1</p>'),
+]
+
+
+def in_kit_two_words(golden, at_least: int = 1):
+    """The goldens as the pages give them since the family kit 2.0: every change in KIT_TWO made (the titles at
+    least ``at_least`` times) and nothing else touched."""
+    import re
+
+    made = [0] * len(KIT_TWO)
+
+    def change(x):
+        if isinstance(x, str):
+            for i, (pattern, to) in enumerate(KIT_TWO):
+                x, n = re.subn(pattern, to, x)
+                made[i] += n
+            assert "\u00b7" not in x and "\u2014" not in x, x
+            return x
+        if isinstance(x, list):
+            return [change(v) for v in x]
+        if isinstance(x, dict):
+            return {k: change(v) for k, v in x.items()}
+        return x
+
+    changed = change(golden)
+    assert made[0] >= at_least, made
+    return changed
+
+
 def test_the_pages_and_the_other_endpoints_give_what_they_gave(tmp_path):
     """With nothing hidden and two statements shown: the council's and the vote's pages as they are sent to readers
     without scripts, the directory, the sitemap, saved briefings, the status page's figures."""
@@ -888,6 +935,7 @@ def test_the_pages_and_the_other_endpoints_give_what_they_gave(tmp_path):
                                         "case": f"/api/status {limits}"}
     assert list(now) == list(golden)
     now = statements_marked(now, golden, at_least=2)
+    golden = in_kit_two_words(golden)
     for case, was in golden.items():
         if now[case] != was:
             print("PAGE", case, "\n   was", str(was)[:3000], "\n   now", str(now[case])[:3000])
