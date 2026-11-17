@@ -2,14 +2,14 @@
 # Where Councils Stand: the website, its API and the data tools in one image. The data lives in the /data volume.
 
 # The pages (Vite, TypeScript, React)
-FROM node:22.23.4-slim AS web
+FROM node:22.23.5-slim AS web
 WORKDIR /web
 COPY web/package.json web/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY web ./
 RUN npm run build
 
-FROM python:3.12.15-slim
+FROM python:3.12.16-slim
 # security fixes published since the base image was built
 RUN apt-get update && apt-get upgrade -y \
  && apt-get install -y --no-install-recommends ca-certificates \
