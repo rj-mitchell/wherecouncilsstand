@@ -123,3 +123,41 @@ def test_letters_after_a_councillors_name():
 def test_an_alderman_is_kept():
     out, n = redact("Alderman Jo Smith spoke in favour, and Ann Other addressed the meeting.", {"smith"})
     assert "Alderman Jo Smith" in out and "Ann Other" not in out
+
+
+def test_patterns_found_by_the_audit():
+    """Members of the public named on the live site in November 2026 (North Somerset, York, Southwark, Woking,
+    Waverley), and the forms the audit found slipping through."""
+    for text, gone in [
+        ("Lucy Byrne, resident of Pill, addressed the meeting.", ["Lucy Byrne"]),
+        ("Steve Lily, of Claremont Terrace Residents Association, spoke.", ["Steve Lily"]),
+        ("Sophia McAllister, Gary Danks and Mary Knight residents of St Jame's Estate presented a petition.",
+         ["Sophia McAllister", "Gary Danks", "Mary Knight"]),
+        ("Margaret Ripley, a local resident aged 99, attended.", ["Margaret Ripley"]),
+        ("Sarah Brown, a local resident, spoke against the proposal.", ["Sarah Brown"]),
+        ("Jo Bloggs said that the scheme would affect her family.", ["Jo Bloggs"]),
+        ("The Council received a petition presented by Gary Lineker regarding the closure.", ["Gary Lineker"]),
+        ("The deputation, led by Ahmed Khan, raised concerns.", ["Ahmed Khan"]),
+        ("Officers present: Sam Taylor, Joe Bloggs and Ann Other.", ["Sam Taylor", "Joe Bloggs", "Ann Other"]),
+        ("Officers in attendance: Mike Ward (Democratic Services), Lucy Gray (Monitoring Officer).",
+         ["Mike Ward", "Lucy Gray"]),
+        ("Presentation of CIL Petition for Farnham – Mr Steve Dally", ["Steve Dally"]),
+    ]:
+        out = r(text)
+        assert not any(n in out for n in gone), out
+        assert REMOVED in out
+
+
+def test_councillors_stay_in_the_new_patterns():
+    """Councillors, known by their surnames from the attendance lists or written as "Councillor", are kept by every
+    new pattern; and organisations are not taken for people."""
+    for text in ["Kate Hollingsbee said that the budget was balanced.",
+                 "Councillor Ann Other said that the budget was balanced.",
+                 "Councillor Davies said that the scheme was good.",
+                 "Dave Leech, a local resident, spoke.",
+                 "The petition was presented by Councillor Jane Smith.",
+                 "The Leader said that the council would consider it.",
+                 "Hampshire County Council said that funding had been cut.",
+                 "Network Rail said the line would close.",
+                 "Petition presented by Save Our Park Campaign"]:
+        assert r(text) == text

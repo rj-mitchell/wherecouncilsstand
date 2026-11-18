@@ -12,9 +12,15 @@ processed again if the rules change.
 Names are found where minutes usually give them:
   * with a title: "Mr J Smith", "Mrs Jones", "Dr Patel";
   * with a role: "Jane Smith (Director of Public Health)", "Colin Carmichael, Chief Executive";
-  * as the subject of speaking: "Jane Smith asked …", "Mark Jones addressed the Council";
+  * as the subject of speaking: "Jane Smith asked …", "Mark Jones said …", "Mark Jones addressed the Council";
   * after a description: "a member of the public, Jane Smith", "Public speaker: John Brown";
-  * after an action towards them: "the Leader invited Jonathan Davies …", "a question from Jane Smith".
+  * before a description: "Sarah Brown, a local resident, spoke", "Lucy Byrne, resident of Pill", "Steve Lily, of
+    Claremont Terrace Residents Association", "Ann Smith, Gary Danks and Mary Knight, residents of …";
+  * after an action towards them: "the Leader invited Jonathan Davies …", "a question from Jane Smith", "a petition
+    presented by Gary Danks", "a deputation led by Ann Smith";
+  * in a list of the officers at a meeting: "Officers present: Sam Taylor, Joe Bloggs and Ann Other".
+
+Agenda items' titles are passed through here too, wherever they are indexed, shown or given to the model.
 
 Places and job titles written like names ("Hampshire Rose", "the Equalities Manager") are mostly left alone, but some
 are removed by mistake; a name given with no such context can be missed. See docs/PILOT.md.
@@ -43,11 +49,16 @@ _WITH_ROLE = re.compile(rf"\b(?P<name>{_FULL})(?=\s*\((?:the\s+)?(?:{_ROLE_WORDS
 _SPEAKING = re.compile(
     rf"(?<!Councillor )(?<!Councillors )(?<!Cllr )(?<!Cllr\. )(?<!Alderman )(?<!Aldermen )\b(?P<name>{_FULL})\s+"
     r"(?=asked|spoke|addressed|presented|submitted|read out|thanked|put (?:a|the|her|his|their) question|"
-    r"made (?:a|the) (?:statement|deputation|representation))"
+    r"made (?:a|the) (?:statement|deputation|representation)|"
+    # found by the audit of November 2026: "Jo Bloggs said that the scheme would affect her family"
+    r"said\b|stated\b|explained\b|commented\b|queried\b|questioned\b|objected\b|responded\b|replied\b|"
+    r"highlighted\b|urged\b|requested\b|expressed\b|outlined\b|suggested\b|raised\b)"
 )
 _OBJECT = re.compile(
     rf"\b(?:invited|welcomed|thanked|introduced|congratulated|thanks to|welcome to|presentation by|statement by|"
-    rf"question from|questions from|petition from|deputation from|submitted by)\s+(?P<name>{_FULL})\b"
+    rf"question from|questions from|petition from|deputation from|submitted by|"
+    # "The Council received a petition presented by Gary Danks", "a deputation, led by Ahmed Khan" (the audit)
+    rf"presented by|led by|organised by|tabled by|raised by|asked by)\s+(?P<name>{_FULL})\b"
 )
 _DESCRIBED = re.compile(
     rf"(?i:member of the public|members of the public|public speakers?|petitioners?|objectors?|lead petitioner|"
@@ -55,6 +66,27 @@ _DESCRIBED = re.compile(
     rf"(?:,|:|\s+-|\s+–)?\s+(?P<name>(?:(?:Mr|Mrs|Ms|Miss|Mx|Dr)\.?\s+)?(?:[A-Z]\.?\s*){{0,3}}{_FULL}|"
     rf"(?:Mr|Mrs|Ms|Miss|Mx|Dr)\.?\s+(?:[A-Z]\.?\s*){{0,3}}{_NAME_WORD})"
 )
+# A name (or a list of names) said to be a resident, a member of the public, a petitioner, or to come from an
+# organisation, straight after it (found by the audit of November 2026): "Sarah Brown, a local resident, spoke",
+# "Margaret Ripley, a local resident aged 99", "Lucy Byrne, resident of Pill", "Helen Jones (resident) addressed",
+# "Steve Lily, of Claremont Terrace Residents Association", "Sophia McAllister, Gary Danks and Mary Knight residents
+# of St James' Estate".
+_PERSON = (rf"(?:(?:Mr|Mrs|Ms|Miss|Mx|Dr)\.?\s+)?(?:[A-Z]\.?\s*){{0,3}}{_FULL}|"
+           rf"(?:Mr|Mrs|Ms|Miss|Mx|Dr)\.?\s+(?:[A-Z]\.?\s*){{0,3}}{_NAME_WORD}")
+_SEP = r"(?:,\s*|\s+and\s+|\s*&\s*)"
+_DESCRIBED_AFTER = re.compile(
+    rf"\b(?P<name>(?:{_PERSON})(?:{_SEP}(?:{_PERSON}))*)"
+    rf"(?=\s*\((?:a\s+)?(?:local\s+)?(?:resident|member of the public|petitioner|public speaker)\)|"
+    rf",?\s+(?:(?:a|an|both|all|two|three|four|fellow)\s+)?(?:local\s+)?(?:residents?|members? of the public|"
+    rf"lead petitioners?|petitioners?|public speakers?)\b|"
+    rf",\s+(?:of|from)\s+(?:the\s+)?[A-Z])"
+)
+# The officers at a meeting, listed after a heading: "Officers present: Sam Taylor, Joe Bloggs and Ann Other",
+# "Officers in attendance: Mike Ward (Democratic Services), Lucy Gray (Monitoring Officer)" (the audit). Only a
+# heading that says they are officers: "Present:" alone lists councillors.
+_OFFICERS = re.compile(r"\b(?i:(?:council\s+)?(?:officers?|officials?|staff)\s+(?:present|in attendance|attending)|"
+                       r"in attendance \(officers?\))\s*[:\-–]?\s*")
+_OFFICER_ENTRY = re.compile(rf"\s*(?P<name>{_PERSON})")
 # A question's header: "Question 1 From: Marcus Simpson To: Cabinet Member for ..." (found by the check)
 _HEADER = re.compile(rf"\b(?:From|Asked by|Questioner|Submitted by|Petitioner|Speaker)\s*:\s*"
                      rf"(?P<name>(?:[A-Z]\.?\s+){{0,3}}{_NAME_WORD}(?:\s+(?!To\b){_NAME_WORD}){{0,2}})\b")
@@ -69,7 +101,10 @@ _TRANSCRIPT = re.compile(rf"(?m)^\s*(?P<name>{_FULL})\s*\([A-Z][a-z]+(?:[ -][A-Z
 _ORG_WORDS = {"road", "street", "avenue", "council", "borough", "county", "district", "centre", "center", "school",
               "college", "academy", "trust", "board", "committee", "cabinet", "services", "team", "partnership",
               "authority", "government", "university", "homes", "housing", "plan", "policy", "fund", "estate",
-              "crescent", "terrace", "gardens", "nhs", "ltd", "limited", "plc", "association", "society", "forum"}
+              "crescent", "terrace", "gardens", "nhs", "ltd", "limited", "plc", "association", "society", "forum",
+              "police", "agency", "audit", "group", "network", "company", "campaign", "commission", "department",
+              "office", "village", "hospital", "rail", "railway", "highways", "water", "energy", "transport",
+              "residents", "action", "alliance", "union", "federation", "charity", "foundation", "club"}
 # Words of job titles, which minutes often capitalise ("The Equalities Manager presented").
 _TITLE_WORDS = {"manager", "officer", "director", "head", "leader", "member", "lead", "executive", "services",
                 "service", "delivery", "development", "change", "finance", "performance", "planning", "strategy",
@@ -80,7 +115,8 @@ _TITLE_WORDS = {"manager", "officer", "director", "head", "leader", "member", "l
                 "monitoring", "treasurer", "clerk", "solicitor", "partnerships", "children", "adults", "education",
                 "health", "care", "public", "safety", "commissioning", "economy", "growth", "assets", "property"}
 _PLACE_FIRST = {"holy", "saint", "st", "the", "royal", "east", "west", "north", "south", "new", "national", "regional",
-                "local", "public", "great", "upper", "lower", "old", "little"}
+                "local", "public", "great", "upper", "lower", "old", "little", "natural", "historic", "sport", "save",
+                "friends"}
 
 
 def _surname(name: str) -> str:
@@ -88,10 +124,14 @@ def _surname(name: str) -> str:
     return words[-1].lower().strip("'’") if words else ""
 
 
+# Words that make a name a councillor's, wherever the pattern that found it started: "Councillor Ann Other said".
+_COUNCILLOR_WORDS = {"councillor", "councillors", "cllr", "cllrs", "alderman", "aldermen", "cynghorydd", "cynghorwyr"}
+
+
 def _is_person(name: str) -> bool:
     words = [w.lower().strip(".,'’") for w in re.sub(r"\b(?:Mr|Mrs|Ms|Miss|Mx|Dr|Prof|Professor|Sir|Dame|Rev|Revd)\b\.?",
                                                      " ", name).split()]
-    return (bool(words) and not any(w in _ORG_WORDS or w in _TITLE_WORDS for w in words)
+    return (bool(words) and not any(w in _ORG_WORDS or w in _TITLE_WORDS or w in _COUNCILLOR_WORDS for w in words)
             and words[0] not in _PLACE_FIRST)
 
 
@@ -145,21 +185,42 @@ def redact(text: str, councillors: set[str]) -> tuple[str, int]:
         if _AFTER_COUNCILLOR.search(text[max(0, start - 14):start]) or _COUNCILLOR_ROLE.match(text[end:end + 40]):
             return False
         words = {w.lower().strip(".,'’") for w in name.split()}
+        after = re.match(r"\s+([A-Z][a-z]+)", text[end:end + 30])
+        if after and after.group(1).lower() in _ORG_WORDS:   # "Save Our Park Campaign", "Pill Residents Association"
+            return False
         if _surname(name) in councillors or words & councillors - {""} and len(words) <= 2 or not _is_person(name):
             return False
         spans.append((start, end))
         return True
+
+    def each(names: str, start: int) -> None:
+        """Every name in a list ("Ann Smith, Gary Danks and Mary Knight"), each considered on its own."""
+        for p in re.finditer(_PERSON, names):
+            consider(p.group(0), start + p.start())
 
     for rx in (_TITLED, _WITH_ROLE, _SPEAKING, _OBJECT, _DESCRIBED, _HEADER, _INITIALS, _TRANSCRIPT):
         for m in rx.finditer(text):
             name = m.group("name") if "name" in rx.groupindex else m.group(0)
             start = m.start("name") if "name" in rx.groupindex else m.start()
             consider(name, start)
-            if rx is _DESCRIBED:   # "local residents A Smith, David Edwards and Sarah Holmes"
+            if rx in (_DESCRIBED, _OBJECT):   # "local residents A Smith, David Edwards and Sarah Holmes"
                 pos = start + len(name)
                 while (more := _LIST_MORE.match(text[pos:pos + 120])):
                     consider(more.group("name"), pos + more.start("name"))
                     pos += more.end()
+    for m in _DESCRIBED_AFTER.finditer(text):
+        each(m.group("name"), m.start("name"))
+    for m in _OFFICERS.finditer(text):       # the list runs to the end of its sentence or line
+        pos = m.end()
+        while (entry := _OFFICER_ENTRY.match(text, pos)):
+            consider(entry.group("name"), entry.start("name"))
+            pos = entry.end()
+            role = re.match(r"\s*\([^()\n]{0,80}\)", text[pos:])          # "(Democratic Services)"
+            pos += role.end() if role else 0
+            sep = re.match(_SEP, text[pos:])
+            if not sep:
+                break
+            pos += sep.end()
     if not spans:
         return text, 0
     spans.sort()
