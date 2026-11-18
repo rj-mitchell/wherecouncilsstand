@@ -468,6 +468,16 @@ def councils_text(directory: dict[str, Any]) -> str:
     return "".join(parts)
 
 
+def briefing_title(at: str | None) -> str:
+    """A saved briefing's title, made by the site: never the reader's question, which can say anything at all and
+    would otherwise stand as the site's own headline in a browser tab, a search result or a link's preview."""
+    return f"Briefing from council minutes, {long_date(at[:10])}" if at else "Briefing from council minutes"
+
+
+BRIEFING_DESCRIPTION = ("A briefing written by AI from councils’ own minutes, in answer to a question asked by a reader. "
+                        "Every point cites the minutes it comes from.")
+
+
 def home_text(totals: dict[str, Any], examples: list[str]) -> str:
     return ("<h1>Council decisions, from the minutes</h1>"
             "<p>Ask about anything councils across the UK have discussed, decided or voted on at full council and "

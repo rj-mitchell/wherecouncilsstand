@@ -23,6 +23,7 @@ import shared  # noqa: E402
 from test_parity import (  # noqa: E402
     a_site,
     as_the_old_tables_kept_it,
+    briefings_titled_by_date,
     command,
     environment,
     kept,
@@ -193,7 +194,9 @@ def test_the_sites_figures_are_the_same_after_the_move_as_before(moved, tmp_path
     assert [k for k, v in golden["cached"].items() if v] == ["an-hour-old", "six-days-old"]
     client = TestClient(app)
     reads = [shared.send(client, {"get": answer["case"]}) for answer in golden["reads"]]
-    assert statements_marked(reads, golden["reads"], at_least=1) == golden["reads"] and len(reads) == 11
+    # a statement about a saved briefing is labelled with the briefing's title, not its question (test_parity.py)
+    assert statements_marked(reads, golden["reads"], at_least=1) == briefings_titled_by_date(golden["reads"], app)
+    assert len(reads) == 11
     from wts_core.usage import visitor_code
 
     assert visitor_code(site.db, shared.ADDRESS, clock=clock) == golden["visitor"] == MINE

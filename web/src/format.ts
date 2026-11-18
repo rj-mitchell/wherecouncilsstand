@@ -56,6 +56,12 @@ export function partyColour(code: string): string {
   return ["LAB", "CON", "LD", "REF", "GRN", "PC"].includes(code) ? `var(--party-${code})` : "var(--party-other)";
 }
 
+/** A briefing's title, made by the site from its date: never the reader's question, which can say anything and would
+ * otherwise stand as the site's own headline in a browser tab, a bookmark or the history. */
+export function briefingTitle(iso: string | null | undefined): string {
+  return iso ? `Briefing from council minutes, ${longDate(iso)}` : "Briefing from council minutes";
+}
+
 export function setTitle(title: string) {
   document.title = title ? `${title} | Where Councils Stand` : "Where Councils Stand";
 }

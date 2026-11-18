@@ -9,7 +9,7 @@ import { AskSister } from "./components/Sister";
 import { PlanChips } from "./components/PlanChips";
 import { Sources } from "./components/Sources";
 import { Why } from "./components/Why";
-import { longDate, markNav, monthYear, number, setTitle } from "./format";
+import { briefingTitle, longDate, markNav, monthYear, number, setTitle } from "./format";
 
 type State = {
   question: string;
@@ -69,7 +69,7 @@ function App() {
           for (const ev of b.events) st = apply(st, ev);
           setS({ ...st, briefingId: b.id });
           setQuestion(b.question);
-          setTitle(b.question);
+          setTitle(briefingTitle(b.at));
         })
         .catch((e: Error) => setS({ ...EMPTY, phase: "error", error: e.message }));
     }
@@ -82,7 +82,7 @@ function App() {
     abort.current = ctrl;
     let st: State = { ...EMPTY, question: q, phase: "reading" };
     setS(st);
-    setTitle(q);
+    setTitle(briefingTitle(new Date().toISOString()));
     if (location.pathname !== "/") history.replaceState(null, "", "/");
     requestAnimationFrame(() => resultRef.current?.focus());
     try {
@@ -168,7 +168,7 @@ function App() {
           <article className="briefing">
             <p className="briefing-head">
               <span>
-                Briefing: <em>{s.question}</em>
+                {s.savedAt ? "Asked by a reader" : "Your question"}: <em>{s.question}</em>
               </span>
               <span>{longDate(s.savedAt || new Date().toISOString())}</span>
             </p>
