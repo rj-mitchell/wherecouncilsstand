@@ -12,7 +12,7 @@ from typing import Any
 
 import duckdb
 
-from councils import authority, sisters, store
+from councils import authority, scrub, sisters, store, suppress
 from councils.config import Settings
 from councils.reference import people
 from councils.registry import (
@@ -170,9 +170,10 @@ class Data:
 
     # Freshness
     def stamp(self) -> float:
-        """When the store last changed: the newest meetings file."""
+        """When the store last changed: the newest meetings file, or the suppression list (suppress.py), whose
+        entries the pages show at once."""
         files = list((self.root / "meetings").glob("*.parquet"))
-        return max((f.stat().st_mtime for f in files), default=0.0)
+        return max(max((f.stat().st_mtime for f in files), default=0.0), suppress.stamp(self.settings.data_dir))
 
     def _fresh(self) -> None:
         stamp = self.stamp()
@@ -364,6 +365,8 @@ class Data:
         meetings = {m["meeting_id"]: m for m in store.parquet.read(self.root, "meetings", gss)}
         if c is None:
             c = self._people(gss)
+        # an item's title can name someone who isn't a councillor ("Petition – Mr Steve Dally"): as for the index
+        names, sup = scrub.surnames(self.root, gss), suppress.load(self.settings.data_dir)
         by_vote: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for r in rows:
             by_vote[r["vote_id"]].append(r)
@@ -377,7 +380,8 @@ class Data:
                 sides[v["vote"]][people.party_name(party, gss) if party else "Not matched"] += 1
             out.append({
                 "vote_id": vote_id, "date": _iso(first["date"]), "committee": m.get("committee_title", ""),
-                "kind": m.get("kind", ""), "item": it.get("title", ""), "number": it.get("number", ""),
+                "kind": m.get("kind", ""), "number": it.get("number", ""),
+                "item": scrub.item_title(it.get("title", ""), names, sup, gss, first["item_id"]),
                 "question": first["question"], "outcome": first["outcome"], "url": it.get("url", ""),
                 "counts": {s: sum(sides[s].values()) for s in SIDE_ORDER},
                 "by_party": {s: [{"party": p, "n": n} for p, n in sides[s].most_common()] for s in SIDE_ORDER},
@@ -407,7 +411,10 @@ class Data:
         size = Counter((m["side"], m["party"]) for m in members)
         members.sort(key=lambda x: (SIDE_ORDER.index(x["side"]), x["party"] is None, -size[(x["side"], x["party"])],
                                     x["party"] or "", x["name"]))
-        excerpt = rows[0]["excerpt"]
+        # stored with others' names removed by the rules of the day: through them again, as the minutes are
+        excerpt = scrub.minutes_text(rows[0]["excerpt"], scrub.surnames(self.root, gss),
+                                     suppress.load(self.settings.data_dir), gss, rows[0]["item_id"],
+                                     (summary or {}).get("item") or "")
         control = (people.party_name(authority.control_key(gss, rows[0]["date"])) if councils()[gss].is_authority
                    else people.party_name(c.control_on(rows[0]["date"]), gss) if c else None)
         return {**(summary or {}), "gss": gss, "council": councils()[gss].name,

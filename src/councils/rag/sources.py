@@ -4,6 +4,10 @@ Each source's title tells the model where the passage comes from and who it name
 the council, the meeting and its date, the agenda item, the party in overall control of the council on the date, and
 the councillors the passage names with their party on the date. Where the item has a named vote, the vote is given as
 a further block: who voted which way, and their parties on the date.
+
+The passage's text and its item's title go through scrub.py again here, as they were when indexed, so that a rule
+or an entry on the suppression list added since the index was built applies to what the model is given and the
+page shows at once.
 """
 
 from __future__ import annotations
@@ -15,7 +19,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
-from councils import store
+from councils import scrub, store, suppress
 from councils.config import Settings
 from councils.rank.evidence import evidence_group, group_label
 from councils.reference import people
@@ -85,8 +89,11 @@ class Lookup:
         left_out = set(without_votes)
         self.people: dict[str, people.Council] = {}
         self.votes: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        self.surnames: dict[str, set[str]] = {}
+        self.suppressions = suppress.load(settings.data_dir)
         for gss in gss_codes:
             att = store.parquet.read(root, "attendance", gss)
+            self.surnames[gss] = scrub.surnames(root, gss)
             meetings = store.parquet.read(root, "meetings", gss)
             self.people[gss] = people.build(att, meetings).get(gss) or people.Council(gss)
             for v in store.parquet.read(root, "votes", gss):
@@ -132,6 +139,10 @@ class Lookup:
 
 def record_source(n: int, r: dict[str, Any], lookup: Lookup, group_by: str = "control") -> Source:
     d = date.fromisoformat(r["date"])
+    names, sup = lookup.surnames.get(r["gss"], set()), lookup.suppressions
+    r = {**r, "item_title": scrub.item_title(r.get("item_title") or "", names, sup, r["gss"], r["record_id"]),
+         "heading": scrub.item_title(r.get("heading") or "", names, sup, r["gss"], r["record_id"]),
+         "text": scrub.minutes_text(r["text"], names, sup, r["gss"], r["record_id"], r.get("item_title") or "")}
     control = people.party_name(r["control"], r["gss"]) if r.get("control") else "not recorded"
     if r.get("council_type") == "strategic_authority":
         # a strategic authority has no party in control; its mayor's party is shown as that (decision 19)

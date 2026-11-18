@@ -62,7 +62,7 @@ def test_each_briefing_leaves_one_record_and_none_holds_a_visitors_code(asked):
     assert first["briefing_id"] == again["briefing_id"] == bid and refused["briefing_id"] is None
     assert refused["error_type"] == "ModelDeclined"
     assert (first["model"], first["parse_model"], first["instructions"]) == ("claude-sonnet-5-5",
-                                                                             "claude-haiku-5-5", "2")
+                                                                             "claude-haiku-5-5", "3")
     assert (first["input_tokens"], first["output_tokens"], first["cost_usd"]) == (1000, 200, 0.004)
     assert (again["input_tokens"], again["cost_usd"]) == (0, 0.0)             # a replay costs nothing
     assert (first["citations_total"], first["unsupported"], first["loaded_words"]) == (1, 1, 1)

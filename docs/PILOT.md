@@ -353,6 +353,19 @@ one-member groups or mixed groups ("Independent partnership"), which need a pers
 - Declarations can include sensitive details about councillors' families. Show the councillor, the item and the kind
   of interest. Show the excerpt only behind a link to the council's own record.
 
+  Done in November 2026, after an audit found briefings naming councillors whose relatives were in adult social care
+  or awaiting a hospital discharge: the minutes had been indexed with each declaration in full. Each declaration is
+  now cut down to who declared, the item and the kind of interest before the minutes are indexed, shown or given to
+  the model (`parse/declarations.py`, `without_reasons`), and an item that is the declarations themselves keeps only
+  those. The reasons stay in the store, never shown. The model's instructions also forbid describing anyone's
+  health, disability, care or family circumstances (rule 11).
+- The same audit found members of the public still named on the live site, in patterns the rules missed ("Lucy
+  Byrne, resident of Pill", "Steve Lily, of Claremont Terrace Residents Association", a list of names followed by
+  "residents of", "X said", "a petition presented by X", "Officers present: …"), and in agenda items' titles, which
+  had never been through the rules ("Presentation of CIL Petition … – Mr Steve Dally"). The patterns are caught, the
+  titles go through the rules wherever they are indexed, shown or given to the model, and names the rules miss can be
+  removed by hand with the suppression list (OPERATIONS.md, "Removing a name the rules missed").
+
 ## The full load
 
 On 24 and 25 October 2026, every council whose web service answered was loaded the same way, from May 2018. The

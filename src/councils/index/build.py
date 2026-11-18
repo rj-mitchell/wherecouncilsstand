@@ -1,7 +1,9 @@
 """Build the search index from the Parquet store (adapted from Where Countries Stand).
 
-Each agenda item's minutes are split into passages of about 250 words. Before that, the names of people who aren't
-councillors are removed (parse/redact.py), so neither the site nor the model ever sees them. Each passage carries
+Each agenda item's minutes are split into passages of about 250 words. Before that, each declaration of interest is
+cut down to who declared, the item and the kind of interest, and the names of people who aren't councillors are
+removed, from the text and from the item's title, as are the names on the owner's suppression list (scrub.py), so
+that they can't be searched for and aren't given to the model. Each passage carries
 its filter columns: the council's nation, type and region, the kind of meeting, the date, the party in control of the
 council on the date, the councillors it names and their parties on the date, and whether the item has a named vote.
 The keyword index is built straight away; embedding (meaning search) is a separate, resumable step, newest first.
@@ -21,7 +23,7 @@ import numpy as np
 from wts_core.adapters.lancedb import UNKNOWN_EMBEDDER
 from wts_core.ports import Embedder
 
-from councils import authority, store
+from councils import authority, scrub, store, suppress
 from councils.config import Settings
 from councils.index.lance import IndexOutOfDate, LanceIndex, get_embedder, open_as_built, open_index
 from councils.parse import redact
@@ -100,6 +102,7 @@ def passage_rows(gss: str, settings: Settings, max_words: int = 250) -> list[dic
     attendance = store.parquet.read(root, "attendance", gss)
     who = people.build(attendance, list(meetings.values())).get(gss) or people.Council(gss)
     surnames = redact.councillor_surnames({a["name"] for a in attendance if a["member_id"]})
+    suppressions = suppress.load(settings.data_dir)
     voted = {v["item_id"] for v in store.parquet.read(root, "votes", gss)}
     matchers: dict[int, Matcher] = {}
     out = []
@@ -108,13 +111,16 @@ def passage_rows(gss: str, settings: Settings, max_words: int = 250) -> list[dic
         m = meetings.get(it["meeting_id"])
         if not text.strip() or m is None:
             continue
-        text, _ = redact.redact(text, surnames)
+        text = scrub.minutes_text(text, surnames, suppressions, gss, it["item_id"], it["title"] or "")
+        if not text.strip():          # a declarations item with nothing left once the reasons are out
+            continue
+        title = scrub.item_title(it["title"] or "", surnames, suppressions, gss, it["item_id"])
         if it["year"] not in matchers:   # councillors around that year, for matching names
             matchers[it["year"]] = Matcher([Member(mid, name, "") for mid, name in
                                             people.recent(who, it["date"], 400)])
         matcher = matchers[it["year"]]
         heading = (f"{council.name}, {m['committee_title']}, {fmt_date(it['date'])}"
-                   + (f" — {it['number']} {it['title']}" if it.get("number") else f" — {it['title']}"))
+                   + (f" — {it['number']} {title}" if it.get("number") else f" — {title}"))
         # a strategic authority's "control" is its mayor's party on the date, or no single party (decision 19)
         control = authority.control_key(gss, it["date"]) if council.is_authority else who.control_on(it["date"])
         for i, chunk in enumerate(chunk_text(text, max_words)):
@@ -138,12 +144,12 @@ def passage_rows(gss: str, settings: Settings, max_words: int = 250) -> list[dic
                 "chunk": i,
                 "council_name": council.name,
                 "committee": m["committee_title"],
-                "item_title": it["title"],
+                "item_title": title,
                 "item_number": it.get("number") or "",
                 "heading": heading,
                 "text": chunk,
                 # the item's title and the council's name are searchable too ("what has Barnsley said about HS2")
-                "search_text": f"{it['title']}\n{council.name}\n{chunk}",
+                "search_text": f"{title}\n{council.name}\n{chunk}",
                 "url": it["url"],
             })
     return out

@@ -116,7 +116,7 @@ def test_sources_only_reads_the_question_with_the_model_only_while_the_caps_allo
 
 def test_follow_up_history_is_bounded_and_not_kept_with_the_saved_briefing(client):
     """The earlier questions a follow-up carries go to the model, cut to a fixed length, and into the cache key (the
-    answer depends on them). They are not saved with the briefing, nor served with it (as Where MPs Stand and Where
+    answer depends on them); the earlier answers it carries never go to the model (the audit of November 2026). They are not saved with the briefing, nor served with it (as Where MPs Stand and Where
     Countries Stand): a shared page should not carry an earlier conversation."""
     from councils.api.app import AskBody
 
@@ -132,7 +132,8 @@ def test_follow_up_history_is_bounded_and_not_kept_with_the_saved_briefing(clien
     final = events(c.post("/api/ask", json=ask))[-1]
     assert final["type"] == "final" and final["answer"] and len(fake.calls) == 1
     prompt = fake.calls[0]["messages"][0]["content"][-1]["text"]
-    assert "Q: What have councils decided about bin collections?" in prompt and "A" * 600 in prompt
+    # the earlier question only: an earlier answer is whatever the reader's browser sends, never given to the model
+    assert "Q: What have councils decided about bin collections?" in prompt and "A" * 50 not in prompt
     saved = archive.get(final["briefing_id"])
     assert saved.options == {"mode": "summary", "plan": None, "sources_only": False}
     assert "A" * 50 not in json.dumps([saved.question, saved.options, saved.events])

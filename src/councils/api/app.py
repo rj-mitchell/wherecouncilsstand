@@ -48,6 +48,7 @@ from wts_core.state import StateDB
 from wts_core.usage import cache_key, visitor_code
 
 from councils import replies as right_of_reply
+from councils import scrub
 from councils import state as state_database
 from councils.api import plaintext
 from councils.api.data import Data
@@ -90,8 +91,9 @@ EXAMPLES = [
 
 class HistoryItem(BaseModel):
     """An earlier question in the conversation, as a follow-up sends it back (as Where MPs Stand). Each part is cut
-    to a fixed length, so a request cannot inflate the prompt: the question to the longest a question may be, the
-    answer to more than the briefing instructions use of it (rag/answer.py)."""
+    to a fixed length, so a request cannot inflate the prompt. Only the question is given to the model: the answer
+    is whatever the reader's browser sends, and is never trusted as what the site wrote (rag/answer.py). It is
+    still accepted, so that a page that sends it is not refused, and is part of the answer cache's key."""
 
     question: str = ""
     answer: str = ""
@@ -170,9 +172,13 @@ class HeadAsGet:
 class CouncilsHooks(Hooks):
     """This site's own steps in the flow of a briefing (``wts_core.briefing.Hooks``)."""
 
+    def __init__(self, settings: Settings | None = None):
+        self.settings = settings
+
     def on_cached(self, ask: Ask, events: list[Event]) -> list[Event]:
-        """A cached briefing's marks are judged again by the current checks before it is shown."""
-        return rechecked(events)
+        """A cached briefing's marks are judged again by the current checks before it is shown, and its text goes
+        through the current rules for what may be shown (scrub.py)."""
+        return shown_events(rechecked(events), self.settings)
 
     def on_event(self, ask: Ask, event: Event) -> Event | None:
         """Token counts are for the spending record, which has them by now: this site sends none to the reader,
@@ -180,6 +186,14 @@ class CouncilsHooks(Hooks):
         if event["type"] in ("plan", "final"):
             return {k: v for k, v in event.items() if k not in ("usage", "parse_error")}
         return event
+
+
+def shown_events(events: list[Event], settings: Settings | None) -> list[Event]:
+    """A saved or cached briefing's events as they may be shown now (scrub.py): declarations without their reasons,
+    names removed by the current rules and the suppression list."""
+    if settings is None:
+        return events
+    return scrub.briefing_events(events, settings.parquet_dir, settings.data_dir)
 
 
 def answer_key(body: AskBody, data_stamp: float, model: str | None, hidden: Iterable[str] = ()) -> str:
@@ -236,7 +250,7 @@ def build(settings: Settings, state: StateDB | None = None, *, clock: Clock = SY
         clock=clock, random=random)
     log = SqliteBriefingLog(db, clock=clock)
     config = configuration(settings, log)       # its id worked out, and the parts behind it kept
-    desk = parts.desk(config, log=log, hooks=CouncilsHooks(),
+    desk = parts.desk(config, log=log, hooks=CouncilsHooks(settings),
                       # the record counts each briefing's sources by the group the evidence was balanced across
                       group_of=lambda card: card.get("group"))
     replies = right_of_reply.open_replies(db, lambda: data, parts.archive, clock)
@@ -448,7 +462,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         # a briefing saved before follow-up questions were left out of its options is served without them
         return {"id": b.id, "at": b.created_at, "question": b.question,
                 "options": {k: val for k, val in b.options.items() if k != "history"},
-                "events": rechecked(b.events)}
+                "events": shown_events(rechecked(b.events), settings)}
 
     # Councils and votes
     def shown_directory(now: right_of_reply.Hidden) -> dict[str, Any]:

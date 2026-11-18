@@ -26,11 +26,12 @@ def briefing_request(settings: Settings, question: str, sources: list[Source], m
     cfg = settings.answer
     history_note = ""
     if history:
+        # Only the earlier questions. An earlier answer would come from the reader's browser, which could send any
+        # text at all as "what the site said", so it is never put in front of the model (the audit of November 2026).
         history_note = "If this question follows on from an earlier one, answer what it asks, building on the " \
-            "earlier briefing rather than repeating it (do not restate points already made unless the new " \
-            "records change them). Earlier in this conversation (for context only; cite only the search " \
-            "results below):\n" + \
-            "\n".join(f"Q: {h['question']}\nA (summary): {h.get('answer', '')[:600]}" for h in history[-3:])
+            "earlier questions rather than repeating what a briefing on them would say. The reader's earlier " \
+            "questions in this conversation (for context only; cite only the search results below):\n" + \
+            "\n".join(f"Q: {h['question']}" for h in history[-3:])
     return ModelRequest(
         model=cfg.get("model", "claude-sonnet-5-5"),
         instructions=system_prompt(today or date.today()),
