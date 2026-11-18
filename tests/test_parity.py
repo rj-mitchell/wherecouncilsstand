@@ -818,7 +818,21 @@ def test_the_owners_commands_print_what_they_did(owner):
                 entry[1] = ", ".join(part for part in entry[1].split(", ") if part != "shown_on")
     assert now_kept == then
     reads = [shared.send(client, {"get": path}) for path in shared.OWNER_READS]
-    assert statements_marked(reads, golden["reads"], at_least=1) == golden["reads"]
+    assert statements_marked(reads, golden["reads"], at_least=1) == briefings_titled_by_date(golden["reads"], app)
+
+
+def briefings_titled_by_date(golden: list, app) -> list:
+    """Deliberately changed in November 2026: a statement about a saved briefing is labelled, on the council's page,
+    with the briefing's title, which the site makes from its date, where it was labelled with the reader's question
+    ("Briefing: What has Barnsley decided about public toilets?")."""
+    import json
+
+    from councils.api.plaintext import briefing_title
+
+    saved = app.state.councils.parts.archive.get("abc123")
+    old = f"Briefing: {saved.question}"
+    assert old in json.dumps(golden)
+    return json.loads(json.dumps(golden).replace(json.dumps(old)[1:-1], briefing_title(saved.created_at)))
 
 
 def test_the_owners_commands_under_their_new_names_do_the_same(owner):
@@ -889,6 +903,16 @@ def test_the_pages_and_the_other_endpoints_give_what_they_gave(tmp_path):
                                         "case": f"/api/status {limits}"}
     assert list(now) == list(golden)
     now = statements_marked(now, golden, at_least=2)
+    # Deliberately changed in November 2026: a saved briefing's page is sent with a title, description and canonical
+    # link the site makes from its date, never the reader's question (test_pages.py); its body is as it was.
+    from councils.api.plaintext import BRIEFING_DESCRIPTION, briefing_title, page_with_meta
+
+    archive = app.state.councils.parts.archive
+    for case in [c for c in golden if c.startswith("/b/") and golden[c]["status"] == 200]:
+        saved = archive.get(case.split("/")[2])
+        golden[case] = {**golden[case], "text": page_with_meta(
+            golden[case]["text"], title=f"{briefing_title(saved.created_at)} | Where Councils Stand",
+            description=BRIEFING_DESCRIPTION, url=f"https://wherecouncilsstand.com{case}")}
     for case, was in golden.items():
         if now[case] != was:
             print("PAGE", case, "\n   was", str(was)[:3000], "\n   now", str(now[case])[:3000])

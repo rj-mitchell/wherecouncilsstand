@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 from test_pipeline import BARNSLEY, GUILDFORD, settings  # noqa: F401 - the fixture
+from wts_core.dates import long_date
 
 from councils import store
 from councils.api.app import create_app
@@ -269,3 +270,21 @@ def test_the_privacy_notice_says_what_is_kept_in_the_sentences_the_owner_accepte
     for not_here in ("not useful", "failed questions", "per day for reports"):
         assert not_here not in notice
     assert "Requests aren\u2019t logged." in notice      # still true: the log of briefings holds nothing from a request
+
+
+def test_a_saved_briefings_title_is_the_sites_never_the_readers_question(site):
+    """A reader's question can say anything; as the page's title it would stand as the site's own headline in a
+    browser tab, a search result and a link's preview (as on the sister sites, found by the audit of November 2026).
+    The title is made by the site from the date; the question is shown in the page, as asked by a reader."""
+    archive = site.app.state.councils.parts.archive
+    question = "Why is Councillor Kitching a crook?"
+    archive.save(question, {}, [{"type": "final", "answer": None}], id="abc1234")
+    saved = archive.get("abc1234")
+    r = site.get("/b/abc1234")
+    assert r.status_code == 200 and "crook" not in r.text.lower()
+    head = r.text.split("</head>")[0]
+    title = f"Briefing from council minutes, {long_date(saved.created_at[:10])} | Where Councils Stand"
+    assert f"<title>{title}</title>" in head and f'<meta property="og:title" content="{title}" />' in head
+    assert '<link rel="canonical" href="https://wherecouncilsstand.com/b/abc1234" />' in head
+    missing = site.get("/b/nothere")
+    assert missing.status_code == 404 and '<meta name="robots" content="noindex" />' in missing.text

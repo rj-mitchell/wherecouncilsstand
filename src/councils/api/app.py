@@ -535,8 +535,8 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                 elif kind == "councils":
                     about = (data.council(key) or {}).get("name")
                 else:
-                    saved = archive.get(key)
-                    about = f"Briefing: {saved.question if saved else ''}"
+                    saved = archive.get(key)      # the site's title, not the reader's question
+                    about = plaintext.briefing_title(saved.created_at) if saved else None
             except Exception:  # noqa: BLE001 - a name is a courtesy; the link still works without it
                 about = None
             out.append({**r, "about": about or r["page"]})
@@ -626,8 +626,24 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         return readable("index", build)
 
     @app.get("/b/{bid}", include_in_schema=False)
-    def shared(bid: str):
-        return page("index")
+    def shared(bid: str, request: Request):
+        """A saved briefing: the app's page, with a title and description the site makes (the date it was written),
+        never the reader's question; the question is shown in the page, as asked by a reader."""
+        base = site_url(request)
+
+        def build():
+            url = f"{base}/b/{bid}"
+            b = archive.get(bid)
+            if b is None:
+                return (404, "Briefing not found | Where Councils Stand", "There is no briefing at this address.",
+                        url, None, None)
+            if b.withdrawn_at:
+                return (410, "Briefing withdrawn | Where Councils Stand", "This briefing has been withdrawn.", url,
+                        None, None)
+            return (200, f"{plaintext.briefing_title(b.created_at)} | Where Councils Stand",
+                    plaintext.BRIEFING_DESCRIPTION, url, None, None)
+
+        return readable("index", build)
 
     @app.get("/councils", include_in_schema=False)
     def councils_page(request: Request):
