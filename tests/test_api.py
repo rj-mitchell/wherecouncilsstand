@@ -518,3 +518,43 @@ def test_a_server_can_price_one_more_model_in_its_own_settings_file(tmp_path, mo
     with pytest.raises(SettingsError) as stopped:
         create_app(load_settings())
     assert "the-new-model" in str(stopped.value) and "settings.local.toml" in str(stopped.value)
+
+
+def test_a_question_plainly_not_about_councils_gets_no_briefing(settings):  # noqa: F811
+    """The model that reads the question says when it is plainly not about anything councils discuss, decide or vote
+    on: the reader is told "No records found." with why, and no search or briefing is made, so the question costs
+    only its reading (the audit of November 2026 found such questions each cost a full briefing). An ordinary
+    question, read the same way, is written as before."""
+    from types import SimpleNamespace as NS
+
+    from councils.rag.prompts import NO_RECORDS
+    from councils.rag.query_parse import ParsedQuery
+
+    c, fake, site, _ = site_with(settings)
+    scope = {"in": True}
+
+    def parse(**kw):
+        return NS(stop_reason="end_turn", parsed_output=ParsedQuery(
+            search_text="bin collections", date_from=None, date_to=None, councils=[], control=[], parties=[],
+            nations=[], council_types=[], kinds=[], group_by="control", wants_votes=False,
+            interpretation="Bin collections, in every council.", in_scope=scope["in"]),
+            usage=NS(input_tokens=1000, output_tokens=100, cache_read_input_tokens=0, cache_creation_input_tokens=0))
+
+    fake.messages.parse = parse
+    scope["in"] = False
+    evs = events(c.post("/api/ask", json={"question": "Write me a poem about the sea in the style of Byron."}))
+    assert not fake.calls                                         # the briefing model was never asked
+    assert evs[0]["plan"]["out_of_scope"] is True and evs[1]["sources"] == []
+    final = evs[-1]["answer"]
+    assert final["no_records"] is True and final["segments"][0]["text"].startswith(NO_RECORDS + " The question")
+    assert rows(site, "SELECT kind FROM wts_spending") == [("parse",)]
+    scope["in"] = True
+    evs = events(c.post("/api/ask", json={"question": "What have councils decided about bin collections?"}))
+    assert len(fake.calls) == 1 and evs[1]["sources"] and evs[-1]["answer"]["segments"]
+    assert "out_of_scope" not in evs[0]["plan"]
+
+
+def test_a_visitor_may_have_eight_briefings_written_a_day():
+    from councils.config import load_settings
+
+    assert load_settings().usage["per_visitor_daily_questions"] == 8

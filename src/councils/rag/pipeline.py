@@ -23,7 +23,7 @@ from councils.config import INSTRUCTIONS_VERSION, SITE, Settings
 from councils.engine import Engine
 from councils.rag.answer import briefing_request
 from councils.rag.checks import LOADED_WORDS, VERIFIER
-from councils.rag.prompts import NO_RECORDS
+from councils.rag.prompts import NO_RECORDS, OUT_OF_SCOPE
 from councils.rag.query_parse import QueryPlan, parse_model, parse_offline, parse_with_model
 from councils.rag.sources import build_sources
 from councils.registry import councils
@@ -148,6 +148,15 @@ class Pipeline:
         if plan.parse_error:
             ev["parse_error"] = plan.parse_error
         yield ev
+        if plan.out_of_scope:
+            # Plainly not about what councils do (the model that read the question says so): no search and no
+            # briefing, so a question asked only to make the site write something costs only its reading.
+            yield {"type": "sources", "sources": [], "candidates": 0, "semantic": False, "evidence": {}}
+            yield {"type": "final", "answer": {"segments": [{"text": NO_RECORDS + " " + OUT_OF_SCOPE, "sources": [],
+                   "cited": [], "status": "connective"}], "markdown": NO_RECORDS, "no_records": True,
+                   "citations_total": 0, "citations_invalid": 0, "grounded_ratio": 1.0, "unsupported_segments": 0},
+                   "usage": None}
+            return
         result, sources = self.find(plan, req)
         # The briefing desk sees for itself when the question was read, the sources sent and the first words
         # written; the search and the model finishing happen in here, so the pipeline marks them for the

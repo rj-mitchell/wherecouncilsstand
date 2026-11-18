@@ -92,6 +92,12 @@ def added_to_the_settings_file(now: dict, golden: dict) -> None:
     for section, key, value in (("answer", "cache_instructions", "short"), ("embedding", "theme_similarity", 0.8)):
         for given in (now[section], now["raw"][section]):
             assert key not in golden[section] and given.pop(key) == value
+    # a visitor's daily allowance of new briefings went from 30 to 8 in November 2026, after an audit found one
+    # visitor could spend 1.5 times the daily cap; a local file or an override that sets it still wins
+    for given, was in ((now["usage"], golden["usage"]), (now["raw"]["usage"], golden["raw"]["usage"])):
+        if was.get("per_visitor_daily_questions") == 30:
+            assert given["per_visitor_daily_questions"] == 8
+            given["per_visitor_daily_questions"] = 30
 
 
 def test_the_settings_are_read_from_the_real_environment_too(monkeypatch, tmp_path):
@@ -999,6 +1005,26 @@ def deliberately_changed(was: dict) -> dict:
     return was
 
 
+_SCOPE_RULE = (
+    "\n- in_scope: false only when the question is plainly not about anything a council or strategic authority could\n"
+    "  discuss, decide or vote on: a request to write a story, a poem or code, to chat, or for general knowledge with no\n"
+    "  bearing on public services, local government or a place. Any question about a public matter, a service, a place, a\n"
+    "  party or a councillor is in scope, however it is worded. When in doubt, true.")
+
+
+def read_for_scope(was: dict) -> dict:
+    """Changed on purpose in November 2026: the model that reads a question also says whether it is about what
+    councils do at all, so that a question plainly not about them gets "No records found." without a briefing (the
+    audit found such questions each cost a full briefing). Its instructions gain one rule; the rest is as it was."""
+    import copy
+
+    was = copy.deepcopy(was)
+    for block in was["system"]:
+        assert block["text"].endswith("in British English.")
+        block["text"] += _SCOPE_RULE
+    return was
+
+
 def test_the_model_is_sent_what_it_was_sent(tmp_path):
     """Every request the real pipeline makes of the model's SDK, argument for argument, through the shared
     package's model client: the instructions (as one cacheable block), the sources as documents, the question as
@@ -1016,7 +1042,8 @@ def test_the_model_is_sent_what_it_was_sent(tmp_path):
     assert len(now["briefings"]) == len(golden["briefings"]) == 5
     for got, was in zip(now["briefings"], golden["briefings"], strict=True):
         assert got == deliberately_changed(was)
-    assert now["questions_read"] == golden["questions_read"] and len(now["questions_read"]) == 2
+    assert now["questions_read"] == [read_for_scope(was) for was in golden["questions_read"]]
+    assert len(now["questions_read"]) == 2
 
 
 def old_index(tmp: Path):

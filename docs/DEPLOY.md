@@ -19,8 +19,8 @@ share is described once, in Where MPs Stand's
 
 ## Requirements
 
-About 2 GB of memory while serving (the container is limited to 4 GB, so a runaway update stops itself rather than
-slowing the other sites), and roughly 10 to 12 GB of disk for the full record (when 213 councils were loaded in
+About 2 GB of memory while serving (the container is limited to 4 GB and two processors, so a runaway update stops
+itself, and a flood of requests or the nightly embedding is held back, rather than slowing the other sites), and roughly 10 to 12 GB of disk for the full record (when 213 councils were loaded in
 October 2026: 3.3 GB of cached responses, 180 MB of stored meetings and 3.5 GB of search index). An Anthropic API key
 for written briefings; without one, the site shows the sources only.
 

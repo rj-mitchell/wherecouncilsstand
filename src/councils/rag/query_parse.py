@@ -60,11 +60,15 @@ class QueryPlan:
     group_by: str = "control"
     unresolved_councils: list[str] = field(default_factory=list)
     parse_error: str | None = None
+    # the model found the question plainly not about what councils discuss, decide or vote on: no briefing is
+    # written (rag/pipeline.py). Never set by the built-in rules or by a plan the reader edited.
+    out_of_scope: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {"question": self.question, "search_text": self.search_text, "filters": self.filters.as_dict(),
                 "wants_votes": self.wants_votes, "interpretation": self.interpretation, "parser": self.parser,
-                "group_by": self.group_by, "unresolved_councils": self.unresolved_councils}
+                "group_by": self.group_by, "unresolved_councils": self.unresolved_councils,
+                **({"out_of_scope": True} if self.out_of_scope else {})}
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> QueryPlan:
@@ -214,6 +218,8 @@ class ParsedQuery(BaseModel):
     group_by: GroupBy
     wants_votes: bool
     interpretation: str = Field(description="One sentence: how the question was interpreted")
+    in_scope: bool = Field(default=True, description="False only when the question is plainly not about anything "
+                                                     "councils discuss, decide or vote on")
 
 
 def system_prompt(today: date, start: date, default_years: int) -> str:
@@ -242,7 +248,11 @@ Rules:
   "the West Yorkshire mayor").
 - group_by: "control" (by party in overall control, the default), "region", "type" (kind of council) or "council".
 - wants_votes: true if the question is about how councillors voted.
-- interpretation: one plain sentence describing the filters you chose, in British English."""
+- interpretation: one plain sentence describing the filters you chose, in British English.
+- in_scope: false only when the question is plainly not about anything a council or strategic authority could
+  discuss, decide or vote on: a request to write a story, a poem or code, to chat, or for general knowledge with no
+  bearing on public services, local government or a place. Any question about a public matter, a service, a place, a
+  party or a councillor is in scope, however it is worded. When in doubt, true."""
 
 
 def parse_model(settings) -> str:
@@ -270,7 +280,7 @@ def parse_with_model(model: ModelClient, settings, question: str,
                         councils=codes, nations=list(p.nations), council_types=list(p.council_types),
                         kinds=list(p.kinds), control=list(p.control), parties=list(p.parties)),
         wants_votes=p.wants_votes, interpretation=p.interpretation, parser="model", group_by=p.group_by,
-        unresolved_councils=unresolved)
+        unresolved_councils=unresolved, out_of_scope=not p.in_scope)
     return plan, usage
 
 
