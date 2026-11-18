@@ -132,6 +132,7 @@ flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app sh -c 
 | `councils reports`, `councils withdraw` | Reports and takedown requests, and withdrawn briefings |
 | `councils statements` | Statements under the right of reply |
 | `councils hide`, `unhide`, `hidden` | Hide a page while a concern about it is decided |
+| `councils suppress add`, `suppress list` | Remove a name or phrase the automatic rules missed (the suppression list) |
 | `councils waiting`, `would-lapse` | What is waiting for a decision, and what the next tidy would lapse |
 | `councils stats`, `weekly-report`, `propose-questions` | How briefings went, and test questions proposed from readers' own |
 | `councils tidy` | The nightly deletion, after each backup |
@@ -286,6 +287,37 @@ hidden vote among its sources shows that page's note in its place until the page
 is still named, with a link that leads to the note, on the pages of strategic authorities it belongs to, and it
 still counts in the totals. Hiding is not withdrawal: a withdrawn briefing stays withdrawn. `councils waiting`
 counts what is hidden, so nothing is left hidden by oversight.
+
+### Removing a name the rules missed
+
+Names of people who aren't councillors are removed by rules (`src/councils/parse/redact.py`), and the rules miss
+some. When a takedown request names one still shown, or you find one, put it on the suppression list:
+
+```bash
+docker compose run --rm -T app councils suppress add "North Somerset" "Lucy Byrne" --note "takedown request 41"
+docker compose run --rm -T app councils suppress add E07000216 "Steve Dally" --item E07000216:1234:5678   # in one item only
+docker compose run --rm -T app councils suppress list
+docker compose run --rm -T app councils index E06000024        # then take it out of the search index (that council only)
+```
+
+The council is its GSS code or a unique part of its name. Write the name or phrase as the minutes do (case, spacing
+and the kind of apostrophe don't matter; only whole words match). `--item` limits the entry to one agenda item, or
+to one meeting: `councils search` shows each passage's item id, and a named vote's id without its last part is its
+item's. `--note` is for you and is never shown.
+
+The entry applies at once, without a restart, wherever the minutes are shown or given to the model: the sources of
+new briefings, the pages of named votes, and saved and cached briefings (each match becomes "[name removed]"). The
+search index still holds the words, so the name can still be searched for and can still bring up the passage, until
+the council is indexed again with `councils index <council>`, which the command reminds you of. Run it the same day.
+
+The list is `/data/suppress.csv` on the server, beside `settings.local.toml`. It is never committed: the repository
+is public, and the list is a list of people's names. It is not in the nightly backup of the state database either,
+so copy it off the server when you add to it (`scp`), or keep the takedown requests' notes so it can be written
+again. Edit it by hand only to remove an entry; the columns are `council,item,text,added,note`.
+
+A name in an agenda item's title is removed like one in its minutes. Declarations of interest are cut down to who
+declared, the item and the kind of interest wherever the minutes are searched, shown or given to the model; the
+reasons stay only in the store (`declarations` table) and in the council's own minutes.
 
 ## Briefing statistics
 

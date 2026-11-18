@@ -229,13 +229,14 @@ def test_an_authoritys_control_is_its_mayors_party_labelled_as_such():
 
 def test_a_source_from_an_authority_says_its_mayors_party_not_control():
     from councils.rag.sources import Lookup, record_source
+    from councils.suppress import Suppressions
 
     r = {"record_id": "E47000003:1501:1", "gss": "E47000003", "council_type": "strategic_authority",
          "council_name": "West Yorkshire Combined Authority", "committee": "Combined Authority Board",
          "kind": "board", "date": "2026-01-22", "item_title": "Budget", "item_number": "12.", "control": "MAYOR:LAB",
          "text": "RESOLVED that the budget be approved.", "url": "u", "members": []}
     lookup = Lookup.__new__(Lookup)
-    lookup.votes, lookup.people = {}, {}
+    lookup.votes, lookup.people, lookup.surnames, lookup.suppressions = {}, {}, {}, Suppressions()
     title = record_source(1, r, lookup).title
     assert "its mayor on the date: Labour" in title and "overall control" not in title
     assert "strategic authority's board" in title

@@ -22,7 +22,9 @@ DEFAULT_CONFIG = REPO_ROOT / "config" / "settings.toml"
 STATIC_DIR = REPO_ROOT / "data_static"
 # Raise this whenever the briefing instructions (rag/prompts.py) or the answer's shape change: it is part of the
 # answer cache's key, so a briefing written under the old instructions is never served as if written under the new.
-INSTRUCTIONS_VERSION = "2"
+# "3" (November 2026): rule 11, on people's health, disability, care and family; and a follow-up is given the earlier
+# questions only, not the earlier answers.
+INSTRUCTIONS_VERSION = "3"
 
 
 def _version() -> str:

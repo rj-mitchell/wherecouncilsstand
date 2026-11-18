@@ -325,6 +325,9 @@ def asked(tmp_path, monkeypatch):
         clock = shared.Clock()
         numbered_ids(monkeypatch)
         monkeypatch.setattr(web, "parse_offline", shared.offline_reader)
+        # the cache's keys as the golden file has them, made under the instructions of the day ("2"); the change
+        # of version since is asserted in test_the_answer_caches_key_is_the_same_for_every_question_and_choice
+        monkeypatch.setattr(web, "INSTRUCTIONS_VERSION", "2")
         s = site_settings(tmp_path / f"ask-{made[0]}", limits)
         db = new_state(s, clock)
         pipeline = shared.ScriptedPipeline(clock, s.answer["model"], has_model=has_model)
@@ -436,13 +439,18 @@ def test_cost_and_stored_token_counts_are_the_same_for_every_usage_and_model(par
         PriceTable.from_settings({})
 
 
-def test_the_answer_caches_key_is_the_same_for_every_question_and_choice():
+def test_the_answer_caches_key_is_the_same_for_every_question_and_choice(monkeypatch):
     """So nothing cached is lost at the move: a key the old code made is the key the new code looks for."""
+    from councils.api import app as web
     from councils.api.app import AskBody, answer_key
     from councils.config import INSTRUCTIONS_VERSION
 
     golden = shared.read("limits.json")["cache_keys"]
-    assert golden["instructions_version"] == INSTRUCTIONS_VERSION
+    # Deliberately changed: the instructions went from "2" (the golden file's) to "3" in November 2026 (rule 11, on
+    # people's health, disability, care and family, and follow-ups given earlier questions only), so no answer
+    # written under "2" is served again. With the version the golden file was made with, the keys are as they were.
+    assert golden["instructions_version"] == "2" and INSTRUCTIONS_VERSION == "3"
+    monkeypatch.setattr(web, "INSTRUCTIONS_VERSION", golden["instructions_version"])
     now = [{"body": body, "stamp": stamp, "key": answer_key(AskBody(**body), stamp, golden["model"])}
            for body in shared.KEY_BODIES for stamp in shared.KEY_STAMPS]
     assert now == golden["keys"]
@@ -461,7 +469,7 @@ def test_the_answer_caches_key_changes_with_the_model_the_instructions_and_the_r
     assert web.answer_key(body, 1731500000.25, "claude-sonnet-5-5") == key
     assert web.answer_key(body, 1731500000.25, "claude-opus-5-5") != key          # another model
     assert web.answer_key(body, 1731586400.0, "claude-sonnet-5-5") != key         # the record has changed
-    monkeypatch.setattr(web, "INSTRUCTIONS_VERSION", "3")
+    monkeypatch.setattr(web, "INSTRUCTIONS_VERSION", "4")
     assert web.answer_key(body, 1731500000.25, "claude-sonnet-5-5") != key        # new instructions
 
 
@@ -933,6 +941,40 @@ def test_the_real_pipeline_sends_and_writes_what_it_did(tmp_path, monkeypatch):
 # What the model is sent, and an index the old code built
 
 
+# What the model is sent was changed on purpose in November 2026 (INSTRUCTIONS_VERSION "3"), after an audit: the
+# instructions gained rule 11 and a line on declarations of interest, so that a briefing never describes anyone's
+# health, disability, care or family; and a follow-up is given the reader's earlier questions only, never an earlier
+# answer, which is whatever the reader's browser sends. Everything else is as the golden file has it.
+_NEW_RULE = (
+    "11. Never describe the health, disability, care or family circumstances of any person, councillor or not: not an\n"
+    "   illness or condition, a disability or a grant for one, social care or a hospital stay, nor what a relative does\n"
+    "   or receives, even where a passage mentions it. Declarations of interest are given only as who declared, the\n"
+    "   item and the kind of interest; report no more than that, and never guess why an interest was declared.\n")
+_NEW_LINE = ("- A declaration of interest is given as who declared, the item and the kind of interest only: the reason is "
+             "left\n  out of the records on purpose. See rule 11.\n")
+
+
+def deliberately_changed(was: dict) -> dict:
+    import copy
+    import re
+
+    was = copy.deepcopy(was)
+    for block in was["system"]:
+        text = block["text"]
+        assert "\nLanguage: British English" in text and "\n- Some text reads" in text
+        text = text.replace("\n\nLanguage: British English", "\n" + _NEW_RULE + "\nLanguage: British English", 1)
+        block["text"] = text.replace("\n- Some text reads", "\n" + _NEW_LINE + "- Some text reads", 1)
+    for message in was["messages"]:
+        for part in message["content"] if isinstance(message["content"], list) else []:
+            if isinstance(part, dict) and "Earlier in this conversation" in part.get("text", ""):
+                part["text"] = re.sub(r"\nA \(summary\): [^\n]*", "", part["text"]).replace(
+                    "building on the earlier briefing rather than repeating it (do not restate points already made "
+                    "unless the new records change them). Earlier in this conversation",
+                    "building on the earlier questions rather than repeating what a briefing on them would say. The "
+                    "reader's earlier questions in this conversation")
+    return was
+
+
 def test_the_model_is_sent_what_it_was_sent(tmp_path):
     """Every request the real pipeline makes of the model's SDK, argument for argument, through the shared
     package's model client: the instructions (as one cacheable block), the sources as documents, the question as
@@ -949,7 +991,7 @@ def test_the_model_is_sent_what_it_was_sent(tmp_path):
     golden, now = shared.read("requests.json"), shared.requests_made(fake)
     assert len(now["briefings"]) == len(golden["briefings"]) == 5
     for got, was in zip(now["briefings"], golden["briefings"], strict=True):
-        assert got == was
+        assert got == deliberately_changed(was)
     assert now["questions_read"] == golden["questions_read"] and len(now["questions_read"]) == 2
 
 

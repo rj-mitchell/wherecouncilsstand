@@ -175,7 +175,8 @@ def letter(row: dict, address: str, greeting: str, passed_on: bool, why_you: str
     parts.append(
         "How it would read your site:\n\n" + reading
         + f"- It identifies itself as: {USER_AGENT}\n"
-        "- Names of people who aren't councillors are removed before anything is shown.\n")
+        "- Names of people who aren't councillors are removed automatically. The rules miss some, and anyone named "
+        "can ask for their name to be taken down.\n")
     parts.append(
         f"If you would rather we didn't, we will keep {short} out, and the site will say why it isn't included. "
         "I'm happy to answer any questions, or to change how it reads the site to suit you.\n")

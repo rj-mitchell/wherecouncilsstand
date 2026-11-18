@@ -16,6 +16,7 @@
     councils statements list                  # statements under the right of reply, waiting and published
     councils statements publish 3 --checked "..."   # show it, once its author is confirmed (decision 22)
     councils hide /votes/<id> --note "..."    # hide an item while a concern is decided; unhide shows it again
+    councils suppress add <council> "<name>"  # remove a name or phrase that slipped through (the suppression list)
     councils waiting                          # what is waiting for a decision, and for how long
     councils would-lapse                      # what the next tidy would decline or delete as undecided (changes nothing)
     councils stats --since 7d                 # how briefings went: speed, cost, what the checks found
@@ -573,6 +574,49 @@ app.add_typer(eval_commands(
     clock=lambda: CLOCK))
 
 
+suppress_app = typer.Typer(no_args_is_help=True, help="Names and phrases removed by hand: the suppression list "
+                                                    "(src/councils/suppress.py; docs/OPERATIONS.md).")
+app.add_typer(suppress_app, name="suppress")
+
+
+@suppress_app.command("add")
+def suppress_add(council: str = typer.Argument(..., help="the council: GSS code or a unique part of its name"),
+                 text: str = typer.Argument(..., help="the name or phrase to remove, as the minutes write it"),
+                 item: str = typer.Option("", help="only in this agenda item, or meeting (its id: a named vote's id "
+                                                   "without its last part is its item's)"),
+                 note: str = typer.Option("", help="why, for you (a report's number, say); never shown")) -> None:
+    """Remove a name or phrase from a council's minutes wherever the site shows them or gives them to the model."""
+    from councils import suppress
+    from councils.registry import get
+
+    try:
+        c = get(council)
+    except KeyError as exc:
+        typer.echo(f"error: {exc.args[0]}")
+        raise typer.Exit(1) from None
+    s = load_settings()
+    try:
+        entry = suppress.add(s.data_dir, c.gss, text, item, note, today=CLOCK.now().date())
+    except ValueError as exc:
+        typer.echo(f"error: {exc}")
+        raise typer.Exit(1) from None
+    where = f" in {entry.item}" if entry.item else ""
+    typer.echo(f'added: "{entry.text}" at {c.name}{where}. Pages, the sources of new briefings, and saved and cached '
+               f"briefings leave it out from now on. To take it out of the search index too, run: councils index "
+               f"{c.gss}")
+
+
+@suppress_app.command("list")
+def suppress_list() -> None:
+    """Every entry on the suppression list."""
+    from councils import suppress
+    from councils.registry import councils
+
+    for e in suppress.load(load_settings().data_dir).entries:
+        name = councils()[e.council].name if e.council in councils() else e.council
+        typer.echo("\t".join([e.added, name, e.item or "(whole council)", e.text] + ([e.note] if e.note else [])))
+
+
 @app.command()
 def serve(host: str = "127.0.0.1", port: int = 8000,
           behind_proxy: bool = typer.Option(False, help="trust the proxy's forwarded client address")) -> None:
@@ -688,7 +732,7 @@ def search(query: str, start: str = typer.Option(None, "--from"), end: str = typ
     res = Engine(load_settings()).search(query, _filters(start, end, council, control, party, kind),
                                          limit=limit, group_by=group_by)
     for r in res.records:
-        typer.echo(f"\n[{r['date']}] {r['heading']}  (control: {r['control']})\n  {r['url']}\n  "
+        typer.echo(f"\n[{r['date']}] {r['heading']}  (control: {r['control']}; item {r['record_id']})\n  {r['url']}\n  "
                    + r["text"][:300].replace("\n", " "))
     typer.echo(f"\n{len(res.records)} items from {res.candidates} candidates; " + json.dumps(res.evidence, default=str))
 
