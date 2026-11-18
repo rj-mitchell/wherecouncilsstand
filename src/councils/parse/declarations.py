@@ -105,7 +105,7 @@ def parse(text: str, members: list[Member]) -> list[Declaration]:
 
 def _who(who: str) -> str:
     """The councillors a declaration names, written plainly: "Councillor Smith", "Councillors Leech and Osborne";
-    anything else said before "declared" (the reason, often) is left out."""
+    anything else said before "declared" (the reason, often) is left out. "A councillor" where none is named."""
     names = [n for n in split_names(re.sub(r"^the (?:mayor|chair(?:man)?)\s*\(?", "", flatten(who), flags=re.I))
              if not re.search(r"\d", n) and len(n.split()) <= 4]
     if not names:
@@ -156,7 +156,11 @@ def without_reasons(text: str, title: str = "") -> str:
             a, b = _sentence(plain, m.start(), m.end())
             if any(x < b and a < y for x, y, _ in found):
                 continue
-            found.append((a, b, _reduced(m, plain[a:b])))
+            reduced = _reduced(m, plain[a:b])
+            if reduced.startswith("A councillor ") and not _PERSONAL.search(plain[a:b]):
+                # nobody named and nothing personal: not a declaration ("Councillors were asked to declare interests")
+                continue
+            found.append((a, b, reduced))
     found.sort()
     if title and DECLARATIONS_ITEM.search(title):
         if found:

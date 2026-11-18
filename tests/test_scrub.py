@@ -41,6 +41,8 @@ def test_declarations_keep_who_the_item_and_the_kind_only():
     ]:
         assert without_reasons(text) == reduced
     assert without_reasons("The Leader said the budget was balanced.") == "The Leader said the budget was balanced."
+    reminder = "Councillors were asked to declare interests at the start of each item."
+    assert without_reasons(reminder) == reminder
 
 
 def test_a_declarations_item_keeps_only_the_declarations():
