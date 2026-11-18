@@ -1,4 +1,4 @@
-/// <reference types="vitest" />
+/// <reference types="vitest/config" />
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { defineConfig, type Plugin } from "vite";
@@ -37,7 +37,7 @@ export default defineConfig({
   build: {
     outDir: "dist",
     sourcemap: false,
-    rollupOptions: { input: Object.fromEntries(pages.map((p) => [p, here(`./${p}.html`)])) },
+    rolldownOptions: { input: Object.fromEntries(pages.map((p) => [p, here(`./${p}.html`)])) },
   },
   test: { environment: "jsdom" },
 });
