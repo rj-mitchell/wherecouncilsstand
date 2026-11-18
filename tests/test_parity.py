@@ -98,6 +98,12 @@ def added_to_the_settings_file(now: dict, golden: dict) -> None:
         if was.get("per_visitor_daily_questions") == 30:
             assert given["per_visitor_daily_questions"] == 8
             given["per_visitor_daily_questions"] = 30
+    # and a briefing in progress is reserved at $0.25, not $0.15, which was below what 16,000 tokens of output
+    # alone can cost ($0.16): eight written at once could pass the caps
+    for given, was in ((now["usage"], golden["usage"]), (now["raw"]["usage"], golden["raw"]["usage"])):
+        if was.get("briefing_estimate_usd") == 0.15:
+            assert given["briefing_estimate_usd"] == 0.25
+            given["briefing_estimate_usd"] = 0.15
 
 
 def test_the_settings_are_read_from_the_real_environment_too(monkeypatch, tmp_path):
