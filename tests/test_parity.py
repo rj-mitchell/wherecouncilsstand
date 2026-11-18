@@ -104,6 +104,12 @@ def added_to_the_settings_file(now: dict, golden: dict) -> None:
         if was.get("briefing_estimate_usd") == 0.15:
             assert given["briefing_estimate_usd"] == 0.25
             given["briefing_estimate_usd"] = 0.15
+    # and the question reader gives each question medium effort, not low, after a run of Where MPs Stand's test set
+    # read 9 in 10 questions' filters right at low (a reading costs a fiftieth of a penny)
+    for given, was in ((now["answer"], golden["answer"]), (now["raw"]["answer"], golden["raw"]["answer"])):
+        if was.get("query_parse_effort") == "low":
+            assert given["query_parse_effort"] == "medium"
+            given["query_parse_effort"] = "low"
 
 
 def test_the_settings_are_read_from_the_real_environment_too(monkeypatch, tmp_path):
@@ -1021,13 +1027,16 @@ _SCOPE_RULE = (
 def read_for_scope(was: dict) -> dict:
     """Changed on purpose in November 2026: the model that reads a question also says whether it is about what
     councils do at all, so that a question plainly not about them gets "No records found." without a briefing (the
-    audit found such questions each cost a full briefing). Its instructions gain one rule; the rest is as it was."""
+    audit found such questions each cost a full briefing). Its instructions gain one rule; and it reads each
+    question at medium effort, not low (a reading costs a fiftieth of a penny). The rest is as it was."""
     import copy
 
     was = copy.deepcopy(was)
     for block in was["system"]:
         assert block["text"].endswith("in British English.")
         block["text"] += _SCOPE_RULE
+    assert was["output_config"] == {"effort": "low"}
+    was["output_config"] = {"effort": "medium"}
     return was
 
 
