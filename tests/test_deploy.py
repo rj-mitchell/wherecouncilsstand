@@ -129,6 +129,13 @@ def test_the_tidy_after_the_backup_has_time_to_finish():
     assert stat.S_IMODE((DEPLOY / "update.sh").stat().st_mode) & 0o111
 
 
+def test_the_site_is_limited_to_two_processors_and_four_gigabytes():
+    """The server is shared with the charity's other sites: neither a flood of requests nor the nightly update (in
+    one-off containers of the same service) may take more than two processors (the audit of November 2026)."""
+    compose = (DEPLOY / "docker-compose.yml").read_text()
+    assert '    mem_limit: 4g\n    cpus: "2"\n' in compose
+
+
 # The database as the code before the move left it
 
 

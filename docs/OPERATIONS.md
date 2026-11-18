@@ -163,7 +163,9 @@ allowance (`per_visitor_daily_questions`) and the site's daily and monthly caps 
 `monthly_spend_cap_usd`). While a briefing is being written it counts at an estimate (`briefing_estimate_usd`),
 and only a few are written at once (`briefings_at_once`, `briefings_at_once_per_visitor`), so a burst of questions
 can't all pass the daily cap before any is counted. Over a limit, readers still get the sources, which cost
-nothing. With "Sources only" ticked, no briefing is written, but the model still reads the question (a fraction of
+nothing. A visitor may have 8 briefings written a day. A question the model reading it finds plainly not about
+anything councils discuss, decide or vote on (a request for a poem, say) is answered "No records found." without a
+search or a briefing, so it costs only that reading. With "Sources only" ticked, no briefing is written, but the model still reads the question (a fraction of
 a penny) while the caps allow; after that, built-in rules read it. An identical question is answered from the cache
 for up to a week, or until the data changes.
 

@@ -24,8 +24,11 @@ services:
       # nightly copies of the database that cannot be rebuilt (/opt/wherecouncilsstand/deploy/backups)
       - ./backups:/backups
     restart: unless-stopped
-    # the server is shared with the charity's other sites: a runaway update stops itself rather than slowing them
+    # the server is shared with the charity's other sites: a runaway update stops itself rather than slowing them,
+    # and neither the site under a flood of requests nor the nightly update and its embedding (which run in one-off
+    # containers of this service, so with the same limits) can take more than two of its processors
     mem_limit: 4g
+    cpus: "2"
     expose:
       - "8000"
     networks:

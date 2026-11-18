@@ -78,7 +78,10 @@ theme_similarity = 0.8
 
 [usage]
 # The site is public; each new model-written briefing costs money. As Where MPs Stand.
-per_visitor_daily_questions = 30   # a backstop against automated use (visitors keyed by a salted hash of their IP)
+# New briefings a visitor may have written each day: enough for real research (a reader rarely asks more than a few),
+# few enough that one visitor can't spend much of the daily cap. Was 30 until the audit of November 2026, when 30 a
+# day at the estimate below was 1.5 times the daily cap for one visitor. Over it, the sources are still shown.
+per_visitor_daily_questions = 8    # visitors keyed by a salted hash of their IP
 requests_per_minute = 20           # questions and searches per visitor
 answer_cache_hours = 168           # an identical question is answered from the cache until the data changes, or a week
 daily_spend_cap_usd = 3.0          # over this, briefings stop for the day and the sources are shown instead

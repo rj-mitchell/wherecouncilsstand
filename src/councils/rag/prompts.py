@@ -10,6 +10,9 @@ from __future__ import annotations
 from datetime import date
 
 NO_RECORDS = "No records found."
+# said after it when the question is plainly not about what councils do (rag/pipeline.py)
+OUT_OF_SCOPE = ("The question doesn’t seem to be about anything councils discuss, decide or vote on, so no minutes "
+                "were searched. Ask about a council decision, a local service or a vote.")
 
 ANSWER_SYSTEM = """You are a research analyst. You write short, analytical briefings on what councils in England, Wales,
 Scotland and Northern Ireland have discussed, decided and voted on at full council and cabinet meetings, and England's
