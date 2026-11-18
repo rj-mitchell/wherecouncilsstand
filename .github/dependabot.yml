@@ -44,9 +44,12 @@ updates:
       day: "monday"
     open-pull-requests-limit: 3
     groups:
+      # Minor and patch releases together in one pull request. A major release isn't grouped: each comes in a pull
+      # request of its own, to be checked against its upgrade guide.
       npm:
         patterns:
           - "*"
+        update-types: ["minor", "patch"]
 
   # The actions the workflows in .github/workflows/ use
   - package-ecosystem: "github-actions"
