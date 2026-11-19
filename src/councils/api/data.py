@@ -503,4 +503,4 @@ class Data:
                 "control": control,
                 "excerpt": excerpt, "members": members,
                 "description": titles.description(summary, councils()[gss].name) if summary else "",
-                **_nearby(everything, vote_id, rows[0]["item_id"], rows[0]["meeting_id"])}
+                **(_nearby(everything, vote_id, rows[0]["item_id"], rows[0]["meeting_id"]) if summary else {})}
