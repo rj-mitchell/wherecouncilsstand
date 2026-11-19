@@ -1,8 +1,8 @@
 /** One council, or one strategic authority: coverage, the party in control over time (an authority's mayors),
  * members, named votes and recent meetings, and the links between authorities and their councils. */
-import { StrictMode, useEffect, useState, type ReactNode } from "react";
-import { createRoot } from "react-dom/client";
+import type { ReactNode } from "react";
 import "./styles.css";
+import { drawWhenLoaded } from "./draw";
 import { getCouncil, type CouncilPage } from "./api";
 import { SisterLinks } from "./components/Sister";
 import { Statements } from "./components/Statements";
@@ -328,26 +328,7 @@ function Authority({ c }: { c: CouncilPage }) {
   );
 }
 
-function App() {
-  const gss = decodeURIComponent(location.pathname.split("/")[2] || "");
-  const [c, setC] = useState<CouncilPage | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    getCouncil(gss)
-      .then((d) => {
-        setC(d);
-        setTitle(d.name);
-      })
-      .catch((e: Error) => setError(e.message));
-  }, [gss]);
-  if (error)
-    return (
-      <>
-        <h1>Council</h1>
-        <p className="notice">{error}</p>
-      </>
-    );
-  if (!c) return <p className="progress">Getting the council’s record</p>;
+function Council({ c }: { c: CouncilPage }) {
   if (c.type === AUTHORITY) return <Authority c={c} />;
   const ll = c.landlords;
   const landlords = ll && (ll.council || ll.area) && (
@@ -485,8 +466,19 @@ function App() {
 }
 
 markNav();
-createRoot(document.getElementById("app")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+const gss = decodeURIComponent(location.pathname.split("/")[2] || "");
+drawWhenLoaded(
+  () =>
+    getCouncil(gss).then((c) => {
+      setTitle(c.name);
+      return c;
+    }),
+  (c) => <Council c={c} />,
+  (message) => (
+    <>
+      <h1>Council</h1>
+      <p className="notice">{message}</p>
+    </>
+  ),
+  "Getting the council’s record",
 );
