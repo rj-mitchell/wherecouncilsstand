@@ -86,7 +86,7 @@ requests_per_minute = 20           # questions and searches per visitor
 answer_cache_hours = 168           # an identical question is answered from the cache until the data changes, or a week
 daily_spend_cap_usd = 25.0         # over this, briefings stop for the day and the sources are shown instead (the
                                    # owner raised it from 3.0 on 19 November 2026)
-monthly_spend_cap_usd = 50.0
+monthly_spend_cap_usd = 100.0   # raised from 50.0 by the owner on 19 November 2026
 # A briefing's cost is known only when it finishes, so each one being written is counted against the caps at this
 # estimate meanwhile; and only so many are written at once, per visitor and in all (as Where MPs Stand).
 briefing_estimate_usd = 0.25
