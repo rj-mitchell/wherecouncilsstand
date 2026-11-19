@@ -21,7 +21,7 @@ dependencies = [
     # copies of backups, and the libraries behind the model, the embedder and the index (anthropic, lancedb and
     # fastembed: local open-source embedding models on the ONNX runtime, whose weights are downloaded once from
     # Hugging Face at setup and pinned; no council data goes to Hugging Face).
-    "wts-core[cli,offsite,ai] @ https://github.com/rj-mitchell/wts-core/releases/download/v0.3.1/wts_core-0.3.1-py3-none-any.whl",
+    "wts-core[cli,offsite,ai] @ https://github.com/rj-mitchell/wts-core/releases/download/v0.3.2/wts_core-0.3.2-py3-none-any.whl",
 ]
 
 [project.scripts]
