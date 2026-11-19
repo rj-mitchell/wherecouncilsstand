@@ -1,33 +1,13 @@
 /** One named vote: who voted which way, with their party on the date, and the passage it was read from. */
-import { StrictMode, useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
 import "./styles.css";
+import { drawWhenLoaded } from "./draw";
 import { getVote, type VotePage } from "./api";
 import { Statements } from "./components/Statements";
 import { VoteLinks, voteHref } from "./components/VoteLinks";
 import { Mark, Tally } from "./components/VoteMarks";
 import { KIND_LABEL, longDate, markNav, setTitle, sideLabel, voteOn } from "./format";
 
-function App() {
-  const id = decodeURIComponent(location.pathname.split("/")[2] || "");
-  const [v, setV] = useState<VotePage | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    getVote(id)
-      .then((d) => {
-        setV(d);
-        setTitle(d.title || `${d.item || "Named vote"}, ${d.council}`);
-      })
-      .catch((e: Error) => setError(e.message));
-  }, [id]);
-  if (error)
-    return (
-      <>
-        <h1>Named vote</h1>
-        <p className="notice">{error}</p>
-      </>
-    );
-  if (!v) return <p className="progress">Getting the vote</p>;
+function Vote({ v, id }: { v: VotePage; id: string }) {
   return (
     <>
       <p className="meta">
@@ -126,8 +106,19 @@ function App() {
 }
 
 markNav();
-createRoot(document.getElementById("app")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+const id = decodeURIComponent(location.pathname.split("/")[2] || "");
+drawWhenLoaded(
+  () =>
+    getVote(id).then((v) => {
+      setTitle(v.title || `${v.item || "Named vote"}, ${v.council}`);
+      return v;
+    }),
+  (v) => <Vote v={v} id={id} />,
+  (message) => (
+    <>
+      <h1>Named vote</h1>
+      <p className="notice">{message}</p>
+    </>
+  ),
+  "Getting the vote",
 );
