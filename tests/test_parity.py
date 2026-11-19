@@ -111,6 +111,10 @@ def added_to_the_settings_file(now: dict, golden: dict) -> None:
         if was.get("daily_spend_cap_usd") == 3.0:
             assert given["daily_spend_cap_usd"] == 25.0
             given["daily_spend_cap_usd"] = 3.0
+        # and the monthly cap from $50 to $100, the same day
+        if was.get("monthly_spend_cap_usd") == 50.0:
+            assert given["monthly_spend_cap_usd"] == 100.0
+            given["monthly_spend_cap_usd"] = 50.0
     # and the question reader gives each question medium effort, not low, after a run of Where MPs Stand's test set
     # read 9 in 10 questions' filters right at low (a reading costs a fiftieth of a penny)
     for given, was in ((now["answer"], golden["answer"]), (now["raw"]["answer"], golden["raw"]["answer"])):
