@@ -59,7 +59,7 @@ jobs:
           done
           curl -fsS http://127.0.0.1:8000/councils/E08000038 | grep -q "Members by party"
           curl -fsS http://127.0.0.1:8000/councils/E47000002 | grep -q "Constituent councils"
-          curl -fsS http://127.0.0.1:8000/sitemap.xml | grep -q "/votes/E08000038:1:10:0"
+          curl -fsS http://127.0.0.1:8000/sitemap.xml | grep -o "/sitemaps/[^<]*" | while read -r p; do curl -fsS "http://127.0.0.1:8000$p"; done | grep -q "/votes/E08000038:1:10:0"
           curl -fsS http://127.0.0.1:8000/corrections | grep -q "Briefing withdrawn"
       # axe, WCAG 2.2 AA, light and dark, desktop and phone: this site's scripts/a11y.mjs, with Playwright and
       # axe-core at the family's versions

@@ -8,9 +8,11 @@ import re
 import sys
 from dataclasses import replace
 from pathlib import Path
+from types import SimpleNamespace as NS
 
 import pytest
 from test_api import events, site_with
+from test_pages import every_sitemap
 from test_pipeline import BARNSLEY, GUILDFORD, settings  # noqa: F401 - the fixture
 from test_statements import CHECKED, MARKER, VOTE, body, with_vote
 from typer.testing import CliRunner
@@ -174,7 +176,8 @@ def test_a_hidden_named_vote_shows_the_note_and_is_left_out_of_lists_and_sources
     c, fake, parts, run = site
     sid = c.post("/api/statements", json=body()).json()["id"]
     assert run("statements", "publish", str(sid), "--checked", CHECKED).exit_code == 0
-    before = {path: c.get(path) for path in (VOTE_PAGE, f"/api{VOTE_PAGE}", f"/api{COUNCIL_PAGE}", "/sitemap.xml")}
+    before = {path: c.get(path) for path in (VOTE_PAGE, f"/api{VOTE_PAGE}", f"/api{COUNCIL_PAGE}")}
+    before["/sitemap.xml"] = NS(status_code=200, text=every_sitemap(c))       # the index and each sitemap in it
     assert "Houghton" in before[VOTE_PAGE].text and MARKER in before[VOTE_PAGE].text
     first = ask(c)
     assert "Named vote recorded in these minutes" in given_to_the_model(fake) and len(fake.calls) == 1
@@ -192,7 +195,7 @@ def test_a_hidden_named_vote_shows_the_note_and_is_left_out_of_lists_and_sources
     # lists: its council's votes (the page for readers without scripts too), the sitemap, statements
     assert c.get(f"/api{COUNCIL_PAGE}").json()["votes"] == [] and before[f"/api{COUNCIL_PAGE}"].json()["votes"]
     assert VOTE not in c.get(COUNCIL_PAGE).text and VOTE in before["/sitemap.xml"].text
-    assert VOTE not in c.get("/sitemap.xml").text and COUNCIL_PAGE in c.get("/sitemap.xml").text
+    assert VOTE not in every_sitemap(c) and COUNCIL_PAGE in every_sitemap(c)
     assert c.get("/api/statements", params={"page": VOTE_PAGE}).json()["statements"] == []
     assert c.get("/api/statements", params={"council": BARNSLEY}).json()["statements"] == []
     # search and the sources of a briefing: the item's minutes are still found, without the site's reading of
@@ -207,7 +210,7 @@ def test_a_hidden_named_vote_shows_the_note_and_is_left_out_of_lists_and_sources
     # shown again: everything as it was, and the answer from before is replayed once more
     assert run("unhide", VOTE_PAGE).exit_code == 0
     for path, was in before.items():
-        now = c.get(path)
+        now = NS(status_code=200, text=every_sitemap(c)) if path == "/sitemap.xml" else c.get(path)
         assert (now.status_code, now.text) == (was.status_code, was.text), path
     assert ask(c)["briefing_id"] == first["briefing_id"] and len(fake.calls) == 2
 
@@ -229,7 +232,7 @@ def test_a_hidden_councils_page_shows_the_note_and_its_minutes_are_left_out_of_s
     rows = c.get("/api/councils").json()["councils"]
     assert len(rows) == listed - 1 and BARNSLEY not in {r["gss"] for r in rows}
     assert COUNCIL_PAGE not in c.get("/councils").text and f"/councils/{GUILDFORD}" in c.get("/councils").text
-    sitemap = c.get("/sitemap.xml").text
+    sitemap = every_sitemap(c)
     assert BARNSLEY not in sitemap and GUILDFORD in sitemap
     # search, and so the sources of a briefing written meanwhile: none of its minutes
     found = c.post("/api/search", json={"question": BINS}).json()["sources"]

@@ -103,16 +103,59 @@ def test_the_list_of_councils_and_the_home_page_can_be_read_without_scripts(site
     assert 'rel="canonical" href="https://wherecouncilsstand.com/"' in home
 
 
+def every_sitemap(client) -> str:
+    """The sitemap index and every sitemap it lists, as one text."""
+    index = client.get("/sitemap.xml").text
+    return index + "".join(client.get(loc.split("wherecouncilsstand.com", 1)[-1]).text
+                           for loc in re.findall(r"<loc>(.*?/sitemaps/.*?)</loc>", index))
+
+
+def sitemap_entries(site) -> dict[str, list[tuple[str, str]]]:
+    """Each sitemap the index lists, by its address: its pages' addresses and dates."""
+    base = "https://wherecouncilsstand.com"
+    out = {}
+    for loc in re.findall(r"<loc>(.*?)</loc>", site.get("/sitemap.xml").text):
+        r = site.get(loc.removeprefix(base))
+        assert r.status_code == 200 and r.headers["content-type"].startswith("application/xml")
+        out[loc] = re.findall(r"<url><loc>(.*?)</loc>(?:<lastmod>(.*?)</lastmod>)?</url>", r.text)
+    return out
+
+
 def test_sitemap_lists_every_council_and_vote(site):
     r = site.get("/sitemap.xml")
     assert r.status_code == 200 and r.headers["content-type"].startswith("application/xml")
-    locs = re.findall(r"<loc>(.*?)</loc>", r.text)
+    assert r.text.startswith('<?xml version="1.0" encoding="UTF-8"?><sitemapindex ')
     base = "https://wherecouncilsstand.com"
-    assert locs[:2] == [f"{base}/", f"{base}/councils"]
-    assert {f"{base}/about", f"{base}/press", f"{base}/status", f"{base}/named"} <= set(locs)
-    assert f"{base}/404" not in locs
-    assert f"{base}/councils/{BARNSLEY}" in locs and len([u for u in locs if "/councils/" in u]) > 300
-    assert f"{base}/votes/{VOTE}" in locs
+    maps = sitemap_entries(site)
+    assert list(maps) == [f"{base}/sitemaps/pages.xml", f"{base}/sitemaps/councils.xml",
+                          f"{base}/sitemaps/votes-2025.xml"]
+    pages = [u for u, _ in maps[f"{base}/sitemaps/pages.xml"]]
+    assert pages[:2] == [f"{base}/", f"{base}/councils"]
+    assert {f"{base}/about", f"{base}/press", f"{base}/status", f"{base}/named"} <= set(pages)
+    assert f"{base}/404" not in pages and all(not when for _, when in maps[f"{base}/sitemaps/pages.xml"])
+    councils = dict(maps[f"{base}/sitemaps/councils.xml"])
+    # a council's date is that of its latest meeting read; one not covered has none
+    assert councils[f"{base}/councils/{BARNSLEY}"] == "2025-02-26" and len(councils) > 300
+    assert councils[f"{base}/councils/E06000001"] == ""
+    assert maps[f"{base}/sitemaps/votes-2025.xml"] == [(f"{base}/votes/{VOTE}", "2025-02-26")]
+    # the index gives each sitemap's newest date, and none for the pages of text
+    assert "<sitemap><loc>https://wherecouncilsstand.com/sitemaps/pages.xml</loc></sitemap>" in r.text
+    assert "<loc>https://wherecouncilsstand.com/sitemaps/votes-2025.xml</loc><lastmod>2025-02-26</lastmod>" in r.text
+    assert site.get("/sitemaps/votes-1999.xml").status_code == 404
+    # robots.txt names the index alone
+    robots = (Path(__file__).parents[1] / "web" / "public" / "robots.txt").read_text()
+    assert re.findall(r"(?m)^Sitemap: (.*)$", robots) == [f"{base}/sitemap.xml"]
+
+
+def test_no_sitemap_holds_more_than_the_protocol_allows(site, monkeypatch):
+    from councils.api import app as app_module
+
+    monkeypatch.setattr(app_module, "SITEMAP_MAX", 1)
+    data = site.app.state.councils.data
+    monkeypatch.setattr(type(data), "vote_dates", lambda self: [(f"{BARNSLEY}:1:10:{n}", "2025-02-26")
+                                                                for n in range(3)])
+    names = [u.rsplit("/", 1)[1] for u in sitemap_entries(site)]
+    assert names[2:] == ["votes-2025-1.xml", "votes-2025-2.xml", "votes-2025-3.xml"]
 
 
 def test_a_page_is_sent_as_it_is_if_the_record_cannot_be_read(site, monkeypatch):
@@ -208,7 +251,7 @@ def test_an_authority_page_and_its_councils_pages_link_both_ways(site, settings)
     assert "<h2>Strategic authorities</h2>" in listing and "Greater London Authority" in listing
     totals = site.get("/api/status").json()
     assert totals["authorities"] == 20 and totals["authorities_loaded"] == 1
-    assert f"/councils/{SOUTH_YORKSHIRE}" in site.get("/sitemap.xml").text
+    assert f"/councils/{SOUTH_YORKSHIRE}" in every_sitemap(site)
 
 
 WEB = Path(__file__).resolve().parents[1] / "web"

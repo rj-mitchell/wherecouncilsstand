@@ -1306,6 +1306,9 @@ def page_read(client: Any, path: str) -> dict[str, Any]:
                           "loaded": [r for r in body["councils"] if r["gss"] in (BARNSLEY, GUILDFORD)]}
     elif path in ("/sitemap.xml", "/councils"):
         text = answer["text"]
+        if path == "/sitemap.xml":      # an index of sitemaps since November 2026: each of them is read with it
+            text += "".join(send(client, {"get": loc.split("wherecouncilsstand.com", 1)[-1]})["text"]
+                            for loc in re.findall(r"<loc>(.*?/sitemaps/.*?)</loc>", text))
         found = re.findall(rf"/(?:votes|councils)/(?:{BARNSLEY}|{GUILDFORD})[^<\"]*", text)
         answer["text"] = {"of_the_record": sorted(set(found)), "length_over_10000": len(text) > 10000}
     return answer

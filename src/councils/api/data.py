@@ -196,7 +196,7 @@ class Data:
         self._stamp: float | None = None
         self._directory: list[dict[str, Any]] = []
         self._totals: dict[str, Any] = {}
-        self._vote_ids: list[str] | None = None
+        self._vote_ids: list[tuple[str, str]] | None = None
 
     # Freshness
     def stamp(self) -> float:
@@ -293,6 +293,10 @@ class Data:
 
     def vote_ids(self) -> list[str]:
         """Every named vote's id, for the sitemap: newest first."""
+        return [vote_id for vote_id, _ in self.vote_dates()]
+
+    def vote_dates(self) -> list[tuple[str, str]]:
+        """Every named vote's id and the date of its meeting (ISO), newest first: for the sitemap."""
         self._fresh()
         if self._vote_ids is None:
             con = duckdb.connect()
@@ -300,7 +304,7 @@ class Data:
             rows = con.execute("SELECT vote_id, max(date) AS d FROM votes GROUP BY vote_id ORDER BY d DESC, vote_id"
                                ).fetchall() if "votes" in names else []
             held = set(withheld_codes())
-            self._vote_ids = [r[0] for r in rows if r[0].split(":")[0] not in held]
+            self._vote_ids = [(r[0], _iso(r[1]) or "") for r in rows if r[0].split(":")[0] not in held]
         return self._vote_ids
 
     def directory(self) -> dict[str, Any]:
