@@ -394,8 +394,8 @@ is tried again the next night. On the second night running the command fails, an
 other failure also fails the backup's unit and sends the alert.
 
 `councils backup` does the deletions of steps 2 and 3 before it copies the database, so a night's backup holds
-nothing of the day before that the live file doesn't. It does hold the current day's rows so far, with their
-visitors' codes, for as long as that backup is kept.
+nothing of the day before that the live file doesn't. It does hold the current day's rows so far, but with no
+visitors' codes and no visitor secret (wts-core 0.3.2), for as long as that backup is kept.
 
 ## The state database
 
