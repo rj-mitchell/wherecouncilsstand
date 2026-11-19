@@ -15,6 +15,8 @@ from urllib.parse import quote
 from wts_core.dates import long_date
 from wts_core.replies import safe_link
 
+from councils.api import titles
+
 SITE = "Where Councils Stand"
 MAX_ITEMS = 60
 KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy committee", "board": "Board",
@@ -54,10 +56,11 @@ def with_text(page: str, fragment: str | None) -> str:
 
 
 def page_with_meta(page: str, *, title: str, description: str, url: str, noindex: bool = False,
-                   data: dict[str, Any] | None = None) -> str:
-    """The page with its own title, description, canonical address and link-preview text, and ``data`` (schema.org
-    structured data, for search engines) if given. The link-preview image stays the family kit's card, from the
-    page's head."""
+                   data: dict[str, Any] | list[dict[str, Any]] | None = None) -> str:
+    """The page with its own title, description (cut at a word to ``DESCRIPTION_MAX`` characters), canonical
+    address and link-preview text, and ``data`` (schema.org structured data, for search engines, one script for
+    each) if given. The link-preview image stays the family kit's card, from the page's head."""
+    description = titles.shorten(description, titles.DESCRIPTION_MAX)
     tags = [f"<title>{e(title)}</title>",
             f'<meta name="description" content="{e(description)}" />',
             f'<link rel="canonical" href="{e(url)}" />',
@@ -70,8 +73,8 @@ def page_with_meta(page: str, *, title: str, description: str, url: str, noindex
             '<meta name="twitter:card" content="summary_large_image" />']
     if noindex:
         tags.append('<meta name="robots" content="noindex" />')
-    if data:  # "</" is escaped so the data cannot end the script element
-        tags.append('<script type="application/ld+json">' + json.dumps(data).replace("</", "<\\/") + "</script>")
+    for one in ([data] if isinstance(data, dict) else data or []):  # "</" escaped: the data cannot end the script
+        tags.append('<script type="application/ld+json">' + json.dumps(one).replace("</", "<\\/") + "</script>")
     head = "\n    " + "\n    ".join(tags) + "\n  </head>"
     return re.sub(r"\s*</head>", lambda _: head, _HEAD_TAGS.sub("", page), count=1)
 
@@ -118,31 +121,45 @@ def _mayor_now(c: dict[str, Any]) -> str:
     return "No mayor: no single party"
 
 
+def _fits(*candidates: str) -> str:
+    """The first of ``candidates`` short enough for a page's description, or the last cut to fit."""
+    for text in candidates:
+        if len(text) <= titles.DESCRIPTION_MAX:
+            return text
+    return titles.shorten(candidates[-1], titles.DESCRIPTION_MAX)
+
+
 def authority_description(c: dict[str, Any]) -> str:
     what = f"{c['name']} ({c.get('kind_name') or 'strategic authority'}, {_region(c) or 'England'})"
     if not c.get("loaded"):
-        return f"{what}: not covered yet. " + " ".join(c.get("reasons") or [])
-    return (f"{what}: board, and overview and scrutiny meetings from {month_year(c.get('from'))} to "
-            f"{month_year(c.get('to'))}, from the authority’s own minutes. {_mayor_now(c)}. "
-            f"{_plural(c.get('meetings') or 0, 'meeting')} and {_plural(c.get('named_votes') or 0, 'named vote')}, "
-            "with each member’s role and party on the date.")
+        return _fits(f"{what}: not covered yet. " + " ".join(c.get("reasons") or []), f"{c['name']}: not covered yet.")
+    votes = _plural(c.get("named_votes") or 0, "named vote")
+    when = f"{month_year(c.get('from'))} to {month_year(c.get('to'))}"
+    meetings = _plural(c.get("meetings") or 0, "board and scrutiny meeting")
+    return _fits(f"{what}: {votes}, with each member’s role and party, and {meetings} from {when}. {_mayor_now(c)}.",
+                 f"{c['name']}: {votes}, with each member’s role and party, and {meetings} from {when}. "
+                 f"{_mayor_now(c)}.",
+                 f"{c['name']}: {votes} and {meetings} from {when}. {_mayor_now(c)}.")
 
 
 def council_description(c: dict[str, Any]) -> str:
     if _is_authority(c):
         return authority_description(c)
     if not c.get("loaded"):
-        return (f"{c['name']} ({c.get('type_name') or 'council'}, {c.get('region_name') or c.get('nation') or 'UK'}): "
-                "not covered yet. " + " ".join(c.get("reasons") or []))
+        return _fits(f"{c['name']} ({c.get('type_name') or 'council'}, {c.get('region_name') or c.get('nation') or 'UK'}): "
+                     "not covered yet. " + " ".join(c.get("reasons") or []), f"{c['name']}: not covered yet.")
     control = (c.get("control") or {}).get("name")
-    return (f"{c['name']}: full council and cabinet meetings from {month_year(c.get('from'))} to "
-            f"{month_year(c.get('to'))}, from the council’s own minutes. "
-            + (f"In overall control: {control}. " if control else "")
-            + f"{_plural(c.get('meetings') or 0, 'meeting')} and {_plural(c.get('named_votes') or 0, 'named vote')}, "
-            "with each councillor’s party on the date.")
+    votes = _plural(c.get("named_votes") or 0, "named vote")
+    when = f"{month_year(c.get('from'))} to {month_year(c.get('to'))}"
+    meetings = _plural(c.get("meetings") or 0, "full council and cabinet meeting")
+    in_control = f" In overall control: {control}." if control else ""
+    return _fits(f"{c['name']}: {votes}, with each councillor’s party on the date, and {meetings} from {when}."
+                 + in_control,
+                 f"{c['name']}: {votes}, with each councillor’s party, and {meetings} from {when}." + in_control,
+                 f"{c['name']}: {votes} and {_plural(c.get('meetings') or 0, 'meeting')} from {when}." + in_control)
 
 
-def council_data(c: dict[str, Any], url: str, base: str) -> dict[str, Any]:
+def council_data(c: dict[str, Any], url: str, base: str) -> list[dict[str, Any]]:
     """schema.org: the page, about the council."""
     key = "GSS code" if not c["gss"].startswith("SA-") else "Provisional key (no ONS code yet)"
     org: dict[str, Any] = {"@type": "GovernmentOrganization", "name": c["name"],
@@ -155,9 +172,10 @@ def council_data(c: dict[str, Any], url: str, base: str) -> dict[str, Any]:
     elif c.get("authorities"):
         org["memberOf"] = [{"@type": "GovernmentOrganization", "name": a["name"], "url": base + council_path(a["gss"])}
                            for a in c["authorities"]]
-    return {"@context": "https://schema.org", "@type": "WebPage", "name": c["name"], "url": url,
-            "description": council_description(c), "inLanguage": "en-GB",
-            "isPartOf": {"@type": "WebSite", "name": SITE, "url": base + "/"}, "about": org}
+    return [{"@context": "https://schema.org", "@type": "WebPage", "name": c["name"], "url": url,
+             "description": council_description(c), "inLanguage": "en-GB",
+             "isPartOf": {"@type": "WebSite", "name": SITE, "url": base + "/"}, "about": org},
+            breadcrumbs(base, [("Councils", "/councils"), (c["name"], council_path(c["gss"]))])]
 
 
 def _part_of(c: dict[str, Any]) -> str:
@@ -273,6 +291,18 @@ def council_text(c: dict[str, Any]) -> str:
     return "".join(parts)
 
 
+def _short_tally(v: dict[str, Any]) -> str:
+    """"carried, for 30, against 12": a vote's result in a list of links."""
+    return f"{v['outcome'] + ', ' if titles.outcome(v) else ''}{_tally(v.get('counts') or {}, v.get('question'))}".lower()
+
+
+def _vote_links(votes: list[dict[str, Any]]) -> str:
+    return "<ul>" + "".join(
+        f"<li>{_link(vote_path(v['vote_id']), v.get('heading') or v.get('item') or 'Named vote')}: "
+        f"{e(KIND_LABEL.get(v.get('kind', ''), v.get('committee') or ''))}, {e(long_date(v.get('date')))}; "
+        f"{e(_short_tally(v))}.</li>" for v in votes) + "</ul>"
+
+
 def _votes_and_meetings(c: dict[str, Any], whose: str) -> str:
     parts = []
     votes = c.get("votes") or []
@@ -283,8 +313,8 @@ def _votes_and_meetings(c: dict[str, Any], whose: str) -> str:
         parts.append("<ol>")
         for v in votes[:MAX_ITEMS]:
             what = KIND_LABEL.get(v.get("kind", ""), v.get("committee") or "")
-            parts.append(f"<li>{_link(vote_path(v['vote_id']), v.get('item') or 'Named vote')}: {e(what)}, "
-                         f"{e(long_date(v.get('date')))}, a named vote{e(vote_on(v.get('question')))}"
+            parts.append(f"<li>{_link(vote_path(v['vote_id']), v.get('heading') or v.get('item') or 'Named vote')}: "
+                         f"{e(what)}, {e(long_date(v.get('date')))}, a named vote{e(vote_on(v.get('question')))}"
                          f"{', ' + e(v['outcome']) if v.get('outcome') else ''}. "
                          f"{e(_tally(v.get('counts') or {}, v.get('question')))}.</li>")
         parts.append("</ol>")
@@ -316,25 +346,40 @@ def _landlords(c: dict[str, Any]) -> str:
 # A named vote
 
 def vote_title(v: dict[str, Any]) -> str:
-    return f"{v.get('item') or 'Named vote'}, {v['council']}"
+    """A vote's page title (api/titles.py; the app sets the same one): "Amendment 7, lost 10–19: General Fund
+    Budget… – Rushmoor, 26 Feb 2026"."""
+    return v.get("title") or f"{v.get('item') or 'Named vote'}, {v['council']}"
 
 
 def vote_description(v: dict[str, Any]) -> str:
+    if v.get("description"):
+        return v["description"]
     what = KIND_LABEL.get(v.get("kind", ""), v.get("committee") or "A meeting")
-    return (f"{v['council']}, {what.lower() if what in KIND_LABEL.values() else what}, {long_date(v.get('date'))}: "
-            f"a named vote{vote_on(v.get('question'))}{', ' + v['outcome'] if v.get('outcome') else ''}. "
-            f"{_tally(v.get('counts') or {}, v.get('question'))}, with each councillor’s party on the date.")
+    return titles.shorten(f"{v['council']}, {what.lower() if what in KIND_LABEL.values() else what}, "
+                          f"{long_date(v.get('date'))}: a named vote{vote_on(v.get('question'))}"
+                          f"{', ' + v['outcome'] if v.get('outcome') else ''}. "
+                          f"{_tally(v.get('counts') or {}, v.get('question'))}, with each councillor’s party on the "
+                          "date.", titles.DESCRIPTION_MAX)
 
 
-def vote_data(v: dict[str, Any], url: str, base: str) -> dict[str, Any]:
+def breadcrumbs(base: str, trail: list[tuple[str, str]]) -> dict[str, Any]:
+    """schema.org: where a page sits (Councils › a council › a named vote)."""
+    return {"@context": "https://schema.org", "@type": "BreadcrumbList",
+            "itemListElement": [{"@type": "ListItem", "position": n, "name": name, "item": base + path}
+                                for n, (name, path) in enumerate(trail, 1)]}
+
+
+def vote_data(v: dict[str, Any], url: str, base: str) -> list[dict[str, Any]]:
     meeting = f"{KIND_LABEL.get(v.get('kind', ''), v.get('committee') or 'Meeting')}, {long_date(v.get('date'))}"
-    return {"@context": "https://schema.org", "@type": "WebPage", "name": vote_title(v), "url": url,
+    page = {"@context": "https://schema.org", "@type": "WebPage", "name": vote_title(v), "url": url,
             "description": vote_description(v), "inLanguage": "en-GB",
             "isPartOf": {"@type": "WebSite", "name": SITE, "url": base + "/"},
             "about": [{"@type": "GovernmentOrganization", "name": v["council"],
                        "url": base + council_path(v["gss"])},
                       {"@type": "Event", "name": f"{v['council']}: {meeting}", "startDate": v.get("date"),
                        **({"url": v["url"]} if v.get("url") else {})}]}
+    return [page, breadcrumbs(base, [("Councils", "/councils"), (v["council"], council_path(v["gss"])),
+                                     (v.get("heading") or v.get("item") or "Named vote", vote_path(v["vote_id"]))])]
 
 
 CORRECTIONS_LOG = '<div id="corrections-log">'
@@ -395,7 +440,7 @@ def statements_text(rows: list[dict[str, Any]], here: str) -> str:
 def vote_text(v: dict[str, Any]) -> str:
     what = KIND_LABEL.get(v.get("kind", ""), v.get("committee") or "")
     parts = [f'<p class="meta">{_link(council_path(v["gss"]), v["council"])}</p>',
-             f"<h1>{e(v.get('item') or 'Named vote')}</h1>",
+             f"<h1>{e(v.get('heading') or v.get('item') or 'Named vote')}</h1>",
              f"<p>{e(what)}, {e(long_date(v.get('date')))}: a named vote{e(vote_on(v.get('question')))}"
              f"{', ' + e(v['outcome']) if v.get('outcome') else ''}.</p>",
              f"<p>{e(_tally(v.get('counts') or {}, v.get('question')))}.</p>",
@@ -421,7 +466,16 @@ def vote_text(v: dict[str, Any]) -> str:
         parts.append(f"<blockquote><p>{e(v['excerpt'])}</p></blockquote>")
     parts.append(f"<p>{_link(v.get('url'), "The item in the council’s own minutes")}. Names are matched to the "
                  "councillors listed at the meeting. The names of people who aren’t councillors are removed.</p>")
+    parts.append(nearby_text(v))
     return "".join(parts)
+
+
+def nearby_text(v: dict[str, Any]) -> str:
+    """Links from a vote's page to the other named votes on its item (as the app shows them, vote.tsx)."""
+    if not v.get("siblings"):
+        return ""
+    return "<h2>Other named votes on this item</h2>" + _vote_links(v["siblings"])
+
 
 
 # The list of councils, and the home page

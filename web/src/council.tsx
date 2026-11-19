@@ -44,7 +44,7 @@ function Votes({ c, whose }: { c: CouncilPage; whose: string }) {
               <span className="source-n">{v.number}</span>
               <div>
                 <h3>
-                  <a href={`/votes/${encodeURIComponent(v.vote_id)}`}>{v.item || "Named vote"}</a>
+                  <a href={`/votes/${encodeURIComponent(v.vote_id)}`}>{v.heading || v.item || "Named vote"}</a>
                 </h3>
                 <p className="meta">
                   {KIND_LABEL[v.kind] || v.committee}, {longDate(v.date)}

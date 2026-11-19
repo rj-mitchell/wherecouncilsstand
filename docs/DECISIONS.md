@@ -266,3 +266,19 @@ elected, executive or city mayor's title, or "Mayor" and a name at a cabinet mee
 lists don't title as such is not given, and "the Mayor" alone in minutes is not taken to be them, since a council
 may also have a civic mayor. Briefings written under the earlier instructions are not served again (instructions
 version 4).
+
+## 28. What a named vote is called
+
+Decided 19 November 2026, at the owner's request after an audit of how search engines read the site: each named
+vote's page has a title, heading and description of its own. Many agenda items hold several named votes (a budget
+and its amendments), and every one of them had the item's title, so search engines treated them as copies of one
+page and showed only one. A vote's label says what it was on, in the minutes' own terms ("Amendment 7", "Amendments
+3 and 5", "Amendment by Cllr Webb", "Substantive motion"), read as the page is served from the words just before the
+vote in the item's minutes, or in its stored extract where the minutes can't be matched (`api/titles.py`). It is read
+only where those words say so plainly; otherwise the vote is called by its place, "Vote 2 of 4 on this item", and
+two votes on one item never share a label. A vote alone on its item has no label unless it says more than the
+item's title (an amendment, a substantive motion). Who moved an amendment is named only if they are a councillor at
+that council and nothing the rules of decision 9 remove is in the label. The title gives the label, the result and
+count (left out where the result the minutes give contradicts the count), the item, the council and the date in
+about 70 characters, an item in capitals in sentence case; a budget or council tax item's single vote is "How
+councillors voted: …". Nothing in the record changes, and the site still gives no amounts of council tax.

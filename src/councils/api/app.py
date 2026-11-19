@@ -493,10 +493,11 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
 
     @app.get("/api/votes/{vote_id}")
     def vote(vote_id: str):
-        v = data.vote(vote_id)
+        now = hidden()
+        v = data.vote(vote_id, hidden=now.vote_hidden)       # its links to other votes leave out hidden ones
         if v is None:
             raise HTTPException(404, "There is no named vote at this address.")
-        not_hidden(plaintext.vote_path(vote_id))
+        not_hidden(plaintext.vote_path(vote_id), now)
         return v
 
     @app.get("/api/corrections")
@@ -692,14 +693,15 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         base = site_url(request)
 
         def build():
-            v = data.vote(vote_id)
+            now = hidden()
+            v = data.vote(vote_id, hidden=now.vote_hidden)
             if v is None:
                 return (404, "Named vote not found | Where Councils Stand", "There is no named vote at this address.",
                         base + plaintext.vote_path(vote_id), None,
                         "<h1>Named vote not found</h1><p>There is no named vote at this address. Each council’s "
                         'named votes are listed on its page: see the <a href="/councils">list of councils</a>.</p>')
             url = base + plaintext.vote_path(vote_id)
-            instead = hidden().instead(plaintext.vote_path(vote_id))
+            instead = now.instead(plaintext.vote_path(vote_id))
             if instead is not None:     # hidden while a concern is decided: the note, and nothing of the record
                 return (403, "Named vote | Where Councils Stand", right_of_reply.HIDDEN_LEAD, url, None,
                         plaintext.hidden_text("Named vote", instead))

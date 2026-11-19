@@ -6,6 +6,7 @@ from __future__ import annotations
 import re
 import threading
 from collections import Counter, defaultdict
+from collections.abc import Callable
 from datetime import date
 from functools import lru_cache
 from typing import Any
@@ -13,6 +14,7 @@ from typing import Any
 import duckdb
 
 from councils import authority, scrub, sisters, store, suppress
+from councils.api import titles
 from councils.config import Settings
 from councils.reference import people
 from councils.registry import (
@@ -154,6 +156,33 @@ def _plain_name(name: str) -> str:
     return re.sub(r"^(?:Councillor|Cllr\.?|Cynghorydd)\s+", "", name.strip())
 
 
+def _link(v: dict[str, Any]) -> dict[str, Any]:
+    """A named vote as another page links to it."""
+    return {k: v.get(k) for k in ("vote_id", "date", "heading", "label", "outcome", "counts", "partial", "question",
+                                  "kind", "item")}
+
+
+def _nearby(everything: list[dict[str, Any]], vote_id: str, item_id: str, meeting_id: str) -> dict[str, Any]:
+    """The other named votes on the same item (in the minutes' order) and at the same meeting, and the council's
+    named votes just before and after this one (``everything`` is newest first), so that every vote can be reached
+    from the next by a link."""
+    at = next(i for i, v in enumerate(everything) if v["vote_id"] == vote_id)
+    on_item = [v for v in everything if v["vote_id"].rsplit(":", 1)[0] == item_id]
+    meeting = meeting_id + ":"
+    return {"siblings": [_link(v) for v in sorted(on_item, key=lambda v: _block(v["vote_id"]))
+                         if v["vote_id"] != vote_id],
+            "same_meeting": [_link(v) for v in reversed(everything) if v["vote_id"].startswith(meeting)
+                             and v["vote_id"].rsplit(":", 1)[0] != item_id],
+            "later": _link(everything[at - 1]) if at > 0 else None,
+            "earlier": _link(everything[at + 1]) if at + 1 < len(everything) else None}
+
+
+def _block(vote_id: str) -> int:
+    """A vote's place among its item's named votes, from its id ("E07000092:1559:11918:4" -> 4)."""
+    tail = vote_id.rsplit(":", 1)[-1]
+    return int(tail) if tail.isdigit() else 0
+
+
 def _iso(d: date | None) -> str | None:
     return d.isoformat() if d else None
 
@@ -182,6 +211,7 @@ class Data:
                 if stamp != self._stamp:
                     self._build_directory()
                     self._council.cache_clear()
+                    self._votes.cache_clear()
                     self._vote_ids = None
                     self._stamp = stamp
 
@@ -357,19 +387,28 @@ class Data:
 
     # Named votes
     def votes(self, gss: str, c: people.Council | None = None) -> list[dict[str, Any]]:
-        """Every named vote at a council, newest first: the item, the result, and the count of each side by party."""
+        """Every named vote at a council, newest first: the item, the result, the count of each side by party, and
+        what the vote is called (api/titles.py): its label among the item's votes, its heading and its page's
+        title. Built once for each council and kept until the store changes."""
+        return self._votes(gss)
+
+    @lru_cache(maxsize=64)  # noqa: B019 - one Data per process; cleared when the store changes
+    def _votes(self, gss: str) -> list[dict[str, Any]]:
         rows = store.parquet.read(self.root, "votes", gss)
         if not rows:
             return []
         items = {i["item_id"]: i for i in store.parquet.read(self.root, "items", gss)}
         meetings = {m["meeting_id"]: m for m in store.parquet.read(self.root, "meetings", gss)}
-        if c is None:
-            c = self._people(gss)
+        c = self._people(gss)
         # an item's title can name someone who isn't a councillor ("Petition – Mr Steve Dally"): as for the index
         names, sup = scrub.surnames(self.root, gss), suppress.load(self.settings.data_dir)
         by_vote: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for r in rows:
             by_vote[r["vote_id"]].append(r)
+        labels = self._labels(gss, by_vote, items, names, sup)
+        body = councils()[gss]
+        short = body.short_name if sum(1 for x in councils().values() if x.short_name == body.short_name) == 1 \
+            else body.name
         out = []
         for vote_id, vs in by_vote.items():
             first = vs[0]
@@ -378,7 +417,7 @@ class Data:
             for v in vs:
                 party = c.party_on(v["member_id"], v["date"]) if c and v["member_id"] else ""
                 sides[v["vote"]][people.party_name(party, gss) if party else "Not matched"] += 1
-            out.append({
+            v = {
                 "vote_id": vote_id, "date": _iso(first["date"]), "committee": m.get("committee_title", ""),
                 "kind": m.get("kind", ""), "number": it.get("number", ""),
                 "item": scrub.item_title(it.get("title", ""), names, sup, gss, first["item_id"]),
@@ -386,11 +425,46 @@ class Data:
                 "counts": {s: sum(sides[s].values()) for s in SIDE_ORDER},
                 "by_party": {s: [{"party": p, "n": n} for p, n in sides[s].most_common()] for s in SIDE_ORDER},
                 "partial": sum(1 for s in SIDE_ORDER if sides[s]) == 1,
-            })
-        out.sort(key=lambda v: (v["date"], v["vote_id"]), reverse=True)
+                **labels[vote_id],
+            }
+            v["heading"] = titles.heading(v, body.name)
+            v["title"] = titles.title(v, body.name, short)
+            v["budget"] = titles.is_budget(v)
+            out.append(v)
+        out.sort(key=lambda v: (v["date"], v["vote_id"].rsplit(":", 1)[0], -_block(v["vote_id"])), reverse=True)
         return out
 
-    def vote(self, vote_id: str) -> dict[str, Any] | None:
+    def _labels(self, gss: str, by_vote: dict[str, list[dict[str, Any]]], items: dict[str, dict[str, Any]],
+                names: set[str], sup: suppress.Suppressions) -> dict[str, dict[str, Any]]:
+        """Each vote's label among its item's named votes (api/titles.py), read from the item's minutes where its
+        extract can be found in them, otherwise from its extract. A label that names who moved an amendment keeps
+        the name only if it is a councillor's and nothing removes it: the rules the extracts go through."""
+        by_item: dict[str, list[str]] = defaultdict(list)
+        for vote_id, vs in by_vote.items():
+            by_item[vs[0]["item_id"]].append(vote_id)
+        out: dict[str, dict[str, Any]] = {}
+        for item_id, ids in by_item.items():
+            ids.sort(key=_block)
+            excerpts = [by_vote[i][0].get("excerpt") or "" for i in ids]
+            contexts = titles.minutes_context((items.get(item_id) or {}).get("minutes_text") or "", excerpts)
+            found = []
+            for vote_id, excerpt, context in zip(ids, excerpts, contexts, strict=True):
+                question = by_vote[vote_id][0].get("question") or ""
+                label = titles.derive_label(context if context is not None else titles.before_vote(excerpt),
+                                            question, titles.headings(excerpt))
+                if label and " by Cllr " in label:
+                    who = label.split(" by Cllr ", 1)[1]
+                    surname = re.sub(r"[^\w-]", "", who.split()[-1]).lower()
+                    if surname not in names or scrub.minutes_text(label, names, sup, gss, item_id) != label:
+                        label = label.split(" by Cllr ")[0]
+                found.append({"vote_id": vote_id, "label": label})
+            out.update(titles.item_labels(found))
+        return out
+
+    def vote(self, vote_id: str, hidden: Callable[[str], bool] = lambda _: False) -> dict[str, Any] | None:
+        """One named vote's page: its summary, each member's side and party on the date, the extract, and links to
+        the council's other named votes near it: on the same item, at the same meeting, and the votes just before
+        and after it (none that is ``hidden``)."""
         self._fresh()
         gss = vote_id.split(":")[0]
         if gss not in councils() or councils()[gss].withheld:
@@ -399,7 +473,8 @@ class Data:
         if not rows:
             return None
         c = self._people(gss)
-        summary = next((v for v in self.votes(gss, c) if v["vote_id"] == vote_id), None)
+        everything = [v for v in self.votes(gss) if v["vote_id"] == vote_id or not hidden(v["vote_id"])]
+        summary = next((v for v in everything if v["vote_id"] == vote_id), None)
         members = []
         for r in rows:
             party = c.party_on(r["member_id"], r["date"]) if c and r["member_id"] else ""
@@ -421,4 +496,6 @@ class Data:
                 "is_authority": councils()[gss].is_authority,
                 "from_table": " | " in excerpt and excerpt.rstrip().endswith("members)"),
                 "control": control,
-                "excerpt": excerpt, "members": members}
+                "excerpt": excerpt, "members": members,
+                "description": titles.description(summary, councils()[gss].name) if summary else "",
+                **_nearby(everything, vote_id, rows[0]["item_id"], rows[0]["meeting_id"])}
