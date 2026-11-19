@@ -335,6 +335,7 @@ def all_votes(votes: list[dict[str, Any]]) -> str:
 def _votes_and_meetings(c: dict[str, Any], whose: str) -> str:
     parts = []
     votes = c.get("votes") or []
+    parts.append(budget_votes(votes))
     parts.append(f"<h2>Named votes ({len(votes):,})</h2>")
     if not votes:
         parts.append(f"<p>No named votes were found in {whose}.</p>")
