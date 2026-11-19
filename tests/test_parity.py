@@ -15,6 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / "golden"))
 
 import pytest  # noqa: E402
+import seo  # noqa: E402
 import shared  # noqa: E402
 
 from councils.config import REPO_ROOT, load_settings  # noqa: E402
@@ -1035,7 +1036,10 @@ def test_the_owners_commands_print_what_they_did(owner):
                 entry[1] = ", ".join(part for part in entry[1].split(", ") if part != "shown_on")
     assert now_kept == then
     reads = [shared.send(client, {"get": path}) for path in shared.OWNER_READS]
-    assert statements_marked(reads, golden["reads"], at_least=1) == briefings_titled_by_date(golden["reads"], app)
+    # and what changed for search engines in November 2026 is set aside (tests/seo.py)
+    now, was = seo.set_aside(statements_marked(reads, golden["reads"], at_least=1),
+                             briefings_titled_by_date(golden["reads"], app))
+    assert now == was
 
 
 def briefings_titled_by_date(golden: list, app) -> list:
@@ -1130,6 +1134,7 @@ def test_the_pages_and_the_other_endpoints_give_what_they_gave(tmp_path):
         golden[case] = {**golden[case], "text": page_with_meta(
             golden[case]["text"], title=f"{briefing_title(saved.created_at)} | Where Councils Stand",
             description=BRIEFING_DESCRIPTION, url=f"https://wherecouncilsstand.com{case}")}
+    now, golden = seo.set_aside(now, golden)        # what changed for search engines (tests/seo.py)
     for case, was in golden.items():
         if now[case] != was:
             print("PAGE", case, "\n   was", str(was)[:3000], "\n   now", str(now[case])[:3000])

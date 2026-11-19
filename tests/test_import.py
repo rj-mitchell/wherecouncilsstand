@@ -19,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / "golden"))
 
 import pytest  # noqa: E402
+import seo  # noqa: E402
 import shared  # noqa: E402
 from test_parity import (  # noqa: E402
     a_site,
@@ -195,7 +196,10 @@ def test_the_sites_figures_are_the_same_after_the_move_as_before(moved, tmp_path
     client = TestClient(app)
     reads = [shared.send(client, {"get": answer["case"]}) for answer in golden["reads"]]
     # a statement about a saved briefing is labelled with the briefing's title, not its question (test_parity.py)
-    assert statements_marked(reads, golden["reads"], at_least=1) == briefings_titled_by_date(golden["reads"], app)
+    # and what changed for search engines in November 2026 is set aside (tests/seo.py)
+    now, was = seo.set_aside(statements_marked(reads, golden["reads"], at_least=1),
+                             briefings_titled_by_date(golden["reads"], app))
+    assert now == was
     assert len(reads) == 11
     from wts_core.usage import visitor_code
 

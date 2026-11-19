@@ -78,7 +78,8 @@ def test_a_council_page_carries_its_own_details_and_readable_text(site):
 
 def test_a_vote_page_names_each_councillor_and_their_party(site):
     html = site.get(f"/votes/{VOTE}").text
-    assert "<title>Notice of Motion - Weekly Bin Collections, Barnsley Metropolitan Borough Council | Where Councils " \
+    # its own title (api/titles.py; test_titles.py): the item, the result and count, the council and the date
+    assert "<title>Notice of Motion - Weekly Bin…: lost 1–2 – Barnsley, 26 Feb 2025 | Where Councils " \
            "Stand</title>" in html
     assert f'href="https://wherecouncilsstand.com/votes/{VOTE}"' in html
     assert "Hannah Kitching (Liberal Democrats)" in html and "<h2>Against (2)</h2>" in html

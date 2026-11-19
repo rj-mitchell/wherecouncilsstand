@@ -158,7 +158,25 @@ export type VoteSummary = {
   counts: { for: number; against: number; abstain: number };
   by_party: Record<"for" | "against" | "abstain", { party: string; n: number }[]>;
   partial: boolean;
+  /** What the vote was on, among its item's named votes ("Amendment 7", "Vote 2 of 4 on this item"); null for a
+   * vote alone on its item when the item's title says enough (src/councils/api/titles.py) */
+  label?: string | null;
+  /** its place among its item's named votes, and how many there are */
+  n?: number;
+  of?: number;
+  /** the label and the item, as the vote's page heads it and links to it name it */
+  heading?: string;
+  /** the vote's page title, before the site's name: the server sends the same */
+  title?: string;
+  /** on an item about the budget, council tax or a precept */
+  budget?: boolean;
 };
+
+/** A named vote as another page links to it. */
+export type VoteLink = Pick<
+  VoteSummary,
+  "vote_id" | "date" | "heading" | "label" | "outcome" | "counts" | "partial" | "question" | "kind" | "item"
+>;
 
 export type CouncilPage = CouncilRow & {
   control_timeline: { from: string; code: string; name: string }[];
@@ -196,6 +214,14 @@ export type VotePage = VoteSummary & {
   excerpt: string;
   from_table: boolean;
   members: { side: "for" | "against" | "abstain"; name: string; written: string; matched: boolean; party: string | null }[];
+  description?: string;
+  /** the other named votes on the same item, in the minutes' order */
+  siblings?: VoteLink[];
+  /** the named votes on the meeting's other items */
+  same_meeting?: VoteLink[];
+  /** the council's named votes just before and after this one */
+  earlier?: VoteLink | null;
+  later?: VoteLink | null;
 };
 
 async function json<T>(r: Response): Promise<T> {

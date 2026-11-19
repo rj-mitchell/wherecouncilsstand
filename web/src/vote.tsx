@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { getVote, type VotePage } from "./api";
 import { Statements } from "./components/Statements";
+import { VoteLinks } from "./components/VoteLinks";
 import { Mark, Tally } from "./components/VoteMarks";
 import { KIND_LABEL, longDate, markNav, setTitle, sideLabel, voteOn } from "./format";
 
@@ -15,7 +16,7 @@ function App() {
     getVote(id)
       .then((d) => {
         setV(d);
-        setTitle(`${d.item || "Named vote"}, ${d.council}`);
+        setTitle(d.title || `${d.item || "Named vote"}, ${d.council}`);
       })
       .catch((e: Error) => setError(e.message));
   }, [id]);
@@ -32,7 +33,7 @@ function App() {
       <p className="meta">
         <a href={`/councils/${v.gss}`}>{v.council}</a>
       </p>
-      <h1>{v.item || "Named vote"}</h1>
+      <h1>{v.heading || v.item || "Named vote"}</h1>
       <p className="lede">
         {KIND_LABEL[v.kind] || v.committee}, {longDate(v.date)}
         {`: a named vote${voteOn(v.question)}`}
@@ -85,6 +86,12 @@ function App() {
         <a href={v.url}>The item in the council’s own minutes</a>. Names are matched to the councillors listed at the
         meeting. The names of people who aren’t councillors are removed.
       </p>
+      {v.siblings && v.siblings.length > 0 && (
+        <>
+          <h2>Other named votes on this item</h2>
+          <VoteLinks votes={v.siblings} />
+        </>
+      )}
       <p className="small">
         <a href={`/corrections?page=${encodeURIComponent(location.href)}`}>Report a problem with this vote</a>, or see{" "}
         <a href="/named">If you’re named on this site</a>.
