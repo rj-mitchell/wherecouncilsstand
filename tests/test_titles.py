@@ -266,3 +266,16 @@ def test_every_vote_can_be_reached_by_a_link(site, monkeypatch):
     assert f"Later named vote at Barnsley Metropolitan Borough Council: <a href=\"/votes/{BARNSLEY}:5:50:2\">" in steps
     api = site.get(f"/api/votes/{BARNSLEY}:5:50:0").json()
     assert api["earlier"] is None and api["later"]["vote_id"] == f"{BARNSLEY}:5:50:1" and api["same_meeting"] == []
+
+
+def test_a_councils_page_lists_its_budget_and_council_tax_votes_year_by_year(site):
+    """Searches for a council's council tax landed on single vote pages, never its own page, with each year's vote
+    competing with the others. The council's page gathers them; the site gives no amounts of council tax."""
+    html = site.get(f"/councils/{BARNSLEY}").text
+    section = html.split("<h2>Budget and council tax votes, year by year</h2>")[1].split("<h2>Named votes")[0]
+    assert section.startswith("<p>Named votes on agenda items about the budget, council tax or a precept.</p>"
+                              "<h3>2026</h3>")
+    assert [f"/votes/{BARNSLEY}:5:50:{n}" in section for n in range(3)] == [True] * 3
+    assert "£" not in section
+    assert titles.is_budget({"item": "Setting the Council Tax 2026/27"}) and titles.is_budget({"item": "Precepts"})
+    assert not titles.is_budget({"item": "Notice of Motion - Weekly Bin Collections"})

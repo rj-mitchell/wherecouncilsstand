@@ -35,8 +35,21 @@ function PartOf({ c }: { c: CouncilPage }) {
 /** The latest named votes in full, then every named vote by year, each a plain link (as the server's readable text
  * has them, api/plaintext.py), so that search engines and readers can reach every vote without a button. */
 function Votes({ c, whose }: { c: CouncilPage; whose: string }) {
+  const budget = c.votes.filter((v) => v.budget);
   return (
     <>
+      {budget.length > 0 && (
+        <section>
+          <h2>Budget and council tax votes, year by year</h2>
+          <p className="small">Named votes on agenda items about the budget, council tax or a precept.</p>
+          {byYear(budget).map(([year, votes]) => (
+            <div key={year}>
+              <h3>{year}</h3>
+              <VoteLinks votes={votes} />
+            </div>
+          ))}
+        </section>
+      )}
       <h2>Named votes ({number(c.votes.length)})</h2>
       {c.votes.length === 0 ? (
         <p className="small">No named votes were found in {whose}.</p>
