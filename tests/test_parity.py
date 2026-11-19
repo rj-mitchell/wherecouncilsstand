@@ -7,6 +7,7 @@ two differ on purpose, the difference is asserted and said why: nothing is skipp
 
 from __future__ import annotations
 
+import itertools
 import json
 import sys
 from pathlib import Path
@@ -143,29 +144,200 @@ def shown_again(answer: dict | None) -> dict | None:
 
 def as_before(answer: dict) -> dict:
     """The checks' to_dict() writes the keys it wrote before and then "rules": the one key a report has that it had not,
-    the number of the checking rules that wrote it (1), written last. With it taken off, the report must be what
-    the site's own verifier gave."""
-    assert list(answer)[-1] == "rules" and answer["rules"] == 1
+    the number of the checking rules that wrote it, written last. It was 1; it is 2 since wts-core 0.3.2 (below). With
+    it taken off, the report must be what the site's own verifier gave, but for what version 2 flags on purpose."""
+    assert list(answer)[-1] == "rules" and answer["rules"] == 2
     return {k: v for k, v in answer.items() if k != "rules"}
 
 
-def the_same_checks(blocks: list[dict], which: str, golden: dict, name: str) -> None:
+# wts-core 0.3.2: version 2 of the checking rules is stricter than the site's own verifier (and version 1) in two
+# places, and nowhere weaker. A short uncited line that is a sentence of its own ("Costs rose.") or runs to four words
+# or more without leading on to anything is a claim, where any line of 60 characters or fewer with no year, pound sign
+# or percentage passed as a join; and the looser signs of a note about the evidence ("About the evidence:", "Notes:",
+# "gaps", "the evidence is") make a note only in a line about the records themselves. So some passages that were
+# "connective" are now "unsupported", and nothing else may change: each report is compared with the recorded one
+# character for character, with the passages version 2 flags named and set back.
+
+
+def by_character(answer: dict) -> str:
+    """Each character's status, as one letter: what two reports are compared on, however their segments merge."""
+    return "".join(s["status"][0] * len(s["text"]) for s in answer["segments"])
+
+
+def starts(answer: dict) -> set[int]:
+    """Where each segment starts, as a character of the whole text."""
+    out, at = set(), 0
+    for s in answer["segments"]:
+        out.add(at)
+        at += len(s["text"])
+    return out
+
+
+def newly_flagged(now: dict, was: dict, by_line: bool = True) -> list[tuple[int, int, str]]:
+    """The passages a report marks "unsupported" that the recorded one marked "connective", each cut wherever either
+    report starts a segment and, with ``by_line``, at the end of each line (the checks judge each line of a new
+    briefing; a saved one is judged again segment by segment). No other change of status is allowed."""
+    text = "".join(s["text"] for s in now["segments"])
+    assert text == "".join(s["text"] for s in was["segments"])
+    before, after = by_character(was), by_character(now)
+    assert {(a, b) for a, b in zip(before, after, strict=True) if a != b} <= {("c", "u")}
+    cuts = starts(now) | starts(was) | ({i + 1 for i, ch in enumerate(text) if ch == "\n"} if by_line else set())
+    passages, i = [], 0
+    while i < len(text):
+        if before[i] == after[i]:
+            i += 1
+            continue
+        j = i + 1
+        while j < len(text) and j not in cuts and before[j] != after[j]:
+            j += 1
+        passages.append((i, j, text[i:j]))
+        i = j
+    return passages
+
+
+def in_pieces(answer: dict, cuts: set[int]) -> list[dict]:
+    """A report's segments cut at each of ``cuts``: each piece with its status, sources and citations, and the
+    loaded words and misquotations within it, measured from the piece's start."""
+    pieces, at = [], 0
+    for s in answer["segments"]:
+        end = at + len(s["text"])
+        edges = sorted({at, end} | {c for c in cuts if at < c < end})
+        for a, b in itertools.pairwise(edges):
+            piece = {**s, "text": s["text"][a - at:b - at]}
+            for key in ("loaded", "misquotes"):
+                if key in s:
+                    piece[key] = [{**m, "start": max(m["start"] + at, a) - a, "end": min(m["end"] + at, b) - a}
+                                  for m in s[key] if m["start"] + at < b and a < m["end"] + at]
+            pieces.append(piece)
+        at = end
+    return pieces
+
+
+def ratio_of(answer: dict) -> float:
+    """The grounded ratio of a report's segments as they stand, as a saved briefing judged again is given it."""
+    cited = sum(len(s["text"]) for s in answer["segments"] if s["status"] == "cited")
+    unsupported = sum(len(s["text"]) for s in answer["segments"] if s["status"] in ("unsupported", "invalid"))
+    return round(1.0 if not cited + unsupported else cited / (cited + unsupported), 3)
+
+
+def the_same_but_for_what_version_2_flags(now: dict, was: dict, name: str, *, by_line: bool = True,
+                                          ratios: tuple[float, ...] = ()) -> list[str]:
+    """``now`` (under version 2, its stamp taken off) against ``was`` (the site's own verifier): every character's
+    text, status, sources, citations, loaded words and misquotations the same once the newly flagged passages are set
+    back to "connective"; a segment starts or ends elsewhere only at the edge of one of them; every figure the same,
+    but for the count of unsupported segments and the grounded ratio. Those two follow from the segments: the ratio is
+    lower, or (``ratios``) one of those given. Returns the passages' text."""
+    passages = newly_flagged(now, was, by_line)
+    edges = {edge for a, b, _ in passages for edge in (a, b)}
+    assert starts(now) ^ starts(was) <= edges, name
+    cuts = starts(now) | starts(was) | edges
+    pieces, at = in_pieces(now, cuts), 0
+    for piece in pieces:
+        if any(a <= at < b for a, b, _ in passages):
+            assert piece["status"] == "unsupported", name
+            piece["status"] = "connective"
+        at += len(piece["text"])
+    assert pieces == in_pieces(was, cuts), name
+    if passages:
+        assert now["unsupported_segments"] == sum(1 for s in now["segments"] if s["status"] == "unsupported"), name
+        assert now["grounded_ratio"] in ratios or now["grounded_ratio"] <= was["grounded_ratio"], name
+    else:
+        assert (now["unsupported_segments"], now["grounded_ratio"]) == \
+            (was["unsupported_segments"], was["grounded_ratio"]), name
+
+    def figures(answer: dict) -> dict:
+        return {k: v for k, v in answer.items() if k not in ("segments", "unsupported_segments", "grounded_ratio")}
+
+    assert figures(now) == figures(was), name
+    return [text for _, _, text in passages]
+
+
+def the_same_checks(blocks: list[dict], which: str, golden: dict, name: str) -> tuple[list[str], list[str]]:
+    """The briefing's report now against the recorded one. Returns the passages version 2 newly flags in it, and
+    those it no longer clears when the briefing, as older checks might have saved it, is shown again."""
     now = checked(blocks, which)
-    assert as_before(now) == golden["answer"], name
+    flagged = the_same_but_for_what_version_2_flags(as_before(now), golden["answer"], name)
     # answers from before the package carry no stamp, so they are judged again each time they are shown, as the
     # site's own recheck_flags did: the recorded answer, shown again as it was written and as older checks might
-    # have left it
+    # have left it. Judging again only ever clears a mark; under version 2 it clears no line that version 2 would
+    # flag, so a passage marked by older checks that holds one stays marked (a saved briefing is judged again
+    # segment by segment, and one that clears nothing is given back as it was, its ratio and all)
     assert shown_again(golden["answer"]) == golden["shown_again"], name
-    assert shown_again(shared.as_older_checks_left_it(golden["answer"])) == golden["older"], name
+    older = shared.as_older_checks_left_it(golden["answer"])
+    again = shown_again(older)
+    kept = the_same_but_for_what_version_2_flags(again, golden["older"], name, by_line=False,
+                                                 ratios=(ratio_of(again), older["grounded_ratio"]))
     # answers written on the package are stamped and left alone: its marks on unsupported text
     # are as they were written, where the site's own code judged a just-written answer again when it was shown
     assert shown_again(now) == now, name
+    return flagged, kept
+
+
+# What version 2 flags in the named briefings, passage by passage, and why each is a claim
+NOW_FLAGGED: dict[str, dict[str, str]] = {
+    "a claim with no citation, long and short": {
+        " Costs rose.": "a short sentence of its own",
+        " Most councils agree.\n": "a short sentence of its own",
+        "Spending fell by a fifth in real terms over the period.\n": "a sentence of 55 characters",
+    },
+    "notes about the evidence, by the strict rule": {
+        # this site's strict rule takes neither for a note (rag/checks.py: "The votes were not supplied" is a point
+        # to check here); they passed only for being short
+        "The votes on the second reading were not supplied.\n": "no note by this site's rule, and a sentence",
+        "No vote data was supplied for this meeting.\n": "no note by this site's rule, and a sentence",
+        "She argued that nothing was found by the auditors.\n": "names someone as saying it, so no note",
+        "The data are not retrieved from the council's own site.\n": "a sentence about the data, not the records",
+    },
+    "quotations found, cut, altered and made up": {
+        ' A quotation that never closes: "the motion was': "words in quotation marks, cited nowhere, leading on to "
+                                                           "nothing",
+    },
+}
 
 
 @pytest.mark.parametrize("name", list(shared.BRIEFINGS))
 def test_the_checks_report_each_named_briefing_as_before(name):
     briefing = shared.BRIEFINGS[name]
-    the_same_checks(briefing["blocks"], briefing["sources"], shared.read("checks.json")["named"][name], name)
+    flagged, kept = the_same_checks(briefing["blocks"], briefing["sources"], shared.read("checks.json")["named"][name],
+                                    name)
+    assert flagged == list(NOW_FLAGGED.get(name, {})) and kept == [], name
+
+
+# What version 2 flags in the generated briefings, which are made of shared._UNCITED's pieces put together: every
+# passage it flags holds a sentence of its own among those pieces, or a lead-in after which nothing is cited (a person
+# said to say something the briefing does not cite), or is one of WRONGLY_FLAGGED.
+SENTENCES_AMONG_THE_PIECES = (
+    "Costs rose.", "Three councils.", "It was a fiasco.", "The Leader admitted it.", "He claimed that it worked.",
+    "The roll-out was chaotic and botched.", "Gas was supplied to two million homes.", "The votes were not supplied.",
+    "The programme was organised by the council's labour group.", 'It was "lost".',
+    'One member called it "a complete waste of money".', "Members spoke of “a fair contribution”.",
+    "The opposition disagreed", "The scheme was cut by 40%!", "Spending rose by £2 million in 2024",
+    # a looser sign of a note ("About the evidence:") in a line that does not speak of the records
+    "About the evidence: two councils are covered.",
+)
+LEAD_INS_TO_NOTHING = ("The Leader, Cllr. Jones, said", "Mr. Smith told the meeting that", "Cllr Kitching said",
+                       "The Revd. Canon Smith said", "The Hon. Alderman Brown said")
+# Not claims, and flagged all the same: a fault in wts-core 0.3.2, reported to its owner. A heading after a bullet
+# marker, after the full stop that closes a cited sentence or after a two-word lead-in; a bare full stop and a list
+# number, each after an opener the checks then drop ("Based on the evidence, .", "Based on the evidence, 1. ", read
+# as a sentence before the opener is taken off); and a label with the date of the passage just cited. When a release
+# of the package clears them, this test fails, and they are taken out of this list.
+WRONGLY_FLAGGED = ("- ## Councils controlled by Labour\n", ". ## Councils controlled by Labour\n",
+                   "She said ## Councils controlled by Labour\n", ".\n", "1. ", "Notes:  (26 February 2025). ")
+# Shown again as older checks might have saved it (every uncited passage marked), a passage version 1 cleared as a
+# note for a looser sign of one alone ("Notes:") stays marked under version 2 where the line is not about the records.
+# These hold nothing else: a bare label, alone or before an opener, a heading or a date. The same fault, reported.
+WRONGLY_KEPT = ("Notes: ", "Notes: Based on the evidence, ", "Notes: ## Councils controlled by Labour\n",
+                "Notes:  (26 February 2025). ")
+
+
+def why_flagged(passage: str) -> str:
+    if passage in WRONGLY_FLAGGED:
+        return passage
+    for said in (*SENTENCES_AMONG_THE_PIECES, *LEAD_INS_TO_NOTHING):
+        if said in passage:
+            return said
+    raise AssertionError(f"flagged, and not a claim: {passage!r}")
 
 
 def test_the_checks_report_150_generated_briefings_as_before():
@@ -174,8 +346,22 @@ def test_the_checks_report_150_generated_briefings_as_before():
     lines = (shared.GOLDEN / "checks-generated.jsonl").read_text(encoding="utf-8").splitlines()
     briefings = shared.generated_briefings()
     assert len(lines) == len(briefings) == 150
+    reasons: dict[str, int] = {}
+    kept_reasons: dict[str, int] = {}
     for n, (blocks, line) in enumerate(zip(briefings, lines, strict=True)):
-        the_same_checks(blocks, "all", json.loads(line), f"generated briefing {n}")
+        flagged, kept = the_same_checks(blocks, "all", json.loads(line), f"generated briefing {n}")
+        for passage in flagged:
+            reasons[why_flagged(passage)] = reasons.get(why_flagged(passage), 0) + 1
+        for passage in kept:
+            why = passage if passage in WRONGLY_KEPT else why_flagged(passage)
+            kept_reasons[why] = kept_reasons.get(why, 0) + 1
+    # every entry above is used, and version 2 does flag more: 154 passages, 7 of them wrongly
+    assert set(reasons) == {*SENTENCES_AMONG_THE_PIECES, *LEAD_INS_TO_NOTHING, *WRONGLY_FLAGGED}
+    assert sum(reasons.values()) == 154 and sum(reasons[p] for p in WRONGLY_FLAGGED) == 7
+    # shown again as older checks might have saved them, 19 passages stay marked that version 1 cleared, each for a
+    # looser sign of a note in a line not about the records: 14 hold a claim, and 5 are WRONGLY_KEPT
+    assert set(kept_reasons) <= {*SENTENCES_AMONG_THE_PIECES, *WRONGLY_KEPT} and set(WRONGLY_KEPT) <= set(kept_reasons)
+    assert sum(kept_reasons.values()) == 19 and sum(kept_reasons[p] for p in WRONGLY_KEPT) == 5
 
 
 def test_saved_answers_are_judged_again_as_before():
@@ -383,6 +569,22 @@ def test_every_case_of_the_briefing_flow_sends_the_same_text_and_writes_the_same
     name = "with no hours to keep an answer, every question is written afresh"
     assert len(golden[name]["rows"]["cache"]) == 1 and now[name]["rows"]["cache"] == []
     golden[name]["rows"]["cache"] = []
+    # wts-core 0.3.2: a briefing that ends without an answer once its model was called is paid for, so it is charged
+    # when it ends, in a spending row of kind "unfinished", where the site charged nothing: here the pipeline raising
+    # mid-stream and the reader leaving. The scripted pipeline's model reports nothing of what it used, so each is
+    # charged the estimate a briefing in progress is reserved at ([usage] briefing_estimate_usd, $0.25), with no
+    # tokens, as the briefing ends (before the question asked next). And it counts towards the visitor's daily limit
+    # (briefings_today), where the site's own questions table counted only answers (as_the_questions_table still
+    # does, so that table is the same). The bytes sent are the same.
+    for name in ("the pipeline raising mid-stream", "the reader leaving while the briefing is written"):
+        was, got = golden[name], now[name]
+        first, then, answer = was["rows"]["spending"]
+        assert [r[1] for r in was["rows"]["spending"]] == ["parse", "parse", "answer"]
+        unfinished = [then[0], "unfinished", answer[2], answer[3], 0, 0, 0, 0, 0.25]
+        assert got["rows"]["spending"] == [first, unfinished, then, answer], name
+        assert got["briefings_today"] == was["briefings_today"] + 1 == 2, name
+        got["rows"]["spending"].remove(unfinished)
+        got["briefings_today"] -= 1
     for name, was in golden.items():
         got = now[name]
         assert got["sent"] == was["sent"], name                       # every byte of every answer
@@ -966,7 +1168,8 @@ def test_the_real_pipeline_sends_and_writes_what_it_did(tmp_path, monkeypatch):
     now = json.loads(json.dumps(now, default=str))
 
     # the checks' to_dict() writes the keys it wrote before and then "rules". The answer the real pipeline's checks give
-    # carries the number of the checking rules that wrote it, in every copy: sent, saved and cached. Nothing else
+    # carries the number of the checking rules that wrote it (2 since wts-core 0.3.2), in every copy: sent, saved and
+    # cached. Version 2 flags nothing more in this briefing. Nothing else
     # of any event is different. (The "no records" answer is the pipeline's own words, with no checks to stamp it.)
     def unstamped(events: list) -> list:
         return [{**e, "answer": as_before(e["answer"])} if e.get("type") == "final" and e.get("answer")

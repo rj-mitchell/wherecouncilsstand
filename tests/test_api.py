@@ -333,7 +333,10 @@ def test_in_flight_reservations(settings):  # noqa: F811
 
     assert start("a") is None and start("a").startswith("A briefing is already")
     assert start("b") is None and start("c").startswith("Many briefings")
-    assert f.pending_usd(besides=1) == 0.1
+    # wts-core 0.3.2 never reserves a briefing in progress below what its writing alone can cost: [answer] max_tokens
+    # (16,000) of output at the briefing model's price ($10 a million), $0.16. The estimate of $0.10 set here is less,
+    # so it is reserved at $0.16 (the site's own, $0.25, is above it)
+    assert f.pending_usd(besides=1) == 0.16
     f.finish("a")
     f.finish("b")
     # a visitor who was refused ("c", and "a" the second time) leaves nothing behind
