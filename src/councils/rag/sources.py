@@ -5,6 +5,12 @@ the council, the meeting and its date, the agenda item, the party in overall con
 the councillors the passage names with their party on the date. Where the item has a named vote, the vote is given as
 a further block: who voted which way, and their parties on the date.
 
+Control is a fact about the council, not about who spoke (decision 27). So a councillor whose party on the date is not
+the party in control is marked so ("Councillor Hannah Kitching (Liberal Democrats; not the party in control)"), and
+where the council has a directly elected mayor (reference/people.py) and the passage speaks of a mayor, the title
+gives the mayor and their party too: a Labour mayor's point at a council under Reform UK control is then never read
+as Reform UK's. At a strategic authority the mark is "not the mayor's party".
+
 The passage's text and its item's title go through scrub.py again here, as they were when indexed, so that a rule
 or an entry on the suppression list added since the index was built applies to what the model is given and the
 page shows at once.
@@ -25,6 +31,7 @@ from councils.rank.evidence import evidence_group, group_label
 from councils.reference import people
 
 _SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-Z\"“(])")
+_MAYOR = re.compile(r"\bmayor", re.I)
 BLOCK_WORDS = 70
 KIND_LABEL = {"council": "full council", "cabinet": "cabinet", "policy": "policy committee",
               "board": "strategic authority's board", "mayor": "mayor's decisions",
@@ -100,14 +107,29 @@ class Lookup:
                 if v["vote_id"] not in left_out:
                     self.votes[v["item_id"]].append(v)
 
-    def member(self, key: str, d: date) -> str:
+    def member(self, key: str, d: date, control: str = "") -> str:
+        """"Councillor Name (Party)", with the party on the date, and marked where it is not the party in control
+        (``control``, the council's on the date): see ``not_in_control``."""
         gss, _, mid = key.partition(":")
         c = self.people.get(gss)
         if not c:
             return ""
         name = re.sub(r"^(?:Councillor|Cllr|Cynghorydd)\s+", "", c.name_of(mid)).strip()
-        party = people.party_name(c.party_on(mid, d), gss) if c.party_on(mid, d) else "party not recorded"
-        return f"Councillor {name} ({party})"
+        code = c.party_on(mid, d)
+        party = people.party_name(code, gss) if code else "party not recorded"
+        return f"Councillor {name} ({party}{not_in_control(code, control)})"
+
+    def elected_mayor(self, gss: str, d: date, control: str = "") -> tuple[str, str, str]:
+        """A council's directly elected mayor on the date, as (member id, name, "(Party)" marked as ``member``
+        marks it), or empty strings if it has none recorded (reference/people.py). Not for a strategic authority,
+        whose mayor is given as its control."""
+        c = self.people.get(gss)
+        mid = c.mayor_on(d) if c else ""
+        if not c or not mid:
+            return "", "", ""
+        code = c.party_on(mid, d)
+        party = people.party_name(code, gss) if code else "party not recorded"
+        return mid, people.mayor_name(c.name_of(mid)), f"({party}{not_in_control(code, control)})"
 
     def vote_blocks(self, item_id: str, gss: str, d: date) -> list[str]:
         rows = self.votes.get(item_id) or []
@@ -137,6 +159,17 @@ class Lookup:
         return out
 
 
+def not_in_control(party: str, control: str) -> str:
+    """The mark on a named person whose party on the date is not the party in control (decision 27): "; not the party
+    in control" at a council under one party's control, "; not the mayor's party" at a strategic authority with a
+    mayor. Nothing where the party isn't recorded, or no single party is in control."""
+    if not party or not control or control in (people.NOC, people.NO_SINGLE_PARTY):
+        return ""
+    if control.startswith(people.MAYOR):
+        return "; not the mayor's party" if party != control[len(people.MAYOR):] else ""
+    return "; not the party in control" if party != control else ""
+
+
 def record_source(n: int, r: dict[str, Any], lookup: Lookup, group_by: str = "control") -> Source:
     d = date.fromisoformat(r["date"])
     names, sup = lookup.surnames.get(r["gss"], set()), lookup.suppressions
@@ -151,14 +184,23 @@ def record_source(n: int, r: dict[str, Any], lookup: Lookup, group_by: str = "co
                        "strategic authority with no mayor on the date: no single party in control")
     else:
         control_bit = f"party in overall control of the council on the date: {control}"
-    named = [lookup.member(m, d) for m in r.get("members") or []]
+    # the council's directly elected mayor, where it has one and the passage speaks of a mayor or names them
+    mayor_id, mayor, mayor_party = ("", "", "") if r.get("council_type") == "strategic_authority" else \
+        lookup.elected_mayor(r["gss"], d, r.get("control") or "")
+    member_ids = r.get("members") or []
+    if mayor and not (_MAYOR.search(r["text"]) or f"{r['gss']}:{mayor_id}" in member_ids):
+        mayor = ""
+    named = [x for x in (lookup.member(m, d, r.get("control") or "") for m in member_ids
+                         if not (mayor and m == f"{r['gss']}:{mayor_id}")) if x]
     title_bits = [
         f"Minutes of {r['council_name']}, {r['committee']} ({KIND_LABEL.get(r['kind'], r['kind'])}), {fmt_date(d)}",
         f"item {r['item_number']} {r['item_title']}".strip() if r.get("item_number") else r["item_title"],
         control_bit,
     ]
+    if mayor:
+        title_bits.append(f"directly elected mayor of the council on the date: {mayor} {mayor_party}")
     if named:
-        title_bits.append("councillors named in this passage: " + "; ".join(x for x in named if x))
+        title_bits.append("councillors named in this passage: " + "; ".join(named))
     title = " — ".join(b for b in title_bits if b)
     votes = lookup.vote_blocks(r["record_id"], r["gss"], d)
     blocks = blocks_for(r["text"]) + votes
@@ -166,6 +208,9 @@ def record_source(n: int, r: dict[str, Any], lookup: Lookup, group_by: str = "co
                                   "item_number", "control", "parties", "heading", "ranking")}
     meta["group"] = group_label(evidence_group(r, group_by), group_by, r)
     meta["text"] = r["text"]
+    # who the passage is about, each with their own party on the date, for the page to show beside the group's
+    # heading, which names only the council's control (decision 27)
+    meta["named"] = ([f"{mayor}, the directly elected mayor {mayor_party}"] if mayor else []) + named
     # the named votes recorded at this item, for the page to show and link to (/votes/<id>)
     meta["votes"] = [{"vote_id": vid, "text": text} for vid, text in
                      zip(sorted({v["vote_id"] for v in lookup.votes.get(r["record_id"], [])}), votes, strict=False)]

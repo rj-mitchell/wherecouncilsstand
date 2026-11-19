@@ -35,6 +35,10 @@ export type SourceCard = {
   item_number: string;
   control: string | null;
   group: string;
+  /** Who the passage names (and the council's directly elected mayor, where it speaks of a mayor), each with their
+   * own party on the date, marked where it is not the party in control: the group names only the council's
+   * control (decision 27). Missing from briefings saved before it. */
+  named?: string[];
   text: string;
   votes: { vote_id: string; text: string }[];
 };
