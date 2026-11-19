@@ -86,6 +86,10 @@ def added_to_the_settings_file(now: dict, golden: dict) -> None:
         if "claude-sonnet-5-5" in usage["models"] and "claude-sonnet-5-5" not in golden["usage"]["models"]:
             assert usage["models"].pop("claude-sonnet-5-5") == base == {
                 "price_input_per_mtok": 2.0, "price_output_per_mtok": 10.0, "price_cache_read_per_mtok": 0.2}
+    # what a run of the test set may spend ([eval], new with the shared package, so the goldens hold none of it) is
+    # $3, not the $2 it was written in at: the owner raised it on 19 November 2026, after the whole set on the real
+    # archive cost $2.12 (docs/EVALUATION.md)
+    assert now["raw"]["eval"]["max_cost_usd"] == 3.0
     for section in NEW_SECTIONS:
         assert section not in golden["raw"]
         now["raw"].pop(section, None)
