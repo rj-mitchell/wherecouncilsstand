@@ -105,6 +105,12 @@ def added_to_the_settings_file(now: dict, golden: dict) -> None:
         if was.get("briefing_estimate_usd") == 0.15:
             assert given["briefing_estimate_usd"] == 0.25
             given["briefing_estimate_usd"] = 0.15
+    # and the site's daily spending cap is $25, not $3: the owner raised it on 19 November 2026 (the monthly cap is
+    # as it was); a local file or an override that sets it still wins
+    for given, was in ((now["usage"], golden["usage"]), (now["raw"]["usage"], golden["raw"]["usage"])):
+        if was.get("daily_spend_cap_usd") == 3.0:
+            assert given["daily_spend_cap_usd"] == 25.0
+            given["daily_spend_cap_usd"] = 3.0
     # and the question reader gives each question medium effort, not low, after a run of Where MPs Stand's test set
     # read 9 in 10 questions' filters right at low (a reading costs a fiftieth of a penny)
     for given, was in ((now["answer"], golden["answer"]), (now["raw"]["answer"], golden["raw"]["answer"])):
