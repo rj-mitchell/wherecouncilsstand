@@ -244,3 +244,25 @@ def test_a_hidden_vote_is_not_linked_from_the_others(site):
     assert f"/votes/{BARNSLEY}:5:50:1" not in page
     assert [s["vote_id"] for s in site.get(f"/api/votes/{BARNSLEY}:5:50:0").json()["siblings"]] == \
         [f"{BARNSLEY}:5:50:2"]
+
+
+def test_every_vote_can_be_reached_by_a_link(site, monkeypatch):
+    """Half the votes were past the first 25 a council's page showed, behind a button search engines don't press,
+    and the readable text stopped at 60. Now every vote is linked from its council's page, in a list for each year,
+    and each vote's page links to the votes before and after it and at the same meeting."""
+    from councils.api import plaintext
+
+    monkeypatch.setattr(plaintext, "LATEST", 1)
+    html = site.get(f"/councils/{BARNSLEY}").text
+    detailed = html.split("<ol>")[1].split("</ol>")[0]
+    assert detailed.count("<li>") == 1 and "The latest 1, then every named vote by year." in html
+    years = html.split("<h2>Every named vote, by year</h2>")[1]
+    assert '<details class="vote-year" open><summary>2026: 3 named votes</summary>' in years
+    for n in range(3):
+        assert f'<a href="/votes/{BARNSLEY}:5:50:{n}">' in years
+    page = site.get(f"/votes/{BARNSLEY}:5:50:1").text
+    steps = page.split('<nav class="vote-steps"')[1].split("</nav>")[0]
+    assert f"Earlier named vote at Barnsley Metropolitan Borough Council: <a href=\"/votes/{BARNSLEY}:5:50:0\">" in steps
+    assert f"Later named vote at Barnsley Metropolitan Borough Council: <a href=\"/votes/{BARNSLEY}:5:50:2\">" in steps
+    api = site.get(f"/api/votes/{BARNSLEY}:5:50:0").json()
+    assert api["earlier"] is None and api["later"]["vote_id"] == f"{BARNSLEY}:5:50:1" and api["same_meeting"] == []

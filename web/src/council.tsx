@@ -6,10 +6,12 @@ import "./styles.css";
 import { getCouncil, type CouncilPage } from "./api";
 import { SisterLinks } from "./components/Sister";
 import { Statements } from "./components/Statements";
+import { byYear, VoteLinks, voteHref } from "./components/VoteLinks";
 import { Tally } from "./components/VoteMarks";
 import { KIND_LABEL, longDate, markNav, monthYear, number, partyColour, setTitle, voteOn } from "./format";
 
-const PAGE = 25;
+/** named votes set out in full; the rest are listed by year (api/plaintext.py, LATEST) */
+const LATEST = 25;
 const AUTHORITY = "strategic_authority";
 
 /** "Part of: West Yorkshire Combined Authority" on a council's page. */
@@ -30,40 +32,46 @@ function PartOf({ c }: { c: CouncilPage }) {
   );
 }
 
+/** The latest named votes in full, then every named vote by year, each a plain link (as the server's readable text
+ * has them, api/plaintext.py), so that search engines and readers can reach every vote without a button. */
 function Votes({ c, whose }: { c: CouncilPage; whose: string }) {
-  const [shown, setShown] = useState(PAGE);
   return (
     <>
       <h2>Named votes ({number(c.votes.length)})</h2>
       {c.votes.length === 0 ? (
         <p className="small">No named votes were found in {whose}.</p>
       ) : (
-        <ol className="sources">
-          {c.votes.slice(0, shown).map((v) => (
-            <li key={v.vote_id} className={`source ${v.kind}`}>
-              <span className="source-n">{v.number}</span>
-              <div>
-                <h3>
-                  <a href={`/votes/${encodeURIComponent(v.vote_id)}`}>{v.heading || v.item || "Named vote"}</a>
-                </h3>
-                <p className="meta">
-                  {KIND_LABEL[v.kind] || v.committee}, {longDate(v.date)}
-                  {v.question ? `, a named vote${voteOn(v.question)}` : ""}
-                  {v.outcome ? `, ${v.outcome}` : ""}
-                </p>
-                <Tally counts={v.counts} question={v.question} />
-                {v.partial && <p className="small">Only one side could be read from the minutes.</p>}
-              </div>
-            </li>
+        <>
+          {c.votes.length > LATEST && <p className="small">The latest {LATEST}, then every named vote by year.</p>}
+          <ol className="sources">
+            {c.votes.slice(0, LATEST).map((v) => (
+              <li key={v.vote_id} className={`source ${v.kind}`}>
+                <span className="source-n">{v.number}</span>
+                <div>
+                  <h3>
+                    <a href={voteHref(v.vote_id)}>{v.heading || v.item || "Named vote"}</a>
+                  </h3>
+                  <p className="meta">
+                    {KIND_LABEL[v.kind] || v.committee}, {longDate(v.date)}
+                    {v.question ? `, a named vote${voteOn(v.question)}` : ""}
+                    {v.outcome ? `, ${v.outcome}` : ""}
+                  </p>
+                  <Tally counts={v.counts} question={v.question} />
+                  {v.partial && <p className="small">Only one side could be read from the minutes.</p>}
+                </div>
+              </li>
+            ))}
+          </ol>
+          <h2>Every named vote, by year</h2>
+          {byYear(c.votes).map(([year, votes], i) => (
+            <details key={year} className="vote-year" open={i === 0}>
+              <summary>
+                {year}: {number(votes.length)} named {votes.length === 1 ? "vote" : "votes"}
+              </summary>
+              <VoteLinks votes={votes} />
+            </details>
           ))}
-        </ol>
-      )}
-      {shown < c.votes.length && (
-        <p>
-          <button className="button secondary" onClick={() => setShown(shown + PAGE)}>
-            Show more votes
-          </button>
-        </p>
+        </>
       )}
     </>
   );

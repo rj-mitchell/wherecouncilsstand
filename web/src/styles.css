@@ -1514,3 +1514,32 @@ th.num {
     color: GrayText;
   }
 }
+
+/* every named vote by year on a council's page, and the votes near one on a vote's page (components/VoteLinks.tsx;
+   the server's readable text uses the same classes, api/plaintext.py) */
+.vote-year summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+  inline-size: fit-content;
+  min-block-size: var(--target-min);
+  padding-block: 0.15em;
+}
+
+.vote-year ul,
+.vote-links {
+  display: grid;
+  gap: var(--space-xs);
+  margin-block: var(--space-xs) var(--space-s);
+  padding-inline-start: 1.2em;
+  font-size: var(--step--1);
+}
+
+.vote-steps ul {
+  display: grid;
+  gap: var(--space-xs);
+  list-style: none;
+  padding: 0;
+  margin-block: var(--space-m) 0;
+  font-size: var(--step--1);
+}
