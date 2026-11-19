@@ -22,7 +22,7 @@ _NEW_SECTIONS = re.compile(
     r"<h2>Budget and council tax votes, year by year</h2>.*?(?=<h2>Named votes)"
     r"|<p>The latest \d+, then every named vote by year\.</p>"
     r"|<h2>Every named vote, by year</h2>(?:<details.*?</details>)+"
-    r"|<h2>Other named votes (?:on this item|at this meeting)</h2><ul>.*?</ul>"
+    r"|<h2>Other named votes (?:on this item|at this meeting)</h2><ul[^>]*>.*?</ul>"
     r"|<nav class=\"vote-steps\".*?</nav>", re.S)
 
 

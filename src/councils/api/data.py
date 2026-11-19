@@ -164,17 +164,18 @@ def _link(v: dict[str, Any]) -> dict[str, Any]:
 
 def _nearby(everything: list[dict[str, Any]], vote_id: str, item_id: str, meeting_id: str) -> dict[str, Any]:
     """The other named votes on the same item (in the minutes' order) and at the same meeting, and the council's
-    named votes just before and after this one (``everything`` is newest first), so that every vote can be reached
+    named votes just before and after this one in the order they were taken, so that every vote can be reached
     from the next by a link."""
-    at = next(i for i, v in enumerate(everything) if v["vote_id"] == vote_id)
+    in_time = sorted(everything, key=lambda v: (v["date"] or "", v["vote_id"].rsplit(":", 1)[0], _block(v["vote_id"])))
+    at = next(i for i, v in enumerate(in_time) if v["vote_id"] == vote_id)
     on_item = [v for v in everything if v["vote_id"].rsplit(":", 1)[0] == item_id]
     meeting = meeting_id + ":"
     return {"siblings": [_link(v) for v in sorted(on_item, key=lambda v: _block(v["vote_id"]))
                          if v["vote_id"] != vote_id],
             "same_meeting": [_link(v) for v in reversed(everything) if v["vote_id"].startswith(meeting)
                              and v["vote_id"].rsplit(":", 1)[0] != item_id],
-            "later": _link(everything[at - 1]) if at > 0 else None,
-            "earlier": _link(everything[at + 1]) if at + 1 < len(everything) else None}
+            "earlier": _link(in_time[at - 1]) if at > 0 else None,
+            "later": _link(in_time[at + 1]) if at + 1 < len(in_time) else None}
 
 
 def _block(vote_id: str) -> int:

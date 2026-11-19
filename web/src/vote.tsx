@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { getVote, type VotePage } from "./api";
 import { Statements } from "./components/Statements";
-import { VoteLinks } from "./components/VoteLinks";
+import { VoteLinks, voteHref } from "./components/VoteLinks";
 import { Mark, Tally } from "./components/VoteMarks";
 import { KIND_LABEL, longDate, markNav, setTitle, sideLabel, voteOn } from "./format";
 
@@ -91,6 +91,30 @@ function App() {
           <h2>Other named votes on this item</h2>
           <VoteLinks votes={v.siblings} />
         </>
+      )}
+      {v.same_meeting && v.same_meeting.length > 0 && (
+        <>
+          <h2>Other named votes at this meeting</h2>
+          <VoteLinks votes={v.same_meeting} />
+        </>
+      )}
+      {(v.earlier || v.later) && (
+        <nav className="vote-steps" aria-label="Named votes before and after this one">
+          <ul>
+            {(
+              [
+                [`Earlier named vote at ${v.council}`, v.earlier],
+                [`Later named vote at ${v.council}`, v.later],
+              ] as const
+            ).map(([what, x]) =>
+              x ? (
+                <li key={what}>
+                  {what}: <a href={voteHref(x.vote_id)}>{x.heading || "Named vote"}</a>, {longDate(x.date)}
+                </li>
+              ) : null,
+            )}
+          </ul>
+        </nav>
       )}
       <p className="small">
         <a href={`/corrections?page=${encodeURIComponent(location.href)}`}>Report a problem with this vote</a>, or see{" "}

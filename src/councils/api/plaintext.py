@@ -18,7 +18,7 @@ from wts_core.replies import safe_link
 from councils.api import titles
 
 SITE = "Where Councils Stand"
-MAX_ITEMS = 60
+LATEST = 25          # named votes set out in full on a council's page, as its app does (council.tsx); the rest by year
 KIND_LABEL = {"council": "Full council", "cabinet": "Cabinet", "policy": "Policy committee", "board": "Board",
               "mayor": "Mayor’s decisions", "scrutiny": "Overview and scrutiny"}
 AUTHORITY = "strategic_authority"
@@ -296,11 +296,40 @@ def _short_tally(v: dict[str, Any]) -> str:
     return f"{v['outcome'] + ', ' if titles.outcome(v) else ''}{_tally(v.get('counts') or {}, v.get('question'))}".lower()
 
 
+def by_year(votes: list[dict[str, Any]]) -> list[tuple[str, list[dict[str, Any]]]]:
+    """Named votes grouped by the year of their meeting, newest first (as they come)."""
+    years: dict[str, list[dict[str, Any]]] = {}
+    for v in votes:
+        years.setdefault((v.get("date") or "")[:4] or "Undated", []).append(v)
+    return list(years.items())
+
+
 def _vote_links(votes: list[dict[str, Any]]) -> str:
-    return "<ul>" + "".join(
+    return '<ul class="vote-links">' + "".join(
         f"<li>{_link(vote_path(v['vote_id']), v.get('heading') or v.get('item') or 'Named vote')}: "
         f"{e(KIND_LABEL.get(v.get('kind', ''), v.get('committee') or ''))}, {e(long_date(v.get('date')))}; "
         f"{e(_short_tally(v))}.</li>" for v in votes) + "</ul>"
+
+
+def budget_votes(votes: list[dict[str, Any]]) -> str:
+    """The named votes on items about the budget, council tax or a precept, year by year: where readers searching
+    for a council's budget or council tax should land."""
+    budget = [v for v in votes if v.get("budget")]
+    if not budget:
+        return ""
+    return ("<h2>Budget and council tax votes, year by year</h2><p>Named votes on agenda items about the budget, "
+            "council tax or a precept.</p>"
+            + "".join(f"<h3>{e(year)}</h3>{_vote_links(vs)}" for year, vs in by_year(budget)))
+
+
+def all_votes(votes: list[dict[str, Any]]) -> str:
+    """Every named vote, a list for each year (closed but for the latest), so that each can be reached by a link."""
+    if not votes:
+        return ""
+    return ("<h2>Every named vote, by year</h2>" + "".join(
+        f'<details class="vote-year"{" open" if i == 0 else ""}><summary>{e(year)}: '
+        f"{_plural(len(vs), 'named vote')}</summary>{_vote_links(vs)}</details>"
+        for i, (year, vs) in enumerate(by_year(votes))))
 
 
 def _votes_and_meetings(c: dict[str, Any], whose: str) -> str:
@@ -310,17 +339,17 @@ def _votes_and_meetings(c: dict[str, Any], whose: str) -> str:
     if not votes:
         parts.append(f"<p>No named votes were found in {whose}.</p>")
     else:
+        if len(votes) > LATEST:
+            parts.append(f"<p>The latest {LATEST}, then every named vote by year.</p>")
         parts.append("<ol>")
-        for v in votes[:MAX_ITEMS]:
+        for v in votes[:LATEST]:
             what = KIND_LABEL.get(v.get("kind", ""), v.get("committee") or "")
             parts.append(f"<li>{_link(vote_path(v['vote_id']), v.get('heading') or v.get('item') or 'Named vote')}: "
                          f"{e(what)}, {e(long_date(v.get('date')))}, a named vote{e(vote_on(v.get('question')))}"
                          f"{', ' + e(v['outcome']) if v.get('outcome') else ''}. "
                          f"{e(_tally(v.get('counts') or {}, v.get('question')))}.</li>")
         parts.append("</ol>")
-        if len(votes) > MAX_ITEMS:
-            parts.append(f"<p>The {len(votes) - MAX_ITEMS:,} earlier named votes are listed on this page when it "
-                         "runs in a browser.</p>")
+        parts.append(all_votes(votes))
     if c.get("recent"):
         parts.append("<h2>Latest meetings</h2><ul>" + "".join(
             f"<li>{e(long_date(m['date']))}: {_link(m.get('url'), m.get('committee') or 'Meeting')}"
@@ -471,11 +500,20 @@ def vote_text(v: dict[str, Any]) -> str:
 
 
 def nearby_text(v: dict[str, Any]) -> str:
-    """Links from a vote's page to the other named votes on its item (as the app shows them, vote.tsx)."""
-    if not v.get("siblings"):
-        return ""
-    return "<h2>Other named votes on this item</h2>" + _vote_links(v["siblings"])
-
+    """Links from a vote's page to the council's other named votes near it: on the same item, at the same meeting,
+    and the one before and after it (as the app shows them, vote.tsx)."""
+    parts = []
+    if v.get("siblings"):
+        parts.append("<h2>Other named votes on this item</h2>" + _vote_links(v["siblings"]))
+    if v.get("same_meeting"):
+        parts.append("<h2>Other named votes at this meeting</h2>" + _vote_links(v["same_meeting"]))
+    steps = [(f"Earlier named vote at {v['council']}", v.get("earlier")),
+             (f"Later named vote at {v['council']}", v.get("later"))]
+    if any(x for _, x in steps):
+        parts.append('<nav class="vote-steps" aria-label="Named votes before and after this one"><ul>' + "".join(
+            f"<li>{e(what)}: {_link(vote_path(x['vote_id']), x.get('heading') or 'Named vote')}, "
+            f"{e(long_date(x.get('date')))}</li>" for what, x in steps if x) + "</ul></nav>")
+    return "".join(parts)
 
 
 # The list of councils, and the home page
