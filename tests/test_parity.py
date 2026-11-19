@@ -305,7 +305,9 @@ def test_the_checks_report_each_named_briefing_as_before(name):
 
 # What version 2 flags in the generated briefings, which are made of shared._UNCITED's pieces put together: every
 # passage it flags holds a sentence of its own among those pieces, or a lead-in after which nothing is cited (a person
-# said to say something the briefing does not cite), or is one of WRONGLY_FLAGGED.
+# said to say something the briefing does not cite). A line with no words of its own (a heading after a bullet, a
+# bare full stop or list number after an opener the checks drop, a label with only a date after it) is never
+# flagged: wts-core 0.3.2 was fixed before its release, after this site's tests found it flagging them.
 SENTENCES_AMONG_THE_PIECES = (
     "Costs rose.", "Three councils.", "It was a fiasco.", "The Leader admitted it.", "He claimed that it worked.",
     "The roll-out was chaotic and botched.", "Gas was supplied to two million homes.", "The votes were not supplied.",
@@ -317,23 +319,7 @@ SENTENCES_AMONG_THE_PIECES = (
 )
 LEAD_INS_TO_NOTHING = ("The Leader, Cllr. Jones, said", "Mr. Smith told the meeting that", "Cllr Kitching said",
                        "The Revd. Canon Smith said", "The Hon. Alderman Brown said")
-# Not claims, and flagged all the same: a fault in wts-core 0.3.2, reported to its owner. A heading after a bullet
-# marker, after the full stop that closes a cited sentence or after a two-word lead-in; a bare full stop and a list
-# number, each after an opener the checks then drop ("Based on the evidence, .", "Based on the evidence, 1. ", read
-# as a sentence before the opener is taken off); and a label with the date of the passage just cited. When a release
-# of the package clears them, this test fails, and they are taken out of this list.
-WRONGLY_FLAGGED = ("- ## Councils controlled by Labour\n", ". ## Councils controlled by Labour\n",
-                   "She said ## Councils controlled by Labour\n", ".\n", "1. ", "Notes:  (26 February 2025). ")
-# Shown again as older checks might have saved it (every uncited passage marked), a passage version 1 cleared as a
-# note for a looser sign of one alone ("Notes:") stays marked under version 2 where the line is not about the records.
-# These hold nothing else: a bare label, alone or before an opener, a heading or a date. The same fault, reported.
-WRONGLY_KEPT = ("Notes: ", "Notes: Based on the evidence, ", "Notes: ## Councils controlled by Labour\n",
-                "Notes:  (26 February 2025). ")
-
-
 def why_flagged(passage: str) -> str:
-    if passage in WRONGLY_FLAGGED:
-        return passage
     for said in (*SENTENCES_AMONG_THE_PIECES, *LEAD_INS_TO_NOTHING):
         if said in passage:
             return said
@@ -353,15 +339,14 @@ def test_the_checks_report_150_generated_briefings_as_before():
         for passage in flagged:
             reasons[why_flagged(passage)] = reasons.get(why_flagged(passage), 0) + 1
         for passage in kept:
-            why = passage if passage in WRONGLY_KEPT else why_flagged(passage)
-            kept_reasons[why] = kept_reasons.get(why, 0) + 1
-    # every entry above is used, and version 2 does flag more: 154 passages, 7 of them wrongly
-    assert set(reasons) == {*SENTENCES_AMONG_THE_PIECES, *LEAD_INS_TO_NOTHING, *WRONGLY_FLAGGED}
-    assert sum(reasons.values()) == 154 and sum(reasons[p] for p in WRONGLY_FLAGGED) == 7
+            kept_reasons[why_flagged(passage)] = kept_reasons.get(why_flagged(passage), 0) + 1
+    # every entry above is used, and version 2 does flag more: 147 passages, each a claim
+    assert set(reasons) == {*SENTENCES_AMONG_THE_PIECES, *LEAD_INS_TO_NOTHING}
+    assert sum(reasons.values()) == 147
     # shown again as older checks might have saved them, 19 passages stay marked that version 1 cleared, each for a
-    # looser sign of a note in a line not about the records: 14 hold a claim, and 5 are WRONGLY_KEPT
-    assert set(kept_reasons) <= {*SENTENCES_AMONG_THE_PIECES, *WRONGLY_KEPT} and set(WRONGLY_KEPT) <= set(kept_reasons)
-    assert sum(kept_reasons.values()) == 19 and sum(kept_reasons[p] for p in WRONGLY_KEPT) == 5
+    # looser sign of a note in a line not about the records: each holds a claim
+    assert set(kept_reasons) <= set(SENTENCES_AMONG_THE_PIECES)
+    assert sum(kept_reasons.values()) == 14
 
 
 def test_saved_answers_are_judged_again_as_before():
