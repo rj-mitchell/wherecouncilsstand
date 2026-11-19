@@ -72,6 +72,8 @@ STREAM_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
 # The pages the app fills in, and the 404 page: served only at their own addresses (or for an address that isn't
 # there), never as pages of their own at /vote, /index.html ...
 TEMPLATES = {"index", "councils", "council", "vote", "404"}
+# the most addresses one sitemap may hold (the sitemaps protocol allows 50,000)
+SITEMAP_MAX = 45_000
 # How many visitors the per-minute limiter holds before it forgets the idle ones
 FORGET_IDLE_VISITORS_OVER = 10_000
 
@@ -754,20 +756,56 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             log.exception("the corrections log was not written into its page")
         return HTMLResponse(html)
 
-    @app.get("/sitemap.xml", include_in_schema=False)
-    def sitemap(request: Request):
-        """Every page worth finding: the home page, the pages of text, every council and every named vote."""
+    def sitemaps(request: Request) -> dict[str, list[tuple[str, str]]]:
+        """Every page worth finding, as the sitemaps list them: by sitemap's name, each page's address and the date
+        it last changed where that is known ("" where it isn't). The pages of text; every council and strategic
+        authority (the date of its latest meeting read); and the named votes, a sitemap for each year (the date of
+        the vote), split so that none holds more than ``SITEMAP_MAX`` addresses. Nothing hidden while a concern is
+        decided is offered to a search engine."""
         base = site_url(request)
         fixed = ["/", "/councils"] + [f"/{p.stem}" for p in sorted(dist.glob("*.html"))
-                                      if p.stem not in ("index", "councils", "council", "vote", "404")]
-        urls = [base + p for p in fixed]
-        now = hidden()          # nothing hidden while a concern is decided is offered to a search engine
-        urls += [base + plaintext.council_path(r["gss"]) for r in shown_directory(now)["councils"]]
-        urls += [base + plaintext.vote_path(v) for v in data.vote_ids() if not now.vote_hidden(v)]
-        body = "".join(f"<url><loc>{escape(u)}</loc></url>" for u in urls[:50000])
-        return Response('<?xml version="1.0" encoding="UTF-8"?>'
-                        f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{body}</urlset>',
-                        media_type="application/xml")
+                                      if p.stem not in (*TEMPLATES, "councils")]
+        now = hidden()
+        out: dict[str, list[tuple[str, str]]] = {"pages": [(base + p, "") for p in fixed]}
+        out["councils"] = [(base + plaintext.council_path(r["gss"]), r.get("to") or "" if r.get("loaded") else "")
+                           for r in shown_directory(now)["councils"]]
+        years: dict[str, list[tuple[str, str]]] = {}
+        for vote_id, when in data.vote_dates():
+            if not now.vote_hidden(vote_id):
+                years.setdefault(when[:4] or "undated", []).append((base + plaintext.vote_path(vote_id), when))
+        for year in sorted(years, reverse=True):
+            rows = years[year]
+            if len(rows) <= SITEMAP_MAX:
+                out[f"votes-{year}"] = rows
+            else:
+                for n in range(0, len(rows), SITEMAP_MAX):
+                    out[f"votes-{year}-{n // SITEMAP_MAX + 1}"] = rows[n:n + SITEMAP_MAX]
+        return out
+
+    def xml(body: str) -> Response:
+        return Response('<?xml version="1.0" encoding="UTF-8"?>' + body, media_type="application/xml")
+
+    @app.get("/sitemap.xml", include_in_schema=False)
+    def sitemap(request: Request):
+        """The sitemap index (robots.txt names it): a sitemap for the pages of text, one for councils and
+        authorities, and one for each year's named votes, each with the date its newest page last changed."""
+        base = site_url(request)
+        entries = []
+        for name, rows in sitemaps(request).items():
+            newest = max((when for _, when in rows), default="")
+            entries.append(f"<sitemap><loc>{escape(f'{base}/sitemaps/{name}.xml')}</loc>"
+                           + (f"<lastmod>{newest}</lastmod>" if newest else "") + "</sitemap>")
+        return xml(f'<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{"".join(entries)}'
+                   "</sitemapindex>")
+
+    @app.get("/sitemaps/{name}.xml", include_in_schema=False)
+    def one_sitemap(name: str, request: Request):
+        rows = sitemaps(request).get(name)
+        if rows is None:
+            raise HTTPException(404, "There is no sitemap at this address.")
+        body = "".join(f"<url><loc>{escape(u)}</loc>" + (f"<lastmod>{when}</lastmod>" if when else "") + "</url>"
+                       for u, when in rows)
+        return xml(f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{body}</urlset>')
 
     if (dist / "assets").exists():
         app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
