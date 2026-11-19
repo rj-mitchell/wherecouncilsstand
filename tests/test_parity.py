@@ -658,9 +658,11 @@ def test_the_answer_caches_key_is_the_same_for_every_question_and_choice(monkeyp
 
     golden = shared.read("limits.json")["cache_keys"]
     # Deliberately changed: the instructions went from "2" (the golden file's) to "3" in November 2026 (rule 11, on
-    # people's health, disability, care and family, and follow-ups given earlier questions only), so no answer
-    # written under "2" is served again. With the version the golden file was made with, the keys are as they were.
-    assert golden["instructions_version"] == "2" and INSTRUCTIONS_VERSION == "3"
+    # people's health, disability, care and family, and follow-ups given earlier questions only), and to "4" on 19
+    # November 2026 (decision 27: rule 12, a point is never the party in control's unless its speaker is of that
+    # party), so no answer written under "2" or "3" is served again. With the version the golden file was made with,
+    # the keys are as they were.
+    assert golden["instructions_version"] == "2" and INSTRUCTIONS_VERSION == "4"
     monkeypatch.setattr(web, "INSTRUCTIONS_VERSION", golden["instructions_version"])
     now = [{"body": body, "stamp": stamp, "key": answer_key(AskBody(**body), stamp, golden["model"])}
            for body in shared.KEY_BODIES for stamp in shared.KEY_STAMPS]
@@ -680,7 +682,7 @@ def test_the_answer_caches_key_changes_with_the_model_the_instructions_and_the_r
     assert web.answer_key(body, 1731500000.25, "claude-sonnet-5-5") == key
     assert web.answer_key(body, 1731500000.25, "claude-opus-5-5") != key          # another model
     assert web.answer_key(body, 1731586400.0, "claude-sonnet-5-5") != key         # the record has changed
-    monkeypatch.setattr(web, "INSTRUCTIONS_VERSION", "4")
+    monkeypatch.setattr(web, "INSTRUCTIONS_VERSION", "5")
     assert web.answer_key(body, 1731500000.25, "claude-sonnet-5-5") != key        # new instructions
 
 
@@ -1170,8 +1172,32 @@ def test_the_real_pipeline_sends_and_writes_what_it_did(tmp_path, monkeypatch):
         answer["events"] = unstamped(answer["events"])
     now[-1]["briefings"] = [[*b[:4], unstamped(b[4])] for b in now[-1]["briefings"]]
     now[-1]["cached"] = [unstamped(events) for events in now[-1]["cached"]]
+    # Deliberately changed on 19 November 2026 (decision 27): each source's card gives who its passage names, each with
+    # their own party on the date ("named"), and its title marks a councillor who is not of the party in control
+    # (attributed(), below). Every card and every copy of it, sent, saved and cached.
+    for answer in golden[:-1]:
+        answer["events"] = with_named(answer["events"])
+    golden[-1]["briefings"] = [[*b[:4], with_named(b[4])] for b in golden[-1]["briefings"]]
+    golden[-1]["cached"] = [with_named(events) for events in golden[-1]["cached"]]
     for got, was in zip(now, golden, strict=True):
         assert got == was, was["case"]
+
+
+def with_named(events: list) -> list:
+    import re
+
+    out = []
+    for e in events:
+        if e.get("type") == "sources":
+            cards = []
+            for card in e["sources"]:
+                title = card["title"].replace(_KITCHING_WAS, _KITCHING_NOW)
+                named = title.split(" — councillors named in this passage: ")[1:]
+                cards.append({**card, "title": title,
+                              "named": re.split(r"; (?=Councillor )", named[0]) if named else []})
+            e = {**e, "sources": cards}
+        out.append(e)
+    return out
 
 
 # What the model is sent, and an index the old code built
@@ -1208,6 +1234,67 @@ def deliberately_changed(was: dict) -> dict:
                     "unless the new records change them). Earlier in this conversation",
                     "building on the earlier questions rather than repeating what a briefing on them would say. The "
                     "reader's earlier questions in this conversation")
+    return was
+
+
+# And on 19 November 2026 (decision 27, INSTRUCTIONS_VERSION "4"), after an audit found a Labour mayor's remark under
+# a heading of Reform UK control: a council's control is never a speaker's party. The instructions gain rule 12 and a
+# line on what a result title gives; a group is said to be whose councils they are, never whose views; grouping by
+# control names each council's control and the party of whoever made each point; and a named councillor whose party is
+# not the party in control is marked so in the title (on the made-up record, Barnsley's Liberal Democrat under Labour
+# control). Nothing else is different.
+_RULE_12 = (
+    "12. Never present a point as the position of the party in control of a council (or of a strategic authority's\n"
+    "   mayor's party) unless whoever made, moved or proposed it belongs to that party as the result title gives it.\n"
+    "   Attribute each point to the person the minutes record making it, with their own party on the date, and wherever\n"
+    "   it differs from the party in control say both, for example: \"At Barchester (Reform UK control), the minutes record\n"
+    "   the directly elected mayor, Jo Smith (Labour), as saying that ...\". A resolution or decision of the council is the\n"
+    "   council's, not a party's. Where the minutes say only \"the Mayor\" and the title gives a directly elected mayor, the\n"
+    "   passage may mean them, but a council can also have a civic mayor or Lord Mayor who chairs its meetings: name the\n"
+    "   elected mayor only where the passage makes clear it is them (it names them, or calls them the elected, executive\n"
+    "   or city mayor); otherwise write \"the Mayor\" as the minutes do, with no party.\n")
+_TITLE_LINE = (
+    "- A result title gives the party in overall control of the council on the date, and separately each councillor\n"
+    "  the passage names with their own party on the date, marked \"not the party in control\" where it is another party.\n"
+    "  Where the council has a directly elected mayor and the passage speaks of a mayor, the title gives the mayor and\n"
+    "  their party too. Control is a fact about the council, not about who spoke: a council under one party's control has\n"
+    "  councillors of other parties, and its directly elected mayor may be of another party. See rule 12.\n")
+_GROUPS_WAS = (
+    "  and its kind of meeting. A strategic authority is not a council and has no party in overall control: its result\n"
+    "  title gives its mayor's party on the date, or no mayor. Never describe a mayor's party as control of the authority\n"
+    "  or of its councils,")
+_GROUPS_NOW = (
+    "  and its kind of meeting. A group says whose councils they are, never whose views: within it, give each point's\n"
+    "  speaker or mover with their own party (rule 12). A strategic authority is not a council and has no party in\n"
+    "  overall control: its result title gives its mayor's party on the date, or no mayor. Never describe a mayor's party\n"
+    "  as control of the authority or of its councils,")
+_BY_CONTROL_WAS = "as their titles give it. Treat every party the same way."
+_BY_CONTROL_NOW = (
+    _BY_CONTROL_WAS + " A group's label names the council's control only. Within it, name each council with its "
+    "control and, where the title gives one of another party, its directly elected mayor's party (for example "
+    "'Barchester (Reform UK control; directly elected mayor: Labour)'), and give the party of whoever made each point "
+    "wherever it is not the party in control.")
+_KITCHING_WAS = "Councillor Hannah Kitching (Liberal Democrats)"
+_KITCHING_NOW = "Councillor Hannah Kitching (Liberal Democrats; not the party in control)"
+
+
+def attributed(was: dict) -> dict:
+    """What the model is sent, as decision 27 changed it (above)."""
+    import copy
+
+    was = copy.deepcopy(was)
+    for block in was["system"]:
+        text = block["text"]
+        assert text.count(_GROUPS_WAS) == 1 and "\n\nLanguage: British English" in text
+        text = text.replace(_GROUPS_WAS, _GROUPS_NOW).replace("\n- A declaration of interest", "\n" + _TITLE_LINE.rstrip(
+            "\n") + "\n- A declaration of interest", 1)
+        block["text"] = text.replace("\n\nLanguage: British English", "\n" + _RULE_12 + "\nLanguage: British English", 1)
+    for message in was["messages"]:
+        for part in message["content"] if isinstance(message["content"], list) else []:
+            if part.get("type") == "search_result":
+                part["title"] = part["title"].replace(_KITCHING_WAS, _KITCHING_NOW)
+            elif part.get("type") == "text" and part["text"].endswith(_BY_CONTROL_WAS):
+                part["text"] = part["text"].removesuffix(_BY_CONTROL_WAS) + _BY_CONTROL_NOW
     return was
 
 
@@ -1250,7 +1337,7 @@ def test_the_model_is_sent_what_it_was_sent(tmp_path):
     golden, now = shared.read("requests.json"), shared.requests_made(fake)
     assert len(now["briefings"]) == len(golden["briefings"]) == 5
     for got, was in zip(now["briefings"], golden["briefings"], strict=True):
-        assert got == deliberately_changed(was)
+        assert got == attributed(deliberately_changed(was))
     assert now["questions_read"] == [read_for_scope(was) for was in golden["questions_read"]]
     assert len(now["questions_read"]) == 2
 

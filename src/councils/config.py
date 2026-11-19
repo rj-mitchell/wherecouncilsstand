@@ -23,8 +23,10 @@ STATIC_DIR = REPO_ROOT / "data_static"
 # Raise this whenever the briefing instructions (rag/prompts.py) or the answer's shape change: it is part of the
 # answer cache's key, so a briefing written under the old instructions is never served as if written under the new.
 # "3" (November 2026): rule 11, on people's health, disability, care and family; and a follow-up is given the earlier
-# questions only, not the earlier answers.
-INSTRUCTIONS_VERSION = "3"
+# questions only, not the earlier answers. "4" (19 November 2026, decision 27): rule 12, a point is never the party
+# in control's unless its speaker is of that party; and sources' titles mark a named person of another party and give a
+# council's directly elected mayor.
+INSTRUCTIONS_VERSION = "4"
 
 
 def _version() -> str:

@@ -2,7 +2,9 @@
 
 Minutes are not a verbatim record: they are the council's own summary of a meeting, written by its officers. So a
 briefing reports what the minutes record ("the minutes record that Councillor Smith asked whether ..."), never puts
-a summary in a councillor's mouth, and quotes only the minutes' own words (docs/DECISIONS.md, 7).
+a summary in a councillor's mouth, and quotes only the minutes' own words (docs/DECISIONS.md, 7). And a council's
+control is never a speaker's party: a point is the controlling party's only if whoever made it belongs to that party
+(decision 27, rule 12).
 """
 
 from __future__ import annotations
@@ -30,6 +32,11 @@ What the records are
   Report votes from that list only, with the item and date. A vote on a motion is not a vote on every part of it,
   and the minutes do not say why a councillor voted as they did unless they record it. Where only one side is
   recorded, say so, and don't give totals or a result the list doesn't show.
+- A result title gives the party in overall control of the council on the date, and separately each councillor
+  the passage names with their own party on the date, marked "not the party in control" where it is another party.
+  Where the council has a directly elected mayor and the passage speaks of a mayor, the title gives the mayor and
+  their party too. Control is a fact about the council, not about who spoke: a council under one party's control has
+  councillors of other parties, and its directly elected mayor may be of another party. See rule 12.
 - A declaration of interest is given as who declared, the item and the kind of interest only: the reason is left
   out of the records on purpose. See rule 11.
 - Some text reads "[name removed]": the names of people who are not councillors (members of the public, council
@@ -43,9 +50,10 @@ What a good briefing does
   and when.
 - It groups councils in the way that best explains the differences in the evidence, using only the attributes in
   each result title: the party in overall control of the council on the date (or no overall control), the council,
-  and its kind of meeting. A strategic authority is not a council and has no party in overall control: its result
-  title gives its mayor's party on the date, or no mayor. Never describe a mayor's party as control of the authority
-  or of its councils, and never group a strategic authority with councils under a party's control. Never infer a grouping, alliance or motive a title does not state.
+  and its kind of meeting. A group says whose councils they are, never whose views: within it, give each point's
+  speaker or mover with their own party (rule 12). A strategic authority is not a council and has no party in
+  overall control: its result title gives its mayor's party on the date, or no mayor. Never describe a mayor's party
+  as control of the authority or of its councils, and never group a strategic authority with councils under a party's control. Never infer a grouping, alliance or motive a title does not state.
 - For each group it characterises what the minutes record in a sentence and backs it with one to three concrete
   examples: which council, which meeting, when, and what the minutes record, preferably as a short exact quotation.
 - The "In brief" bullets and every characterising sentence are claims too: cite the example(s) that show them, in
@@ -84,6 +92,15 @@ Grounding rules (these override everything else)
    illness or condition, a disability or a grant for one, social care or a hospital stay, nor what a relative does
    or receives, even where a passage mentions it. Declarations of interest are given only as who declared, the
    item and the kind of interest; report no more than that, and never guess why an interest was declared.
+12. Never present a point as the position of the party in control of a council (or of a strategic authority's
+   mayor's party) unless whoever made, moved or proposed it belongs to that party as the result title gives it.
+   Attribute each point to the person the minutes record making it, with their own party on the date, and wherever
+   it differs from the party in control say both, for example: "At Barchester (Reform UK control), the minutes record
+   the directly elected mayor, Jo Smith (Labour), as saying that ...". A resolution or decision of the council is the
+   council's, not a party's. Where the minutes say only "the Mayor" and the title gives a directly elected mayor, the
+   passage may mean them, but a council can also have a civic mayor or Lord Mayor who chairs its meetings: name the
+   elected mayor only where the passage makes clear it is them (it names them, or calls them the elected, executive
+   or city mayor); otherwise write "the Mayor" as the minutes do, with no party.
 
 Language: British English throughout (organise, recognise, centre, programme, per cent), and dates written as
 9 October 2026. Never change the spelling or wording inside a quotation; quote exactly what the minutes say.
@@ -117,7 +134,11 @@ MODE_INSTRUCTIONS = {
 GROUP_BY_INSTRUCTIONS = {
     "control": ("Group the councils by the party in overall control on the date, as each result title gives it, "
                 "including councils under no overall control. Group any strategic authorities on their own, by their "
-                "mayor's party on the date (or no mayor), as their titles give it. Treat every party the same way."),
+                "mayor's party on the date (or no mayor), as their titles give it. Treat every party the same way. "
+                "A group's label names the council's control only. Within it, name each council with its control and, "
+                "where the title gives one of another party, its directly elected mayor's party (for example "
+                "'Barchester (Reform UK control; directly elected mayor: Labour)'), and give the party of whoever made "
+                "each point wherever it is not the party in control."),
     "region": "Group the councils by region, as given in the results, and say plainly where regions are alike.",
     "type": ("Group the councils by kind of council (county, district, unitary, metropolitan or London borough, "
              "strategic authority)."),

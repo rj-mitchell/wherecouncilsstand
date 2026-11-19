@@ -1,4 +1,6 @@
-/** The sources a briefing drew on: minutes, numbered as the briefing cites them, grouped as the evidence was balanced. */
+/** The sources a briefing drew on: minutes, numbered as the briefing cites them, grouped as the evidence was balanced.
+ * A group's heading names the councils' control; each source gives the people its passage is about with their own
+ * party, so that no one's point reads as the controlling party's (decision 27). */
 import type { SourceCard } from "../api";
 import { KIND_LABEL, longDate } from "../format";
 
@@ -35,6 +37,9 @@ export function Sources({ sources }: { sources: SourceCard[] }) {
                     <a href={`/councils/${s.gss}`}>{s.council_name}</a>, {KIND_LABEL[s.kind] || s.committee} ({s.committee}),{" "}
                     {longDate(s.date)}
                   </p>
+                  {s.named && s.named.length > 0 && (
+                    <p className="small named">People in this passage, with their party on the date: {s.named.join("; ")}.</p>
+                  )}
                   <details>
                     <summary>The passage</summary>
                     <blockquote>{s.text}</blockquote>

@@ -160,7 +160,10 @@ def test_pipeline_end_to_end_is_grounded(settings):
     out = answer_once(pipe, AskRequest("What have councils decided about bin collections?"))
     srcs = out["sources"]["sources"]
     assert srcs and all("party in overall control of the council on the date" in s["title"] for s in srcs)
-    assert any("Councillor Hannah Kitching (Liberal Democrats)" in s["title"] for s in srcs)
+    # Barnsley is under Labour control; the councillor who moved the motion is a Liberal Democrat, and is marked so
+    # (decision 27). Guildford's councillor is of the party in control, and isn't
+    assert any("Councillor Hannah Kitching (Liberal Democrats; not the party in control)" in s["title"] for s in srcs)
+    assert any(s["named"] == ["Councillor Julia McShane (Liberal Democrats)"] for s in srcs)
     answer = out["final"]["answer"]
     assert answer["citations_total"] == 1 and answer["citations_invalid"] == 0
     assert answer["unsupported_segments"] == 1          # the uncited sentence is marked, not passed off as sourced

@@ -247,3 +247,22 @@ screen readers are told the same straight after it, and a notice under the brief
 methodology page says so, and the accessibility check (`scripts/a11y.mjs`) fails if a point to check is not marked
 or explained. The same fix is made on the sister sites. Readers see more passages and quotations marked, never
 fewer.
+
+## 27. A council's control is not a speaker's party
+
+Decided 19 November 2026: the owner decided that briefings show both a council's control and the party of whoever
+made, moved or proposed each point, so that a point is never attributed to the party in control when someone of
+another party made it. An audit had found a remark by Doncaster's directly elected Labour mayor about a Section 114
+notice under a heading of Reform UK control. Grouping and balance stay as decision 12 has them; the labelling changes.
+Each source's title gives the council's control and each councillor the passage names with their own party on the
+date, marked "not the party in control" where it is another party (at a strategic authority, "not the mayor's
+party"); where the council has a directly elected mayor and the passage speaks of a mayor, the title gives the mayor
+and their party too. The instructions (rule 12) forbid presenting a point as the controlling party's unless its
+speaker belongs to that party, and grouping by control names each council's control and, where they differ, the
+speaker's or the mayor's party ("Barchester (Reform UK control; directly elected mayor: Labour)"). The list of
+sources gives the people in each passage with their party under the group's heading, and the methodology page says
+so. The site holds no list of councils' elected mayors: one is read from the council's own attendance lists (an
+elected, executive or city mayor's title, or "Mayor" and a name at a cabinet meeting), so a mayor whom a council's
+lists don't title as such is not given, and "the Mayor" alone in minutes is not taken to be them, since a council
+may also have a civic mayor. Briefings written under the earlier instructions are not served again (instructions
+version 4).
