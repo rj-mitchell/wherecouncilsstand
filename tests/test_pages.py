@@ -289,3 +289,38 @@ def test_a_saved_briefings_title_is_the_sites_never_the_readers_question(site):
     assert '<link rel="canonical" href="https://wherecouncilsstand.com/b/abc1234" />' in head
     missing = site.get("/b/nothere")
     assert missing.status_code == 404 and '<meta name="robots" content="noindex" />' in missing.text
+
+
+def test_template_shells_are_not_pages_of_their_own(site):
+    """/vote, /index.html, /council.html and /404 were sent with 200 and no canonical link: the templates the app
+    fills in, which search engines could list as pages. They are not found now; the real addresses still work."""
+    for path in ("/vote", "/vote.html", "/index", "/index.html", "/council", "/council.html", "/councils.html", "/404",
+                 "/404.html"):
+        r = site.get(path, follow_redirects=False)
+        assert r.status_code == 404, path
+    assert site.get(f"/votes/{VOTE}").status_code == site.get(f"/councils/{BARNSLEY}").status_code == 200
+    assert site.get("/").status_code == site.get("/councils").status_code == site.get("/about").status_code == 200
+    r = site.get("/about.html?x=1", follow_redirects=False)
+    assert (r.status_code, r.headers["location"]) == (301, "/about?x=1")
+
+
+def test_an_address_with_a_slash_on_the_end_is_moved_for_good(site):
+    for path, to in ((f"/councils/{BARNSLEY}/", f"/councils/{BARNSLEY}"), ("/about/?a=b", "/about?a=b"),
+                     (f"/votes/{VOTE}/", f"/votes/{VOTE}")):
+        r = site.get(path, follow_redirects=False)
+        assert (r.status_code, r.headers["location"]) == (301, to)
+    assert site.post("/api/report/", json={}, follow_redirects=False).status_code == 307    # a form, sent on as it was
+    assert site.get("/").status_code == 200
+
+
+def test_a_saved_briefing_is_never_listed_by_search_engines(site):
+    archive = site.app.state.councils.parts.archive
+    archive.save("What about bins?", {}, [{"type": "final", "answer": None}], id="bins123")
+    r = site.get("/b/bins123")
+    assert r.status_code == 200 and '<meta name="robots" content="noindex" />' in r.text
+
+
+def test_the_site_names_its_publisher_as_the_family_does(site):
+    data = ld(site.get("/").text)
+    assert data["publisher"] == {"@type": "Organization", "@id": "https://wheretheystand.uk/#org",
+                                 "name": "Where They Stand", "url": "https://wheretheystand.uk/"}

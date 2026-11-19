@@ -5,7 +5,9 @@ page and answer exactly with what the site gave before (tests/golden/). Each cha
 1. A named vote has a label among its item's votes, a heading, a title and a description of its own
    (api/titles.py), and its page links to the other votes near it: the API gives the new fields, and the pages'
    titles, descriptions and structured data (now with breadcrumbs) differ. A council's description is shorter.
-2. A council's page lists every named vote by year, and its budget and council tax votes."""
+2. A council's page lists every named vote by year, and its budget and council tax votes.
+3. A saved briefing's page always asks search engines not to list it, and the home page's structured data gives
+   the charity's id."""
 
 from __future__ import annotations
 
@@ -40,7 +42,7 @@ def comparable(entry: Any) -> Any:
         entry["json"] = {**body, "votes": [_vote(v) for v in body["votes"]]}
     elif isinstance(body, dict) and case.startswith("/api/votes/"):
         entry["json"] = _vote(body)
-    if isinstance(entry.get("text"), str) and re.match(r"/(?:councils|votes)/", case):
+    if isinstance(entry.get("text"), str) and re.match(r"/(?:councils/|votes/|b/|$)", case):
         entry["text"] = _NEW_SECTIONS.sub("", _HEAD.sub("", entry["text"]))
     return entry
 

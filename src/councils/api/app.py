@@ -25,7 +25,14 @@ from typing import Any, Literal
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Header, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response, StreamingResponse
+from fastapi.responses import (
+    FileResponse,
+    HTMLResponse,
+    JSONResponse,
+    RedirectResponse,
+    Response,
+    StreamingResponse,
+)
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 from wts_core.briefing import (
@@ -62,6 +69,9 @@ log = logging.getLogger(__name__)
 
 # so that a proxy passes each event on as it is written
 STREAM_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+# The pages the app fills in, and the 404 page: served only at their own addresses (or for an address that isn't
+# there), never as pages of their own at /vote, /index.html ...
+TEMPLATES = {"index", "councils", "council", "vote", "404"}
 # How many visitors the per-minute limiter holds before it forgets the idle ones
 FORGET_IDLE_VISITORS_OVER = 10_000
 
@@ -333,6 +343,19 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                                                                                   wanted.encode())
 
     app.add_middleware(HeadAsGet)
+    # an address with a slash on the end is sent, for good, to the one without (FastAPI's own redirect is a 307,
+    # which search engines take as temporary); a form posted to one is still sent on as it was
+    app.router.redirect_slashes = False
+
+    @app.middleware("http")
+    async def without_trailing_slash(request: Request, call_next):
+        path = request.url.path
+        if len(path) > 1 and path.endswith("/"):
+            to = path.rstrip("/") or "/"
+            query = request.url.query
+            return RedirectResponse(to + (f"?{query}" if query else ""),
+                                    status_code=301 if request.method in ("GET", "HEAD") else 307)
+        return await call_next(request)
 
     @app.middleware("http")
     async def headers(request: Request, call_next):
@@ -591,11 +614,12 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         another name (the server's address, www) still points search engines to the one address."""
         return (site.get("url") or str(request.base_url)).rstrip("/")
 
-    def readable(name: str, build) -> Response:
+    def readable(name: str, build, *, noindex: bool = False) -> Response:
         """A page with its own title, description, canonical link and structured data, and its content as plain
         HTML for readers without scripts and search engines (api/plaintext.py), which the app replaces when it
         starts. ``build`` gives (status, title, description, url, data, text). If the record can't be read, the page
-        is sent as it is: it still works with scripts on."""
+        is sent as it is: it still works with scripts on. A page that isn't there, or one that is ``noindex``, asks
+        search engines not to list it."""
         path = dist / f"{name}.html"
         if not path.exists():
             raise HTTPException(404, "Not found.")
@@ -606,7 +630,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             log.exception("readable page text not built for %s", name)
             return HTMLResponse(html)
         html = plaintext.page_with_meta(html, title=title, description=description, url=url, data=ld,
-                                        noindex=status != 200)
+                                        noindex=noindex or status != 200)
         return HTMLResponse(plaintext.with_text(html, text), status_code=status)
 
     @app.get("/", include_in_schema=False)
@@ -619,7 +643,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                   "url": base + "/", "inLanguage": "en-GB",
                   "description": "Sourced briefings on what councils across the UK have discussed, decided and voted "
                                  "on, from their own minutes.",
-                  "publisher": {"@type": "Organization", "name": "Where They Stand", "url": "https://wheretheystand.uk"}}
+                  # the charity, as the footer names it, under the one id the family's sites give it
+                  "publisher": {"@type": "Organization", "@id": "https://wheretheystand.uk/#org",
+                                "name": "Where They Stand", "url": "https://wheretheystand.uk/"}}
             return (200, "Where Councils Stand",
                     "Sourced briefings on what councils across the UK have discussed, decided and voted on. Every "
                     "point cites the council’s own minutes.", base + "/", ld, plaintext.home_text(totals, EXAMPLES))
@@ -644,7 +670,9 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             return (200, f"{plaintext.briefing_title(b.created_at)} | Where Councils Stand",
                     plaintext.BRIEFING_DESCRIPTION, url, None, None)
 
-        return readable("index", build)
+        # never listed by search engines, as on Where Countries Stand: a reader's question, answered once, from the
+        # record as it stood; the record itself is listed on the council and vote pages
+        return readable("index", build, noindex=True)
 
     @app.get("/councils", include_in_schema=False)
     def councils_page(request: Request):
@@ -756,13 +784,24 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         return FileResponse(path, media_type="image/vnd.microsoft.icon")
 
     @app.get("/{name}", include_in_schema=False)
-    def static_page(name: str):
-        """about, methodology, privacy, corrections ..., and files such as robots.txt."""
+    def static_page(name: str, request: Request):
+        """about, methodology, privacy, corrections ..., and files such as robots.txt. The pages the app fills in
+        (index, councils, council, vote) and the 404 page are templates, not pages of their own: their files are
+        not found here. "/about.html" is sent, for good, to "/about"."""
         safe = Path(name).name
+        stem = safe.removesuffix(".html")
+        if stem in TEMPLATES:
+            return not_found()
+        if safe.endswith(".html") and (dist / safe).is_file():
+            query = request.url.query
+            return RedirectResponse(f"/{stem}" + (f"?{query}" if query else ""), status_code=301)
         if (dist / safe).is_file():
             return FileResponse(dist / safe)
         if (dist / f"{safe}.html").is_file():
             return FileResponse(dist / f"{safe}.html", media_type="text/html")
+        return not_found()
+
+    def not_found() -> Response:
         missing = dist / "404.html"
         if missing.exists():
             return HTMLResponse(missing.read_text(encoding="utf-8"), status_code=404)
