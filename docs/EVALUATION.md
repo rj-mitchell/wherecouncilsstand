@@ -73,9 +73,11 @@ Runs are saved under the data folder because on the server nothing else can be w
 code, a run would spend its money and then fail to save.
 
 A run costs money. It makes two calls to the model for each question (one to read it, one to write the
-briefing): 31 questions is roughly the cost of 31 briefings. No run starts without a limit: `[eval] max_cost_usd`
-in `config/settings.toml` (2 US dollars), or `--max-cost`. Once the spending reaches the limit no further question
-is asked, the rest are marked as not asked, and the run does not pass. It is never run in CI.
+briefing): 31 questions is roughly the cost of 31 briefings, about $2 on the full record
+([the first baseline](#the-first-baseline-on-the-real-archive-19-november-2026)). No run starts without a limit:
+`[eval] max_cost_usd` in `config/settings.toml` (3 US dollars), or `--max-cost`. Once the spending reaches the limit
+it stops cleanly: no further question is asked, the rest are marked as not asked, the run is saved, and it does not
+pass. It says what it spent as it ends, and the run file keeps it (`cost_usd`). It is never run in CI.
 
 A run is held to `[eval.thresholds]` in `config/settings.toml`: no citation that does not hold, no
 quotation that is not in its source word for word, and no question that ends in an error. The other figures
@@ -111,8 +113,58 @@ mkdir -p eval-out && docker compose exec -T app tar -C /data/eval -c runs fixtur
 
 Then, on a development machine, copy `eval-out/runs/passed.jsonl` (if the run passed) into the repository's
 `eval/runs/` and `eval-out/fixtures/` into `eval/fixtures/`, and commit both. Record the run in the table below.
-Until that first run there are no kept briefings to replay: `councils eval replay` has been run only in the
-tests, on briefings a stand-in for the model wrote from the made-up record.
+The first run ([below](#the-first-baseline-on-the-real-archive-19-november-2026)) kept its briefings in
+`/data/eval/fixtures/` on the server. They are not yet in the repository, so `councils eval replay` is still run
+only in the tests, on briefings a stand-in for the model wrote from the made-up record.
+
+## The first baseline on the real archive (19 November 2026)
+
+The owner ran the whole test set on the server on 19 November 2026, with every briefing written:
+
+```bash
+councils eval run --max-cost 3.5 --record-fixtures /data/eval/fixtures
+```
+
+The run is `/data/eval/runs/20261119-231133-eval-03f4a7c5ac00.json` on the server's data volume, for the
+configuration `03f4a7c5ac00`.
+
+| Figure | Result |
+|---|---|
+| Questions asked | 31 of 31 |
+| Briefings written | 29 |
+| Answers of "no records" | 2 |
+| Errors | 0 |
+| Grounded ratio (mean) | 0.882 |
+| Citations | 481, none not found in their source |
+| Unsupported sentences | 72; 75.9% of briefings have at least one |
+| Quotations | 38; 1 not found word for word |
+| Loaded words | 0 |
+| Sources for a briefing (mean) | 19.66, from 7.07 groups; 38.2% from the largest group |
+| Time to the first word | median 9,273 ms; 95th percentile 24,624 ms |
+| Time to the end | median 18,154 ms; 95th percentile 34,215 ms |
+| Cost | $2.116, or $0.0683 a question |
+| Tokens | 808,188 in and 53,666 out; 173,329 read from the cache and 5,891 written to it |
+| Met every expectation | 100% of questions |
+
+Every question met what the test set expects of it, and none ended in an error. The two answers of "no records"
+are `before-records` and `planning-application`, as the test set expects. Every citation was found in its
+source, and no loaded word was flagged.
+
+The run does not pass. One of the 38 quotations was not found word for word. The threshold for those
+(`max_unverified_quotations`) is 0 on purpose, so a run does not pass whenever even one quotation is not word for
+word. The checks flag each such quotation to the reader, so none is shown as exact.
+
+A full run costs about $2, or 7 cents a question, so the limit for a run is now $3 (`[eval] max_cost_usd`). The
+five questions about named councils (`barnsley-libraries`, `cardiff-cabinet-buses`, `leeds-sheffield-clean-air`,
+`kent-asylum` and `gwynedd-holiday-lets`) cost 1 to 2 cents each, because the records of one or two councils give
+few sources.
+
+This run is what later runs are compared against, and so is the weekly routine of improving the site (wts-core's
+[docs/IMPROVING.md](https://github.com/rj-mitchell/wts-core/blob/main/docs/IMPROVING.md)). On the server:
+
+```bash
+councils eval compare /data/eval/runs/20261119-231133-eval-03f4a7c5ac00.json /data/eval/runs/<the new run>.json
+```
 
 ## Results
 
