@@ -143,8 +143,10 @@ days = 14
 
 [eval]
 # The most a run of the briefing test set may spend on the model, in US dollars (`councils eval run`): no run
-# starts without a limit, and it stops cleanly once spending reaches it.
-max_cost_usd = 2.0
+# starts without a limit, and it stops cleanly once spending reaches it. A full run of the test set on the real
+# archive cost about $2.12 (docs/EVALUATION.md, 19 November 2026); $3 covers it with a margin. Raised from $2 by the
+# owner on 19 November 2026.
+max_cost_usd = 3.0
 
 [eval.thresholds]
 # What a run is held to (a threshold is min_ or max_ and the name of a figure). Citations and quotations must all
