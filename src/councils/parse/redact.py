@@ -74,19 +74,54 @@ _DESCRIBED = re.compile(
 _PERSON = (rf"(?:(?:Mr|Mrs|Ms|Miss|Mx|Dr)\.?\s+)?(?:[A-Z]\.?\s*){{0,3}}{_FULL}|"
            rf"(?:Mr|Mrs|Ms|Miss|Mx|Dr)\.?\s+(?:[A-Z]\.?\s*){{0,3}}{_NAME_WORD}")
 _SEP = r"(?:,\s*|\s+and\s+|\s*&\s*)"
+# What follows such a name or list: found first, and the names looked for in the words just before it. One pattern
+# for the list and what follows it (as at first) tried every capitalised word as the start of a list, and a long run
+# of names and commas took time growing with its square: a petition's 600 signatories, hours (20 November 2026).
 _DESCRIBED_AFTER = re.compile(
-    rf"\b(?P<name>(?:{_PERSON})(?:{_SEP}(?:{_PERSON}))*)"
-    rf"(?=\s*\((?:a\s+)?(?:local\s+)?(?:resident|member of the public|petitioner|public speaker)\)|"
-    rf",?\s+(?:(?:a|an|both|all|two|three|four|fellow)\s+)?(?:local\s+)?(?:residents?|members? of the public|"
-    rf"lead petitioners?|petitioners?|public speakers?)\b|"
-    rf",\s+(?:of|from)\s+(?:the\s+)?[A-Z])"
+    r"\s*\((?:a\s+)?(?:local\s+)?(?:resident|member of the public|petitioner|public speaker)\)|"
+    r",?\s+(?:(?:a|an|both|all|two|three|four|fellow)\s+)?(?:local\s+)?(?:residents?|members? of the public|"
+    r"lead petitioners?|petitioners?|public speakers?)\b|"
+    r",\s+(?:of|from)\s+(?:the\s+)?[A-Z]"
 )
+_PERSON_RX = re.compile(_PERSON)
+_SEP_RX = re.compile(_SEP)
+_SEP_SPLIT = re.compile(f"({_SEP})")
+_WORD_START = re.compile(r"\b(?=[A-Z])")
+_LIST_WINDOW = 1200     # how far back before "residents" a list of names is looked for (some 60 names)
+
+
+def _names_before(text: str, end: int) -> int | None:
+    """Where the list of names that ends at ``end`` begins ("Ann Smith, Bob Jones and Carol Lee" before ", residents
+    of ..."), or None if no name ends there: the list as the pattern before it found it (each entry a whole name,
+    and the first one starting where the earliest whole name does), read backwards a part at a time."""
+    start = max(0, end - _LIST_WINDOW)
+    parts = _SEP_SPLIT.split(text[start:end])   # name, separator, name, ... with the last name last
+    pos, first = end, None
+    for i in range(len(parts) - 1, -1, -2):
+        part = parts[i]
+        part_start = pos - len(part)
+        if part and _PERSON_RX.fullmatch(part) and (part_start == 0 or not text[part_start - 1].isalnum()):
+            first = part_start
+        else:
+            # the earliest whole name that ends this part, if any, begins the list
+            for w in _WORD_START.finditer(part, max(0, len(part) - 120)):
+                if _PERSON_RX.fullmatch(part, w.start()):
+                    first = part_start + w.start()
+                    break
+            break
+        pos = part_start - (len(parts[i - 1]) if i > 0 else 0)
+        if i == 0:
+            break
+    return first
+
+
 # The officers at a meeting, listed after a heading: "Officers present: Sam Taylor, Joe Bloggs and Ann Other",
 # "Officers in attendance: Mike Ward (Democratic Services), Lucy Gray (Monitoring Officer)" (the audit). Only a
 # heading that says they are officers: "Present:" alone lists councillors.
 _OFFICERS = re.compile(r"\b(?i:(?:council\s+)?(?:officers?|officials?|staff)\s+(?:present|in attendance|attending)|"
                        r"in attendance \(officers?\))\s*[:\-–]?\s*")
 _OFFICER_ENTRY = re.compile(rf"\s*(?P<name>{_PERSON})")
+_OFFICER_ROLE = re.compile(r"\s*\([^()\n]{0,80}\)")
 # A question's header: "Question 1 From: Marcus Simpson To: Cabinet Member for ..." (found by the check)
 _HEADER = re.compile(rf"\b(?:From|Asked by|Questioner|Submitted by|Petitioner|Speaker)\s*:\s*"
                      rf"(?P<name>(?:[A-Z]\.?\s+){{0,3}}{_NAME_WORD}(?:\s+(?!To\b){_NAME_WORD}){{0,2}})\b")
@@ -209,18 +244,20 @@ def redact(text: str, councillors: set[str]) -> tuple[str, int]:
                     consider(more.group("name"), pos + more.start("name"))
                     pos += more.end()
     for m in _DESCRIBED_AFTER.finditer(text):
-        each(m.group("name"), m.start("name"))
+        first = _names_before(text, m.start())
+        if first is not None:
+            each(text[first:m.start()], first)
     for m in _OFFICERS.finditer(text):       # the list runs to the end of its sentence or line
         pos = m.end()
         while (entry := _OFFICER_ENTRY.match(text, pos)):
             consider(entry.group("name"), entry.start("name"))
             pos = entry.end()
-            role = re.match(r"\s*\([^()\n]{0,80}\)", text[pos:])          # "(Democratic Services)"
-            pos += role.end() if role else 0
-            sep = re.match(_SEP, text[pos:])
+            role = _OFFICER_ROLE.match(text, pos)                  # "(Democratic Services)"
+            pos = role.end() if role else pos
+            sep = _SEP_RX.match(text, pos)
             if not sep:
                 break
-            pos += sep.end()
+            pos = sep.end()
     if not spans:
         return text, 0
     spans.sort()

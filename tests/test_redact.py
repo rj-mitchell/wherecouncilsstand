@@ -161,3 +161,26 @@ def test_councillors_stay_in_the_new_patterns():
                  "Network Rail said the line would close.",
                  "Petition presented by Save Our Park Campaign"]:
         assert r(text) == text
+
+
+def test_a_long_list_of_names_is_read_in_time_growing_with_its_length_not_its_square():
+    """A petition's hundreds of signatories, or a long run of capitalised words and commas, once took hours (the
+    re-index of 19 November 2026 stopped on one item for a day): each list is now read back from what follows it."""
+    import time
+
+    from councils.parse.redact import redact
+
+    names = ", ".join(f"Mr A B Smith Jones Brown{'e' * (i % 3)}" for i in range(3000))
+    started = time.perf_counter()
+    redact(names + ", residents of Pill, spoke.", set())
+    redact(names + " spoke.", set())
+    assert time.perf_counter() - started < 5
+
+
+def test_names_before_residents_are_still_found_after_any_words_and_in_any_list():
+    from councils.parse.redact import REMOVED, redact
+
+    out, n = redact("The Chair said Ann Smith, Bob Jones and Carol Lee, residents of Pill, spoke.", set())
+    assert out == f"The Chair said {REMOVED}, {REMOVED} and {REMOVED}, residents of Pill, spoke." and n == 3
+    out, _ = redact("Helen Jones (resident) addressed the committee.", set())
+    assert out == f"{REMOVED} (resident) addressed the committee."
