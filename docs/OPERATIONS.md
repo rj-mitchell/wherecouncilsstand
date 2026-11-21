@@ -177,6 +177,16 @@ into a daily visitor code and never stored, and requests are not logged. The cod
 rows only, to count a visitor's briefings. After its day, a spending row keeps its day, model, token counts and
 cost, and nothing that says who it was for or at what time.
 
+### Share cards of saved briefings
+
+A saved briefing with a written answer has its own link preview, `/b/<id>/card.png` (decision 34): drawn the first
+time it is asked for, with no AI, by `src/councils/cards.py`, and kept as `data/cards/<id>.v<card version>.r<rules
+version>.png` (about 60 KB each). A card is never drawn for a briefing that is missing, withdrawn, hidden while a
+concern is decided, or has no written answer, and an existing card is not served for one. The folder holds nothing
+that is not in the saved briefing itself and is not backed up: deleting it (`docker compose exec app rm -rf
+/data/cards`) loses nothing, and each card is drawn again when next asked for. A change to what a card shows raises
+`CARD_VERSION`, so cards are drawn afresh; the old files can then be deleted the same way.
+
 ### Costs and limits
 
 Costs and limits are in `config/settings.toml`, `[usage]`. Each new briefing counts against a visitor's daily

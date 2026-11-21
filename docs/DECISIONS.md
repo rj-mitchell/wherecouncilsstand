@@ -365,3 +365,82 @@ and search engines see the same list.
   the record, the suppression list or what is hidden changes. If it can't be made, the page is sent without it.
 - It comes after the question box and the questions to try, never before them (the family's glossary: nothing
   pushes the question box down).
+
+## 33. A saved briefing's title is the site's own
+
+Made on 18 November 2026 (in the code, `plaintext.briefing_title` and `format.ts`'s `briefingTitle`), and written down
+here on 21 November 2026, when the share cards of decision 34 needed it, as Where MPs Stand's decision 36 and Where
+Countries Stand's decision 7 have it: a reader's question can say anything, so it is never the site's headline. A
+saved briefing's page title, link preview and share card say "Briefing from council minutes, 18 November 2026"; the
+question is shown in the page, labelled "Asked by a reader". A statement about a briefing is labelled with the same
+title. Saved briefings stay out of search engines (`noindex`).
+
+## 34. Checked briefings: the checking shown as design
+
+Decided 21 November 2026, carrying out the charity's review plan of that day, Part B (B1 to B6), in the direction the
+plan chose (B, "ledger"), with the family kit 2.1.0's `briefing.css` and the markup, words and behaviour of the
+charity's `family/BRIEFINGS.md`. It changes decision 26's marks, not what is marked: every point to check is still
+shown, and more plainly.
+
+- **The strip (B1, B3).** At the top of every briefing, under "Briefing written by AI", a band in the site's cloth
+  titled "Checked against the council minutes", with three counts in words: citations matched to the record,
+  quotations found word for word, and sentences without a source. Its counts are wts-core's `check_counts` on the
+  answer as shown; a count with a point to check says "To check" and links to the first one. It replaces the notices
+  under the briefing; "How this briefing was checked" at the end keeps the verifier's own counts and is linked from
+  the strip.
+- **The marks.** A quotation found word for word is set in the minutes' typeface on the record's highlight with
+  "✓ word for word"; one not found has a wavy underline and "Not found word for word". Text with no source (and text
+  whose only citation was removed) has a dotted underline, "No source" in words on the first, and is always shown,
+  never hidden and never grey. Each mark has words for screen readers after it, in this site's terms ("found word
+  for word in the minutes of source 3", "not found word for word in the minutes cited for it").
+- **Chips (B1).** After each cited passage, a chip in place of "[3]": the number, the council, the meeting (full
+  council, cabinet, or the committee's own name) and the date in full, separated by commas. It is named by its own
+  words, with no `aria-label` (WCAG 2.5.3).
+- **The record beside the briefing.** On screens 64rem and wider, the passage of the cited minutes sits beside the
+  briefing as a page of minutes (the council, the meeting and date, who the passage names with their party on the
+  date, the item's number and heading, the passage with the quoted words highlighted, and a link to the council's own
+  minutes), open from the start on the first source and following chips and the scroll, joined to the chip by a
+  line. On narrower screens a chip opens the same slip in a sheet that holds focus until it is closed.
+- **The display rule (B1).** Every answer a reader is shown (a new briefing's final event, a cached one, a saved one)
+  passes through wts-core's `quotes_beside`: a quotation found word for word in the minutes cited straight after it
+  is shown as those minutes' quotation, never as text with no source. Saved and cached copies keep the verifier's
+  own segments. Separately, the instructions now tell the model to attach each citation to the claim and its
+  quotation, never to a date beside them (INSTRUCTIONS_VERSION "5"), so briefings written under "4" are written
+  again rather than served from the cache.
+- **The wait (B6).** While a briefing is written, the page shows its stages from the stream's real events in order:
+  the family's spines until the question is read; the question as read, in large chips from the plan's own
+  filters; each record found arriving as a page of minutes into a pile, with a running count and then the search's
+  own summary; "Writing from these N records only. The AI may use these and nothing else.", each card marked "Cited"
+  as its citation arrives; then the strip's counts running up through the real results before the pile settles into
+  the record. Nothing is invented and nothing waits for an animation; the finished text is shown at once. One status
+  region says each stage once; with reduced motion the stages are the same, without movement.
+- **Sources only (B4, B6).** "Sources only (no AI)" is a second button beside "Ask", an equal choice, in place of a
+  check box. It shows the first two stages, then the list of sources.
+- **The home page (B4).** The grey box about the checking gives way to a static proof in the page's HTML, which works
+  without scripts: the three steps, a sentence with a record quotation and its chip beside the passage it came from,
+  the same words highlighted and joined by a rule, and a link to the methodology. No saved briefing is kept in this
+  repository, so the quotation and the passage are a genuine minute from the site's test record (Glasgow City
+  Council, City Administration Committee, 25 January 2024, item 2; `tests/fixtures/coins/glasgow_minutes_19226.pdf`),
+  labelled "From the minutes of Glasgow City Council, City Administration Committee, 25 January 2024"; the page says
+  that the words around the quotation show how a briefing reports minutes. The line under the question box and its
+  disclosure, "How the briefings are checked", stay (decision 23), now under the box rather than in a grey panel
+  beside it. The proof is hidden once a briefing is shown.
+- **Share cards (B5).** A saved briefing with a written answer has its own `og:image`, `/b/<id>/card.png`, drawn once
+  by wts-core's `adapters.cards.briefing_card` in the site's cloth with the site's icon, the neutral title of
+  decision 33, the strip's three counts in words and the day it was prepared, and kept on disk
+  ([`OPERATIONS.md`](OPERATIONS.md), "Share cards of saved briefings"). Fonts are Source Serif 4 and Source Sans 3,
+  copied with their licences into `data_static/fonts`.
+- **Print and exports.** Printed, the strip is outlined in black, chips print as "[3]", the record and the wait are
+  left off, and the list of sources is the numbered reference list. The site has no Word export, so there is nothing
+  more to change.
+- **Kit and CI.** The site takes wts-core 0.4.0 with its `cards` extra and the family kit 2.1.0, and CI now runs the
+  shared kit check at that version. Two small rules are the site's own, around the kit's parts: a council's long name
+  gives way to the date on a card in the pile (the kit's cards were drawn for short UN symbols), and the four stages
+  take two rows on a phone.
+
+The prototype the design was chosen from is in the charity's repository (`family/prototypes/checked-briefings/`) and
+published at https://claude.ai/artifact/MrYFRm3pmhdi7n1uhZ2pKR. Screenshots at phone and computer widths, light and
+dark, are in [`screenshots/2026-11-checked-briefings/`](screenshots/2026-11-checked-briefings/): the saved briefing in
+them is the made-up record's (`scripts/fixture_site.py`), written by hand and checked by the site's own checks, and
+the wait is that briefing's events replayed.
+
