@@ -756,16 +756,30 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             log.exception("the corrections log was not written into its page")
         return HTMLResponse(html)
 
+    # the sitemaps as last made, and what they were made from
+    sitemaps_kept: dict[str, Any] = {}
+    sitemaps_lock = threading.Lock()
+
     def sitemaps(request: Request) -> dict[str, list[tuple[str, str]]]:
         """Every page worth finding, as the sitemaps list them: by sitemap's name, each page's address and the date
         it last changed where that is known ("" where it isn't). The pages of text; every council and strategic
         authority (the date of its latest meeting read); and the named votes, a sitemap for each year (the date of
         the vote), split so that none holds more than ``SITEMAP_MAX`` addresses. Nothing hidden while a concern is
-        decided is offered to a search engine."""
-        base = site_url(request)
+        decided is offered to a search engine.
+
+        Made once and kept until the record changes, something is hidden or shown again, or the site's address
+        does: the index and each sitemap it lists are asked for one after another, and each used to read every
+        named vote again. What is hidden is asked on each request, so a page hidden leaves the sitemaps at once."""
+        base, now = site_url(request), hidden()
+        key = (data.version(), base, frozenset(now.notes))
+        with sitemaps_lock:      # one request makes them while any others wait, rather than all at once
+            if sitemaps_kept.get("key") != key:
+                sitemaps_kept.update(key=key, sitemaps=make_sitemaps(base, now))
+            return sitemaps_kept["sitemaps"]
+
+    def make_sitemaps(base: str, now: right_of_reply.Hidden) -> dict[str, list[tuple[str, str]]]:
         fixed = ["/", "/councils"] + [f"/{p.stem}" for p in sorted(dist.glob("*.html"))
                                       if p.stem not in (*TEMPLATES, "councils")]
-        now = hidden()
         out: dict[str, list[tuple[str, str]]] = {"pages": [(base + p, "") for p in fixed]}
         out["councils"] = [(base + plaintext.council_path(r["gss"]), r.get("to") or "" if r.get("loaded") else "")
                            for r in shown_directory(now)["councils"]]

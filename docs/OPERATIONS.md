@@ -49,6 +49,7 @@ For every loaded council, 20 at a time and one request at a time to each council
 | A council moves full council or cabinet to a new committee | Picked up within a week if its title follows the usual patterns. Otherwise add it to `data_static/committees.csv`. |
 | A council relabels a party | Mapped by the rules in `parse/parties.py`, or listed by `scripts/party_labels.py` for a decision. Run `councils parties` after changing either. |
 | The vote parser improves | `councils parse` reads every council's stored minutes again (about two minutes), with no downloads. |
+| The site is busy while the run rewrites the store, one council at a time | The site keeps what it has made of each council (its page, its named votes and each vote's page) until that council's own files change, or the suppression list does, so a change to one council never makes the others' pages again. The list of councils is built again when any council changes, and while that happens requests are given the list as it was. The sitemaps are kept until the record or what is hidden changes. Until 21 November 2026 every change threw away every council's pages, and on 20 November, with a slow rule in `parse/redact.py`, the site stopped answering during the run. |
 
 Nothing is ever deleted because a server didn't answer.
 

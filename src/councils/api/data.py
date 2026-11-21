@@ -1,17 +1,26 @@
-"""What the council and vote pages show, read from the store. The directory is built once and rebuilt when the daily
-update has changed the store; a council's own page is built when first asked for and kept until then."""
+"""What the council and vote pages show, read from the store.
+
+The nightly update rewrites the store one council at a time while the site is serving, so what is kept is kept by
+what it was made from. The directory (and the list of every named vote, for the sitemap) is built from every
+council's files and built again when any of them changes. What a council's own pages show (its page, its named
+votes and their labels, its members' parties) is built when first asked for and kept until that council's own
+files change, or the suppression list does: a change to one council never throws away another's. Until November
+2026 any change threw away every council's, so during the update every page was built afresh, again and again,
+while search engines' crawlers read the named votes (docs/OPERATIONS.md, "Built to keep working"). What is hidden
+while a concern is decided is never kept here: the routes leave it out on each request (app.py)."""
 
 from __future__ import annotations
 
+import os
 import re
 import threading
 from collections import Counter, defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Hashable
 from datetime import date
-from functools import lru_cache
-from typing import Any
+from typing import Any, TypeVar
 
 import duckdb
+import pyarrow.parquet as pq
 
 from councils import authority, scrub, sisters, store, suppress
 from councils.api import titles
@@ -188,33 +197,134 @@ def _iso(d: date | None) -> str | None:
     return d.isoformat() if d else None
 
 
+T = TypeVar("T")
+# the tables the directory is built from, every council's files of each
+DIRECTORY_TABLES = ("meetings", "votes", "attendance")
+# the tables a council's own pages are built from, its own file of each
+COUNCIL_TABLES = ("meetings", "items", "attendance", "votes")
+PEOPLE_TABLES = ("meetings", "attendance")
+
+
+def _written(path: str | os.PathLike[str]) -> tuple[int, int, int]:
+    """When a file was last written, as part of a key: its time, size and inode (each write replaces the whole file,
+    so it has a new inode even when two writes fall in the same tick of the clock). Zeros if it isn't there."""
+    try:
+        s = os.stat(path)
+    except FileNotFoundError:
+        return (0, 0, 0)
+    return (s.st_mtime_ns, s.st_size, s.st_ino)
+
+
+# what a vote's page gives of each member, kept as a tuple of these
+MEMBER_FIELDS = ("side", "name", "written", "matched", "party")
+
+
+def _sides(rows: list[dict[str, Any]], c: people.Council | None, gss: str, same: dict[str, str]
+           ) -> list[tuple[Any, ...]]:
+    """Each member's side in a named vote, with the name the council's lists give them and their party on the
+    date; each side by party, largest first, then by name. Kept for every vote of every council, so each name is
+    held once (``same``), not once for each vote."""
+    members = []
+    for r in rows:
+        party = c.party_on(r["member_id"], r["date"]) if c and r["member_id"] else ""
+        known = _plain_name(c.name_of(r["member_id"])) if c and r["member_id"] else ""
+        written = same.setdefault(r["name"], r["name"])
+        members.append((r["vote"], same.setdefault(known, known) or written, written, bool(r["member_id"]),
+                        people.party_name(party, gss) if party else None))
+    size = Counter((m[0], m[4]) for m in members)
+    members.sort(key=lambda m: (SIDE_ORDER.index(m[0]), m[4] is None, -size[(m[0], m[4])], m[4] or "", m[1]))
+    return members
+
+
+def _control_on(gss: str, d: date, c: people.Council | None) -> str | None:
+    """The party in control of a council on a date (an authority's mayor's party), as words."""
+    if councils()[gss].is_authority:
+        return people.party_name(authority.control_key(gss, d))
+    return people.party_name(c.control_on(d), gss) if c else None
+
+
+class _Kept:
+    """Values kept by name, each with the key of what it was made from. Asked again with the same key, the value
+    kept is given; with another, it is made again and replaces the old one, so there is never more than one value
+    for a name (one for each council, at most). One thread makes a value while any others asking for it wait for
+    it, rather than all making it at once: the pages are served from a pool of threads, and a crawler asks for
+    many of one council's votes together."""
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._held: dict[Hashable, tuple[Hashable, Any]] = {}
+        self._making: dict[Hashable, threading.Lock] = {}
+
+    def get(self, name: Hashable, key: Hashable, make: Callable[[], T]) -> T:
+        with self._lock:
+            held = self._held.get(name)
+            if held is not None and held[0] == key:
+                return held[1]
+            making = self._making.setdefault(name, threading.Lock())
+        with making:
+            with self._lock:
+                held = self._held.get(name)
+                if held is not None and held[0] == key:
+                    return held[1]       # made by the thread this one waited for
+            value = make()
+            with self._lock:
+                self._held[name] = (key, value)
+            return value
+
+
 class Data:
     def __init__(self, settings: Settings):
         self.settings = settings
         self.root = settings.parquet_dir
         self._lock = threading.Lock()
-        self._stamp: float | None = None
-        self._directory: list[dict[str, Any]] = []
-        self._totals: dict[str, Any] = {}
-        self._vote_ids: list[tuple[str, str]] | None = None
+        # what the directory was built from (None until it is first built), and the directory: replaced whole, so
+        # a request never sees one build's rows with another's totals
+        self._built_from: tuple[tuple[str, int], ...] | None = None
+        self._dir: dict[str, Any] = {"councils": [], "by_gss": {}, "totals": {}}
+        self._kept = _Kept()
+        # how many councils' named votes are made at once: each reads its items' minutes, and the work is the
+        # processor's (two in the container), so more at once is slower for each and holds more in memory
+        self._making_votes = threading.BoundedSemaphore(2)
 
     # Freshness
     def stamp(self) -> float:
         """When the store last changed: the newest meetings file, or the suppression list (suppress.py), whose
-        entries the pages show at once."""
+        entries the pages show at once. Part of the answer cache's key (app.py)."""
         files = list((self.root / "meetings").glob("*.parquet"))
         return max(max((f.stat().st_mtime for f in files), default=0.0), suppress.stamp(self.settings.data_dir))
 
-    def _fresh(self) -> None:
-        stamp = self.stamp()
-        if stamp != self._stamp:
-            with self._lock:
-                if stamp != self._stamp:
-                    self._build_directory()
-                    self._council.cache_clear()
-                    self._votes.cache_clear()
-                    self._vote_ids = None
-                    self._stamp = stamp
+    def _files(self, table: str) -> int:
+        """Every council's file of one table, as a key that changes when any of them is written, added or removed."""
+        try:
+            with os.scandir(self.root / table) as found:
+                return hash(frozenset((e.name, *_written(e.path)) for e in found if e.name.endswith(".parquet")))
+        except FileNotFoundError:
+            return 0
+
+    def _own(self, gss: str, tables: tuple[str, ...] = COUNCIL_TABLES, *, suppressions: bool = True) -> Hashable:
+        """What a council's own pages are made from, as a key: its own files, and the suppression list, whose
+        entries are removed from every council's pages at once."""
+        files = tuple(_written(store.parquet.path(self.root, t, gss)) for t in tables)
+        return (files, suppress.stamp(self.settings.data_dir)) if suppressions else files
+
+    def _fresh(self) -> tuple[tuple[str, int], ...]:
+        """Build the directory again if any council's files have changed since it was built, and give what it is
+        built from now. While one thread builds it, the others are given the directory as it was rather than wait
+        (except for the first build). Nothing kept for each council is thrown away: that is kept by its own files."""
+        now = tuple((t, self._files(t)) for t in DIRECTORY_TABLES)
+        if now != self._built_from and self._lock.acquire(blocking=self._built_from is None):
+            try:
+                if now != self._built_from:
+                    self._dir = self._build_directory()
+                    self._built_from = now
+            finally:
+                self._lock.release()
+        return self._built_from or now
+
+    def version(self) -> Hashable:
+        """What the directory and the list of named votes (``vote_dates``) given now are made from: it changes
+        whenever either may have. For keeping what is made from them (the sitemaps, app.py)."""
+        return self._fresh()
 
     def last_update(self) -> dict[str, Any] | None:
         log = self.settings.data_dir / "updates.jsonl"
@@ -226,7 +336,7 @@ class Data:
         return json.loads(lines[-1]) if lines else None
 
     # The directory
-    def _build_directory(self) -> None:
+    def _build_directory(self) -> dict[str, Any]:
         con = duckdb.connect()
         names = store.parquet.attach(con, self.root)
         meetings = {r[0]: r[1:] for r in con.execute(
@@ -262,31 +372,39 @@ class Data:
             row["coverage"], row["reasons"] = coverage(row, *attendance.get(c.gss, (0, 0)))
             out.append(row)
         out.sort(key=lambda r: r["name"])
-        self._directory = out
         loaded = [r for r in out if r["loaded"]]
         bodies = [r for r in out if r["type"] != "strategic_authority"]
         sa = [r for r in out if r["type"] == "strategic_authority"]
-        self._totals = {"councils": len(bodies), "loaded": sum(1 for r in bodies if r["loaded"]),
-                        "authorities": len(sa), "authorities_loaded": sum(1 for r in sa if r["loaded"]),
-                        "coverage": dict(Counter(r["coverage"] for r in bodies)),
-                        "meetings": sum(r["meetings"] for r in loaded),
-                        "named_votes": sum(r["named_votes"] for r in loaded),
-                        "from": min((r["from"] for r in loaded), default=None),
-                        "to": max((r["to"] for r in loaded), default=None)}
+        totals = {"councils": len(bodies), "loaded": sum(1 for r in bodies if r["loaded"]),
+                  "authorities": len(sa), "authorities_loaded": sum(1 for r in sa if r["loaded"]),
+                  "coverage": dict(Counter(r["coverage"] for r in bodies)),
+                  "meetings": sum(r["meetings"] for r in loaded),
+                  "named_votes": sum(r["named_votes"] for r in loaded),
+                  "from": min((r["from"] for r in loaded), default=None),
+                  "to": max((r["to"] for r in loaded), default=None)}
         # the party in control now, for the directory: from each council's own timeline; an authority's mayor
         for r in loaded:
             r["control"] = self._control_now(r["gss"])
         for r in sa:
             r["control"] = authority_control(r["gss"])
+        return {"councils": out, "by_gss": {r["gss"]: r for r in out}, "totals": totals}
 
     def _control_now(self, gss: str) -> dict[str, str] | None:
-        c = self._people(gss)
-        if not c or not c.control_by_date:
-            return None
-        code = c.control_on(date.today())
-        return {"code": code, "name": people.party_name(code, gss), "as_of": _iso(c.control_by_date[-1][0])}
+        """The party in control of a council today, from its own timeline: kept until its meetings or attendance
+        change (or the day does), so that building the directory again reads only the councils that changed."""
+        def now() -> dict[str, str] | None:
+            c = self._people(gss)
+            if not c or not c.control_by_date:
+                return None
+            code = c.control_on(date.today())
+            return {"code": code, "name": people.party_name(code, gss), "as_of": _iso(c.control_by_date[-1][0])}
+
+        return self._kept.get(("control", gss), (self._own(gss, PEOPLE_TABLES, suppressions=False), date.today()),
+                              now)
 
     def _people(self, gss: str) -> people.Council | None:
+        """A council's members and control over time. Not kept: it holds every attendance, a few megabytes for a
+        large council, and what is made from it is kept instead."""
         att = store.parquet.read(self.root, "attendance", gss)
         meetings = store.parquet.read(self.root, "meetings", gss)
         return people.build(att, meetings).get(gss)
@@ -296,41 +414,49 @@ class Data:
         return [vote_id for vote_id, _ in self.vote_dates()]
 
     def vote_dates(self) -> list[tuple[str, str]]:
-        """Every named vote's id and the date of its meeting (ISO), newest first: for the sitemap."""
-        self._fresh()
-        if self._vote_ids is None:
-            con = duckdb.connect()
-            names = store.parquet.attach(con, self.root)
-            rows = con.execute("SELECT vote_id, max(date) AS d FROM votes GROUP BY vote_id ORDER BY d DESC, vote_id"
-                               ).fetchall() if "votes" in names else []
-            held = set(withheld_codes())
-            self._vote_ids = [(r[0], _iso(r[1]) or "") for r in rows if r[0].split(":")[0] not in held]
-        return self._vote_ids
+        """Every named vote's id and the date of its meeting (ISO), newest first: for the sitemap. Read again only
+        when a council's named votes have changed."""
+        votes = dict(self._fresh())["votes"]
+        return self._kept.get(("vote dates",), votes, self._read_vote_dates)
+
+    def _read_vote_dates(self) -> list[tuple[str, str]]:
+        con = duckdb.connect()
+        names = store.parquet.attach(con, self.root)
+        rows = con.execute("SELECT vote_id, max(date) AS d FROM votes GROUP BY vote_id ORDER BY d DESC, vote_id"
+                           ).fetchall() if "votes" in names else []
+        held = set(withheld_codes())
+        return [(r[0], _iso(r[1]) or "") for r in rows if r[0].split(":")[0] not in held]
 
     def directory(self) -> dict[str, Any]:
         self._fresh()
-        return {"totals": self._totals, "councils": self._directory}
+        d = self._dir
+        return {"totals": d["totals"], "councils": d["councils"]}
 
     def totals(self) -> dict[str, Any]:
         self._fresh()
-        return self._totals
+        return self._dir["totals"]
 
     # A council
     def council(self, gss: str) -> dict[str, Any] | None:
+        """A council's page: its row in the directory, the authorities it belongs to (or an authority's councils
+        and mayors), and what is made from its own record, kept until that changes."""
         self._fresh()
-        c = self._council(gss)
-        return None if c is None else {**c, "landlords": sisters.landlords(gss)}
-
-    @lru_cache(maxsize=64)  # noqa: B019 - one Data per process; cleared when the store changes
-    def _council(self, gss: str) -> dict[str, Any] | None:
-        entry = next((r for r in self._directory if r["gss"] == gss), None)
+        d = self._dir
+        entry = d["by_gss"].get(gss)
         if entry is None:
             return None
         # the strategic authorities a council belongs to, and an authority's councils and mayors (decision 17)
-        links = self._links(gss)
+        links = self._links(gss, d["by_gss"])
         if not entry["loaded"]:
-            return {**entry, **links, "control_timeline": [], "seats": None, "members": None, "by_year": [],
+            page = {**entry, **links, "control_timeline": [], "seats": None, "members": None, "by_year": [],
                     "votes": [], "recent": []}
+        else:
+            page = {**entry, **links, **self._kept.get(("council", gss), self._own(gss),
+                                                       lambda: self._council(gss, entry["type"]))}
+        return {**page, "landlords": sisters.landlords(gss)}
+
+    def _council(self, gss: str, kind: str) -> dict[str, Any]:
+        """What a loaded council's page shows from its own record."""
         meetings = store.parquet.read(self.root, "meetings", gss)
         att = store.parquet.read(self.root, "attendance", gss)
         c = people.build(att, meetings).get(gss)
@@ -364,11 +490,9 @@ class Data:
         years = sorted({y for y, _ in by_year})
         recent = sorted(meetings, key=lambda m: m["date"], reverse=True)[:12]
         return {
-            **entry,
-            **links,
             "control_timeline": timeline,
             "seats": seats,
-            "members": authority_members(meetings, att) if entry["type"] == "strategic_authority" else None,
+            "members": authority_members(meetings, att) if kind == "strategic_authority" else None,
             "by_year": [{"year": y, **{k: by_year[(y, k)] for k in KIND_LABEL}, "with_minutes": with_minutes[y]}
                         for y in years],
             "votes": self.votes(gss, c),
@@ -376,13 +500,13 @@ class Data:
                         "url": m["url"], "items_with_minutes": m["items_with_minutes"]} for m in recent],
         }
 
-    def _links(self, gss: str) -> dict[str, Any]:
-        loaded = {r["gss"]: r["loaded"] for r in self._directory}
+    def _links(self, gss: str, rows: dict[str, dict[str, Any]]) -> dict[str, Any]:
         c = councils()[gss]
         if c.is_authority:
             return {"constituents": [{"gss": m.council, "name": councils()[m.council].name,
                                       "role": m.role, "role_name": MEMBER_ROLES.get(m.role, m.role),
-                                      "from": _iso(m.start), "to": _iso(m.end), "loaded": loaded.get(m.council, False)}
+                                      "from": _iso(m.start), "to": _iso(m.end),
+                                      "loaded": bool(rows.get(m.council, {}).get("loaded"))}
                                      for m in members_of(gss) if m.council in councils()],
                     "mayors": [{"name": m.name, "party": m.party, "party_name": people.party_name(m.party),
                                 "from": _iso(m.start), "to": _iso(m.end)} for m in mayors_of(gss)]}
@@ -394,15 +518,30 @@ class Data:
     def votes(self, gss: str, c: people.Council | None = None) -> list[dict[str, Any]]:
         """Every named vote at a council, newest first: the item, the result, the count of each side by party, and
         what the vote is called (api/titles.py): its label among the item's votes, its heading and its page's
-        title. Built once for each council and kept until the store changes."""
-        return self._votes(gss)
+        title. Built once for each council and kept until its own record or the suppression list changes."""
+        return self._record(gss)["votes"]
 
-    @lru_cache(maxsize=64)  # noqa: B019 - one Data per process; cleared when the store changes
-    def _votes(self, gss: str) -> list[dict[str, Any]]:
+    def _record(self, gss: str) -> dict[str, Any]:
+        """A council's named votes as its page lists them (``votes``), and what each vote's own page shows of its
+        record (``pages``: by vote id, its first row, each member's side and the council's control on the date),
+        made together, from the same files, and kept together."""
+        return self._kept.get(("votes", gss), self._own(gss), lambda: self._votes(gss))
+
+    def _votes(self, gss: str) -> dict[str, Any]:
         rows = store.parquet.read(self.root, "votes", gss)
         if not rows:
-            return []
-        items = {i["item_id"]: i for i in store.parquet.read(self.root, "items", gss)}
+            return {"votes": [], "pages": {}}
+        with self._making_votes:
+            return self._make_votes(gss, rows)
+
+    def _make_votes(self, gss: str, rows: list[dict[str, Any]]) -> dict[str, Any]:
+        # only the items voted on, and only what is used of them: each item's minutes are the most there is to read
+        p = store.parquet.path(self.root, "items", gss)
+        voted = sorted({r["item_id"] for r in rows})
+        items = {i["item_id"]: i for i in (pq.read_table(p, columns=["item_id", "number", "title", "url",
+                                                                       "minutes_text"],
+                                                          filters=[("item_id", "in", voted)]).to_pylist()
+                                           if p.exists() else [])}
         meetings = {m["meeting_id"]: m for m in store.parquet.read(self.root, "meetings", gss)}
         c = self._people(gss)
         # an item's title can name someone who isn't a councillor ("Petition – Mr Steve Dally"): as for the index
@@ -414,7 +553,7 @@ class Data:
         body = councils()[gss]
         short = body.short_name if sum(1 for x in councils().values() if x.short_name == body.short_name) == 1 \
             else body.name
-        out = []
+        out, pages, same = [], {}, {}
         for vote_id, vs in by_vote.items():
             first = vs[0]
             it, m = items.get(first["item_id"], {}), meetings.get(first["meeting_id"], {})
@@ -436,8 +575,10 @@ class Data:
             v["title"] = titles.title(v, body.name, short)
             v["budget"] = titles.is_budget(v)
             out.append(v)
+            pages[vote_id] = ({k: first[k] for k in ("excerpt", "item_id", "meeting_id")}, _sides(vs, c, gss, same),
+                              _control_on(gss, first["date"], c))
         out.sort(key=lambda v: (v["date"], v["vote_id"].rsplit(":", 1)[0], -_block(v["vote_id"])), reverse=True)
-        return out
+        return {"votes": out, "pages": pages}
 
     def _labels(self, gss: str, by_vote: dict[str, list[dict[str, Any]]], items: dict[str, dict[str, Any]],
                 names: set[str], sup: suppress.Suppressions) -> dict[str, dict[str, Any]]:
@@ -474,33 +615,21 @@ class Data:
         gss = vote_id.split(":")[0]
         if gss not in councils() or councils()[gss].withheld:
             return None
-        rows = [r for r in store.parquet.read(self.root, "votes", gss) if r["vote_id"] == vote_id]
-        if not rows:
+        record = self._record(gss)
+        page = record["pages"].get(vote_id)
+        if page is None:
             return None
-        c = self._people(gss)
-        everything = [v for v in self.votes(gss) if v["vote_id"] == vote_id or not hidden(v["vote_id"])]
+        first, sides, control = page
+        everything = [v for v in record["votes"] if v["vote_id"] == vote_id or not hidden(v["vote_id"])]
         summary = next((v for v in everything if v["vote_id"] == vote_id), None)
-        members = []
-        for r in rows:
-            party = c.party_on(r["member_id"], r["date"]) if c and r["member_id"] else ""
-            known = _plain_name(c.name_of(r["member_id"])) if c and r["member_id"] else ""
-            members.append({"side": r["vote"], "name": known or r["name"],
-                            "written": r["name"], "matched": bool(r["member_id"]),
-                            "party": people.party_name(party, gss) if party else None})
-        # each side by party, largest first, then by name
-        size = Counter((m["side"], m["party"]) for m in members)
-        members.sort(key=lambda x: (SIDE_ORDER.index(x["side"]), x["party"] is None, -size[(x["side"], x["party"])],
-                                    x["party"] or "", x["name"]))
         # stored with others' names removed by the rules of the day: through them again, as the minutes are
-        excerpt = scrub.minutes_text(rows[0]["excerpt"], scrub.surnames(self.root, gss),
-                                     suppress.load(self.settings.data_dir), gss, rows[0]["item_id"],
+        excerpt = scrub.minutes_text(first["excerpt"], scrub.surnames(self.root, gss),
+                                     suppress.load(self.settings.data_dir), gss, first["item_id"],
                                      (summary or {}).get("item") or "")
-        control = (people.party_name(authority.control_key(gss, rows[0]["date"])) if councils()[gss].is_authority
-                   else people.party_name(c.control_on(rows[0]["date"]), gss) if c else None)
         return {**(summary or {}), "gss": gss, "council": councils()[gss].name,
                 "is_authority": councils()[gss].is_authority,
                 "from_table": " | " in excerpt and excerpt.rstrip().endswith("members)"),
                 "control": control,
-                "excerpt": excerpt, "members": members,
+                "excerpt": excerpt, "members": [dict(zip(MEMBER_FIELDS, m, strict=True)) for m in sides],
                 "description": titles.description(summary, councils()[gss].name) if summary else "",
-                **(_nearby(everything, vote_id, rows[0]["item_id"], rows[0]["meeting_id"]) if summary else {})}
+                **(_nearby(everything, vote_id, first["item_id"], first["meeting_id"]) if summary else {})}
