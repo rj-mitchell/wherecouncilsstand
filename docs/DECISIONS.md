@@ -282,3 +282,15 @@ that council and nothing the rules of decision 9 remove is in the label. The tit
 count (left out where the result the minutes give contradicts the count), the item, the council and the date in
 about 70 characters, an item in capitals in sentence case; a budget or council tax item's single vote is "How
 councillors voted: …". Nothing in the record changes, and the site still gives no amounts of council tax.
+
+## 29. Rebuilding the search index waits for the server's update lock
+
+Decided 21 November 2026, in the review of that day (A2 in the charity's review plan): `councils index` takes the
+server's update lock, `/var/lock/wheretheystand-update.lock`, before it writes anything, as every site's nightly
+update does. On 19 and 20 November an index run by hand and the nightly update ran together for ten hours, and both
+wrote the search index's state file. Like the update, it waits for the lock rather than fail: it says it is waiting,
+what holds the lock and how to see who, and carries on by itself when the lock is free, so that an index run the same
+day as a suppression (decision 9) still happens without anyone coming back to start it. It does not wait when the
+lock cannot be opened at all: in the server's containers the lock is the server's file, mounted read-only by
+`deploy/docker-compose.yml`, and if it is missing the command does nothing and exits 1, saying how to put it right,
+rather than run unguarded. On a developer's machine with no `/var/lock`, it runs without a lock.

@@ -671,12 +671,20 @@ def report(all_councils: bool = typer.Option(False, "--all", help="every council
 
 @app.command()
 def index(council: list[str] = typer.Argument(None, help="GSS codes or names; all loaded councils if none")) -> None:
-    """Build the keyword search index from the stored minutes (names of non-councillors removed)."""
+    """Build the keyword search index from the stored minutes (names of non-councillors removed). Takes the server's
+    update lock first, as the nightly update does, and waits for it while another job holds it (decision 29)."""
     from councils.index.build import Indexer
+    from councils.lock import LockUnavailable, update_lock
     from councils.registry import get
 
     s = load_settings()
-    n = Indexer(s).index_all([get(c).gss for c in council] if council else None)
+    codes = [get(c).gss for c in council] if council else None
+    try:
+        with update_lock(lambda words: typer.echo(words, err=True)):
+            n = Indexer(s).index_all(codes)
+    except LockUnavailable as exc:
+        typer.echo(f"error: {exc}", err=True)
+        raise typer.Exit(1) from None
     typer.echo(f"{n} passages indexed")
 
 
