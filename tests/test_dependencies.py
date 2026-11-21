@@ -24,16 +24,17 @@ def requirement() -> str:
 
 def test_the_shared_package_is_the_wheel_of_a_release_with_the_extras_the_site_uses():
     name, address = (part.strip() for part in requirement().split("@", 1))
-    # Typer for the shared commands, httpx for off-site copies, and the model's SDK, the embedder and the index.
-    # Not "duckdb": the site reads its own store with DuckDB, which is a dependency of its own.
-    assert name == "wts-core[cli,offsite,ai]"
+    # Typer for the shared commands, httpx for off-site copies, the model's SDK, the embedder and the index, and
+    # Pillow for the share cards of saved briefings. Not "duckdb": the site reads its own store with DuckDB, which
+    # is a dependency of its own.
+    assert name == "wts-core[cli,offsite,ai,cards]"
     # the wheel of a tagged release, by its address: the Docker image has no git (wts-core docs/adr/0006)
     assert re.fullmatch(r"https://github\.com/rj-mitchell/wts-core/releases/download/v(\d+\.\d+\.\d+)/"
                         r"wts_core-\1-py3-none-any\.whl", address)
     lock = tomllib.loads((ROOT / "uv.lock").read_text())
     locked = {canonical(p["name"]): p for p in lock["package"]}
     [ours] = [d for d in locked["councils"]["dependencies"] if d["name"] == "wts-core"]
-    assert sorted(ours["extra"]) == ["ai", "cli", "offsite"]
+    assert sorted(ours["extra"]) == ["ai", "cards", "cli", "offsite"]
     assert locked["wts-core"]["source"]["url"] == address
     # the libraries the package's "ai" extra brings are no longer the site's own to name, nor an extra of its own
     project = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
@@ -52,7 +53,7 @@ def test_ci_calls_the_shared_workflows_at_the_tag_of_the_package_installed():
     ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
     called = re.findall(r"uses: rj-mitchell/wts-core/(\S+)@(\S+)", ci)
     assert sorted(what for what, _ in called) == [
-        ".github/actions/a11y", ".github/actions/setup", ".github/workflows/docker.yml",
+        ".github/actions/a11y", ".github/actions/setup", ".github/workflows/docker.yml", ".github/workflows/kit.yml",
         ".github/workflows/python.yml", ".github/workflows/web.yml"]
     assert {tag for _, tag in called} == {version}
     assert '- dependency-name: "rj-mitchell/wts-core*"' in (ROOT / ".github" / "dependabot.yml").read_text()

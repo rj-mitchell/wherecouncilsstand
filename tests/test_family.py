@@ -30,6 +30,11 @@ def test_the_kit_copy_matches_its_own_record():
         h.update((FAMILY / path).read_bytes())
         h.update(b"\0")
     assert h.hexdigest() == expected, "web/public/family was edited, or a file is missing: sync the kit again"
+    # and CI's kit job checks the copy is the version it names: the two are raised together
+    synced = re.search(r"^kit (\S+)$", version, re.M).group(1)
+    ci = (FAMILY.parents[2] / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    assert re.search(rf'workflows/kit\.yml@\S+\n    with:\n      version: "{re.escape(synced)}"\n      site: councils\n'
+                     r"      path: web/public/family\n", ci), "raise the kit's version in ci.yml with the sync"
 
 
 def test_the_kit_asks_for_nothing_from_another_site():
