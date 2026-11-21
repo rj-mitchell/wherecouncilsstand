@@ -4,7 +4,7 @@
  * only with the thing it describes. */
 export function Why() {
   return (
-    <div className="why panel">
+    <div className="why">
       <p>Briefings are written by AI from the official record only, and every citation is checked.</p>
       <details>
         <summary>How the briefings are checked</summary>

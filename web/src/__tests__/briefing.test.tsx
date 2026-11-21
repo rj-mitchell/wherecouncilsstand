@@ -1,12 +1,18 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Answer } from "../api";
-import { BriefingText, CheckNotices, MISQUOTE_TITLE } from "../components/Briefing";
+import type { SourceCard } from "../api";
+import { BriefingText, Chip } from "../components/Briefing";
+
+const card = (n: number, council: string, kind: string, committee: string, date: string): SourceCard => ({
+  n, title: "", url: `https://example.org/${n}`, record_id: `r${n}`, date, gss: "E08000038", council_name: council,
+  committee, kind, item_title: "An item", item_number: "4.", control: null, group: "", text: "The minutes.", votes: [],
+});
 
 describe("BriefingText", () => {
-  it("sets headings, the In brief box, bullets, citations and unsupported text without injecting HTML", () => {
+  it("sets headings, the In brief box, bullets, chips and text with no source without injecting HTML", () => {
     const { container } = render(
       <BriefingText
+        sources={[card(5, "Rother District Council", "cabinet", "Cabinet", "2025-06-12")]}
         segments={[
           { text: "**In brief**\n\n- Councils closed toilets, as when Rother did", sources: [], status: "connective" },
           { text: " in June 2025", sources: [5], status: "cited" },
@@ -18,20 +24,22 @@ describe("BriefingText", () => {
     const brief = container.querySelector(".resolved");
     expect(brief?.querySelector("h2")?.textContent).toBe("In brief");
     expect(brief?.querySelectorAll("li")).toHaveLength(1);
-    expect(container.querySelector('a.cite[href="#source-5"]')?.textContent).toBe("[5]");
+    const chip = container.querySelector('button.wts-chip[data-source="5"]')!;
+    expect(chip.textContent).toBe("Source 5Rother District Council, cabinet, 12 June 2025");
     expect([...container.querySelectorAll("h2")].map((h) => h.textContent)).toEqual(["In brief", "Councils under no overall control"]);
-    const unsupported = [...container.querySelectorAll(".unsupported")].map((e) => e.textContent);
-    expect(unsupported).toContain("A claim with no source.");
+    const marked = [...container.querySelectorAll(".wts-nosource")].map((e) => e.textContent);
+    expect(marked).toContain("A claim with no source.No source (no source)");
     expect(container.querySelector("img")).toBeNull();
     expect(container.textContent).toContain("<img src=x onerror=alert(1)> is shown as text");
   });
 
-  it("renders streaming text before the answer is checked", () => {
-    const { container } = render(<BriefingText text={"**In brief**\n\n- First finding"} />);
+  it("renders streaming text before the answer is checked, with a cursor", () => {
+    const { container } = render(<BriefingText text={"**In brief**\n\n- First finding"} cursor />);
     expect(container.querySelector(".resolved li")?.textContent).toBe("First finding");
+    expect(container.querySelector(".resolved li .wts-cursor")?.getAttribute("aria-hidden")).toBe("true");
   });
 
-  it("marks text whose citations all failed the check as it marks text with no source", () => {
+  it("marks text whose citations all failed the check as text with no source, and says why", () => {
     const { container } = render(
       <BriefingText
         segments={[
@@ -40,33 +48,32 @@ describe("BriefingText", () => {
         ]}
       />,
     );
-    const marked = container.querySelector(".unsupported");
-    expect(marked?.textContent).toBe(". Every council in Sussex did the same.");
-    expect(marked?.getAttribute("title")).toBe("Not supported by a cited source");
-    expect(container.querySelectorAll("a.cite")).toHaveLength(1);
+    const marked = container.querySelector(".wts-nosource")!;
+    expect(marked.id).toBe("nosource-1");
+    expect(marked.firstChild?.textContent).toBe(". Every council in Sussex did the same.");
+    expect(marked.querySelector(".wts-nosource__tag")?.textContent).toBe("No source");
+    expect(marked.querySelector(".wts-vh")?.textContent).toBe(" (its citation did not match the minutes and was removed)");
+    expect(container.querySelectorAll("button.wts-chip")).toHaveLength(1);
   });
 
-  it("marks a quotation not found word for word, and says so to a screen reader", () => {
+  it("marks a quotation not found word for word, in words and to a screen reader", () => {
     const text = 'The minutes record that the leader said "we will close every toilet" in June.';
     const start = text.indexOf('"');
     const end = text.lastIndexOf('"') + 1;
     const { container } = render(
-      <BriefingText
-        segments={[{ text, sources: [3], status: "cited", misquotes: [{ start, end, text: "we will close every toilet" }] }]}
-      />,
+      <BriefingText segments={[{ text, sources: [3], status: "cited", misquotes: [{ start, end, text: "we will close every toilet" }] }]} />,
     );
-    const quote = container.querySelector(".misquote");
-    expect(quote?.getAttribute("title")).toBe(MISQUOTE_TITLE);
-    expect(quote?.querySelector(".visually-hidden")?.textContent).toBe(
-      " (quotation not found word for word in the minutes cited for it)",
+    const quote = container.querySelector(".wts-quote--missing")!;
+    expect(quote.id).toBe(`misquote-0-${start}`);
+    expect(quote.querySelector(".wts-quote__tick")?.textContent).toBe("Not found word for word");
+    expect(quote.querySelector(".wts-vh")?.textContent).toBe(
+      " (quotation not found word for word in the minutes cited for it, source 3)",
     );
-    expect(quote?.textContent?.startsWith('"we will close every toilet"')).toBe(true);
+    expect(container.querySelector(".wts-quote--checked")).toBeNull();
     expect(container.querySelector("p")?.textContent).toMatch(/^The minutes record that the leader said "we will close/);
-    expect(container.querySelector("p")?.textContent).toMatch(/cited for it\) in June\.\[3\]$/);
   });
 
   it("keeps a marked quotation in place across bold, a bullet and a line break, and explains it once", () => {
-    // a bullet's marker is taken off the line, and bold is set: the marks follow the text, not the characters
     const first = '**In brief**\n\n- The cabinet was told "this budget is **balanced** and';
     const second = ' fair" by the leader.';
     const { container } = render(
@@ -77,40 +84,51 @@ describe("BriefingText", () => {
         ]}
       />,
     );
-    const parts = [...container.querySelectorAll(".misquote")].map((e) => e.textContent?.replace(/ \(quotation.*\)$/, ""));
+    const parts = [...container.querySelectorAll(".wts-quote--missing")].map((e) =>
+      [...e.childNodes].filter((n) => !(n instanceof HTMLElement && n.matches(".wts-vh, .wts-quote__tick"))).map((n) => n.textContent).join(""));
     expect(parts.join("")).toBe('"this budget is balanced and fair"');
-    expect(container.querySelector("li strong .misquote")?.textContent).toBe("balanced");
-    expect(container.querySelectorAll(".misquote .visually-hidden")).toHaveLength(1);
-    expect(container.querySelector("li")?.textContent).toBe(
-      'The cabinet was told "this budget is balanced and fair" (quotation not found word for word in the minutes cited for it) by the leader.[2]',
+    expect(container.querySelector("li .wts-quote--missing strong")?.textContent).toBe("balanced");
+    expect(container.querySelectorAll(".wts-quote--missing .wts-vh")).toHaveLength(1);
+  });
+
+  it("shows a quotation found word for word in the record's own words, with its tick and its words", () => {
+    const { container } = render(
+      <BriefingText segments={[{ text: 'Guildford resolved "that the strategy be adopted"', sources: [4], status: "cited" }]} />,
     );
+    const q = container.querySelector(".wts-quote--checked")!;
+    expect(q.querySelector(".wts-quote__tick")?.textContent).toBe("✓ word for word");
+    expect(q.querySelector(".wts-quote__tick")?.getAttribute("aria-hidden")).toBe("true");
+    expect(q.querySelector(".wts-vh")?.textContent).toBe(" (quotation, found word for word in the minutes of source 4)");
+  });
+
+  it("shows two runs next to each other from the same source with one chip", () => {
+    const { container } = render(
+      <BriefingText segments={[
+        { text: "Barnsley consulted", sources: [1], status: "cited" },
+        { text: " ", sources: [], status: "connective" },
+        { text: "and then agreed.", sources: [1], status: "cited" },
+      ]} />,
+    );
+    expect(container.querySelectorAll("button.wts-chip")).toHaveLength(1);
   });
 });
 
-const answer: Answer = { segments: [], citations_total: 2, citations_invalid: 0, unsupported_segments: 0, quotes_unverified: 0 };
-
-describe("CheckNotices", () => {
-  it("says nothing when every point passed", () => {
-    const { container } = render(<CheckNotices answer={answer} />);
-    expect(container.textContent).toBe("");
+describe("Chip", () => {
+  it("is named by its own words: no aria-label, nothing hidden from screen readers (WCAG 2.5.3)", () => {
+    const { container } = render(
+      <Chip n={3} source={card(3, "Barnsley Metropolitan Borough Council", "council", "Full Council", "2026-02-26")} />,
+    );
+    expect(container.innerHTML).toBe(
+      '<button type="button" class="wts-chip" data-source="3"><span class="wts-chip__in"><span class="wts-chip__n">' +
+        '<span class="wts-vh">Source </span>3</span><span>Barnsley Metropolitan Borough Council, full council, 26 February 2026' +
+        "</span></span></button>",
+    );
   });
 
-  it("explains marked text when its only failing is a citation that was removed", () => {
-    render(
-      <CheckNotices
-        answer={{ ...answer, citations_invalid: 1, segments: [{ text: "A claim.", sources: [], status: "invalid" }] }}
-      />,
+  it("names a committee by its own name", () => {
+    const { container } = render(
+      <Chip n={1} source={card(1, "Glasgow City Council", "policy", "City Administration Committee", "2024-01-25")} />,
     );
-    expect(screen.getByText(/isn’t supported by a cited source/)).toBeTruthy();
-    expect(screen.getByText(/One passage gave a source, but its citation failed the check against the minutes/)).toBeTruthy();
-  });
-
-  it("explains marked quotations", () => {
-    const { container } = render(<CheckNotices answer={{ ...answer, quotes_unverified: 2 }} />);
-    expect(container.textContent).toBe(
-      "2 quotations marked like this were not found word for word in the minutes cited for them. Check the minutes before relying on them.",
-    );
-    expect(container.querySelector(".notice .misquote")).not.toBeNull();
+    expect(container.textContent).toBe("Source 1Glasgow City Council, City Administration Committee, 25 January 2024");
   });
 });
-

@@ -54,13 +54,13 @@ from wts_core.settings import Messages, require
 from wts_core.state import StateDB
 from wts_core.usage import cache_key, visitor_code
 
+from councils import cards, scrub
 from councils import replies as right_of_reply
-from councils import scrub
 from councils import state as state_database
 from councils.api import plaintext
 from councils.api.data import Data
 from councils.config import INSTRUCTIONS_VERSION, REPO_ROOT, SITE, Settings, load_settings
-from councils.rag.checks import rechecked
+from councils.rag.checks import rechecked, shown
 from councils.rag.pipeline import AskRequest, Pipeline, configuration
 from councils.rag.query_parse import QueryPlan, parse_model, parse_offline
 from councils.registry import REGION_NAMES, TYPE_NAMES
@@ -120,6 +120,7 @@ class HistoryItem(BaseModel):
 
 HISTORY_LIMITS = {"question": 500, "answer": 1000}
 BRIEFING_PAGE = re.compile(r"/b/([A-Za-z0-9_-]{6,40})/?(?:[?#].*)?$")   # a saved briefing's address, in a report
+BRIEFING_ID = re.compile(r"[A-Za-z0-9_-]{6,40}")
 PLAN_MAX_CHARS = 20_000  # an edited plan is a few hundred characters; this is far more than any reader needs
 
 
@@ -190,9 +191,9 @@ class CouncilsHooks(Hooks):
         self.settings = settings
 
     def on_cached(self, ask: Ask, events: list[Event]) -> list[Event]:
-        """A cached briefing's marks are judged again by the current checks before it is shown, and its text goes
-        through the current rules for what may be shown (scrub.py)."""
-        return shown_events(rechecked(events), self.settings)
+        """A cached briefing's marks are judged again by the current checks before it is shown, then the display rule
+        for quotations (``shown``), and its text goes through the current rules for what may be shown (scrub.py)."""
+        return shown_events(shown(rechecked(events)), self.settings)
 
     def on_event(self, ask: Ask, event: Event) -> Event | None:
         """Token counts are for the spending record, which has them by now: this site sends none to the reader,
@@ -200,6 +201,11 @@ class CouncilsHooks(Hooks):
         if event["type"] in ("plan", "final"):
             return {k: v for k, v in event.items() if k not in ("usage", "parse_error")}
         return event
+
+    def for_this_reader(self, ask: Ask, final: Event) -> Event:
+        """A new briefing's final event as it is sent, once it has been saved and cached as the verifier wrote it:
+        through the display rule for quotations (``councils.rag.checks.shown``), as a saved or cached one is."""
+        return shown([final])[0]
 
 
 def shown_events(events: list[Event], settings: Settings | None) -> list[Event]:
@@ -489,7 +495,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         # a briefing saved before follow-up questions were left out of its options is served without them
         return {"id": b.id, "at": b.created_at, "question": b.question,
                 "options": {k: val for k, val in b.options.items() if k != "history"},
-                "events": shown_events(rechecked(b.events), settings)}
+                "events": shown_events(shown(rechecked(b.events)), settings)}
 
     # Councils and votes
     def shown_directory(now: right_of_reply.Hidden) -> dict[str, Any]:
@@ -687,9 +693,38 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             return (200, f"{plaintext.briefing_title(b.created_at)} | Where Councils Stand",
                     plaintext.BRIEFING_DESCRIPTION, url, None, None)
 
+        def card(html: str) -> str:
+            """A written briefing's own share card in its link preview (``councils.cards``), with the counts in
+            words for its text alternative; any other keeps the family's card."""
+            b = archive.get(bid)
+            if b is None or b.withdrawn_at or hidden().instead_of_briefing(b.id, b.events) is not None:
+                return html
+            counts = cards.shown_counts(b.events)
+            if counts is None:
+                return html
+            alt = (f"{plaintext.briefing_title(b.created_at)}: a briefing written by AI, checked against "
+                   f"{cards.RECORD}. {cards.counts_in_words(counts)}. Where Councils Stand.")
+            return plaintext.with_card(html, f"{base}/b/{bid}/card.png", alt)
+
         # never listed by search engines, as on Where Countries Stand: a reader's question, answered once, from the
         # record as it stood; the record itself is listed on the council and vote pages
-        return readable("index", build, noindex=True)
+        return readable("index", build, noindex=True, more=card)
+
+    @app.get("/b/{bid}/card.png", include_in_schema=False)
+    def briefing_card(bid: str):
+        """A saved briefing's share card (``councils.cards``): drawn once and kept. Nothing for a briefing that is not
+        there, has been withdrawn, is hidden for now, or has no written answer."""
+        b = archive.get(bid) if BRIEFING_ID.fullmatch(bid) else None
+        if b is None or b.withdrawn_at or hidden().instead_of_briefing(b.id, b.events) is not None:
+            raise HTTPException(404, "Not found.")
+        counts = cards.shown_counts(b.events)
+        if counts is None:
+            raise HTTPException(404, "Not found.")
+        icon = dist / "family" / "icon-512.png"
+        path = cards.card_png(settings.data_dir / "cards", b.id, plaintext.briefing_title(b.created_at), counts,
+                              plaintext.long_date(b.created_at[:10]),
+                              icon if icon.is_file() else REPO_ROOT / "web" / "public" / "family" / "icon-512.png")
+        return FileResponse(path, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
 
     @app.get("/councils", include_in_schema=False)
     def councils_page(request: Request):

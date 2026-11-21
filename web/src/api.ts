@@ -47,7 +47,16 @@ export type SourceCard = {
  * (the quotation marks included), and the quotation. */
 export type Misquote = { start: number; end: number; text: string };
 
-export type Segment = { text: string; sources: number[]; status: string; loaded?: unknown[]; misquotes?: Misquote[] };
+/** A passage of a briefing. ``beside``: a quotation the verifier found word for word in the source cited straight
+ * after it, shown as that source's quotation (wts-core's display rule, ``quotes_beside``). */
+export type Segment = {
+  text: string;
+  sources: number[];
+  status: string;
+  loaded?: unknown[];
+  misquotes?: Misquote[];
+  beside?: boolean;
+};
 
 export type Answer = {
   segments: Segment[];
@@ -64,7 +73,7 @@ export type AskEvent =
   | { type: "plan"; plan: Plan }
   | { type: "sources"; sources: SourceCard[]; candidates: number; semantic: boolean; evidence: unknown }
   | { type: "text"; text: string }
-  | { type: "citation" }
+  | { type: "citation"; search_result_index?: number; cited_text?: string }
   | { type: "final"; answer: Answer | null; note?: string; briefing_id?: string; cached?: boolean }
   | { type: "error"; message: string };
 

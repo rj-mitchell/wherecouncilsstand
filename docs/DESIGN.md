@@ -1,7 +1,7 @@
 # Design
 
 The site's design: how it stays independent of councils, its layout, colours, type and mark. Where Councils Stand
-uses the Where They Stand family's design (family kit 2.0), shared with its sister sites: a white page, light grey
+uses the Where They Stand family's design (family kit 2.1), shared with its sister sites: a white page, light grey
 panels, the site's cloth as a solid band across the top of every page, Source Serif 4 for headings and Source Sans 3
 for everything else.
 
@@ -26,12 +26,13 @@ The site must look like a record of councils' decisions. Nothing on it should re
 - Every part of a page lines up to one column, 72rem wide with the kit's gutter: the header's contents, the main
   content, the family shelf and the footer. Running text is held to about two-thirds of it (46rem); panels, tables,
   lists of votes and sources, and the filters use the whole column.
-- Where a short block would sit alone, two blocks share the row (`.split`): the question box beside the panel about
-  the briefings on the home page, a council's introduction beside its figures, members by party beside the party
+- Where a short block would sit alone, two blocks share the row (`.split`): a council's introduction beside its figures, members by party beside the party
   in control, meetings by year beside the latest meetings.
 - Panels (`.panel`, notices, statements, the routes on the page for people who are named) are light grey with no
   border or coloured edge. A council's figures are a short list of terms and values.
-- The home page has the question box first, then, under the questions to try, "Latest named votes" (decision 32):
+- The home page has the question box first, held to the running text's width, with "Ask" and "Sources only (no AI)"
+  side by side under it, then the line about the briefings and its disclosure. Under the questions to try comes the
+  proof of the checking ("The home page", below), then "Latest named votes" (decision 32):
   the 20 newest named votes across every council, in as many columns as fit the whole column (one on a phone,
   two on a wide screen). Each has its vote's heading as a link in the heading face, then the council and the date
   in full, then the result and counts with their sides named. A thin rule above each separates them. The server
@@ -109,6 +110,67 @@ sits on the band of the same brown, so its gilt edge frames it.
   year, shares its row with the latest meetings, so it stays narrow enough to read across on a wide screen.
 - Dates in a timeline take the width of the longest, but never more than 16rem or 45% of the line, so on a narrow
   phone a long date range wraps rather than squeezing the names.
-- Citation marks ("[1]") keep their small size, with an invisible area to tap or click around each: 24 px tall,
-  28 px on a touch screen, reaching a little either side but never into a citation next to it. Each mark is kept on
-  one line.
+- Citations are chips ("Checked briefings", below), not bare numbers; printed, each is its number in brackets.
+
+## Checked briefings
+
+Decision 34, after the charity's review plan of 21 November 2026 (B1 to B6) and the family's `family/BRIEFINGS.md`.
+The parts are the family kit's (`/family/briefing.css`, linked by the home page, which also shows saved briefings),
+used as they are, in the site's cloth (`wts-cloth--councils` on the briefing); `web/src/styles.css` adds only the
+layout around them. `web/src/checked.ts` holds the pure parts, `components/Briefing.tsx` draws the briefing,
+`components/Record.tsx` the record beside it and the sheet, `components/Wait.tsx` the wait, and `ask.tsx` puts them
+together.
+
+### The briefing
+
+- The question, as asked, then how the question was read and the filters used, then "Briefing written by AI", then
+  the check strip: a band of the cloth titled "Checked against the council minutes", with citations matched,
+  quotations found word for word and sentences without a source, each in words, a tick or "!" and "To check", and a
+  link to the first point to check. On a phone the counts stack, number first.
+- The text: a quotation found word for word in the minutes' serif on the record's highlight with "✓ word for word";
+  one not found with a wavy underline and "Not found word for word"; text with no source with a dotted underline in
+  the warning colour, "No source" in words on the first. After each cited passage a chip: its number on the cloth,
+  then the council, the meeting (full council, cabinet, or the committee's name) and the date.
+- On screens 64rem and wider the briefing is beside the record (24rem, sticky): a page of minutes for one source,
+  open on the first, with the council, the meeting and date, who the passage names with their party on the date, the
+  item's number and heading, the passage with every quoted run highlighted and the chosen one outlined, and a link to
+  the council's own minutes; "Previous source" and "Next source" under it. A chip pressed, focused or pointed at
+  shows its source, and as the reader scrolls the chip nearest the upper third of the window leads, unless they have
+  just chosen one. A thin line in the cloth joins the chip's line of text to its passage across the gutter.
+- On narrower screens a chip opens the same slip in a sheet from the bottom of the screen; focus moves to its heading,
+  stays in it, and returns to the chip on Close, Escape or a tap outside.
+- At the end, "How this briefing was checked" (the verifier's own counts, and what each mark means), the link to the
+  briefing and the report link, the offer of the same question on Where MPs Stand, then the list of sources (the
+  printed reference list).
+
+### The wait
+
+The stages run across the column, "Now" in words and a heavier border on the current one (two rows on a phone):
+reading the question, searching the record, writing from these records only, checking every citation and quotation.
+Before the plan arrives, the family's five spines; then the question as read in large chips ("Councils in Wales",
+"since May 2022", "all parties", "full council and cabinet") with the plan's own reading. The records found arrive as
+cards, each a page of minutes (the council and the date, the meeting and the item, the first words of the passage),
+into a pile beside the text on wide screens and along a shelf on phones, under a running count and then the search's
+own summary ("24 records from 11 councils at 18 meetings: 15 from full council and 9 from cabinet"). Then "Writing
+from these N records only. The AI may use these and nothing else.", the text as it is written with a cursor, and each
+card marked "Cited" as its citation arrives. When the final event arrives the strip appears and its counts run up
+through the real results, each quotation taking its highlight in turn, the count of sentences without a source
+"counted last"; then the pile settles into the record. Cards are added as they arrive, with no canvas and no work per
+frame. With reduced motion the stages are the same, without movement. Sources only shows the first two stages, then
+the list of sources.
+
+### The home page
+
+Under the questions to try, the proof of the checking, in the page's HTML so that it needs no script: "Every
+briefing, checked against the council minutes", the three steps in large type, then a sentence with a record
+quotation and its chip on the left and, on the right, the page of minutes it came from with the same words
+highlighted, joined by a rule across the gutter (where the script runs, the two highlights are set level). The
+example is a genuine minute from the site's test record, Glasgow City Council's City Administration Committee of 25
+January 2024, and the page says where it comes from. A link to the methodology ends it. It is hidden once a briefing
+is shown.
+
+### Share cards
+
+A saved briefing's link preview is its own card (1200 by 630): the band of the cloth with the site's icon and name,
+"Briefing written by AI, checked against the council minutes", the title "Briefing from council minutes, <date>"
+(decision 33), the strip's three counts in words, and the day it was prepared.

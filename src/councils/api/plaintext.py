@@ -80,6 +80,17 @@ def page_with_meta(page: str, *, title: str, description: str, url: str, noindex
     return re.sub(r"\s*</head>", lambda _: head, _HEAD_TAGS.sub("", page), count=1)
 
 
+_OG_IMAGE = re.compile(r'(<meta property="og:image" content=")[^"]*(")')
+_OG_IMAGE_ALT = re.compile(r'(<meta property="og:image:alt" content=")[^"]*(")')
+
+
+def with_card(page: str, image: str, alt: str) -> str:
+    """The page with its own link-preview image in place of the family kit's card (a saved briefing's share card,
+    ``councils.cards``), and that image's text alternative. A page without the kit's image tags is left as it is."""
+    page = _OG_IMAGE.sub(lambda m: f"{m[1]}{e(image)}{m[2]}", page, count=1)
+    return _OG_IMAGE_ALT.sub(lambda m: f"{m[1]}{e(alt)}{m[2]}", page, count=1)
+
+
 def _link(href: str | None, text: str) -> str:
     return f'<a href="{e(href)}">{e(text)}</a>' if href else e(text)
 

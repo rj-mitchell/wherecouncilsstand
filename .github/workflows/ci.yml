@@ -3,7 +3,7 @@ name: CI
 # Lint, tests, the Docker image and an accessibility check, on every push and pull request.
 # The jobs shared by every Where They Stand site come from wts-core's workflows, called at the same tag as the
 # package in pyproject.toml (tests/test_dependencies.py keeps the two in step; docs/OPERATIONS.md,
-# "A newer wts-core"). The family kit in web/public/family is checked by tests/test_family.py.
+# "A newer wts-core"). The family kit in web/public/family is checked by the kit job and tests/test_family.py.
 
 on:
   push:
@@ -16,18 +16,28 @@ permissions:
 jobs:
   # The family's toolchain (Python 3.12, uv 0.11.32): uv sync --frozen, ruff check, pytest.
   python:
-    uses: rj-mitchell/wts-core/.github/workflows/python.yml@v0.3.2
+    uses: rj-mitchell/wts-core/.github/workflows/python.yml@v0.4.0
 
   # Node 22: npm ci, the type check, the tests, the build.
   web:
-    uses: rj-mitchell/wts-core/.github/workflows/web.yml@v0.3.2
+    uses: rj-mitchell/wts-core/.github/workflows/web.yml@v0.4.0
     with:
       working-directory: web
+
+  # The family kit's copy in web/public/family is the version this site last synced, synced for this site (README,
+  # "The Where They Stand family"; tests/test_family.py checks the copy against its own record). Raise the version
+  # in the same change as a new sync.
+  kit:
+    uses: rj-mitchell/wts-core/.github/workflows/kit.yml@v0.4.0
+    with:
+      version: "2.1.0"
+      site: councils
+      path: web/public/family
 
   # The image the server runs, built as the server builds it, and one command run in it: a broken image is found
   # here, before the server finds it.
   docker:
-    uses: rj-mitchell/wts-core/.github/workflows/docker.yml@v0.3.2
+    uses: rj-mitchell/wts-core/.github/workflows/docker.yml@v0.4.0
     with:
       tag: wherecouncilsstand:ci
       run: councils --help
@@ -39,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: rj-mitchell/wts-core/.github/actions/setup@v0.3.2
+      - uses: rj-mitchell/wts-core/.github/actions/setup@v0.4.0
         with:
           node: "22"
           node-cache-path: web/package-lock.json
@@ -64,7 +74,7 @@ jobs:
       # axe, WCAG 2.2 AA, light and dark, desktop and phone: this site's scripts/a11y.mjs, with Playwright and
       # axe-core at the family's versions
       - name: Accessibility check
-        uses: rj-mitchell/wts-core/.github/actions/a11y@v0.3.2
+        uses: rj-mitchell/wts-core/.github/actions/a11y@v0.4.0
         with:
           url: http://127.0.0.1:8000
       - name: Show the site's log if anything failed

@@ -19,6 +19,10 @@ marked. What is this site's own is here:
 
 The pipeline runs every check with one call (``wts_core.checks.check_briefing``, in rag/pipeline.py); a saved or
 cached briefing is shown through ``rechecked``.
+
+What a reader is shown passes one more, shared step (``shown``): the display rule for quotations, wts-core's
+``quotes_beside``. A quotation the verifier found word for word in the source cited straight after it is shown as
+that source's quotation, never as text with no source; the checks and the counts are unchanged.
 """
 
 from __future__ import annotations
@@ -32,6 +36,7 @@ from wts_core.checks import (
     EVIDENCE_NOTES_STRICT,
     LoadedWords,
     Verifier,
+    quotes_beside,
 )
 
 from councils.rag.prompts import NO_RECORDS
@@ -54,3 +59,12 @@ def rechecked(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     their number, ``rules``) keeps its marks on unsupported text as they were written."""
     return [{**e, "answer": LOADED_WORDS.still_loaded(VERIFIER.recheck(e["answer"]))}
             if e.get("type") == "final" and e.get("answer") else e for e in events]
+
+
+def shown(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Events as a reader is shown them: each final event's answer through the display rule for quotations
+    (``quotes_beside``), so that a quotation found word for word in the source cited beside it is never shown as text
+    with no source. Only what is sent changes: the saved and cached copies keep the verifier's own segments, and every
+    count is the verifier's. The family's account is ``family/BRIEFINGS.md`` in the charity's repository."""
+    return [{**e, "answer": quotes_beside(e["answer"])}
+            if e.get("type") == "final" and isinstance(e.get("answer"), dict) else e for e in events]

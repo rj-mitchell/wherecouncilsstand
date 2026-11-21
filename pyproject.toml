@@ -20,8 +20,9 @@ dependencies = [
     # uv.lock holds the file's SHA-256, and nothing is fetched with git. Its extras: the shared commands, off-site
     # copies of backups, and the libraries behind the model, the embedder and the index (anthropic, lancedb and
     # fastembed: local open-source embedding models on the ONNX runtime, whose weights are downloaded once from
-    # Hugging Face at setup and pinned; no council data goes to Hugging Face).
-    "wts-core[cli,offsite,ai] @ https://github.com/rj-mitchell/wts-core/releases/download/v0.3.2/wts_core-0.3.2-py3-none-any.whl",
+    # Hugging Face at setup and pinned; no council data goes to Hugging Face), and Pillow, which draws the share card
+    # of a saved briefing (cards).
+    "wts-core[cli,offsite,ai,cards] @ https://github.com/rj-mitchell/wts-core/releases/download/v0.4.0/wts_core-0.4.0-py3-none-any.whl",
 ]
 
 [project.scripts]

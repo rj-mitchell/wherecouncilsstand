@@ -116,6 +116,56 @@ ITEMS = {
 }
 
 
+# A saved briefing on the made-up record, for checking the briefing's page (scripts/a11y.mjs) and for working on it:
+# its question says it is made up, its sources are what the site's own search finds for it, and its words were written
+# here, by hand, citing them. The site's own checks (rag/checks.py) were run over it, so its marks are theirs: a
+# quotation found word for word, one not found, a sentence no source supports, and one whose citation was removed.
+FIXTURE_BRIEFING = "madeupbriefing"
+FIXTURE_QUESTION = "A made-up question, for testing the site: what have councils decided about libraries, bins and public toilets?"
+FIXTURE_BLOCKS = [  # (the words, the item whose minutes they cite, the words quoted from it)
+    ("**In brief**\n\n- Councils recorded different decisions on bins: at Barnsley, the minutes record that Councillor "
+     "Kitching moved \"that weekly bin collections be restored\"", "Notice of Motion - Weekly Bin Collections",
+     "Councillor Kitching moved that weekly bin collections be restored."),
+    (" and that the motion was lost.", "Notice of Motion - Weekly Bin Collections",
+     "Upon being put to the vote the motion was lost."),
+    ("\n- At Guildford, the minutes record that the council resolved \"that the strategy be adopted\", a strategy "
+     "\"including weekly bin collections\"", "Waste and Recycling Strategy", "RESOLVED that the strategy be adopted."),
+    (".\n\n**Councils controlled by Labour**\n\nAt Barnsley, the cabinet considered \"the library strategy, including "
+     "community libraries\"", "Library Strategy", "The Cabinet considered the library strategy, including community "
+                                                   "libraries."),
+    (". The strategy was welcomed by residents across the borough.", None, None),
+    ("\n\n**Councils controlled by the Liberal Democrats**\n\nAt Guildford, the minutes record that the Executive "
+     "considered \"the future of public toilets in the town centre\"", "Public Toilets", "The Executive considered the future of public toilets in the town centre."),
+    (". Guildford later closed two of them in 2024.", "Public Toilets", "Guildford closed two public toilets in 2024."),
+    ("\n\nAbout the evidence: the records come from three councils' full council and cabinet meetings.", None, None),
+]
+
+
+def save_briefing(settings, archive) -> None:
+    from datetime import date as day
+
+    from wts_core.checks import check_briefing
+
+    from councils.rag.checks import LOADED_WORDS, VERIFIER
+    from councils.rag.pipeline import AskRequest, Pipeline
+    from councils.rag.query_parse import parse_offline
+
+    plan = parse_offline(FIXTURE_QUESTION, day(2025, 11, 1), 4, settings.start_date)
+    # Cardiff's named vote is hidden while a made-up concern is decided (below): left out, as the site leaves it out
+    result, sources = Pipeline(settings).find(plan, AskRequest(question=FIXTURE_QUESTION,
+                                                               without_votes=(f"{CARDIFF}:3:30:0",)))
+    index = {s.meta["item_title"]: i for i, s in enumerate(sources)}
+    blocks = [{"text": words, "citations": [] if item is None else [
+        {"type": "search_result_location", "cited_text": quoted, "search_result_index": index[item], "source": None}]}
+        for words, item, quoted in FIXTURE_BLOCKS]
+    answer = check_briefing(blocks, sources, VERIFIER, LOADED_WORDS)
+    archive.save(FIXTURE_QUESTION, {"mode": "summary", "plan": None, "sources_only": False}, [
+        {"type": "plan", "plan": plan.to_dict()},
+        {"type": "sources", "sources": [s.card() for s in sources], "candidates": result.candidates,
+         "semantic": result.semantic_available, "evidence": result.evidence},
+        {"type": "final", "answer": answer, "briefing_id": FIXTURE_BRIEFING}], id=FIXTURE_BRIEFING)
+
+
 def build(folder: Path) -> None:
     from wts_core.adapters.hashing import HashingEmbedder
 
@@ -190,6 +240,7 @@ def build(folder: Path) -> None:
     archive = open_archive(db)
     archive.save("A made-up question, for testing the site", {}, [], id="madeupbrief")
     archive.withdraw("madeupbrief", "A made-up withdrawal, for testing the site.")
+    save_briefing(settings, archive)
     replies.hide(f"/votes/{CARDIFF}:3:30:0", "A made-up note, for testing the site: we are checking a report that "
                                              "the sides of this vote were read the wrong way round.")
     (folder / "updates.jsonl").write_text(json.dumps(
