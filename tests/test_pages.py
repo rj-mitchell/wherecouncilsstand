@@ -147,6 +147,42 @@ def test_sitemap_lists_every_council_and_vote(site):
     assert re.findall(r"(?m)^Sitemap: (.*)$", robots) == [f"{base}/sitemap.xml"]
 
 
+def robots_allows(robots: str, path: str) -> bool:
+    """Whether robots.txt lets `User-agent: *` fetch ``path`` (its path and query), as Google reads it (RFC 9309) and
+    as the charity's crawler check does: the longest matching rule wins, and Allow wins a tie."""
+    best, allow = -1, True
+    for kind, rule in re.findall(r"(?mi)^(allow|disallow):[ \t]*(\S*)", robots):
+        pattern = re.escape(rule).replace(r"\*", ".*").replace(r"\$", "$") if rule else None
+        if pattern and re.match(pattern, path) and (len(rule) > best or (len(rule) == best and kind.lower() == "allow")):
+            best, allow = len(rule), kind.lower() == "allow"
+    return allow
+
+
+def test_robots_opens_what_the_pages_draw_from_and_nothing_that_costs_or_writes(site):
+    """Google's renderer obeys robots.txt for the fetches a page makes, so a page that draws its record from a closed
+    address shows search engines an error. The charity's crawler check found the list of councils, a council's page
+    and a vote's page doing so on 21 November 2026 (decision 30)."""
+    robots = (Path(__file__).parents[1] / "web" / "public" / "robots.txt").read_text()
+    assert re.findall(r"(?m)^User-agent: (.*)$", robots) == ["*"]
+    # the free, read-only addresses the pages draw from (web/src/api.ts, status.ts), as the pages ask for them
+    drawn = ["/api/meta", "/api/councils", f"/api/councils/{BARNSLEY}", "/api/votes/E07000212%3A1155%3A6607%3A0",
+             f"/api/votes/{VOTE}", "/api/status", "/api/statements?page=%2Fvotes%2FE08000038%3A1%3A10%3A0",
+             f"/api/statements?council={BARNSLEY}"]
+    assert [p for p in drawn if not robots_allows(robots, p)] == []
+    # what costs money, writes, holds a reader's own work or is for the owner stays closed, as does anything new
+    closed = ["/api/ask", "/api/search", "/api/briefings/abc123", "/api/report", "/api/statements", "/api/check",
+              "/api/openapi.json", "/api/health", "/api/corrections", "/api/anything-added-later"]
+    assert [p for p in closed if robots_allows(robots, p)] == []
+    # every address that takes a POST is closed at the address it is posted to
+    posted = {r.path for r in site.app.routes if "POST" in getattr(r, "methods", set())}
+    assert posted >= {"/api/ask", "/api/report", "/api/statements"}
+    assert [p for p in sorted(posted) if robots_allows(robots, p)] == []
+    # the pages themselves are open, and /api/ is closed after the addresses it allows
+    assert all(robots_allows(robots, p) for p in ["/", "/councils", f"/councils/{BARNSLEY}", f"/votes/{VOTE}"])
+    rules = re.findall(r"(?m)^((?:Allow|Disallow): .*)$", robots)
+    assert rules[-1] == "Disallow: /api/" and all(r.startswith("Allow: ") for r in rules[:-1])
+
+
 def test_no_sitemap_holds_more_than_the_protocol_allows(site, monkeypatch):
     from councils.api import app as app_module
 

@@ -1,5 +1,17 @@
+# Every page is open to search engines. The home page, the list of councils, each council's page, each named vote's
+# page and the status page draw their content from the site's free, read-only addresses under /api/, and a search
+# engine that draws a page obeys this file for those fetches too, so they are allowed (docs/DECISIONS.md, 30).
+# /api/statements? is the published statements beside a page, asked for with a query; the address that takes a new
+# statement has none, so it stays closed. Everything else under /api/ stays closed: briefings and searches, which
+# cost money, reports and anything else that writes, and the check token's address. An address added under /api/
+# later is closed until it is listed here.
 User-agent: *
 Allow: /
+Allow: /api/meta
+Allow: /api/status
+Allow: /api/councils
+Allow: /api/votes/
+Allow: /api/statements?
 Disallow: /api/
 
 Sitemap: https://wherecouncilsstand.com/sitemap.xml
