@@ -100,3 +100,13 @@ def test_the_containers_lock_is_the_one_the_update_unit_takes():
     assert mount and named
     assert mount.group(1) == str(Path(SERVER_LOCK).parent)
     assert named.group(1) == f"{mount.group(2)}/{Path(SERVER_LOCK).name}"
+
+
+def test_embed_takes_the_same_lock_as_index():
+    """embed writes the index's state file too, so it is guarded in the same way (decision 29)."""
+    import inspect
+
+    from councils import cli
+
+    for command in (cli.index, cli.embed):
+        assert "update_lock(" in inspect.getsource(command)

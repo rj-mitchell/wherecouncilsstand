@@ -134,7 +134,7 @@ flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app sh -c 
 | `councils parse` | Read votes and declarations again from stored minutes (after parser changes) |
 | `councils parties` | Map stored party labels again (after `parse/parties.py` or `data_static/parties.csv` change) |
 | `councils index` | Rebuild the search index for all councils, keeping the vectors of unchanged passages. Waits for the server's update lock |
-| `councils embed` | Embed passages not yet embedded (`--again` after a change of embedding model) |
+| `councils embed` | Embed passages not yet embedded (`--again` after a change of embedding model). Waits for the server's update lock, as `councils index` does |
 | `councils optimize` | Compact the search index and delete superseded files |
 | `councils reports`, `councils withdraw` | Reports and takedown requests, and withdrawn briefings |
 | `councils statements` | Statements under the right of reply |

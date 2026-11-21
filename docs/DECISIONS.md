@@ -285,8 +285,8 @@ councillors voted: …". Nothing in the record changes, and the site still gives
 
 ## 29. Rebuilding the search index waits for the server's update lock
 
-Decided 21 November 2026, in the review of that day (A2 in the charity's review plan): `councils index` takes the
-server's update lock, `/var/lock/wheretheystand-update.lock`, before it writes anything, as every site's nightly
+Decided 21 November 2026, in the review of that day (A2 in the charity's review plan): `councils index` and
+`councils embed`, which both write the search index's state file, take the server's update lock, `/var/lock/wheretheystand-update.lock`, before it writes anything, as every site's nightly
 update does. On 19 and 20 November an index run by hand and the nightly update ran together for ten hours, and both
 wrote the search index's state file. Like the update, it waits for the lock rather than fail: it says it is waiting,
 what holds the lock and how to see who, and carries on by itself when the lock is free, so that an index run the same
