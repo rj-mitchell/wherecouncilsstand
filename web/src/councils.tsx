@@ -1,9 +1,9 @@
 /** Every principal council in the UK, and England's strategic authorities: which are covered, from when, and which
  * party is in control (for an authority, its mayor's party). */
-import { StrictMode, useEffect, useMemo, useState } from "react";
-import { createRoot } from "react-dom/client";
+import { useMemo, useState } from "react";
 import "./styles.css";
 import { getCouncils, type CouncilRow, type Coverage } from "./api";
+import { drawWhenLoaded } from "./draw";
 import { CoverageLabel } from "./components/Coverage";
 import { markNav, monthYear, number, setTitle } from "./format";
 
@@ -71,31 +71,17 @@ function Authorities({ rows }: { rows: CouncilRow[] }) {
   );
 }
 
-function App() {
-  const [all, setRows] = useState<CouncilRow[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+function App({ all }: { all: CouncilRow[] }) {
   const [q, setQ] = useState("");
   const [nation, setNation] = useState("");
   const [control, setControl] = useState("");
   const [coverage, setCoverage] = useState("");
-  useEffect(() => {
-    setTitle("Councils");
-    getCouncils().then((d) => setRows(d.councils)).catch((e: Error) => setError(e.message));
-  }, []);
-  const rows = useMemo(() => (all ? all.filter((r) => r.type !== AUTHORITY) : null), [all]);
-  const authorities = useMemo(() => (all ? all.filter((r) => r.type === AUTHORITY) : []), [all]);
+  const rows = useMemo(() => all.filter((r) => r.type !== AUTHORITY), [all]);
+  const authorities = useMemo(() => all.filter((r) => r.type === AUTHORITY), [all]);
   const controls = useMemo(
-    () => [...new Set((rows || []).filter((r) => r.control).map((r) => r.control!.name))].sort(),
+    () => [...new Set(rows.filter((r) => r.control).map((r) => r.control!.name))].sort(),
     [rows],
   );
-  if (error)
-    return (
-      <>
-        <h1>Councils</h1>
-        <p className="notice">The list of councils couldn’t be loaded: {error}</p>
-      </>
-    );
-  if (!rows) return <p className="progress">Getting the list of councils</p>;
   const match = (r: CouncilRow) =>
     (!q || r.name.toLowerCase().includes(q.toLowerCase())) &&
     (!nation || r.nation === nation) &&
@@ -232,8 +218,20 @@ function App() {
 }
 
 markNav();
-createRoot(document.getElementById("app")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+// The server sends the list as plain text (api/plaintext.py), which stays until the list has come, and stays if it
+// can't be had (draw.tsx).
+drawWhenLoaded(
+  () =>
+    getCouncils().then((d) => {
+      setTitle("Councils");
+      return d.councils;
+    }),
+  (all) => <App all={all} />,
+  (message) => (
+    <>
+      <h1>Councils</h1>
+      <p className="notice">The list of councils couldn’t be loaded: {message}</p>
+    </>
+  ),
+  "Getting the list of councils",
 );

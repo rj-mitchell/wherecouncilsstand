@@ -282,3 +282,36 @@ that council and nothing the rules of decision 9 remove is in the label. The tit
 count (left out where the result the minutes give contradicts the count), the item, the council and the date in
 about 70 characters, an item in capitals in sentence case; a budget or council tax item's single vote is "How
 councillors voted: …". Nothing in the record changes, and the site still gives no amounts of council tax.
+
+## 29. Rebuilding the search index waits for the server's update lock
+
+Decided 21 November 2026, in the review of that day (A2 in the charity's review plan): `councils index` and
+`councils embed`, which both write the search index's state file, take the server's update lock, `/var/lock/wheretheystand-update.lock`, before it writes anything, as every site's nightly
+update does. On 19 and 20 November an index run by hand and the nightly update ran together for ten hours, and both
+wrote the search index's state file. Like the update, it waits for the lock rather than fail: it says it is waiting,
+what holds the lock and how to see who, and carries on by itself when the lock is free, so that an index run the same
+day as a suppression (decision 9) still happens without anyone coming back to start it. It does not wait when the
+lock cannot be opened at all: in the server's containers the lock is the server's file, mounted read-only by
+`deploy/docker-compose.yml`, and if it is missing the command does nothing and exits 1, saying how to put it right,
+rather than run unguarded. On a developer's machine with no `/var/lock`, it runs without a lock.
+
+## 30. Search engines see what readers see
+
+Decided 21 November 2026, in the review of that day (A1 and A2 in the charity's review plan), following Where MPs
+Stand's decision 40: the charity's new nightly crawler check (A2), which draws each page in Chromium with every
+request robots.txt closes blocked, as Google's renderer blocks it, found the list of councils, a council's page and a
+named vote's page showing crawlers "Failed to fetch" in place of their content. The server writes each of those pages'
+content into it, but the page's script then fetched the record from `/api/councils` or `/api/votes`, which robots.txt
+closed, and replaced the server's text with the error. Readers saw the pages as they should be. This is about the
+site's own robots.txt, not councils' (decision 21).
+
+- robots.txt (`web/public/robots.txt`) allows the free, read-only addresses the pages are drawn from: `/api/meta`
+  and `/api/councils` (the home page), `/api/councils` and `/api/councils/<code>` (the list and each council),
+  `/api/votes/<id>` (each named vote), `/api/status` (the status page) and the published statements beside a page,
+  `/api/statements?…`, asked for with a query. Everything else under `/api/` stays closed, and so does anything added
+  there later until it is listed: briefings, questions and searches, which cost money; the address that takes a new
+  statement, which has no query, and every other address that writes; and the check token's address. Hidden pages
+  stay hidden at every address (decision 24).
+- A page the server writes its content into keeps that content if the record can't be fetched: the script draws the
+  page only once the record has come, and otherwise leaves the server's text as it is, with no error. Only a page the
+  server sent no text into says what went wrong (`web/src/draw.tsx`, which the list of councils now uses too).

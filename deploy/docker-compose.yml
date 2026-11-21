@@ -23,6 +23,12 @@ services:
       - councils-data:/data
       # nightly copies of the database that cannot be rebuilt (/opt/wherecouncilsstand/deploy/backups)
       - ./backups:/backups
+      # the server's update lock (/var/lock/wheretheystand-update.lock), which every site's nightly update takes:
+      # `councils index` takes it too, so that it never runs beside an update (decision 29). Read-only: a lock is
+      # taken through a file opened for reading.
+      - /var/lock:/run/wheretheystand-lock:ro
+    environment:
+      COUNCILS_UPDATE_LOCK: /run/wheretheystand-lock/wheretheystand-update.lock
     restart: unless-stopped
     # the server is shared with the charity's other sites: a runaway update stops itself rather than slowing them,
     # and neither the site under a flood of requests nor the nightly update and its embedding (which run in one-off

@@ -28,6 +28,16 @@ describe("drawWhenLoaded", () => {
     await act(async () => fail(new Error("There is no named vote at this address.")));
     expect(document.getElementById("app")!.textContent).toBe("There is no named vote at this address.");
   });
+
+  it("leaves the server's text as it is if the record can't be had", async () => {
+    // a search engine drawing the page may be refused the record by robots.txt (decision 30)
+    document.body.innerHTML = '<div id="app"><h1>From the server</h1></div>';
+    let fail: (e: Error) => void = () => {};
+    const record = new Promise<string>((_, r) => (fail = r));
+    await act(async () => drawWhenLoaded(() => record, (v) => <h1>{v}</h1>, (m) => <p>{m}</p>, "Getting it"));
+    await act(async () => fail(new TypeError("Failed to fetch")));
+    expect(document.getElementById("app")!.innerHTML).toBe("<h1>From the server</h1>");
+  });
 });
 
 describe("vote links", () => {

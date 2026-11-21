@@ -66,6 +66,12 @@ Every site's update on the shared server takes the same lock (`/var/lock/whereth
 for it, so only one runs at a time. A run can therefore start late; while it waits, `systemctl status
 councils-update` shows it as "activating".
 
+`councils index` takes the same lock itself (decision 29), so it never runs beside an update: started while one
+runs, it says "Waiting for the server's update lock", and carries on by itself when the update ends (Ctrl-C stops
+waiting). The containers see the lock through a read-only mount of the server's `/var/lock` (`docker-compose.yml`).
+If the lock file isn't there, as after a restart of the server before any update has run, the command does nothing
+and says so; make the file with `touch /var/lock/wheretheystand-update.lock` and run it again.
+
 If the update, the backup or the weekly report fails, the server emails wheretheystanduk@gmail.com with the
 result and the last log lines, at most once every six hours (Where MPs Stand's
 [`docs/HOSTING.md`](https://github.com/rj-mitchell/wherempsstand/blob/main/docs/HOSTING.md), "Email from the
@@ -127,8 +133,8 @@ flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app sh -c 
 | `councils load` | Load councils not yet in the store (`--resume` carries on a first load) |
 | `councils parse` | Read votes and declarations again from stored minutes (after parser changes) |
 | `councils parties` | Map stored party labels again (after `parse/parties.py` or `data_static/parties.csv` change) |
-| `councils index` | Rebuild the search index for all councils, keeping the vectors of unchanged passages |
-| `councils embed` | Embed passages not yet embedded (`--again` after a change of embedding model) |
+| `councils index` | Rebuild the search index for all councils, keeping the vectors of unchanged passages. Waits for the server's update lock |
+| `councils embed` | Embed passages not yet embedded (`--again` after a change of embedding model). Waits for the server's update lock, as `councils index` does |
 | `councils optimize` | Compact the search index and delete superseded files |
 | `councils reports`, `councils withdraw` | Reports and takedown requests, and withdrawn briefings |
 | `councils statements` | Statements under the right of reply |
@@ -312,6 +318,7 @@ The entry applies at once, without a restart, wherever the minutes are shown or 
 new briefings, the pages of named votes, and saved and cached briefings (each match becomes "[name removed]"). The
 search index still holds the words, so the name can still be searched for and can still bring up the passage, until
 the council is indexed again with `councils index <council>`, which the command reminds you of. Run it the same day.
+If an update is running, it waits for it to finish ("Scheduling and alerts"), so leave it running.
 
 The list is `/data/suppress.csv` on the server, beside `settings.local.toml`. It is never committed: the repository
 is public, and the list is a list of people's names. It is not in the nightly backup of the state database either,

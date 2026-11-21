@@ -671,12 +671,20 @@ def report(all_councils: bool = typer.Option(False, "--all", help="every council
 
 @app.command()
 def index(council: list[str] = typer.Argument(None, help="GSS codes or names; all loaded councils if none")) -> None:
-    """Build the keyword search index from the stored minutes (names of non-councillors removed)."""
+    """Build the keyword search index from the stored minutes (names of non-councillors removed). Takes the server's
+    update lock first, as the nightly update does, and waits for it while another job holds it (decision 29)."""
     from councils.index.build import Indexer
+    from councils.lock import LockUnavailable, update_lock
     from councils.registry import get
 
     s = load_settings()
-    n = Indexer(s).index_all([get(c).gss for c in council] if council else None)
+    codes = [get(c).gss for c in council] if council else None
+    try:
+        with update_lock(lambda words: typer.echo(words, err=True)):
+            n = Indexer(s).index_all(codes)
+    except LockUnavailable as exc:
+        typer.echo(f"error: {exc}", err=True)
+        raise typer.Exit(1) from None
     typer.echo(f"{n} passages indexed")
 
 
@@ -685,19 +693,26 @@ def embed(max_minutes: float = typer.Option(None, help="stop after this long; ru
           again: bool = typer.Option(False, "--again", help="throw every vector away and embed everything afresh "
                                                             "with the model the settings name: for after the "
                                                             "embedding model has changed")) -> None:
-    """Embed indexed passages for meaning search, newest first."""
+    """Embed indexed passages for meaning search, newest first. It writes the index's state file, as the update and
+    ``index`` do, so it takes the server's update lock first and waits for it (decision 29)."""
     from councils.index.build import State, embed_again, embed_pending
     from councils.index.lance import get_embedder, open_index
+    from councils.lock import LockUnavailable, update_lock
 
     s = load_settings()
-    embedder = get_embedder(s)
-    if again:
-        typer.echo(f"{embed_again(s, embedder)} council-years to embed again")
-    idx = open_index(s, embedder)
-    n = embed_pending(s, idx, State(s.index_dir / "state.json"), embedder,
-                      max_seconds=max_minutes * 60 if max_minutes else None)
-    if n:
-        idx.refresh()
+    try:
+        with update_lock(lambda words: typer.echo(words, err=True)):
+            embedder = get_embedder(s)
+            if again:
+                typer.echo(f"{embed_again(s, embedder)} council-years to embed again")
+            idx = open_index(s, embedder)
+            n = embed_pending(s, idx, State(s.index_dir / "state.json"), embedder,
+                              max_seconds=max_minutes * 60 if max_minutes else None)
+            if n:
+                idx.refresh()
+    except LockUnavailable as exc:
+        typer.echo(f"error: {exc}", err=True)
+        raise typer.Exit(1) from None
     typer.echo(f"{n} passages embedded")
 
 
