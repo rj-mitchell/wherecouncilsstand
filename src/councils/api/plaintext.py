@@ -15,6 +15,7 @@ from urllib.parse import quote
 from wts_core.dates import long_date
 from wts_core.replies import safe_link
 
+from councils import sisters
 from councils.api import titles
 
 SITE = "Where Councils Stand"
@@ -218,7 +219,7 @@ def authority_text(c: dict[str, Any]) -> str:
              _constituents(c)]
     if not c.get("loaded"):
         parts.append(f"<p>This strategic authority isn’t covered yet. {e(' '.join(c.get('reasons') or []))}</p>")
-        return "".join(parts) + _mayors(c)
+        return "".join(parts) + _mayors(c) + mps_text(c)
     parts.append(f"<p>Board, and overview and scrutiny committee meetings from {e(month_year(c.get('from')))} to "
                  f"{e(month_year(c.get('to')))}, read from the authority’s {_link(c.get('site'), 'own record')}.</p>")
     control = c.get("control") or {}
@@ -244,6 +245,7 @@ def authority_text(c: dict[str, Any]) -> str:
                    ([f"{m['party']} ({_source(m['party_source'])})"] if m.get("party") else [])
             parts.append(f"<li>{e(who)}: {e(', '.join(bits))}</li>")
         parts.append("</ul>")
+    parts.append(mps_text(c))
     parts.append(_votes_and_meetings(c, "this authority’s minutes"))
     return "".join(parts)
 
@@ -267,7 +269,7 @@ def council_text(c: dict[str, Any]) -> str:
         parts.append(f"<p>This council isn’t covered yet. {e(' '.join(c.get('reasons') or []))} Councils are covered "
                      "when their minutes are published through a system the site can read (Modern.gov, CMIS or CoINS) "
                      "and their site can be read.</p>")
-        return "".join(parts) + _landlords(c)
+        return "".join(parts) + _landlords(c) + mps_text(c)
     parts.append(f"<p>Full council and cabinet meetings from {e(month_year(c.get('from')))} to "
                  f"{e(month_year(c.get('to')))}, read from the council’s {_link(c.get('site'), 'own record')}.</p>")
     control = c.get("control") or {}
@@ -287,6 +289,7 @@ def council_text(c: dict[str, Any]) -> str:
     if c.get("control_timeline"):
         parts.append("<h2>Party in overall control</h2><ul>" + "".join(
             f"<li>From {e(month_year(t['from']))}: {e(t['name'])}</li>" for t in c["control_timeline"]) + "</ul>")
+    parts.append(mps_text(c))
     parts.append(_votes_and_meetings(c, "this council’s minutes"))
     return "".join(parts)
 
@@ -371,6 +374,37 @@ def _landlords(c: dict[str, Any]) -> str:
     if not links:
         return ""
     return "<h2>On Where Landlords Stand</h2><ul>" + "".join(f"<li>{x}</li>" for x in links) + "</ul>"
+
+
+def mps_text(c: dict[str, Any]) -> str:
+    """The MPs whose seats overlap the council (decision 31), each linked to their page on Where MPs Stand, under
+    that site's name and its spine from the family kit, so the reader knows they are going to another site. As the
+    app draws it (council.tsx, Seats)."""
+    m = c.get("mps") or {}
+    seats = m.get("seats") or []
+    if not seats:
+        return ""
+    whose = "authority" if _is_authority(c) else "council"
+    items = []
+    for s in seats:
+        mp = s.get("mp")
+        if mp:
+            items.append(f"<li>{_link(mp['url'], mp['name'])}, {e(mp['party'] + ', ' if mp.get('party') else '')}"
+                         f"MP for {e(s['name'])}</li>")
+        else:
+            items.append(f"<li>{e(s['name'])}: no MP listed on {e(sisters.MPS_NAME)}</li>")
+    return (f'<section class="seats" aria-labelledby="mps-heading"><h2 id="mps-heading">MPs whose seats overlap this '
+            f'{whose}</h2><div class="sister"><span class="spine" aria-hidden="true">{sisters.spine("mps")}</span><div><p class="sister-name">On '
+            f'{e(sisters.MPS_NAME)}</p><p class="small">{seats_note(len(seats), whose)}</p>'
+            f'<ul class="seat-list">{"".join(items)}</ul></div></div></section>')
+
+
+def seats_note(n: int, whose: str) -> str:
+    """What the list of MPs is, and where it comes from (council.tsx says the same)."""
+    seat = "constituency" if n == 1 else f"{n:,} Westminster constituencies"
+    return (f"The {'Westminster ' if n == 1 else ''}{seat} with at least part of a ward in this {whose}’s area, "
+            "from the ONS lookup of wards to constituencies (July 2024 boundaries), each with the MP "
+            f"{e(sisters.MPS_NAME)} lists for it.")
 
 
 # A named vote
@@ -559,6 +593,46 @@ def councils_text(directory: dict[str, Any]) -> str:
                              f"{e(' '.join(r.get('reasons') or []))}</li>")
         parts.append("</ul>")
     return "".join(parts)
+
+
+LATEST_VOTES_ROOT = '<div id="latest-votes"></div>'
+
+
+def latest_result(v: dict[str, Any]) -> str:
+    """A vote's result and counts as the record has them: "Lost. For 10, Against 19, Abstained 2."; where only one
+    side could be read, that side alone, said so."""
+    said = titles.outcome(v)
+    counts, question = v.get("counts") or {}, v.get("question")
+    lead = f"{said.capitalize()}. " if said else ""
+    if v.get("partial"):
+        read = ", ".join(f"{side_label(s, question)} {counts[s]}" for s in SIDES if counts.get(s))
+        return f"{lead}Only one side could be read from the minutes: {read}."
+    return f"{lead}{_tally(counts, question)}."
+
+
+def latest_votes_text(votes: list[dict[str, Any]]) -> str:
+    """The home page's latest named votes (decision 32): each vote's heading (as its own page has it) linking to
+    its page, its council, its date in full, and its result and counts."""
+    if not votes:
+        return ""
+    items = "".join(
+        f'<li><a href="{e(vote_path(v["vote_id"]))}">{e(v.get("heading") or v.get("item") or "Named vote")}</a>'
+        f'<p class="meta">{e(v["council"])}, <time datetime="{e(v.get("date") or "")}">{e(long_date(v.get("date")))}'
+        f'</time></p><p class="latest-result">{e(latest_result(v))}</p></li>' for v in votes)
+    return ('<section class="latest-votes" aria-labelledby="latest-votes-heading">'
+            '<h2 id="latest-votes-heading">Latest named votes</h2>'
+            f"<p>The {_plural(len(votes), 'newest named vote')} in the record, from every council and strategic "
+            "authority the site reads, newest first. Each links to the vote’s own page, with how each councillor "
+            f'voted and their party on the date.</p><ol class="latest-list">{items}</ol>'
+            '<p><a href="/councils">Every council’s named votes, from the list of councils</a></p></section>')
+
+
+def with_latest_votes(page: str, votes: list[dict[str, Any]]) -> str:
+    """The home page with its latest named votes in place, outside the app's root, so the app leaves them as they
+    are (web/index.html keeps an empty place for them)."""
+    if LATEST_VOTES_ROOT not in page:
+        return page
+    return page.replace(LATEST_VOTES_ROOT, f'<div id="latest-votes">{latest_votes_text(votes)}</div>', 1)
 
 
 def briefing_title(at: str | None) -> str:

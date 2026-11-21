@@ -1110,14 +1110,59 @@ input[type="checkbox"] {
 }
 
 .sister-ask {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
   font-size: var(--step--1);
   margin-block: var(--space-s) 0;
 }
 
-.sister-ask .wts-spine {
-  display: inline-block;
-  vertical-align: -0.3em;
-  margin-inline-end: var(--space-xs);
+/* the kit's spine (components/Sister.tsx, sisters.spine on the server), at the kit's size */
+.spine {
+  display: inline-flex;
+  flex: none;
+}
+
+/* the MPs whose seats overlap a council (decision 31): as many columns as fit, the whole column wide */
+.seats .sister > div {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.sister .seat-list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: var(--space-xs) var(--space-l);
+  margin-block-start: var(--space-s);
+}
+
+/* The home page's latest named votes (decision 32), written by the server outside the app */
+
+.latest-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: var(--space-m) var(--space-l);
+  margin-block: var(--space-m);
+  padding: 0;
+  list-style: none;
+}
+
+.latest-list li {
+  padding-block-start: var(--space-s);
+  border-block-start: 1px solid var(--rule);
+}
+
+.latest-list a {
+  font-family: var(--serif);
+  font-weight: 600;
+}
+
+.latest-list p {
+  margin-block: var(--space-xs) 0;
+}
+
+.latest-result {
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Votes: neutral marks */

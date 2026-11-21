@@ -427,6 +427,40 @@ class Data:
         held = set(withheld_codes())
         return [(r[0], _iso(r[1]) or "") for r in rows if r[0].split(":")[0] not in held]
 
+    def latest_votes(self, n: int = 20, hidden: Callable[[str], bool] = lambda _: False,
+                     shown: Hashable = ()) -> list[dict[str, Any]]:
+        """The newest ``n`` named votes across every council, for the home page (decision 32): newest first, those
+        on one day by council, each council's in the order its page lists them, none that is ``hidden``. Each as its
+        council's page lists it (its heading is its own page's, api/titles.py), with the council's code and name.
+
+        Kept until the record, the suppression list or what is hidden (``shown``, the caller's key for it) changes.
+        Each council's named votes come from what is kept for that council's own pages, so a change to one council
+        makes only its votes again."""
+        key = (self.version(), suppress.stamp(self.settings.data_dir), shown, n)
+        return self._kept.get(("latest votes",), key, lambda: self._latest_votes(n, hidden))
+
+    def _latest_votes(self, n: int, hidden: Callable[[str], bool]) -> list[dict[str, Any]]:
+        every = councils()
+        chosen: list[tuple[str, str]] = []
+        last_day = None
+        for vote_id, when in self.vote_dates():          # newest first
+            if len(chosen) >= n and when != last_day:
+                break                                    # every vote on the last day taken is taken
+            gss = vote_id.split(":")[0]
+            if gss in every and not every[gss].withheld and not hidden(vote_id):
+                chosen.append((vote_id, when))
+                last_day = when
+        out = []
+        for gss in dict.fromkeys(vote_id.split(":")[0] for vote_id, _ in chosen):
+            wanted = {vote_id for vote_id, _ in chosen if vote_id.startswith(gss + ":")}
+            for place, v in enumerate(self.votes(gss)):
+                if v["vote_id"] in wanted:
+                    out.append({**_link(v), "title": v.get("title"), "gss": gss, "council": every[gss].name,
+                                "place": place})
+        out.sort(key=lambda v: (v["council"], v["place"]))
+        out.sort(key=lambda v: v["date"] or "", reverse=True)      # stable: on one day, by council
+        return [{k: x for k, x in v.items() if k != "place"} for v in out[:n]]
+
     def directory(self) -> dict[str, Any]:
         self._fresh()
         d = self._dir
@@ -453,7 +487,9 @@ class Data:
         else:
             page = {**entry, **links, **self._kept.get(("council", gss), self._own(gss),
                                                        lambda: self._council(gss, entry["type"]))}
-        return {**page, "landlords": sisters.landlords(gss)}
+        # where its record meets the sister sites': Where Landlords Stand's pages for it, and the MPs whose seats
+        # overlap it on Where MPs Stand (decision 31), from files kept here, never asked of another site now
+        return {**page, "landlords": sisters.landlords(gss), "mps": sisters.mps(self.settings, gss)}
 
     def _council(self, gss: str, kind: str) -> dict[str, Any]:
         """What a loaded council's page shows from its own record."""

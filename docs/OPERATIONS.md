@@ -28,13 +28,22 @@ For every loaded council, 20 at a time and one request at a time to each council
    New and changed passages are embedded for meaning search for up to `--embed-minutes` (60 on the server), and
    the rest on the next run. The new rows are merged into the indices, and index files superseded more than an
    hour ago are deleted. If nothing changed, the index isn't touched.
-7. A summary is printed and appended to `data/updates.jsonl`. A run takes about 50 minutes:
+7. Where MPs Stand's list of current MPs (`https://wherempsstand.com/api/people`) is fetched again, for the MPs
+   whose seats overlap each council's page (decision 31), into `data/mps.json`. If that site can't be reached, or
+   answers with something that isn't a list of MPs, or with fewer than half as many as the last copy, the last good
+   copy is kept (or, before the first good fetch, the one kept with the code, `data_static/mps.json`). The pages
+   read the new copy at once; nothing is asked of Where MPs Stand while a page is served.
+8. A summary is printed and appended to `data/updates.jsonl`. A run takes about 50 minutes:
 
    ```json
    {"finished": "2026-10-25T21:05:01", "minutes": 51.7, "councils": 214, "changed": 17, "new_meetings": 23,
     "failed": ["E07000072", "E07000076"], "robots": [], "passages_embedded": 9927, "still_to_embed": 0,
-    "index": "merged", "needs_attention": false}
+    "index": "merged", "mps": {"mps": 650, "unmatched": []}, "needs_attention": false}
    ```
+
+   `"mps"` gives how many MPs the list had and the seats overlapping a council that no MP on it sits for (a vacant
+   seat, or a seat the two records name differently), or, if the list couldn't be had, `"error"` and the date of the
+   copy kept (`"kept"`). Neither makes the run need attention.
 
    It exits with status 1 if `needs_attention` is true: more than a tenth of councils, and more than five, failed.
 
@@ -49,7 +58,8 @@ For every loaded council, 20 at a time and one request at a time to each council
 | A council moves full council or cabinet to a new committee | Picked up within a week if its title follows the usual patterns. Otherwise add it to `data_static/committees.csv`. |
 | A council relabels a party | Mapped by the rules in `parse/parties.py`, or listed by `scripts/party_labels.py` for a decision. Run `councils parties` after changing either. |
 | The vote parser improves | `councils parse` reads every council's stored minutes again (about two minutes), with no downloads. |
-| The site is busy while the run rewrites the store, one council at a time | The site keeps what it has made of each council (its page, its named votes and each vote's page) until that council's own files change, or the suppression list does, so a change to one council never makes the others' pages again. The list of councils is built again when any council changes, and while that happens requests are given the list as it was. The sitemaps are kept until the record or what is hidden changes. Until 21 November 2026 every change threw away every council's pages, and on 20 November, with a slow rule in `parse/redact.py`, the site stopped answering during the run. |
+| The site is busy while the run rewrites the store, one council at a time | The site keeps what it has made of each council (its page, its named votes and each vote's page) until that council's own files change, or the suppression list does, so a change to one council never makes the others' pages again. The list of councils is built again when any council changes, and while that happens requests are given the list as it was. The sitemaps are kept until the record or what is hidden changes, and so are the home page's latest named votes (or until the suppression list changes), which are made from each council's kept votes. Until 21 November 2026 every change threw away every council's pages, and on 20 November, with a slow rule in `parse/redact.py`, the site stopped answering during the run. |
+| Where MPs Stand can't be reached, or answers wrongly | Its list of MPs is kept as last fetched, so the MPs on councils' pages stay as they were; the summary's `"mps"` says why. |
 
 Nothing is ever deleted because a server didn't answer.
 
@@ -89,6 +99,10 @@ off-site copy is over two days old or the last off-site copy failed.
   on its own.
 - A council under `robots`. This happens only with `[robots] obey` switched on (it is off, decision 21): the
   council's robots.txt has started to forbid reading it, and nothing was read or changed.
+- Seats under `"mps"` `"unmatched"`. A seat is vacant, or Where MPs Stand spells its name differently from the ONS
+  lookup: that seat is listed on council pages without a link until it has an MP on the list. A name that differs
+  needs a rule in `seat_key` (`src/councils/sisters.py`). After a boundary change, rebuild the seats with
+  `scripts/mp_links.py` ([`DATA.md`](DATA.md)).
 - A council's meetings suddenly drop to zero. Its committees have probably been renamed. Look at its committee
   list (`zcat /data/raw/modgov/<GSS>/committees.xml.gz`) and add the new titles to `data_static/committees.csv`.
 

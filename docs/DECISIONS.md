@@ -315,3 +315,53 @@ site's own robots.txt, not councils' (decision 21).
 - A page the server writes its content into keeps that content if the record can't be fetched: the script draws the
   page only once the record has come, and otherwise leaves the server's text as it is, with no error. Only a page the
   server sent no text into says what went wrong (`web/src/draw.tsx`, which the list of councils now uses too).
+
+## 31. The MPs whose seats overlap a council
+
+Decided 21 November 2026, in the review of that day (C1 in the charity's review plan, and the owner's choices
+recorded there): a council's page lists "MPs whose seats overlap this council" (on a strategic authority's page,
+"this authority"), each MP linking to their page on Where MPs Stand (`/people/<number>/<slug>`), under that site's
+name and its spine, so the reader knows they are moving to another site. Where MPs Stand lists the councils that
+overlap each MP's seat and links back.
+
+- The seats come from the ONS's "Ward to Westminster Parliamentary Constituency to Local Authority District to Upper
+  Tier Local Authority (July 2024) Lookup in the UK" (Open Government Licence v3.0): a council overlaps a seat when
+  at least part of one of its wards is in it. They are kept in `data_static/council_constituencies.csv`, built by
+  `scripts/mp_links.py`, which names its source, for every council, lower and upper tier, and every strategic
+  authority: an authority's seats are its constituent councils' (not its non-constituent councils', which are
+  outside its area), and the Greater London Authority's are those of London's boroughs and the City of London. The
+  ONS asks lookups to carry only "Source: Office for National Statistics licensed under the Open Government Licence
+  v.3.0", with no Ordnance Survey notice, so the terms page, the README and `DATA.md` give that statement.
+- Each seat's MP comes from Where MPs Stand's own public list (`/api/people`), matched by the seat's name without
+  accents, case or punctuation. The script keeps the first copy with the code (`data_static/mps.json`) and prints any
+  seat left unmatched (none on 21 November 2026). The nightly update fetches the list again and keeps the last good
+  copy if Where MPs Stand can't be reached or answers wrongly ([`OPERATIONS.md`](OPERATIONS.md), "The steps of a
+  run"). Nothing is asked of another site while a page is served.
+- An MP is linked only if Where MPs Stand lists them; a seat it lists no MP for is named without a link. The seats
+  are listed in order of name, so a reader finds their own; the MP's party is the one Where MPs Stand gives.
+- The list is shown after the council's members and party in control, and before its named votes, on every
+  council's page, covered or not. It is not in the page's description or structured data.
+- Every link to a sister site shows the spine as the family kit's footer shelf draws it, taken from the kit's
+  `shelf.html`, never drawn here. The offer of the same question on Where MPs Stand is made only under a written
+  briefing: not under "No records found", an error, or the sources alone (sources only, or over a limit).
+
+## 32. The latest named votes on the home page
+
+Decided 21 November 2026, in the review of that day (C3 in the charity's review plan): the home page lists "Latest
+named votes", the 20 newest named votes across every council and strategic authority, so that a first-time visitor
+or a search engine finds the record on the first page, not only a question box. It is made from the record by the
+server, with no AI, and written into the page's HTML outside the app's root, so readers with and without scripts
+and search engines see the same list.
+
+- Each vote has its own page's heading (its label among the item's votes and the item, decision 28), so votes on
+  one item are told apart as on their pages; then the council, the date in full and the result with the counts as
+  the record has them, each side named as on the vote's page ("For the motion" in a Scottish division). Where only
+  one side could be read, only that side is given, and the list says so. A result the count contradicts is left
+  out, as in a vote's title. Each links to the vote's page.
+- Newest first by the date of the meeting; votes on the same day by council, each council's in the order its page
+  lists them. Votes hidden while a concern is decided (decision 24), and councils withheld, are left out.
+- It is made from what is kept for each council's own pages, which are kept until that council's own files change
+  (pull request #11; [`OPERATIONS.md`](OPERATIONS.md), "Built to keep working"), and the list itself is kept until
+  the record, the suppression list or what is hidden changes. If it can't be made, the page is sent without it.
+- It comes after the question box and the questions to try, never before them (the family's glossary: nothing
+  pushes the question box down).

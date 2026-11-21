@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import "./styles.css";
 import { drawWhenLoaded } from "./draw";
 import { getCouncil, type CouncilPage } from "./api";
-import { SisterLinks } from "./components/Sister";
+import { SISTERS, SisterLinks, Spine } from "./components/Sister";
 import { Statements } from "./components/Statements";
 import { byYear, VoteLinks, voteHref } from "./components/VoteLinks";
 import { Tally } from "./components/VoteMarks";
@@ -145,6 +145,44 @@ function Recent({ c }: { c: CouncilPage }) {
   );
 }
 
+/** The MPs whose seats overlap the council or authority, on Where MPs Stand (decision 31), as the server writes them
+ * (api/plaintext.py, mps_text): under that site's name and its spine from the family kit. */
+function Seats({ c }: { c: CouncilPage }) {
+  const seats = c.mps?.seats || [];
+  if (!seats.length) return null;
+  const whose = c.type === AUTHORITY ? "authority" : "council";
+  const site = SISTERS.mps.name;
+  return (
+    <section className="seats" aria-labelledby="mps-heading">
+      <h2 id="mps-heading">MPs whose seats overlap this {whose}</h2>
+      <div className="sister">
+        <Spine site="mps" />
+        <div>
+          <p className="sister-name">On {site}</p>
+          <p className="small">
+            The {seats.length === 1 ? "Westminster constituency" : `${number(seats.length)} Westminster constituencies`}{" "}
+            with at least part of a ward in this {whose}’s area, from the ONS lookup of wards to constituencies (July 2024
+            boundaries), each with the MP {site} lists for it.
+          </p>
+          <ul className="seat-list">
+            {seats.map((s) => (
+              <li key={s.code}>
+                {s.mp ? (
+                  <>
+                    <a href={s.mp.url}>{s.mp.name}</a>, {s.mp.party ? `${s.mp.party}, ` : ""}MP for {s.name}
+                  </>
+                ) : (
+                  `${s.name}: no MP listed on ${site}`
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /** Two sections side by side when there are both, so the row fills the column. */
 function Pair({ children }: { children: ReactNode[] }) {
   const shown = children.filter(Boolean);
@@ -227,6 +265,7 @@ function Authority({ c }: { c: CouncilPage }) {
             their minutes are published through a system the site can read and their site can be read.
           </p>
           {mayorSection}
+          <Seats c={c} />
           <Statements council={c.gss} here={`/councils/${c.gss}`} />
         </>
       ) : (
@@ -314,6 +353,7 @@ function Authority({ c }: { c: CouncilPage }) {
             </>
           )}
 
+          <Seats c={c} />
           <Votes c={c} whose="this authority’s minutes" />
           <Statements council={c.gss} here={`/councils/${c.gss}`} />
           <Pair>
@@ -369,6 +409,7 @@ function Council({ c }: { c: CouncilPage }) {
             through a system the site can read (Modern.gov, CMIS or CoINS) and their site can be read.
           </p>
           {landlords}
+          <Seats c={c} />
           <Statements council={c.gss} here={`/councils/${c.gss}`} />
         </>
       ) : (
@@ -451,6 +492,7 @@ function Council({ c }: { c: CouncilPage }) {
             ]}
           </Pair>
 
+          <Seats c={c} />
           <Votes c={c} whose="this council’s minutes" />
           <Statements council={c.gss} here={`/councils/${c.gss}`} />
           <Pair>

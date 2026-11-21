@@ -16,7 +16,7 @@ import json
 import logging
 import re
 import threading
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
 from datetime import date
 from html import escape
@@ -74,6 +74,8 @@ STREAM_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
 TEMPLATES = {"index", "councils", "council", "vote", "404"}
 # the most addresses one sitemap may hold (the sitemaps protocol allows 50,000)
 SITEMAP_MAX = 45_000
+# the named votes on the home page, newest first across every council (decision 32)
+LATEST_VOTES = 20
 # How many visitors the per-minute limiter holds before it forgets the idle ones
 FORGET_IDLE_VISITORS_OVER = 10_000
 
@@ -616,16 +618,22 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         another name (the server's address, www) still points search engines to the one address."""
         return (site.get("url") or str(request.base_url)).rstrip("/")
 
-    def readable(name: str, build, *, noindex: bool = False) -> Response:
+    def readable(name: str, build, *, noindex: bool = False, more: Callable[[str], str] | None = None) -> Response:
         """A page with its own title, description, canonical link and structured data, and its content as plain
         HTML for readers without scripts and search engines (api/plaintext.py), which the app replaces when it
-        starts. ``build`` gives (status, title, description, url, data, text). If the record can't be read, the page
-        is sent as it is: it still works with scripts on. A page that isn't there, or one that is ``noindex``, asks
-        search engines not to list it."""
+        starts. ``build`` gives (status, title, description, url, data, text). ``more`` adds what the server writes
+        outside the app's root, which the app leaves as it is (the home page's latest named votes). If the record
+        can't be read, the page is sent without what couldn't be made: it still works with scripts on. A page that
+        isn't there, or one that is ``noindex``, asks search engines not to list it."""
         path = dist / f"{name}.html"
         if not path.exists():
             raise HTTPException(404, "Not found.")
         html = path.read_text(encoding="utf-8")
+        if more is not None:
+            try:
+                html = more(html)
+            except Exception:  # noqa: BLE001 - as below
+                log.exception("server-written part not added to %s", name)
         try:
             status, title, description, url, ld, text = build()
         except Exception:  # noqa: BLE001 - the readable copy is a courtesy; never fail the page for it
@@ -652,7 +660,14 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
                     "Sourced briefings on what councils across the UK have discussed, decided and voted on. Every "
                     "point cites the council’s own minutes.", base + "/", ld, plaintext.home_text(totals, EXAMPLES))
 
-        return readable("index", build)
+        def latest(html: str) -> str:
+            """The newest named votes across every council, written into the page outside the app (decision 32),
+            so that readers with or without scripts, and search engines, find the record on the first page."""
+            now = hidden()
+            votes = data.latest_votes(LATEST_VOTES, now.vote_hidden, frozenset(now.notes))
+            return plaintext.with_latest_votes(html, votes)
+
+        return readable("index", build, more=latest)
 
     @app.get("/b/{bid}", include_in_schema=False)
     def shared(bid: str, request: Request):
