@@ -669,9 +669,10 @@ def test_the_answer_caches_key_is_the_same_for_every_question_and_choice(monkeyp
     # Deliberately changed: the instructions went from "2" (the golden file's) to "3" in November 2026 (rule 11, on
     # people's health, disability, care and family, and follow-ups given earlier questions only), and to "4" on 19
     # November 2026 (decision 27: rule 12, a point is never the party in control's unless its speaker is of that
-    # party), so no answer written under "2" or "3" is served again. With the version the golden file was made with,
+    # party), and to "5" on 21 November 2026 (decision 34: each citation attached to the claim and its quotation),
+    # so no answer written under an earlier version is served again. With the version the golden file was made with,
     # the keys are as they were.
-    assert golden["instructions_version"] == "2" and INSTRUCTIONS_VERSION == "4"
+    assert golden["instructions_version"] == "2" and INSTRUCTIONS_VERSION == "5"
     monkeypatch.setattr(web, "INSTRUCTIONS_VERSION", golden["instructions_version"])
     now = [{"body": body, "stamp": stamp, "key": answer_key(AskBody(**body), stamp, golden["model"])}
            for body in shared.KEY_BODIES for stamp in shared.KEY_STAMPS]
@@ -691,7 +692,7 @@ def test_the_answer_caches_key_changes_with_the_model_the_instructions_and_the_r
     assert web.answer_key(body, 1731500000.25, "claude-sonnet-5-5") == key
     assert web.answer_key(body, 1731500000.25, "claude-opus-5-5") != key          # another model
     assert web.answer_key(body, 1731586400.0, "claude-sonnet-5-5") != key         # the record has changed
-    monkeypatch.setattr(web, "INSTRUCTIONS_VERSION", "5")
+    monkeypatch.setattr(web, "INSTRUCTIONS_VERSION", "6")
     assert web.answer_key(body, 1731500000.25, "claude-sonnet-5-5") != key        # new instructions
 
 
@@ -1311,6 +1312,28 @@ def attributed(was: dict) -> dict:
     return was
 
 
+# And on 21 November 2026 (decision 34, INSTRUCTIONS_VERSION "5"; the charity's review plan, B1): each citation is
+# attached to the claim and its quotation, never to a date or other words beside them, after a briefing on a sister
+# site showed a quotation found word for word as text with no source because its citation sat on "in November 2025".
+# One line is added to what a good briefing does; nothing else is different.
+_CITE_AFTER = "  the same sentence. Only headings, bold group labels and the closing note may go uncited.\n"
+_CITE_RULE = (
+    "- Attach each citation to the claim and its quotation, never to a date, a council's name or other words beside them.\n"
+    "  Put a date before a quotation (on 26 February 2025 the council resolved \"...\"), so that the quotation ends the words\n"
+    "  its citation supports, and never cite a trailing \"in February 2025\" on its own.\n")
+
+
+def cites_the_quotation(was: dict) -> dict:
+    """What the model is sent, as decision 34 changed it (above)."""
+    import copy
+
+    was = copy.deepcopy(was)
+    for block in was["system"]:
+        assert block["text"].count(_CITE_AFTER) == 1
+        block["text"] = block["text"].replace(_CITE_AFTER, _CITE_AFTER + _CITE_RULE)
+    return was
+
+
 _SCOPE_RULE = (
     "\n- in_scope: false only when the question is plainly not about anything a council or strategic authority could\n"
     "  discuss, decide or vote on: a request to write a story, a poem or code, to chat, or for general knowledge with no\n"
@@ -1350,7 +1373,7 @@ def test_the_model_is_sent_what_it_was_sent(tmp_path):
     golden, now = shared.read("requests.json"), shared.requests_made(fake)
     assert len(now["briefings"]) == len(golden["briefings"]) == 5
     for got, was in zip(now["briefings"], golden["briefings"], strict=True):
-        assert got == attributed(deliberately_changed(was))
+        assert got == cites_the_quotation(attributed(deliberately_changed(was)))
     assert now["questions_read"] == [read_for_scope(was) for was in golden["questions_read"]]
     assert len(now["questions_read"]) == 2
 

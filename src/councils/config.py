@@ -25,8 +25,9 @@ STATIC_DIR = REPO_ROOT / "data_static"
 # "3" (November 2026): rule 11, on people's health, disability, care and family; and a follow-up is given the earlier
 # questions only, not the earlier answers. "4" (19 November 2026, decision 27): rule 12, a point is never the party
 # in control's unless its speaker is of that party; and sources' titles mark a named person of another party and give a
-# council's directly elected mayor.
-INSTRUCTIONS_VERSION = "4"
+# council's directly elected mayor. "5" (21 November 2026, decision 34): each citation is attached to the claim and its
+# quotation, never to a date or other words beside them (the charity's review plan, B1).
+INSTRUCTIONS_VERSION = "5"
 
 
 def _version() -> str:

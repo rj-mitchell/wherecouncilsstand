@@ -124,5 +124,15 @@ def test_the_instructions_never_give_a_point_to_the_party_in_control_unless_its_
     assert "A group says whose councils they are, never whose views" in system
     assert "Barchester (Reform UK control; directly elected mayor: Labour)" in GROUP_BY_INSTRUCTIONS["control"]
     assert GROUP_BY_INSTRUCTIONS["control"] in user_instruction("Section 114 notices?", "summary", "", "")
-    # raised with the instructions, so that no briefing written under the old ones is served again
-    assert INSTRUCTIONS_VERSION == "4"
+    # raised with the instructions, so that no briefing written under the old ones is served again ("5" since 21
+    # November 2026: test_the_instructions_attach_each_citation_to_its_claim_and_quotation)
+    assert INSTRUCTIONS_VERSION >= "4"
+
+
+def test_the_instructions_attach_each_citation_to_its_claim_and_quotation():
+    """Decision 34 (the charity's review plan, B1): a citation put on the date after a quotation ("... said “...” in
+    February 2025 [1]") left the quotation, found word for word, in a passage marked as having no source."""
+    system = system_prompt(D)
+    assert "Attach each citation to the claim and its quotation, never to a date" in system
+    assert 'never cite a trailing "in February 2025" on its own' in system
+    assert INSTRUCTIONS_VERSION == "5"

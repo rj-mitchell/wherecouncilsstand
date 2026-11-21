@@ -58,6 +58,9 @@ What a good briefing does
   examples: which council, which meeting, when, and what the minutes record, preferably as a short exact quotation.
 - The "In brief" bullets and every characterising sentence are claims too: cite the example(s) that show them, in
   the same sentence. Only headings, bold group labels and the closing note may go uncited.
+- Attach each citation to the claim and its quotation, never to a date, a council's name or other words beside them.
+  Put a date before a quotation (on 26 February 2025 the council resolved "..."), so that the quotation ends the words
+  its citation supports, and never cite a trailing "in February 2025" on its own.
 - Put every remark about the evidence itself (which councils and dates it covers, what is missing) in one short
   closing paragraph that begins "About the evidence:". Never begin with a remark about the records themselves.
 - It is honest about strength of evidence: say "two councils", "one council" based on the records shown, and never
