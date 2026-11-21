@@ -31,6 +31,14 @@ The site must look like a record of councils' decisions. Nothing on it should re
   in control, meetings by year beside the latest meetings.
 - Panels (`.panel`, notices, statements, the routes on the page for people who are named) are light grey with no
   border or coloured edge. A council's figures are a short list of terms and values.
+- The home page has the question box first, then, under the questions to try, "Latest named votes" (decision 32):
+  the 20 newest named votes across every council, in as many columns as fit the whole column (one on a phone,
+  two on a wide screen). Each has its vote's heading as a link in the heading face, then the council and the date
+  in full, then the result and counts with their sides named. A thin rule above each separates them. The server
+  writes it outside the app's root, so it is the same with and without scripts.
+- A council's or authority's page lists "MPs whose seats overlap this council" (decision 31) under its members and
+  control: Where MPs Stand's spine and name, a line saying where the seats come from, then each MP as a link with
+  their party and seat, in as many columns as fit.
 - The footer is the family shelf, then six links (About, Methodology, Corrections, Accessibility, Privacy, Source
   code) and one short paragraph with the independence line and the licence notice. Terms, Press, Status and the page
   for people who are named are linked from the About page.
@@ -42,6 +50,13 @@ family") gives the colour tokens, the fonts, the endorsement, the footer shelf, 
 theme colour. Its files are included as they are (`<!--#include family/shelf-->` in the partials) and never
 edited here. On the brown band the endorsement's spine is drawn a shade darker than the cloth so that it stays
 visible.
+
+A link to a sister site names it and shows its spine, so the reader knows they are moving to another site (the
+charity's roadmap, "Links between the records"). The spine is the kit's own drawing, taken from its footer shelf
+(`family/shelf.html`), never drawn here: by the server for the pages it writes (`sisters.spine`) and by the app
+from the same file (`components/Sister.tsx`). It goes beside the links to Where Landlords Stand on a council's
+page, the MPs whose seats overlap it, and the offer of the same question on Where MPs Stand, which appears only
+under a written briefing (not under "No records found", an error or the sources alone).
 
 ## Colour and type
 

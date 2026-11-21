@@ -98,7 +98,10 @@ node family/kit/sync.mjs --site councils --out ../wherecouncilsstand/web/public/
 ```
 
 Council pages link to Where Landlords Stand (`data_static/landlords_links.csv`, built by
-`scripts/landlords_links.py`), and each briefing links to the same question on Where MPs Stand.
+`scripts/landlords_links.py`) and to the MPs whose seats overlap them on Where MPs Stand
+(`data_static/council_constituencies.csv` and `data_static/mps.json`, built by `scripts/mp_links.py`, with the list
+of MPs refreshed by the nightly update; decision 31), and each written briefing offers the same question on Where MPs
+Stand.
 
 ## Data sources and licences
 
@@ -108,6 +111,11 @@ Council pages link to Where Landlords Stand (`data_static/landlords_links.csv`, 
   copyright and are shown only as cited extracts linking to the council's record
   ([decision 10](docs/DECISIONS.md#10-reuse)).
 - Party labels: Open Council Data's lists of councillors (public domain), used to interpret councils' own codes.
+- Westminster constituencies overlapping each council: the ONS's "Ward to Westminster Parliamentary Constituency to
+  Local Authority District to Upper Tier Local Authority (July 2024) Lookup in the UK". Source: Office for National
+  Statistics licensed under the Open Government Licence v.3.0. The ONS asks lookups to carry that statement only (no
+  Ordnance Survey notice).
+- Each constituency's MP: Where MPs Stand's public list of current members.
 
 Text written by the site, including briefings, and the data it publishes are licensed under CC BY 4.0 (see the
 site's terms page). The name and mark are not covered by these licences.

@@ -179,6 +179,7 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
     import time
 
     from councils import load as load_
+    from councils import sisters
     from councils.index.build import update_index
     from councils.index.lance import get_embedder
     from councils.registry import councils, get
@@ -193,13 +194,17 @@ def update(council: list[str] = typer.Argument(None, help="GSS codes or names; a
         typer.echo(json.dumps(line))
     changed = [ln["gss"] for ln in lines if ln.get("changed")]
     indexed = update_index(s, changed, get_embedder(s), max_seconds=embed_minutes * 60)
+    # Where MPs Stand's list of MPs, for the MPs on councils' pages (decision 31): fetched again, or the last good
+    # copy kept, never asked for while a page is served
+    mps = sisters.refresh_mps(s)
     summary = {"finished": time.strftime("%Y-%m-%dT%H:%M:%S"), "minutes": round((time.time() - started) / 60, 1),
                "councils": len(lines), "changed": len(changed),
                "new_meetings": sum(ln.get("new_meetings", 0) for ln in lines),
                "failed": sorted(ln["gss"] for ln in lines if ln.get("error")),
                # only with [robots] obey on (decision 21): sites whose robots.txt has started to forbid reading
                # (docs/OPERATIONS.md, "Problems a run reports")
-               "robots": sorted(ln["gss"] for ln in lines if ln.get("error") == ROBOTS_ERROR), **indexed}
+               "robots": sorted(ln["gss"] for ln in lines if ln.get("error") == ROBOTS_ERROR), **indexed,
+               "mps": mps}
     # needs attention: many councils failing at once means something on our side, not one council's server
     summary["needs_attention"] = not lines or len(summary["failed"]) > max(5, len(lines) // 10)
     # the site's own retention: confirming addresses of statements that ended three months ago (decision 22)

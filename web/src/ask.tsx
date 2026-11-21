@@ -5,7 +5,7 @@ import "./styles.css";
 import { ask, getBriefing, getCouncils, getMeta, type Answer, type AskEvent, type Meta, type Plan, type SourceCard } from "./api";
 import { BriefingText, CheckNotices } from "./components/Briefing";
 import { Statements } from "./components/Statements";
-import { AskSister } from "./components/Sister";
+import { AskSister, writtenBriefing } from "./components/Sister";
 import { PlanChips } from "./components/PlanChips";
 import { Sources } from "./components/Sources";
 import { Why } from "./components/Why";
@@ -211,7 +211,7 @@ function App() {
                 )}
               </>
             )}
-            {s.phase === "done" && s.question && <AskSister site="mps" question={s.question} />}
+            {writtenBriefing(s) && <AskSister site="mps" question={s.question} />}
           </article>
         )}
         {/* statements in their authors' own words beside a saved briefing (decision 22), after it, never in it */}

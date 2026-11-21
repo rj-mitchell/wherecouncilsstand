@@ -204,6 +204,13 @@ export type CouncilPage = CouncilRow & {
     council: { name: string; url: string } | null;
     area: { name: string; landlords: number; url: string } | null;
   } | null;
+  /** the MPs whose seats overlap it, on Where MPs Stand (decision 31; data_static/council_constituencies.csv) */
+  mps?: {
+    site: string;
+    url: string;
+    fetched: string | null;
+    seats: { code: string; name: string; mp: { name: string; party: string | null; url: string } | null }[];
+  } | null;
 };
 
 export type VotePage = VoteSummary & {

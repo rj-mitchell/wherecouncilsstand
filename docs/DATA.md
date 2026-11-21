@@ -361,6 +361,34 @@ after Where Landlords Stand's weekly update has published new figures, and commi
 address, so this site never depends on the other being up. Where Landlords Stand links back to each council's page
 here (`/councils/{gss}`).
 
+## MPs whose seats overlap a council: `data_static/council_constituencies.csv` and `data_static/mps.json`
+
+Each council's and strategic authority's page lists the MPs whose seats overlap it, linking to their pages on Where
+MPs Stand (decision 31). `council_constituencies.csv` gives, for each council (lower and upper tier) and strategic
+authority, the Westminster constituencies (2024 boundaries) with at least part of one of its wards, with each
+seat's code and name and how many of the council's wards (or parts of wards) are in it: 402 councils and
+authorities, 650 constituencies and 1,517 overlaps on 21 November 2026. A strategic authority's seats are its
+constituent councils' (`authority_councils.csv`, not its non-constituent councils, which are outside its area); the
+Greater London Authority's are those of London's 32 boroughs and the City of London. Barnsley and Sheffield are
+given the codes this site uses (from 2019), which the lookup of July 2024 doesn't.
+
+It is built by `scripts/mp_links.py` from the ONS's "Ward to Westminster Parliamentary Constituency to Local
+Authority District to Upper Tier Local Authority (July 2024) Lookup in the UK" (item
+`62eb9df29a2f4521b5076a419ff9a47e` on the [Open Geography Portal](https://geoportal.statistics.gov.uk/), downloaded
+as CSV from `https://geoportal.statistics.gov.uk/api/download/v1/items/62eb9df29a2f4521b5076a419ff9a47e/csv?layers=0`;
+the same table is the feature service `WD24_PCON24_LAD24_UTLA24_UK_LU`). Source: Office for National Statistics
+licensed under the Open Government Licence v.3.0. The ONS's licences page asks lookups to carry that statement only;
+the Ordnance Survey notice belongs to its digital boundaries, which aren't used. Run the script again when the ONS
+publishes a new lookup (after boundary changes or a change of councils), and commit both files.
+
+`mps.json` is the first copy of Where MPs Stand's public list of current members (`https://wherempsstand.com/api/people`):
+for each sitting MP, their number, name, address on that site (`/people/<number>/<slug>`), party and seat. Seats are
+matched to the lookup's by name, without accents, case or punctuation; the script prints any seat left without an
+MP (none on 21 November 2026), and so does each nightly update (`"mps"` in its summary). The nightly update fetches
+the list again into the data folder (`mps.json` there), and keeps the last good copy if Where MPs Stand can't be
+reached or answers with something that isn't the list ([`OPERATIONS.md`](OPERATIONS.md)). A seat with no MP on the
+list is named without a link; an MP is linked only if Where MPs Stand lists them.
+
 ## Licence
 
 Council documents are the council's copyright. See decision 10 in [`DECISIONS.md`](DECISIONS.md) for how they are

@@ -7,7 +7,10 @@ page and answer exactly with what the site gave before (tests/golden/). Each cha
    titles, descriptions and structured data (now with breadcrumbs) differ. A council's description is shorter.
 2. A council's page lists every named vote by year, and its budget and council tax votes.
 3. A saved briefing's page always asks search engines not to list it, and the home page's structured data gives
-   the charity's id."""
+   the charity's id.
+4. A council's page lists the MPs whose seats overlap it, on Where MPs Stand (decision 31; the API gives ``mps``),
+   and the home page lists the latest named votes (decision 32), both asserted in test_sisters.py and
+   test_pages.py."""
 
 from __future__ import annotations
 
@@ -25,7 +28,9 @@ _NEW_SECTIONS = re.compile(
     r"|<p>The latest \d+, then every named vote by year\.</p>"
     r"|<h2>Every named vote, by year</h2>(?:<details.*?</details>)+"
     r"|<h2>Other named votes (?:on this item|at this meeting)</h2><ul[^>]*>.*?</ul>"
-    r"|<nav class=\"vote-steps\".*?</nav>", re.S)
+    r"|<nav class=\"vote-steps\".*?</nav>"
+    r"|<section class=\"seats\".*?</section>"
+    r"|(?<=<div id=\"latest-votes\">)<section class=\"latest-votes\".*?</section>", re.S)
 
 
 def _vote(v: Any) -> Any:
@@ -39,7 +44,7 @@ def comparable(entry: Any) -> Any:
     entry = dict(entry)
     case, body = entry["case"], entry.get("json")
     if isinstance(body, dict) and case.startswith("/api/councils/") and "votes" in body:
-        entry["json"] = {**body, "votes": [_vote(v) for v in body["votes"]]}
+        entry["json"] = {**{k: x for k, x in body.items() if k != "mps"}, "votes": [_vote(v) for v in body["votes"]]}
     elif isinstance(body, dict) and case.startswith("/api/votes/"):
         entry["json"] = _vote(body)
     if isinstance(entry.get("text"), str) and re.match(r"/(?:councils/|votes/|b/|$)", case):
