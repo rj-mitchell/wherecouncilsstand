@@ -995,6 +995,177 @@ input[type="checkbox"] {
   font-weight: 600;
 }
 
+/* A checked briefing (family/BRIEFINGS.md, with the kit's briefing.css, whose parts are used as they are): the
+   layout around them. On wide screens the briefing sits beside the record, which is sticky in its own column, and the
+   line joining a chip to its passage runs in the gutter between. */
+.briefing.briefing--checked {
+  max-width: none;
+}
+
+.briefing--checked > .wts-stages {
+  margin-block: var(--space-m);
+}
+
+.ai-label {
+  display: inline-block;
+  font-size: var(--step--1);
+  font-weight: 600;
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  padding: 0.1em 0.5em;
+  margin-block: var(--space-m) var(--space-s);
+}
+
+.result-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-l);
+}
+
+.result-main {
+  min-width: 0;
+  max-width: var(--measure);
+}
+
+.record-col {
+  display: none;
+  min-width: 0;
+}
+
+.wts-connector {
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .result-grid.has-record {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+    column-gap: var(--space-xl);
+  }
+
+  .record-col,
+  .wts-connector {
+    display: block;
+  }
+
+  .record-col__pile {
+    position: sticky;
+    top: 1rem;
+    display: grid;
+    gap: var(--space-xs);
+  }
+}
+
+/* on a phone the four stages take two rows, so the wait itself stays in view */
+@media (max-width: 40rem) {
+  .briefing--checked > .wts-stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* a council's long name gives way to the date on a card, rather than run under it */
+.wts-card__top > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wts-card__top > span:last-child {
+  flex: none;
+}
+
+.wait {
+  display: grid;
+  gap: var(--space-s);
+  margin-block: var(--space-m);
+}
+
+.wait__reading,
+.wait__only {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.wait__only {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* a chip that wraps reads from its start, as the text around it does */
+.briefing-text .wts-chip {
+  text-align: start;
+}
+
+.briefing-text .answer {
+  margin-block-start: 0;
+}
+
+.check-details {
+  border-block-start: 1px solid var(--rule-strong);
+  margin-block-start: var(--space-l);
+  padding-block-start: var(--space-s);
+  font-size: var(--step--1);
+}
+
+.check-details h2 {
+  font-size: var(--step-1);
+  margin-block: 0 var(--space-xs);
+}
+
+.check-details ul {
+  padding-inline-start: 1.2em;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+body.has-sheet {
+  overflow: hidden;
+}
+
+/* the question box, held to the running text's width now it has the row to itself */
+.home-top .ask-form {
+  max-width: var(--measure);
+}
+
+/* the line about the briefings and its disclosure, just under the question box (the family's glossary) */
+.home-top .why {
+  margin-block-start: var(--space-s);
+  max-width: var(--measure);
+}
+
+/* The home page's proof of the checking, in the whole column */
+.proof {
+  margin-block: var(--space-xl) 0;
+  padding-block-start: var(--space-m);
+  border-block-start: 1px solid var(--rule-strong);
+}
+
+.proof[hidden] {
+  display: none;
+}
+
+.proof h2 {
+  margin: 0;
+}
+
+.proof__label {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.proof__note,
+.proof__more {
+  margin: 0;
+  font-size: var(--step--1);
+}
+
+.proof__note {
+  color: var(--ink-soft);
+}
+
 .progress {
   font-size: var(--step--1);
   color: var(--ink-soft);
@@ -1497,8 +1668,14 @@ th.num {
   .wts-shelf,
   .ask-form,
   .why,
-  .examples {
+  .examples,
+  .proof,
+  .record-col {
     display: none;
+  }
+
+  .result-main {
+    max-width: none;
   }
 
   .wordmark::after {

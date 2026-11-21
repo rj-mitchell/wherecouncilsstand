@@ -1,0 +1,191 @@
+{
+ "id": "beside01",
+ "sources": [
+  {
+   "n": 1,
+   "kind": "council",
+   "title": "Minutes of Guildford Borough Council, Full Council (full council), 5 March 2025 — item 20. Waste and Recycling Strategy — party in overall control of the council on the date: Liberal Democrats — councillors named in this passage: Councillor Julia McShane (Liberal Democrats)",
+   "url": "https://example/E07000209/20",
+   "record_id": "E07000209:2:20",
+   "date": "2025-03-05",
+   "gss": "E07000209",
+   "council_name": "Guildford Borough Council",
+   "committee": "Full Council",
+   "item_title": "Waste and Recycling Strategy",
+   "item_number": "20.",
+   "control": "LD",
+   "parties": [
+    "LD"
+   ],
+   "heading": "Guildford Borough Council, Full Council, 5 March 2025 — 20. Waste and Recycling Strategy",
+   "ranking": {
+    "score": 0.5611,
+    "relevance": 0.6175,
+    "keyword": 0.5778,
+    "semantic": 0.2131,
+    "recency": 0.9087
+   },
+   "group": "Councils controlled by the Liberal Democrats",
+   "text": "Councillor Julia McShane introduced the waste and recycling strategy, including fortnightly bin collections.\nRESOLVED that the strategy be adopted.",
+   "named": [
+    "Councillor Julia McShane (Liberal Democrats)"
+   ],
+   "votes": []
+  },
+  {
+   "n": 2,
+   "kind": "council",
+   "title": "Minutes of Barnsley Metropolitan Borough Council, Full Council (full council), 26 February 2025 — item 10. Notice of Motion - Weekly Bin Collections — party in overall control of the council on the date: Labour — councillors named in this passage: Councillor Hannah Kitching (Liberal Democrats; not the party in control)",
+   "url": "https://example/E08000038/10",
+   "record_id": "E08000038:1:10",
+   "date": "2025-02-26",
+   "gss": "E08000038",
+   "council_name": "Barnsley Metropolitan Borough Council",
+   "committee": "Full Council",
+   "item_title": "Notice of Motion - Weekly Bin Collections",
+   "item_number": "10.",
+   "control": "LAB",
+   "parties": [
+    "LD"
+   ],
+   "heading": "Barnsley Metropolitan Borough Council, Full Council, 26 February 2025 — 10. Notice of Motion - Weekly Bin Collections",
+   "ranking": {
+    "score": 0.5126,
+    "relevance": 0.5647,
+    "keyword": 0.6567,
+    "semantic": 0.0776,
+    "recency": 0.9077
+   },
+   "group": "Councils controlled by Labour",
+   "text": "Councillor Kitching moved that weekly bin collections be restored.\n[name removed] asked about recycling centres.\nUpon being put to the vote the motion was lost.",
+   "named": [
+    "Councillor Hannah Kitching (Liberal Democrats; not the party in control)"
+   ],
+   "votes": []
+  }
+ ],
+ "answer": {
+  "segments": [
+   {
+    "text": "At Barnsley, the minutes record a motion on how often bins are emptied, as when Councillor Kitching moved ",
+    "sources": [],
+    "cited": [],
+    "status": "unsupported",
+    "loaded": [],
+    "misquotes": []
+   },
+   {
+    "text": "“that weekly bin collections be restored”",
+    "sources": [
+     2
+    ],
+    "cited": [],
+    "status": "cited",
+    "loaded": [],
+    "misquotes": [],
+    "beside": true
+   },
+   {
+    "text": " in February 2025",
+    "sources": [
+     2
+    ],
+    "cited": [],
+    "status": "cited",
+    "loaded": [],
+    "misquotes": []
+   },
+   {
+    "text": ". ",
+    "sources": [],
+    "cited": [],
+    "status": "connective",
+    "loaded": [],
+    "misquotes": []
+   },
+   {
+    "text": "At Guildford, the minutes record that Councillor Julia McShane introduced “the waste and recycling strategy, including fortnightly bin collections”",
+    "sources": [
+     1
+    ],
+    "cited": [],
+    "status": "cited",
+    "loaded": [],
+    "misquotes": []
+   },
+   {
+    "text": ".",
+    "sources": [],
+    "cited": [],
+    "status": "connective",
+    "loaded": [],
+    "misquotes": []
+   },
+   {
+    "text": " The minutes record the cabinet as saying “bins will be emptied every week”",
+    "sources": [
+     1
+    ],
+    "cited": [],
+    "status": "cited",
+    "loaded": [],
+    "misquotes": [
+     {
+      "start": 42,
+      "end": 75,
+      "text": "“bins will be emptied every week”"
+     }
+    ]
+   },
+   {
+    "text": ". ",
+    "sources": [],
+    "cited": [],
+    "status": "connective",
+    "loaded": [],
+    "misquotes": []
+   },
+   {
+    "text": "Every council in the region did the same.",
+    "sources": [],
+    "cited": [],
+    "status": "unsupported",
+    "loaded": [],
+    "misquotes": []
+   },
+   {
+    "text": " ",
+    "sources": [],
+    "cited": [],
+    "status": "connective",
+    "loaded": [],
+    "misquotes": []
+   },
+   {
+    "text": "Guildford ended weekly collections in 2019.",
+    "sources": [],
+    "cited": [],
+    "status": "invalid",
+    "loaded": [],
+    "misquotes": []
+   }
+  ],
+  "markdown": "",
+  "no_records": false,
+  "citations_total": 4,
+  "citations_invalid": 1,
+  "grounded_ratio": 0.5,
+  "unsupported_segments": 2,
+  "loaded_words": 0,
+  "quotes_total": 3,
+  "quotes_unverified": 1,
+  "rules": 2
+ },
+ "counts": {
+  "citations_matched": 3,
+  "citations_total": 4,
+  "quotes_found": 2,
+  "quotes_total": 3,
+  "no_source": 3
+ }
+}

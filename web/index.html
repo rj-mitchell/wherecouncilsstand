@@ -4,11 +4,59 @@
     <!--#include head-->
     <title>Where Councils Stand</title>
     <meta name="description" content="Sourced briefings on what councils across the UK have discussed, decided and voted on. Every point cites the council’s own minutes." />
+    <link rel="stylesheet" href="/family/briefing.css" />
   </head>
   <body class="wts-headings">
     <!--#include header-->
     <main id="main">
       <div id="app"></div>
+      <!-- The checking, shown without a script (the charity's family/BRIEFINGS.md, "The home page"; decision 34). The
+           quotation and the passage are real: the minutes of Glasgow City Council's City Administration Committee of
+           25 January 2024, item 2, kept for the site's tests (tests/fixtures/coins/glasgow_minutes_19226.pdf). No
+           saved briefing is kept in this repository, so the sentence around the quotation shows how a briefing reports
+           minutes, and says so; it was not written by the AI. tests/test_checked_briefings.py checks each word. -->
+      <section class="wts-proof wts-cloth--councils proof" id="proof" aria-labelledby="proof-head">
+        <h2 id="proof-head">Every briefing, checked against the council minutes</h2>
+        <ol class="wts-proof__steps">
+          <li>Searches only the official record</li>
+          <li>AI writes only from what was found</li>
+          <li>Every citation and quotation is checked before you see it</li>
+        </ol>
+        <div class="wts-proof__pair">
+          <div>
+            <p class="proof__label">How a briefing quotes the minutes</p>
+            <p class="wts-proof__said">The minutes record that Bailie Christie presented a report on the museums’
+              collections policy, and that the committee approved <span class="wts-quote wts-quote--checked">“the
+              principles and process for a review of collecting priorities”<span class="wts-quote__tick"
+              aria-hidden="true">✓ word for word</span><span class="wts-vh"> (quotation, found word for word in the
+              minutes of source 1)</span></span>&#8288;<span class="wts-chip"><span class="wts-chip__in"><span
+              class="wts-chip__n"><span class="wts-vh">Source </span>1</span><span>Glasgow City Council, City
+              Administration Committee, 25 January 2024</span></span></span></p>
+          </div>
+          <div>
+            <p class="proof__label">From the minutes of Glasgow City Council, City Administration Committee, 25 January 2024</p>
+            <div class="wts-slip">
+              <div class="wts-slip__top"><b>Glasgow City Council</b><span>City Administration Committee, 25 January
+                2024</span></div>
+              <div class="wts-slip__who">Presented by <strong>Bailie Christie</strong>, City Convener for Culture,
+                Sport and International Relations</div>
+              <div class="wts-slip__heading">Item 2: Glasgow Life Museums Collections Development Policy 2024-29
+                approved.</div>
+              <p class="wts-passage" tabindex="0" aria-label="The passage from source 1">… After consideration, the
+                committee (a) approved (i) the Glasgow Life Museums Collections Development Policy 2024-29; (ii)
+                <mark>the principles and process for a review of collecting priorities</mark>; and (iii) the means of
+                escalation required for certain Loans-Out; …</p>
+              <div class="wts-slip__foot"><span class="wts-slip__found">✓ Highlighted words found word for word</span><a
+                href="https://onlineservices.glasgow.gov.uk/councillorsandcommittees/Agenda.asp?meetingid=19226"
+                rel="noreferrer">The minutes on Glasgow City Council’s website</a></div>
+            </div>
+          </div>
+        </div>
+        <p class="proof__note">The quotation and the passage are real, from a page of minutes the site keeps for its
+          tests. The words around the quotation show how a briefing reports minutes.</p>
+        <p class="proof__more"><a href="/methodology#ai-briefings">How every briefing is checked, on the methodology
+          page</a></p>
+      </section>
       <div id="latest-votes"></div>
       <noscript><p>This page needs JavaScript. The minutes themselves are on each council’s own website.</p></noscript>
     </main>
