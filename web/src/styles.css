@@ -809,58 +809,6 @@ input[type="checkbox"] {
   padding-inline-start: 1.2em;
 }
 
-.cite {
-  font-size: 0.72em;
-  vertical-align: super;
-  line-height: 0;
-  text-decoration: none;
-  padding-inline: 0.12em;
-  /* kept whole on one line: one split across two lines would stretch its tap area (below) over the text between */
-  white-space: nowrap;
-  /* a larger, invisible place to tap or click (below): 24px tall, 28px on a touch screen, which still fits inside a
-     line, and reaching a little either side, but never into a citation next to it */
-  position: relative;
-  --cite-hit: 24px;
-  --cite-reach: 4px;
-}
-
-.cite::after {
-  content: "";
-  position: absolute;
-  inset-block: calc((100% - var(--cite-hit)) / 2);
-  inset-inline: calc(-1 * var(--cite-reach));
-}
-
-.cite:has(+ .cite)::after {
-  inset-inline-end: 0;
-}
-
-.cite + .cite::after {
-  inset-inline-start: 0;
-}
-
-@media (pointer: coarse) {
-  .cite {
-    --cite-hit: 28px;
-    --cite-reach: 8px;
-  }
-}
-
-.unsupported {
-  background: var(--warn-subtle);
-  text-decoration: underline dotted var(--warn);
-  text-underline-offset: 0.2em;
-}
-
-/* a quotation not found word for word in the minutes cited for it: a wavy line, so it is told apart from the dotted
-   line of unsupported text (and still shows inside it); the explanation is said by a screen reader (Briefing.tsx) */
-.misquote {
-  text-decoration: underline wavy var(--warn);
-  text-decoration-thickness: 0.08em;
-  text-decoration-skip-ink: none;
-  text-underline-offset: 0.22em;
-}
-
 .notice {
   background: var(--warn-subtle);
   padding: var(--space-s) var(--space-m);

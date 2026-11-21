@@ -227,6 +227,13 @@ function App() {
         dealtAll(after.sources.length);
         setSaid("Checking every citation and quotation.");
         check(a);
+        // on a phone the strip can be below the screen while the cards fill it: brought into view, but only from
+        // above, so a reader already further down is not moved
+        requestAnimationFrame(() => {
+          const strip = document.getElementById("check");
+          if (strip && strip.getBoundingClientRect().top > innerHeight)
+            strip.scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
+        });
       } else if (!a && after.sources.length) {
         // sources only (or no briefing could be written): the records dealt in full, then the list of sources
         setWait((w) => ({ ...w, sourcesOnly: true, stage: 2 }));
