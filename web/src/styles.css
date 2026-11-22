@@ -1046,21 +1046,6 @@ input[type="checkbox"] {
 }
 
 /* and a long meeting and item give way to "Cited", which would otherwise be cut off at the end of the line */
-.wts-card__who {
-  display: flex;
-  gap: 0.35em;
-}
-
-.wts-card__who > span:first-child {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.wts-card__who > .wts-card__cited {
-  flex: none;
-}
-
 .wait {
   display: grid;
   gap: var(--space-s);
@@ -1134,45 +1119,6 @@ body.has-sheet {
 
 .proof h2 {
   margin: 0;
-}
-
-/* Kit 2.3.0's two cards of the same height. This site's label over the passage is long (decision 34 words it), so
-   from 48rem the two labels share a row, the cards start level, and the join is drawn across the gutter at the
-   cards' own middle rather than the kit's (which assumes one-line labels). */
-@media (min-width: 48rem) {
-  .proof .wts-proof__pair {
-    grid-template-rows: auto 1fr;
-    row-gap: 0;
-  }
-
-  .proof .wts-proof__side {
-    display: grid;
-    grid-row: span 2;
-    grid-template-rows: subgrid;
-    row-gap: 0.4rem;
-  }
-
-  /* each label straight above its card */
-  .proof .wts-proof__label {
-    align-self: end;
-  }
-
-  .proof .wts-proof__pair::after {
-    content: none;
-  }
-
-  .proof .wts-proof__side:first-child .wts-proof__card {
-    position: relative;
-  }
-
-  .proof .wts-proof__side:first-child .wts-proof__card::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: calc(100% + 1px);
-    width: 2.5rem;
-    border-top: 2px solid var(--wts-cloth-text);
-  }
 }
 
 .proof__more {
