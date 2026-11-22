@@ -1,6 +1,7 @@
 """A small made-up record for running the site without the real data: three councils' meetings, members and named
-votes, one made-up statement beside a vote, and one strategic authority's board and scrutiny meetings (South
-Yorkshire, of which Barnsley is a constituent council), indexed with the offline test embedder. Used by CI's
+votes, one made-up statement beside a vote, one strategic authority's board and scrutiny meetings (South
+Yorkshire, of which Barnsley is a constituent council), indexed with the offline test embedder, and two topic
+briefings written by the site's own weekly command with a stand-in for the model. Used by CI's
 accessibility check (scripts/a11y.mjs), and handy for working on the pages.
 
     uv run python scripts/fixture_site.py /tmp/councils-fixture
@@ -166,6 +167,66 @@ def save_briefing(settings, archive) -> None:
         {"type": "final", "answer": answer, "briefing_id": FIXTURE_BRIEFING}], id=FIXTURE_BRIEFING)
 
 
+# Topic briefings on the made-up record (decision 35), written by the site's own weekly command (councils.topics) as
+# of FIXTURE_TODAY, through the real pipeline and checks, with a stand-in for the model that writes from the passages
+# it is given: so the topic pages can be checked as they are drawn. Two topics have them; the rest show that they have
+# not been written yet.
+FIXTURE_TODAY = date(2025, 10, 20)
+FIXTURE_TOPICS = ("council-tax-and-budgets", "climate-and-net-zero")
+
+
+class FixtureModel:
+    """A stand-in for the model (``wts_core.ports.ModelClient``), with no network: for each of the first four passages
+    it is given, a point quoting the passage's first words, cited to it, under "In brief", then one sentence it cites
+    nothing for, so the page shows a passage with no source as well."""
+
+    provider = "fixture"
+    supports = frozenset({"citations"})
+
+    def stream(self, request):
+        from wts_core.events import Block, Citation, CitationDelta, Completed, TextDelta
+        from wts_core.ports import Usage
+
+        blocks = [Block("**In brief**\n\n")]
+        for i, doc in enumerate(request.documents[:4]):
+            words = " ".join(doc.passages[0].split()[:9]).rstrip(".,;:")
+            council = doc.title.split(",")[0].removeprefix("Minutes of ")
+            blocks.append(Block(("" if i == 0 else "\n") + f"- {council}: the minutes record “{words}”",
+                                (Citation(document=i, quoted=doc.passages[0]),)))
+        blocks.append(Block("\n\nAbout the evidence: every council here reached the same view on the question."))
+
+        def events():
+            for b in blocks:
+                if b.citations:
+                    yield CitationDelta(b.citations[0].document, b.citations[0].quoted)
+                yield TextDelta(b.text)
+            yield Completed(tuple(blocks), "claude-sonnet-5-5", "end_turn", Usage(input_uncached=1000, output=200))
+
+        return events()
+
+    def structured(self, request, schema):
+        from wts_core.ports import NoStructuredAnswer
+
+        raise NoStructuredAnswer("the stand-in reads no questions")
+
+
+def write_topics(settings) -> None:
+    from wts_core.adapters.hashing import HashingEmbedder
+
+    from councils import topics
+    from councils.api.app import build as site_parts
+    from councils.engine import Engine
+    from councils.rag.pipeline import Pipeline
+
+    site = site_parts(settings)
+    pipeline = Pipeline(settings, Engine(settings, HashingEmbedder(64), FIXTURE_TODAY), model=FixtureModel(),
+                        today=FIXTURE_TODAY)
+    run = topics.refresh(settings, site.db, pipeline, site.parts, only=FIXTURE_TOPICS, today=FIXTURE_TODAY,
+                         without_votes=(f"{CARDIFF}:3:30:0",))
+    if len(run.written) != len(FIXTURE_TOPICS):
+        sys.exit(f"the made-up topic briefings were not all written: {run.outcomes}")
+
+
 def build(folder: Path) -> None:
     from wts_core.adapters.hashing import HashingEmbedder
 
@@ -241,6 +302,7 @@ def build(folder: Path) -> None:
     archive.save("A made-up question, for testing the site", {}, [], id="madeupbrief")
     archive.withdraw("madeupbrief", "A made-up withdrawal, for testing the site.")
     save_briefing(settings, archive)
+    write_topics(settings)
     replies.hide(f"/votes/{CARDIFF}:3:30:0", "A made-up note, for testing the site: we are checking a report that "
                                              "the sides of this vote were read the wrong way round.")
     (folder / "updates.jsonl").write_text(json.dumps(

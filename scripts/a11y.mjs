@@ -14,7 +14,11 @@ const VOTE = "/votes/E08000038:1:10:0";
 // a named vote hidden while a concern is decided (the made-up record hides Cardiff's): the note in its place
 const HIDDEN = "/votes/W06000015:3:30:0";
 // E47000002: South Yorkshire's strategic authority; E12000007: the GLA, not covered; E10000011: East Sussex, withheld
+// the topic briefings (decision 35): the list, a topic the made-up record has a briefing for (written by the site's
+// own weekly command, scripts/fixture_site.py), and one not written yet
+const TOPIC = "/topics/council-tax-and-budgets";
 const pages = ["/", "/councils", "/councils/E08000038", "/councils/W06000015", "/councils/E06000001", VOTE, "/about",
+  "/topics", TOPIC, "/topics/adult-social-care",
   "/methodology", "/corrections", "/corrections?kind=statement", "/named", "/accessibility", "/privacy", "/terms",
   "/press", "/status", "/no-such-page",
   "/councils/E99999999", "/councils/E47000002", "/councils/E12000007", "/councils/E10000011", HIDDEN];
@@ -64,7 +68,7 @@ pages.push(`/b/${SAMPLE}`, SAVED);
 const ready = { "/councils": "table", "/councils/E08000038": ".statements", "/councils/W06000015": ".facts",
   "/councils/E47000002": ".facts", "/corrections?kind=statement": "#st-text",
   [VOTE]: ".statement", "/status": ".status-list", "/corrections": ".corrections-log", [HIDDEN]: ".notice",
-  [`/b/${SAMPLE}`]: ".wts-check", [SAVED]: ".wts-check" };
+  [`/b/${SAMPLE}`]: ".wts-check", [SAVED]: ".wts-check", "/topics": ".topic-list", [TOPIC]: ".wts-check" };
 
 const browser = await chromium.launch();
 let failures = 0;
@@ -117,11 +121,12 @@ for (const scheme of ["light", "dark"]) {
         ].filter(Boolean);
         for (const w of wrong) fail(`${scheme} ${width}px ${path}: ${w}`);
       }
-      if (path === SAVED && width === 1280) {
+      if ((path === SAVED || path === TOPIC) && width === 1280) {
+        await page.waitForSelector("#record-panel", { timeout: 5_000 }).catch(() => {});
         const panel = await page.evaluate(() => document.querySelector("#record-panel .wts-slip__top")?.textContent ?? "");
         if (!panel) fail(`${scheme} ${width}px ${path}: the record is not open beside the briefing`);
       }
-      if (path === SAVED && width === 390) {
+      if ((path === SAVED || path === TOPIC) && width === 390) {
         // the sheet: focus moves to its heading, stays inside it, and goes back to the chip when it closes
         const chip = page.locator(".answer .wts-chip").first();
         await chip.click();
@@ -151,7 +156,9 @@ for (const scheme of ["light", "dark"]) {
 const plain = [["/", "Council decisions, from the minutes"], ["/", "Every briefing, checked against the council minutes"], ["/councils", "Barnsley"],
   ["/councils/E08000038", "Members by party"], [VOTE, "Against"], [VOTE, "Not checked or endorsed by Where Councils Stand"],
   ["/councils/E47000002", "Constituent councils"], ["/corrections", "Briefing withdrawn"],
-  ["/corrections", "A made-up correction"], [HIDDEN, "This page is hidden while a concern about it is decided."]];
+  ["/corrections", "A made-up correction"], [HIDDEN, "This page is hidden while a concern about it is decided."],
+  ["/topics", "Council tax and budgets"], [TOPIC, "Checked against the council minutes"], [TOPIC, "word for word"],
+  ["/", "Every topic, with the question each one asks"]];
 for (const scheme of ["light", "dark"]) {
   for (const width of [1280, 390]) {
     const ctx = await browser.newContext({ viewport: { width, height: 1000 }, colorScheme: scheme, bypassCSP: true });

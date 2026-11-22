@@ -408,6 +408,17 @@ blockquote {
   font-size: 1.0625rem;
 }
 
+/* five links on one line on a phone (Topics joined them: decision 35) */
+@media (max-width: 26rem) {
+  .site-nav {
+    gap: 0 var(--space-s);
+  }
+
+  .site-nav a {
+    font-size: 1rem;
+  }
+}
+
 .site-nav a[aria-current="page"] {
   font-weight: 600;
   text-decoration-thickness: 3px;
@@ -1282,6 +1293,68 @@ body.has-sheet {
 .latest-result {
   font-size: var(--step--1);
   font-variant-numeric: tabular-nums;
+}
+
+/* The topic briefings (decision 35): the list on /topics and on the home page, written by the server, and a topic's
+   page, whose briefing the server writes in the family's markup */
+
+.topic-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: var(--space-m) var(--space-l);
+  margin-block: var(--space-l);
+  padding: 0;
+  list-style: none;
+}
+
+.topic-list li {
+  padding-block-start: var(--space-s);
+  border-block-start: 1px solid var(--rule);
+}
+
+.topic-list h2 {
+  font-size: var(--step-1);
+  margin-block: 0 var(--space-xs);
+}
+
+.topic-list p {
+  margin-block: var(--space-xs) 0;
+  max-width: var(--measure);
+}
+
+.topic-q {
+  font-family: var(--serif);
+}
+
+.topic-about {
+  max-width: var(--measure);
+}
+
+.topic-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-s) var(--space-l);
+  margin-block: var(--space-m);
+  padding: 0;
+  list-style: none;
+}
+
+.topic-links li {
+  padding-block-start: var(--space-xs);
+  border-block-start: 1px solid var(--rule);
+}
+
+.topic-links a {
+  font-family: var(--serif);
+  font-weight: 600;
+}
+
+.topic-links p {
+  margin-block: 0.2rem 0;
+}
+
+.topic-earlier ul {
+  padding-inline-start: 1.2em;
 }
 
 /* Votes: neutral marks */

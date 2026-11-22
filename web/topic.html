@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <!--#include head-->
+    <title>Topic | Where Councils Stand</title>
+    <meta name="description" content="A briefing written by AI from councils’ own minutes, checked against them, and written afresh every week." />
+    <link rel="stylesheet" href="/family/briefing.css" />
+  </head>
+  <body class="wts-headings">
+    <!--#include header-->
+    <main id="main">
+      <!-- The server writes the topic's briefing here in full (src/councils/api/topic_pages.py; decision 35); the
+           page's script adds the record beside it, or the sheet a chip opens on a phone. -->
+      <div id="app"></div>
+      <noscript><p>This page needs JavaScript. The minutes themselves are on each council’s own website.</p></noscript>
+    </main>
+    <!--#include footer-->
+    <script type="module" src="/src/topic.tsx"></script>
+  </body>
+</html>

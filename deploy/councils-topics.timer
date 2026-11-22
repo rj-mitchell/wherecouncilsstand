@@ -1,0 +1,12 @@
+[Unit]
+Description=Where Councils Stand: the topic briefings, every Sunday evening
+
+[Timer]
+# UTC, Sunday evening: a quiet hour for readers and the server, hours after the day's update (03:17, which may wait
+# on other sites' jobs into the afternoon) and before the next, so a week's briefings cover the week's minutes. The
+# weekly report on Monday morning then counts its spending.
+OnCalendar=Sun *-*-* 21:43:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

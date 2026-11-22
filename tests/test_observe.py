@@ -285,7 +285,7 @@ def test_every_command_the_timers_run_is_one_the_site_has():
             assert help_text.exit_code == 0, f"{unit.name}: no command `councils {name}`"
             for option in [word for word in rest if word.startswith("--")]:
                 assert option in help_text.output, f"{unit.name}: `councils {name}` has no {option}"
-    assert seen == {"update", "backup", "backup-check", "weekly-report", "tidy"}
+    assert seen == {"update", "backup", "backup-check", "weekly-report", "tidy", "topics"}
     # (that deploy/update.sh installs every unit, and when: tests/test_deploy.py)
 
 

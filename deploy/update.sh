@@ -11,7 +11,7 @@
 set -euo pipefail
 DIR="${DIR:-/opt/wherecouncilsstand}"
 UNITS_DIR="${UNITS_DIR:-/etc/systemd/system}"
-JOBS="councils-update councils-backup councils-backup-check councils-weekly-report"
+JOBS="councils-update councils-backup councils-backup-check councils-weekly-report councils-topics"
 
 echo "==> Fetching the latest version"
 self_before=$(sha1sum "$DIR/deploy/update.sh" | cut -d' ' -f1)
@@ -87,7 +87,7 @@ if [[ -z "$answered" ]]; then
 fi
 
 # only now, with the new site up: the timers' units as this version has them
-echo "==> Refreshing the update, backup, backup check and weekly report timers"
+echo "==> Refreshing the update, backup, backup check, weekly report and topic briefing timers"
 for job in $JOBS; do
   cp "$job.service" "$job.timer" "$UNITS_DIR/"
 done

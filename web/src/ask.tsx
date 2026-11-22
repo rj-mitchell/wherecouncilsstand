@@ -6,7 +6,8 @@ import { StrictMode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, u
   type MouseEvent } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
-import { ask, getBriefing, getCouncils, getMeta, type Answer, type AskEvent, type Meta, type Plan, type SourceCard } from "./api";
+import { ask, getBriefing, getCouncils, getMeta, type Answer, type AskEvent, type Meta, type Plan, type SourceCard,
+  type TopicRef } from "./api";
 import { checkCounts, citedSources, countsSentence, flagged, quotations, quotedFrom, type Evidence } from "./checked";
 import { BriefingText, CheckDetails, CheckStrip, type Checking } from "./components/Briefing";
 import { PlanChips } from "./components/PlanChips";
@@ -16,6 +17,7 @@ import { Sources } from "./components/Sources";
 import { Statements } from "./components/Statements";
 import { Found, Pile, PlanRead, Spines, Stages } from "./components/Wait";
 import { Why } from "./components/Why";
+import { drawConnector as drawLine, WIDE } from "./connector";
 import { briefingTitle, longDate, markNav, monthYear, number, setTitle } from "./format";
 
 type State = {
@@ -33,10 +35,12 @@ type State = {
   savedAt: string | null;
   /** the sources cited so far as the text streams, from its citation events */
   lit: number[];
+  /** a saved topic briefing's topic (decision 35), whose question is the topic's own */
+  topic: TopicRef | null;
 };
 
 const EMPTY: State = { question: "", phase: "idle", plan: null, sources: [], evidence: null, text: "", answer: null,
-  note: null, error: null, briefingId: null, cached: false, savedAt: null, lit: [] };
+  note: null, error: null, briefingId: null, cached: false, savedAt: null, lit: [], topic: null };
 
 function apply(s: State, ev: AskEvent): State {
   switch (ev.type) {
@@ -67,7 +71,6 @@ type Wait = { live: boolean; sourcesOnly: boolean; stage: number; dealt: number;
 const NO_WAIT: Wait = { live: false, sourcesOnly: false, stage: -1, dealt: 0, run: null, checked: [] };
 
 const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
-const WIDE = "(min-width: 64rem)";
 const canHover = () => matchMedia("(hover: hover)").matches;
 
 function useMedia(query: string): boolean {
@@ -125,7 +128,7 @@ function App() {
     if (shared) {
       getBriefing(shared[1])
         .then((b) => {
-          let st: State = { ...EMPTY, question: b.question, phase: "reading", savedAt: b.at };
+          let st: State = { ...EMPTY, question: b.question, phase: "reading", savedAt: b.at, topic: b.topic || null };
           for (const ev of b.events) st = apply(st, ev);
           setS({ ...st, briefingId: b.id });
           setQuestion(b.question);
@@ -297,34 +300,7 @@ function App() {
 
   /** A line from the chosen chip's line of text to its passage, across the gutter. */
   const drawConnector = useCallback((chip: HTMLElement | null) => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    svg.replaceChildren();
-    const grid = gridRef.current, text = textRef.current, passage = document.getElementById("record-passage");
-    if (!chip || !grid || !text || !passage || !matchMedia(WIDE).matches) return;
-    const box = grid.getBoundingClientRect(), a = chip.getBoundingClientRect();
-    if (a.bottom < 0 || a.top > innerHeight) return;
-    const m = passage.querySelector("mark.wts-now") || passage.querySelector("mark") || passage;
-    const b = m.getBoundingClientRect(), pb = passage.getBoundingClientRect(), t = text.getBoundingClientRect();
-    // from the end of the chip's line of text, so the line runs in the gutter and never across the briefing
-    const x1 = t.right + 6 - box.left, y1 = a.top + a.height / 2 - box.top;
-    const x2 = pb.left - 6 - box.left;
-    const y2 = Math.min(Math.max(b.top + 10, pb.top + 8), pb.bottom - 8) - box.top;
-    if (x2 - x1 < 12) return;
-    const mid = (x1 + x2) / 2, ns = "http://www.w3.org/2000/svg";
-    svg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
-    svg.setAttribute("width", String(box.width));
-    svg.setAttribute("height", String(box.height));
-    const path = document.createElementNS(ns, "path");
-    path.setAttribute("d", `M${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}`);
-    svg.append(path);
-    for (const [cx, cy] of [[x1, y1], [x2, y2]]) {
-      const dot = document.createElementNS(ns, "circle");
-      dot.setAttribute("cx", String(cx));
-      dot.setAttribute("cy", String(cy));
-      dot.setAttribute("r", "3");
-      svg.append(dot);
-    }
+    drawLine(svgRef.current, gridRef.current, textRef.current, chip);
   }, []);
 
   // open from the start on the first source, as the text cites them
@@ -536,7 +512,15 @@ function App() {
           <article className="briefing briefing--checked wts-cloth--councils" aria-labelledby="briefing-question">
             <p className="briefing-head" id="briefing-question">
               <span>
-                {s.savedAt ? "Asked by a reader" : "Your question"}: <em>{s.question}</em>
+                {s.topic ? (
+                  <>
+                    Topic briefing, <a href={s.topic.path}>{s.topic.title}</a>: <em>{s.question}</em>
+                  </>
+                ) : (
+                  <>
+                    {s.savedAt ? "Asked by a reader" : "Your question"}: <em>{s.question}</em>
+                  </>
+                )}
               </span>
               <span>{longDate(s.savedAt || new Date().toISOString())}</span>
             </p>

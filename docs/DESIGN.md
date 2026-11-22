@@ -174,3 +174,16 @@ is shown.
 A saved briefing's link preview is its own card (1200 by 630): the band of the cloth with the site's icon and name,
 "Briefing written by AI, checked against the council minutes", the title "Briefing from council minutes, <date>"
 (decision 33), the strip's three counts in words, and the day it was prepared.
+
+## Topic briefings
+
+Decision 35. `/topics` lists the ten topics in two columns on a computer and one on a phone, each with its title (a
+link, in the serif), its question in the serif, a line on what it covers, and when its briefing was prepared and from
+how many records (or that it has not been written yet). A topic's page opens with a link back to the list, the title,
+the question as the lede in the serif, and a sentence saying what a topic briefing is, when this one was prepared and
+what it was written from; then the briefing exactly as a saved one looks (the checked design above), without the
+question box, the wait or the offer of Where MPs Stand; then the sources and the earlier weeks' briefings. The record
+sits beside it on a computer and opens in a sheet on a phone, as on the home page. The home page lists the topics that
+have a briefing as serif links with the day each was prepared, in as many columns as fit, between the proof of the
+checking and the latest named votes. A topic's share card is the saved briefing's card, titled with the topic's
+question. On a phone the five links of the menu keep to one line, a little closer together.

@@ -22,7 +22,7 @@ from datetime import date
 from html import escape
 from pathlib import Path
 from typing import Any, Literal
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import (
@@ -57,7 +57,8 @@ from wts_core.usage import cache_key, visitor_code
 from councils import cards, scrub
 from councils import replies as right_of_reply
 from councils import state as state_database
-from councils.api import plaintext
+from councils import topics as topic_briefings
+from councils.api import plaintext, topic_pages
 from councils.api.data import Data
 from councils.config import INSTRUCTIONS_VERSION, REPO_ROOT, SITE, Settings, load_settings
 from councils.rag.checks import rechecked, shown
@@ -71,7 +72,7 @@ log = logging.getLogger(__name__)
 STREAM_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
 # The pages the app fills in, and the 404 page: served only at their own addresses (or for an address that isn't
 # there), never as pages of their own at /vote, /index.html ...
-TEMPLATES = {"index", "councils", "council", "vote", "404"}
+TEMPLATES = {"index", "councils", "council", "vote", "topics", "topic", "404"}
 # the most addresses one sitemap may hold (the sitemaps protocol allows 50,000)
 SITEMAP_MAX = 45_000
 # the named votes on the home page, newest first across every council (decision 32)
@@ -492,10 +493,13 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         instead = hidden().instead_of_briefing(b.id, b.events)
         if instead is not None:
             raise HTTPException(403, instead)
-        # a briefing saved before follow-up questions were left out of its options is served without them
+        # a briefing saved before follow-up questions were left out of its options is served without them; a topic's
+        # (decision 35) says which topic, so its page says so rather than "Asked by a reader"
+        topic = topic_briefings.find(settings, str(b.options.get("topic") or "")) if b.options.get("topic") else None
         return {"id": b.id, "at": b.created_at, "question": b.question,
                 "options": {k: val for k, val in b.options.items() if k != "history"},
-                "events": shown_events(shown(rechecked(b.events)), settings)}
+                "events": shown_events(shown(rechecked(b.events)), settings),
+                **({"topic": {"slug": topic.slug, "title": topic.title, "path": topic.path}} if topic else {})}
 
     # Councils and votes
     def shown_directory(now: right_of_reply.Hidden) -> dict[str, Any]:
@@ -668,8 +672,13 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
 
         def latest(html: str) -> str:
             """The newest named votes across every council, written into the page outside the app (decision 32),
-            so that readers with or without scripts, and search engines, find the record on the first page."""
+            so that readers with or without scripts, and search engines, find the record on the first page; and
+            the topic briefings (decision 35), before them."""
             now = hidden()
+            try:
+                html = topic_pages.with_home_topics(html, all_topics(now))
+            except Exception:  # noqa: BLE001 - the votes below are made all the same
+                log.exception("the topics were not written into the home page")
             votes = data.latest_votes(LATEST_VOTES, now.vote_hidden, frozenset(now.notes))
             return plaintext.with_latest_votes(html, votes)
 
@@ -724,6 +733,95 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
         path = cards.card_png(settings.data_dir / "cards", b.id, plaintext.briefing_title(b.created_at), counts,
                               plaintext.long_date(b.created_at[:10]),
                               icon if icon.is_file() else REPO_ROOT / "web" / "public" / "family" / "icon-512.png")
+        return FileResponse(path, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
+
+    # Topic briefings (decision 35): standing questions, each written afresh every week (src/councils/topics.py),
+    # with a page at a fixed address that the server writes in full, so search engines and readers without scripts
+    # read the briefing as everyone else does. Indexed, unlike a reader's saved briefing (decision 33).
+    def topic_shown(t: topic_briefings.Topic, now: right_of_reply.Hidden) -> topic_pages.Shown:
+        """A topic as its pages show it: its current briefing as any saved briefing is shown (the current checks,
+        the display rule, what may be shown), or the note in its place while a concern is decided."""
+        vs = topic_briefings.versions(site_parts.db, archive, t.slug)
+        if not vs:
+            return topic_pages.Shown(t)
+        b = archive.get(vs[0]["briefing_id"])
+        if b is None:
+            return topic_pages.Shown(t, earlier=vs[1:])
+        instead = now.instead_of_briefing(b.id, b.events)
+        if instead is not None:
+            return topic_pages.Shown(t, instead=instead, earlier=vs[1:])
+        evs = {ev.get("type"): ev for ev in shown_events(shown(rechecked(b.events)), settings)}
+        answer = (evs.get("final") or {}).get("answer")
+        if not isinstance(answer, dict) or answer.get("no_records") or not answer.get("segments"):
+            return topic_pages.Shown(t, earlier=vs[1:])
+        found = evs.get("sources") or {}
+        return topic_pages.Shown(t, view={"id": b.id, "at": b.created_at, "answer": answer,
+                                          "sources": found.get("sources") or [], "evidence": found.get("evidence"),
+                                          "plan": (evs.get("plan") or {}).get("plan") or {}},
+                                 earlier=vs[1:])
+
+    def all_topics(now: right_of_reply.Hidden) -> list[topic_pages.Shown]:
+        return [topic_shown(t, now) for t in topic_briefings.site_topics(settings)]
+
+    def a_topic(slug: str) -> topic_briefings.Topic:
+        t = topic_briefings.find(settings, slug)
+        if t is None:
+            raise HTTPException(404, "There is no topic at this address.")
+        return t
+
+    @app.get("/topics", include_in_schema=False)
+    def topics_page(request: Request):
+        base = site_url(request)
+
+        def build():
+            return (200, "Topics | Where Councils Stand",
+                    "Briefings on what councils across the UK keep returning to, from council tax to bins, each "
+                    "written by AI from their own minutes, checked against them, and written afresh every week.",
+                    base + "/topics", plaintext.breadcrumbs(base, [("Topics", "/topics")]),
+                    topic_pages.index_text(all_topics(hidden())))
+
+        return readable("topics", build)
+
+    @app.get("/topics/{slug}", include_in_schema=False)
+    def topic_page(slug: str, request: Request):
+        """A topic's page, with its current briefing written into it in full. Search engines may list it once it
+        has a briefing to show (never while it has none, or while it is hidden)."""
+        base = site_url(request)
+        t = topic_briefings.find(settings, slug)
+        url = f"{base}/topics/{quote(slug)}"
+        if t is None:
+            def missing():
+                return (404, "Topic not found | Where Councils Stand", "There is no topic at this address.", url, None,
+                        '<h1>Topic not found</h1><p>There is no topic at this address. See the '
+                        '<a href="/topics">list of topics</a>.</p>')
+            return readable("topic", missing)
+        s = topic_shown(t, hidden())
+
+        def build():
+            return (200, f"{topic_pages.title(t)} | Where Councils Stand", topic_pages.description(s), url,
+                    plaintext.breadcrumbs(base, [("Topics", "/topics"), (t.title, t.path)]),
+                    topic_pages.topic_text(s, base))
+
+        def card(html: str) -> str:
+            """The topic's own share card, with the topic's own question (the family's BRIEFINGS.md), once it has
+            a briefing; until then the family's card."""
+            if not s.written:
+                return html
+            return plaintext.with_card(html, f"{base}{t.path}/card.png", topic_pages.card_alt(s))
+
+        return readable("topic", build, noindex=not s.written, more=card)
+
+    @app.get("/topics/{slug}/card.png", include_in_schema=False)
+    def topic_card(slug: str):
+        """A topic's share card for its current briefing: the topic's own question, the strip's counts and the day
+        it was prepared, drawn once and kept (``councils.cards``)."""
+        s = topic_shown(a_topic(slug), hidden())
+        if not s.written or s.view is None:
+            raise HTTPException(404, "This topic has no briefing to show yet.")
+        icon = dist / "family" / "icon-512.png"
+        path = cards.topic_card_png(settings.data_dir / "cards", s.topic.slug, s.view["id"], s.topic.question,
+                                    cards.check_counts(s.view["answer"]), plaintext.long_date(s.prepared),
+                                    icon if icon.is_file() else REPO_ROOT / "web" / "public" / "family" / "icon-512.png")
         return FileResponse(path, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
 
     @app.get("/councils", include_in_schema=False)
@@ -813,26 +911,34 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     def sitemaps(request: Request) -> dict[str, list[tuple[str, str]]]:
         """Every page worth finding, as the sitemaps list them: by sitemap's name, each page's address and the date
         it last changed where that is known ("" where it isn't). The pages of text; every council and strategic
-        authority (the date of its latest meeting read); and the named votes, a sitemap for each year (the date of
+        authority (the date of its latest meeting read); the topics (the day each was prepared); and the named votes, a sitemap for each year (the date of
         the vote), split so that none holds more than ``SITEMAP_MAX`` addresses. Nothing hidden while a concern is
         decided is offered to a search engine.
 
-        Made once and kept until the record changes, something is hidden or shown again, or the site's address
-        does: the index and each sitemap it lists are asked for one after another, and each used to read every
+        Made once and kept until the record changes, something is hidden or shown again, a topic's briefing
+        changes, or the site's address does: the index and each sitemap it lists are asked for one after another, and each used to read every
         named vote again. What is hidden is asked on each request, so a page hidden leaves the sitemaps at once."""
         base, now = site_url(request), hidden()
-        key = (data.version(), base, frozenset(now.notes))
+        topics_now = all_topics(now)
+        key = (data.version(), base, frozenset(now.notes),
+               tuple((s.topic.slug, s.view["id"] if s.written and s.view else None) for s in topics_now))
         with sitemaps_lock:      # one request makes them while any others wait, rather than all at once
             if sitemaps_kept.get("key") != key:
-                sitemaps_kept.update(key=key, sitemaps=make_sitemaps(base, now))
+                sitemaps_kept.update(key=key, sitemaps=make_sitemaps(base, now, topics_now))
             return sitemaps_kept["sitemaps"]
 
-    def make_sitemaps(base: str, now: right_of_reply.Hidden) -> dict[str, list[tuple[str, str]]]:
+    def make_sitemaps(base: str, now: right_of_reply.Hidden,
+                      topics_now: list[topic_pages.Shown]) -> dict[str, list[tuple[str, str]]]:
         fixed = ["/", "/councils"] + [f"/{p.stem}" for p in sorted(dist.glob("*.html"))
                                       if p.stem not in (*TEMPLATES, "councils")]
         out: dict[str, list[tuple[str, str]]] = {"pages": [(base + p, "") for p in fixed]}
         out["councils"] = [(base + plaintext.council_path(r["gss"]), r.get("to") or "" if r.get("loaded") else "")
                            for r in shown_directory(now)["councils"]]
+        # the topics (decision 35): the list, dated by its newest briefing, and each topic with a briefing to show,
+        # dated by the day it was prepared
+        written = [s for s in topics_now if s.written]
+        out["topics"] = [(base + "/topics", max((s.prepared for s in written), default=""))] + [
+            (base + s.topic.path, s.prepared) for s in written]
         years: dict[str, list[tuple[str, str]]] = {}
         for vote_id, when in data.vote_dates():
             if not now.vote_hidden(vote_id):

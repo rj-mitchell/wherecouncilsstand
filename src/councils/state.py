@@ -3,8 +3,8 @@ its backups are called.
 
 It is a small SQLite file opened through the Where They Stand sites' shared package (wts-core,
 ``wts_core.state``; its docs/adr/0005). The minutes themselves are in Parquet and the search index; nothing here is
-needed to rebuild them. Every table in it is the shared package's own, named ``wts_…``, and only the package reads
-or writes them:
+needed to rebuild them. Every table in it but two is the shared package's own, named ``wts_…``, and only the package
+reads or writes them:
 
 * spending against the caps, the answer cache and saved briefings (``wts_spending``, ``wts_answer_cache``,
   ``wts_briefings``; ``wts_core.usage``);
@@ -12,6 +12,9 @@ or writes them:
   (``wts_reports``, ``wts_statements``, ``wts_statement_log``, ``wts_hidden``; src/councils/replies.py);
 * the record of each briefing (``wts_briefing_log`` and the tables beside it; ``wts_core.observe``);
 * the day's secret that a visitor's code is made with (``wts_kv``).
+
+The two that are the site's own say which saved briefing is each topic briefing's current one, and what the last
+weekly run did with each topic (``topic_versions``, ``topic_checks``; src/councils/topics.py, decision 35).
 
 No address of a visitor is stored. A visitor is a code made from their network and a secret that changes every
 day; the code is kept on the day's spending rows, for the daily limit, and forgotten after its day.
@@ -50,8 +53,9 @@ from councils.config import SITE, Settings
 # (deploy/councils-backup.service); 60 are kept off site.
 #
 # A restore takes only a database with these tables, which every backup made since the move onto the shared
-# package has. The site has no table of its own that a sister site lacks, so the database is also marked as this
-# site's when it is opened (``open_state``), and a backup marked as a sister site's is refused. A backup made
+# package has. The tables a restore asks for are the package's, which a sister site's backup has too, so the
+# database is also marked as this site's when it is opened (``open_state``), and a backup marked as a sister site's
+# is refused. (The topic tables, the site's own, are made when a backup without them is opened.) A backup made
 # before the move has none of these tables, and the command refuses it: docs/OPERATIONS.md says how to put one
 # back by hand.
 BACKUPS = BackupSpec(prefix="councils-state-", keep=14, keep_offsite=60, site=SITE.package,
@@ -77,9 +81,24 @@ BACKUP_ALERTS = AlertWording(
 # The tables, and the one-off import of the site's old rows
 
 
+# The site's own tables, beside the package's (a table without the ``wts_`` prefix is the site's, and the package
+# never reads or writes it): which saved briefing is each topic's current one (src/councils/topics.py, decision 35).
+# Numbered well clear of the package's own migrations.
+SITE_MIGRATIONS = (Migration(1000, "councils_topic_versions", (
+    # each briefing written for a topic; the newest that is not withdrawn is current
+    "CREATE TABLE IF NOT EXISTS topic_versions (briefing_id TEXT PRIMARY KEY, slug TEXT NOT NULL, "
+    "prepared_at TEXT NOT NULL, records_from TEXT, records_to TEXT)",
+    "CREATE INDEX IF NOT EXISTS topic_versions_slug ON topic_versions (slug, prepared_at)",
+    # what the last run did with each topic, for `councils topics list`
+    "CREATE TABLE IF NOT EXISTS topic_checks (slug TEXT PRIMARY KEY, checked_at TEXT NOT NULL, "
+    "outcome TEXT NOT NULL)",
+)),)
+
+
 def migrations() -> tuple[Migration, ...]:
-    """The tables of every part of the shared package this site uses. Each module names its own."""
-    return (*usage.migrations(), *replies.migrations(), *observe.migrations())
+    """The tables of every part of the shared package this site uses (each module names its own), and the site's
+    own."""
+    return (*usage.migrations(), *replies.migrations(), *observe.migrations(), *SITE_MIGRATIONS)
 
 
 # The tables the site kept before the shared package. They are no longer made, read or written by the site; on a

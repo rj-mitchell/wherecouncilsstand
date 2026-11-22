@@ -73,7 +73,7 @@ def a_local_table_of_prices_adds_to_the_sites(now: dict, golden: dict) -> None:
 
 # Sections config/settings.toml has gained with the shared package, each for something the site did not do before:
 # the structured log's limits, the alert thresholds (empty until the owner sets them), and the evaluation harness's.
-NEW_SECTIONS = ("logs", "alerts", "eval")
+NEW_SECTIONS = ("logs", "alerts", "eval", "topics")
 
 
 def added_to_the_settings_file(now: dict, golden: dict) -> None:

@@ -22,7 +22,7 @@ import shared  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 DEPLOY = ROOT / "deploy"
-JOBS = ("councils-update", "councils-backup", "councils-backup-check", "councils-weekly-report")
+JOBS = ("councils-update", "councils-backup", "councils-backup-check", "councils-weekly-report", "councils-topics")
 
 STAND_IN = """#!/usr/bin/env bash
 # a stand-in for {name}: notes what it was asked, and answers as the test says
@@ -78,7 +78,7 @@ TIMERS = tuple(f"{job}.timer" for job in JOBS)
 
 
 def test_the_timers_are_held_and_their_units_installed_only_once_the_new_site_is_up(server):
-    done, calls, units = server(active_timers=TIMERS[:3])            # the weekly report's timer is new: not there yet
+    done, calls, units = server(active_timers=TIMERS[:3])            # the weekly report's and topics' timers are new
     assert done.returncode == 0, done.stdout + done.stderr
     assert "✓ Where Councils Stand is running." in done.stdout
     order = [place(calls, what) for what in (
@@ -96,7 +96,7 @@ def test_the_timers_are_held_and_their_units_installed_only_once_the_new_site_is
 
 def test_a_first_install_has_no_timers_to_hold(server):
     done, calls, units = server()
-    assert done.returncode == 0 and len(units) == 8
+    assert done.returncode == 0 and len(units) == 10
     assert not any(c.startswith(("systemctl stop", "systemctl start")) for c in calls)
 
 

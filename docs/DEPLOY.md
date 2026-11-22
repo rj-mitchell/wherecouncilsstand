@@ -40,7 +40,8 @@ for written briefings; without one, the site shows the sources only.
    bash /opt/wherecouncilsstand/deploy/update.sh
    ```
    This builds and starts the site, and installs its timers: the nightly update, the nightly backup (with the
-   deletion after it), the daily check of the backups, and the weekly report.
+   deletion after it), the daily check of the backups, the weekly report, and the weekly topic briefings (once the
+   record is loaded, write the first with `councils topics refresh`: OPERATIONS.md, "Topic briefings").
 4. Add the site to the front door: `wherecouncilsstand.com=wherecouncilsstand` in `SITES` in
    `/opt/hansardgpt/deploy/.env`, then paste the origin certificate with
    `bash /opt/hansardgpt/deploy/cloudflare.sh site wherecouncilsstand.com` (HOSTING.md, "Other sites on this
