@@ -39,6 +39,22 @@ describe("BriefingText", () => {
     expect(container.querySelector(".resolved li .wts-cursor")?.getAttribute("aria-hidden")).toBe("true");
   });
 
+  it("keeps the space after a passage with no source outside its mark, so its tag never touches the next word", () => {
+    const { container } = render(
+      <BriefingText
+        sources={[card(1, "Rother District Council", "cabinet", "Cabinet", "2025-06-12")]}
+        segments={[
+          { text: "Most councils agreed. ", sources: [], status: "unsupported" },
+          { text: "Rother closed two toilets", sources: [1], status: "cited" },
+        ]}
+      />,
+    );
+    const marked = container.querySelector(".wts-nosource")!;
+    expect(marked.textContent).toBe("Most councils agreed.No source (no source)");
+    expect(marked.nextSibling?.textContent).toBe(" ");
+    expect(container.textContent).toContain("(no source) Rother closed two toilets");
+  });
+
   it("marks text whose citations all failed the check as text with no source, and says why", () => {
     const { container } = render(
       <BriefingText

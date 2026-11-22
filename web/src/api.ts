@@ -74,6 +74,8 @@ export type AskEvent =
   | { type: "sources"; sources: SourceCard[]; candidates: number; semantic: boolean; evidence: unknown }
   | { type: "text"; text: string }
   | { type: "citation"; search_result_index?: number; cited_text?: string }
+  /** the model's text is complete and the checks have begun (family/BRIEFINGS.md, "The wait", kit 2.3.0) */
+  | { type: "progress"; step: "checking" }
   | { type: "final"; answer: Answer | null; note?: string; briefing_id?: string; cached?: boolean }
   | { type: "error"; message: string };
 

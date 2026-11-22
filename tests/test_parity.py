@@ -1197,8 +1197,23 @@ def test_the_real_pipeline_sends_and_writes_what_it_did(tmp_path, monkeypatch):
         answer["events"] = with_named(answer["events"])
     golden[-1]["briefings"] = [[*b[:4], with_named(b[4])] for b in golden[-1]["briefings"]]
     golden[-1]["cached"] = [with_named(events) for events in golden[-1]["cached"]]
+    # Deliberately changed on 22 November 2026 (the family kit 2.3.0, family/BRIEFINGS.md, "The wait"): a briefing the
+    # model has finished writing sends {"type": "progress", "step": "checking"} straight after its last text and before
+    # its final event, so the page can say the checks are running. Only to the reader as it is written: not when the
+    # model declined, nor in a saved or cached copy, nor in a cached replay.
+    for answer in golden[:-1]:
+        answer["events"] = with_checking(answer["events"])
     for got, was in zip(now, golden, strict=True):
         assert got == was, was["case"]
+
+
+def with_checking(events: list) -> list:
+    out = []
+    for e in events:
+        if e.get("type") == "final" and e.get("answer") and not e["answer"].get("no_records") and not e.get("cached"):
+            out.append({"type": "progress", "step": "checking"})
+        out.append(e)
+    return out
 
 
 def with_named(events: list) -> list:
