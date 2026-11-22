@@ -140,6 +140,18 @@ url = "https://wherecouncilsstand.com"
 # the donation page, once the charity is registered; nothing is shown while it is empty
 donate_url = ""
 
+[ads]
+# Measurement for Google Ad Grants (docs/DECISIONS.md, 36; the charity's family/MEASUREMENT.md). Off, as it ships:
+# the pages are as they were, with no script, no banner and nothing from Google. Turned on (with the Google tag's ID
+# from the charity's Google Ads account) only once the charity is registered and its Ad Grants account is set up:
+# then every page loads the family kit's measure.js, which asks the reader first and loads the Google tag only if
+# they accept; the footer gains "Measurement choices"; and /privacy is the measurement version of the notice
+# (web/privacy-measurement.html), which the site refuses to start with while it is still a draft. On the server,
+# COUNCILS_ADS_MEASUREMENT and COUNCILS_ADS_TAG in deploy/.env set these, and the shared front door's policy must
+# be changed too (docs/DEPLOY.md, "Measurement").
+measurement = false
+tag = ""
+
 [logs]
 # The structured log of briefings (data/logs/briefings.jsonl): one line for each stage a briefing reached and one
 # for how it ended, with the record's id, a stage's name, a time in milliseconds and an error's class name. Never a

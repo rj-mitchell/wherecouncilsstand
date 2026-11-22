@@ -178,6 +178,10 @@ into a daily visitor code and never stored, and requests are not logged. The cod
 rows only, to count a visitor's briefings. After its day, a spending row keeps its day, model, token counts and
 cost, and nothing that says who it was for or at what time.
 
+Measurement for Google Ad Grants is built and off (decision 36): `[ads]` in `config/settings.toml`, or
+`COUNCILS_ADS_MEASUREMENT` and `COUNCILS_ADS_TAG` in `deploy/.env`. What the owner does to turn it on, in order, is in
+[`DEPLOY.md`](DEPLOY.md), "Measurement".
+
 ### Share cards of saved briefings
 
 A saved briefing with a written answer has its own link preview, `/b/<id>/card.png` (decision 34): drawn the first

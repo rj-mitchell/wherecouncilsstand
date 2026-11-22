@@ -563,7 +563,7 @@ function App() {
                         may be loaded. Briefings are meant to report what the minutes record, in neutral words.
                       </p>
                     )}
-                    {!wait.live && <CheckDetails answer={answer} found={s.sources.length} />}
+                    {!wait.live && <CheckDetails answer={answer} found={s.sources.length} briefing={s.briefingId} />}
                     {shareUrl && !wait.live && (
                       <>
                         <p className="small">

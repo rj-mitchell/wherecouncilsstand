@@ -517,3 +517,43 @@ finds real, checked briefings to read without asking anything. The topics are in
   glossary limits footer links, not the menu); on a phone the five links keep to one line. The sitemap has a
   `topics.xml` with `/topics`, dated by its newest briefing, and each topic with a briefing, dated by the day it was
   prepared.
+
+## 36. Measurement for Google Ad Grants, built and switched off
+
+The charity will apply for Google Ad Grants once it is registered, which needs the Google tag on the sites to count
+conversions (the charity's review plan of 21 November 2026, Part D, and the owner's answers 3 and 8: "build it now,
+switched off"; its `family/MEASUREMENT.md`, and the checklist `plans/2026-11-21-ad-grants-checklist.md`). It is built
+now and off, as on Where Landlords Stand (its decision 20), so the site is what it was until the owner turns it on
+(22 November 2026):
+
+- **The switch** is `[ads] measurement` and `tag` in `config/settings.toml`, false and empty; on the server
+  `COUNCILS_ADS_MEASUREMENT` and `COUNCILS_ADS_TAG` in `deploy/.env` (wts-core's environment settings), so it can be
+  turned on without a change to the repository. Measurement is on only with the switch on and a tag of Google's form
+  (`AW-`, `G-` or `GT-` and letters and digits); anything else is off.
+- **Off**, every page is sent as it is built, byte for byte as before but for the family kit's version comments and
+  its inert `data-wts-conversion` marks (and `data-wts-briefing` beside the mark at the end of a topic's briefing).
+  The kit's sync copies `measure.js` into `web/public/family` with its other files, so it is at `/family/measure.js`,
+  but no page loads it.
+- **On**, the server adds to every page it sends (the pages it writes, the pages sent as built, the 404 page) the
+  kit's `measure.js` in the head, with this site's conversions, and "Measurement choices" on a line of its own after
+  the footer's notice: it is a control, not a page, so the footer keeps the glossary's six links. Nothing is added to
+  the build: the pages are built once and the switch is read when the site starts, so turning it on or off is a
+  restart, not a new image.
+- **The privacy notice** while measuring is `web/privacy-measurement.html`, held beside `web/privacy.html` and built
+  with the other pages, served at `/privacy` only while measuring and never at an address of its own or in the
+  sitemap (it is one of the app's templates). It is a draft in the glossary's "once registered" words, naming Google
+  as an independent controller under the Google Ads Controller-Controller Data Protection Terms. The site refuses to
+  start with measurement on while it still says `NNNNNNN` for the charity number or "(draft" in its date.
+- **What is measured**, and nothing else (no page views, never a question): a finished briefing read to the end
+  (`briefing_read`: "How this briefing was checked", which ends every written briefing, comes into view, once for
+  each briefing, marked with the briefing's id); a source opened (`source_opened`: a source chip, the slip's link to
+  the council's minutes, a source's link in the list of sources, a named vote's link to the item in the minutes, and
+  a council's latest meetings); the Donate link in the kit's shelf (`donate_click`); and a report or statement sent
+  (`report_sent`: the forms call `window.wtsMeasure?.conversion("report_sent")` once the site has received it; they
+  need JavaScript, so there is no thank-you page to mark). The site offers no downloads, so it has no `download`,
+  and its banner does not name one.
+- **The content security policy.** This app sends none of its own: on the shared server Where MPs Stand's front door
+  sets every site's, and its policy would block the Google tag. Its change is prepared as the charity's
+  `family/front-door-measurement.patch` (and Where MPs Stand's own measurement work), used for each domain in
+  `MEASURED_SITES`; `wherecouncilsstand.com` joins that list only when the owner turns this site on
+  (`docs/DEPLOY.md`, "Measurement").

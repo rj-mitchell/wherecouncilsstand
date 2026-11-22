@@ -171,7 +171,7 @@ def topic_text(s: Shown, base: str) -> str:
             + f'<div class="briefing-text" id="topic-text">{checked.briefing_text(answer.get("segments") or [], sources)}'
               "</div>"
             + checked.loaded_notice(answer)
-            + checked.check_details(answer, len(sources))
+            + checked.check_details(answer, len(sources), view["id"])
             + f'<p class="small">This week’s briefing at its own address: <a href="/b/{e(view["id"])}">{e(link)}</a></p>'
               f'<p class="small"><a href="/corrections?page={e(quote(link, safe=""))}">Report a problem with this '
               "briefing</a></p>"

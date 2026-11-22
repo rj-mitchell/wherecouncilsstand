@@ -42,7 +42,9 @@ The site must look like a record of councils' decisions. Nothing on it should re
   their party and seat, in as many columns as fit.
 - The footer is the family shelf, then six links (About, Methodology, Corrections, Accessibility, Privacy, Source
   code) and one short paragraph with the independence line and the licence notice. Terms, Press, Status and the page
-  for people who are named are linked from the About page.
+  for people who are named are linked from the About page. While measurement for Google Ad Grants is on (decision 36; off as
+  it ships), a line of its own follows the paragraph: "Measurement choices", which opens the family's consent banner
+  again (a control, not a page, so not one of the six links).
 
 ## The family binding
 
@@ -51,6 +53,14 @@ family") gives the colour tokens, the fonts, the endorsement, the footer shelf, 
 theme colour. Its files are included as they are (`<!--#include family/shelf-->` in the partials) and never
 edited here. On the brown band the endorsement's spine is drawn a shade darker than the cloth so that it stays
 visible.
+
+The kit's `measure.js` and `measure-csp.json` are the family's consent banner and Google tag loader, and the hosts
+a content security policy adds for it (the charity's `family/MEASUREMENT.md`). Both are unused while measurement is
+off, as it ships (decision 36): no page loads `measure.js` until `[ads] measurement` is on, and then the server adds
+it to the head of every page it sends. The banner is drawn at the top of `<main>` in the kit's own styles
+(`family.css`, `.wts-measure`), with "Accept" and "Reject" the same button. The pages carry the kit's conversion marks
+(`data-wts-conversion`) whether it is on or off: the source chips and every link to a council's own minutes, "How
+this briefing was checked" at the end of a written briefing, and the shelf's Donate link.
 
 A link to a sister site names it and shows its spine, so the reader knows they are moving to another site (the
 charity's roadmap, "Links between the records"). The spine is the kit's own drawing, taken from its footer shelf

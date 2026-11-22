@@ -53,7 +53,7 @@ function lines(segments: Segment[]): Piece[][] {
 export function Chip({ n, source, seg }: { n: number; source?: SourceCard; seg?: number }) {
   const label = chipLabel(source);
   return (
-    <button type="button" className="wts-chip" data-source={n} data-seg={seg}>
+    <button type="button" className="wts-chip" data-source={n} data-seg={seg} data-wts-conversion="source_opened">
       <span className="wts-chip__in">
         <span className="wts-chip__n">
           <span className="wts-vh">Source </span>
@@ -352,8 +352,10 @@ export function CheckStrip({ answer, running = null }: { answer: Answer; running
 }
 
 /** "How this briefing was checked", at the end, linked from the strip: the verifier's own counts, and what each mark
- * means. */
-export function CheckDetails({ answer, found }: { answer: Answer; found: number }) {
+ * means. It ends a finished briefing, so it carries the family kit's mark for a briefing read to the end
+ * (``briefing_read``, counted once for each briefing, and only while measurement is on and the reader has agreed:
+ * docs/DECISIONS.md, 36). */
+export function CheckDetails({ answer, found, briefing }: { answer: Answer; found: number; briefing?: string | null }) {
   const total = Number(answer.citations_total || 0), invalid = Number(answer.citations_invalid || 0);
   const quotes = Number(answer.quotes_total || 0), missing = Number(answer.quotes_unverified || 0);
   const unsupported = Number(answer.unsupported_segments || 0);
@@ -371,7 +373,8 @@ export function CheckDetails({ answer, found }: { answer: Answer; found: number 
     "Some errors can still get through: check the minutes before relying on a point.",
   ];
   return (
-    <section className="check-details" id="check-details" aria-labelledby="check-details-head">
+    <section className="check-details" id="check-details" aria-labelledby="check-details-head"
+      data-wts-conversion="briefing_read" data-wts-briefing={briefing || undefined}>
       <h2 id="check-details-head">How this briefing was checked</h2>
       <ul>
         {points.filter(Boolean).map((p) => <li key={p}>{p}</li>)}
@@ -436,7 +439,7 @@ export function Slip({ source: s, quoted, nowSeg, passageId, short = false }: {
       </p>
       <div className="wts-slip__foot">
         {spans.length ? <span className="wts-slip__found">✓ Highlighted words found word for word</span> : <span />}
-        <a href={s.url} rel="noreferrer">The minutes on {s.council_name}’s website</a>
+        <a href={s.url} rel="noreferrer" data-wts-conversion="source_opened">The minutes on {s.council_name}’s website</a>
       </div>
     </div>
   );

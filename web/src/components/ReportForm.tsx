@@ -28,6 +28,12 @@ const QUESTION: Record<string, string> = {
 
 export const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
 
+/** Counted as the family kit's conversion "report_sent" once a report or statement has been sent: measure.js is on
+ * the page only while measurement is on (docs/DECISIONS.md, 36), and counts it only if the reader has agreed. */
+function sentForMeasuring() {
+  (window as { wtsMeasure?: { conversion(name: string): boolean } }).wtsMeasure?.conversion("report_sent");
+}
+
 function StatementFields({ page, setPage }: { page: string; setPage: (p: string) => void }) {
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
@@ -49,6 +55,7 @@ function StatementFields({ page, setPage }: { page: string; setPage: (p: string)
     try {
       const r = await sendStatement({ page, name, role, text, link, email, acting });
       setSent(r.id);
+      sentForMeasuring();
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -150,6 +157,7 @@ export function ReportForm({ search }: { search: string }) {
     try {
       const r = await sendReport({ kind, page, message, contact });
       setSent(r.id);
+      sentForMeasuring();
     } catch (err) {
       setError((err as Error).message);
     } finally {
