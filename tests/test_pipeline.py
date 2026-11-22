@@ -172,6 +172,37 @@ def test_pipeline_end_to_end_is_grounded(settings):
     assert all("Bloggs" not in b["text"] for s in sent if s["type"] == "search_result" for b in s["content"])
 
 
+def test_the_pipeline_says_when_the_checks_begin(settings, monkeypatch):
+    """Once the model's text is complete and before the checks run, a ``progress`` event with ``step: "checking"``
+    (the charity's family/BRIEFINGS.md, "The wait", kit 2.3.0): the page shows the checking line from then until the
+    final event, so the seconds the checks take never look finished. Once, after the last text, before the final."""
+    import councils.rag.pipeline as pipeline
+
+    seen: list[dict] = []
+    checks = pipeline.check_briefing
+
+    def watched(*a, **kw):
+        assert seen[-1] == {"type": "progress", "step": "checking"}, "the checks ran before the page was told"
+        return checks(*a, **kw)
+
+    monkeypatch.setattr(pipeline, "check_briefing", watched)
+    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), model=as_model(FakeClient()), today=TODAY)
+    for ev in pipe.run(AskRequest("What have councils decided about bin collections?")):
+        seen.append(ev)
+    kinds = [e["type"] for e in seen]
+    assert kinds.count("progress") == 1 and kinds[-2:] == ["progress", "final"]
+    assert kinds.index("progress") > max(i for i, k in enumerate(kinds) if k in ("text", "citation"))
+
+    # not when the model declined (there is nothing to check), nor when nothing was found (no model, no checks)
+    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), model=as_model(FakeClient(refuse=True)),
+                    today=TODAY)
+    assert all(e["type"] != "progress" for e in pipe.run(AskRequest("What have councils decided about bins?")))
+    pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), model=as_model(FakeClient()), today=TODAY)
+    req = AskRequest("anything", plan={"search_text": "bin collections", "filters": {
+        "date_from": "2019-01-01", "date_to": "2019-01-02"}})
+    assert all(e["type"] != "progress" for e in pipe.run(req))
+
+
 def test_pipeline_returns_no_records_without_calling_the_model(settings):
     client = FakeClient()
     pipe = Pipeline(settings, Engine(settings, HashingEmbedder(64), TODAY), model=as_model(client), today=TODAY)

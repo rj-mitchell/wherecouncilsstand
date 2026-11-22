@@ -282,6 +282,8 @@ blockquote {
 
 .split.even {
   margin-block-start: var(--space-xl);
+  /* two sections one above the other: as far apart as any two sections (an h2's own space above) */
+  row-gap: var(--space-xl);
 }
 
 /* Header: the cloth as a band across the page */
@@ -478,7 +480,7 @@ blockquote {
   display: flex;
   flex-wrap: wrap;
   gap: 0 var(--space-m);
-  margin: 0 0 var(--space-xs);
+  margin: 0 0 var(--space-s);
   padding: 0;
   list-style: none;
 }
@@ -675,6 +677,14 @@ input[type="checkbox"] {
 .filters .field {
   min-width: min(100%, 12rem);
   flex: 1 1 12rem;
+}
+
+/* on a tablet, two filters to a row, rather than three and one stretched under them (four to a row from about
+   58rem, where each has room for its words) */
+@media (min-width: 40rem) and (max-width: 58rem) {
+  .filters .field {
+    flex-basis: calc(50% - var(--space-m));
+  }
 }
 
 .examples {
@@ -876,6 +886,8 @@ input[type="checkbox"] {
   margin-block-start: var(--space-s);
   padding-block-start: var(--space-xs);
   border-block-start: 1px solid var(--rule);
+  /* its rule runs across the whole panel, not stopping at the measure where a panel is wider */
+  max-width: none;
 }
 
 /* the corrections log (the impartiality policy, 7.1), on the corrections page */
@@ -1033,6 +1045,22 @@ input[type="checkbox"] {
   flex: none;
 }
 
+/* and a long meeting and item give way to "Cited", which would otherwise be cut off at the end of the line */
+.wts-card__who {
+  display: flex;
+  gap: 0.35em;
+}
+
+.wts-card__who > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wts-card__who > .wts-card__cited {
+  flex: none;
+}
+
 .wait {
   display: grid;
   gap: var(--space-s);
@@ -1108,21 +1136,48 @@ body.has-sheet {
   margin: 0;
 }
 
-.proof__label {
-  margin: 0 0 var(--space-xs);
-  font-size: var(--step--1);
-  font-weight: 600;
-  color: var(--ink-soft);
+/* Kit 2.3.0's two cards of the same height. This site's label over the passage is long (decision 34 words it), so
+   from 48rem the two labels share a row, the cards start level, and the join is drawn across the gutter at the
+   cards' own middle rather than the kit's (which assumes one-line labels). */
+@media (min-width: 48rem) {
+  .proof .wts-proof__pair {
+    grid-template-rows: auto 1fr;
+    row-gap: 0;
+  }
+
+  .proof .wts-proof__side {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    row-gap: 0.4rem;
+  }
+
+  /* each label straight above its card */
+  .proof .wts-proof__label {
+    align-self: end;
+  }
+
+  .proof .wts-proof__pair::after {
+    content: none;
+  }
+
+  .proof .wts-proof__side:first-child .wts-proof__card {
+    position: relative;
+  }
+
+  .proof .wts-proof__side:first-child .wts-proof__card::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 1px);
+    width: 2.5rem;
+    border-top: 2px solid var(--wts-cloth-text);
+  }
 }
 
-.proof__note,
 .proof__more {
   margin: 0;
   font-size: var(--step--1);
-}
-
-.proof__note {
-  color: var(--ink-soft);
 }
 
 .progress {
@@ -1448,6 +1503,18 @@ th.num {
   font-variant-numeric: tabular-nums;
 }
 
+/* a table's text starts and ends on the column's own edges, level with the heading and paragraphs around it (its
+   rules still run the full width) */
+th:first-child,
+td:first-child {
+  padding-inline-start: 0;
+}
+
+th:last-child,
+td:last-child {
+  padding-inline-end: 0;
+}
+
 /* on a phone the columns need the room more than the gutters do */
 @media (width < 30rem) {
   th,
@@ -1643,6 +1710,12 @@ th.num {
   display: grid;
   gap: var(--space-m);
   max-width: var(--measure);
+}
+
+/* the grid's gap is the space between its parts: a paragraph's own margins would add to it (in a grid they don't
+   collapse), leaving a gap twice the others' */
+.form-grid > p {
+  margin-block: 0;
 }
 
 @media (width < 40rem) {

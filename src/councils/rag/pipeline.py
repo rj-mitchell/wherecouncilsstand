@@ -198,6 +198,9 @@ class Pipeline:
             yield {"type": "error", "message": "The model declined to answer this question.",
                    "usage": usage, "model": done.model}
             return
+        # the text is complete and the checks begin: the page shows the checking line until the final event
+        # (the charity's family/BRIEFINGS.md, "The wait", stage 4; kit 2.3.0)
+        yield {"type": "progress", "step": "checking"}
         if keep is not None:
             keep(tuple(request.documents), tuple(done.blocks), tuple(str(x.meta.get("heading") or "") for x in sources))
         # every check, in the family's one order: citations, openers about the records, spelling, loaded words,

@@ -1,7 +1,7 @@
 # Design
 
 The site's design: how it stays independent of councils, its layout, colours, type and mark. Where Councils Stand
-uses the Where They Stand family's design (family kit 2.1), shared with its sister sites: a white page, light grey
+uses the Where They Stand family's design (family kit 2.3), shared with its sister sites: a white page, light grey
 panels, the site's cloth as a solid band across the top of every page, Source Serif 4 for headings and Source Sans 3
 for everything else.
 
@@ -157,13 +157,18 @@ together.
 
 The stages run across the column, "Now" in words and a heavier border on the current one (two rows on a phone):
 reading the question, searching the record, writing from these records only, checking every citation and quotation.
-Before the plan arrives, the family's five spines; then the question as read in large chips ("Councils in Wales",
+The stage under way has a pulsing dot beside "Now". Before the plan arrives, the family's five books on a shelf, each
+taken down and put back in turn; then the question as read in large chips ("Councils in Wales",
 "since May 2022", "all parties", "full council and cabinet") with the plan's own reading. The records found arrive as
 cards, each a page of minutes (the council and the date, the meeting and the item, the first words of the passage),
 into a pile beside the text on wide screens and along a shelf on phones, under a running count and then the search's
 own summary ("24 records from 11 councils at 18 meetings: 15 from full council and 9 from cabinet"). Then "Writing
 from these N records only. The AI may use these and nothing else.", the text as it is written with a cursor, and each
-card marked "Cited" as its citation arrives. When the final event arrives the strip appears and its counts run up
+card marked "Cited" as its citation arrives. When the text is complete the server says the checks have begun (a
+`progress` event with `step: "checking"`, `rag/pipeline.py`): from then until the final event the stage is
+"Checking", the line about writing goes, and under the text the checking line says "Checking every citation and
+quotation against the council minutes. The briefing is finished when this is done." over a bar that moves while the
+checks run (the status region says it once). When the final event arrives the strip appears and its counts run up
 through the real results, each quotation taking its highlight in turn, the count of sentences without a source
 "counted last"; then the pile settles into the record. Cards are added as they arrive, with no canvas and no work per
 frame. With reduced motion the stages are the same, without movement. Sources only shows the first two stages, then
@@ -172,9 +177,10 @@ the list of sources.
 ### The home page
 
 Under the questions to try, the proof of the checking, in the page's HTML so that it needs no script: "Every
-briefing, checked against the council minutes", the three steps in large type, then a sentence with a record
-quotation and its chip on the left and, on the right, the page of minutes it came from with the same words
-highlighted, joined by a rule across the gutter (where the script runs, the two highlights are set level). The
+briefing, checked against the council minutes", the three steps in large type, then two cards of the same height
+(kit 2.3.0): on the left a sentence with a record quotation and its chip, and under it where the example comes from;
+on the right the page of minutes it came from with the same words highlighted, joined by a rule across the gutter at
+the cards' middle. Its labels share a row from 48rem, so the cards start level although the passage's label is long. The
 example is a genuine minute from the site's test record, Glasgow City Council's City Administration Committee of 25
 January 2024, and the page says where it comes from. A link to the methodology ends it. It is hidden once a briefing
 is shown.

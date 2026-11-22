@@ -15,14 +15,14 @@ import { RecordPanel, Sheet } from "./components/Record";
 import { AskSister, writtenBriefing } from "./components/Sister";
 import { Sources } from "./components/Sources";
 import { Statements } from "./components/Statements";
-import { Found, Pile, PlanRead, Spines, Stages } from "./components/Wait";
+import { CHECKING, CheckingLine, Found, Pile, PlanRead, Spines, Stages } from "./components/Wait";
 import { Why } from "./components/Why";
 import { drawConnector as drawLine, WIDE } from "./connector";
 import { briefingTitle, longDate, markNav, monthYear, number, setTitle } from "./format";
 
 type State = {
   question: string;
-  phase: "idle" | "reading" | "finding" | "writing" | "done" | "error";
+  phase: "idle" | "reading" | "finding" | "writing" | "checking" | "done" | "error";
   plan: Plan | null;
   sources: SourceCard[];
   evidence: Evidence | null;
@@ -54,6 +54,8 @@ function apply(s: State, ev: AskEvent): State {
       const n = s.sources[Number(ev.search_result_index)]?.n;
       return n === undefined || s.lit.includes(n) ? s : { ...s, lit: [...s.lit, n] };
     }
+    case "progress":
+      return ev.step === "checking" ? { ...s, phase: "checking" } : s;
     case "final":
       return { ...s, answer: ev.answer, note: ev.note || null, briefingId: ev.briefing_id || s.briefingId,
         cached: !!ev.cached, phase: "done" };
@@ -64,11 +66,12 @@ function apply(s: State, ev: AskEvent): State {
   }
 }
 
-/** The wait, as it stands: whether it is shown, for which choice, its stage, the cards dealt into the pile, the
- * checks' results running up (null until the final event), and the cards whose citations have been checked. */
-type Wait = { live: boolean; sourcesOnly: boolean; stage: number; dealt: number; run: (Checking & { citations: number; quotes: number }) | null;
-  checked: number[] };
-const NO_WAIT: Wait = { live: false, sourcesOnly: false, stage: -1, dealt: 0, run: null, checked: [] };
+/** The wait, as it stands: whether it is shown, for which choice, its stage, the cards dealt into the pile, whether
+ * the checks are running (from the server's progress event until the final one), the checks' results running up
+ * (null until the final event), and the cards whose citations have been checked. */
+type Wait = { live: boolean; sourcesOnly: boolean; stage: number; dealt: number; checking: boolean;
+  run: (Checking & { citations: number; quotes: number }) | null; checked: number[] };
+const NO_WAIT: Wait = { live: false, sourcesOnly: false, stage: -1, dealt: 0, checking: false, run: null, checked: [] };
 
 const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const canHover = () => matchMedia("(hover: hover)").matches;
@@ -180,12 +183,12 @@ function App() {
     const steps = segs.map((seg, i) => [seg, i] as const).filter(([seg]) => seg.status === "cited");
     if (reduced() || !steps.length) {
       // without movement: the results at once, in the same stage
-      setWait((w) => ({ ...w, stage: 3, run: { citations: c.citations_matched, quotes: c.quotes_found, upTo: segs.length,
-        flash: null } }));
+      setWait((w) => ({ ...w, stage: 3, checking: false, run: { citations: c.citations_matched, quotes: c.quotes_found,
+        upTo: segs.length, flash: null } }));
       later(() => finish(answer), reduced() ? 400 : 0);
       return;
     }
-    setWait((w) => ({ ...w, stage: 3, run: { citations: 0, quotes: 0, upTo: -1, flash: null } }));
+    setWait((w) => ({ ...w, stage: 3, checking: false, run: { citations: 0, quotes: 0, upTo: -1, flash: null } }));
     const stepMs = Math.min(110, 2400 / steps.length);
     let cit = 0, qt = 0;
     const done: number[] = [];
@@ -225,11 +228,17 @@ function App() {
       setWait((w) => ({ ...w, stage: 2 }));
       setSaid(after.sources.length === 1 ? "Writing the briefing from this one record only."
         : `Writing the briefing from these ${after.sources.length} records only.`);
+    } else if (ev.type === "progress" && ev.step === "checking") {
+      // 4. the text is written and the checks have begun: the checking line until the final event, said once
+      dealtAll(after.sources.length);
+      setWait((w) => ({ ...w, stage: 3, checking: true }));
+      setSaid(CHECKING);
     } else if (ev.type === "final") {
       const a = ev.answer;
       if (a && !a.no_records) {
         dealtAll(after.sources.length);
-        setSaid("Checking every citation and quotation.");
+        // already said when the server said the checks had begun (a cached briefing's replay has no such event)
+        if (before.phase !== "checking") setSaid("Checking every citation and quotation.");
         check(a);
         // on a phone the strip can be below the screen while the cards fill it: brought into view, but only from
         // above, so a reader already further down is not moved
@@ -425,7 +434,7 @@ function App() {
   }, [wait.dealt, s.lit.length]);
 
   const t = meta?.totals;
-  const busy = wait.live || ["reading", "finding", "writing"].includes(s.phase);
+  const busy = wait.live || ["reading", "finding", "writing", "checking"].includes(s.phase);
   const shareUrl = s.briefingId ? `${location.origin}/b/${s.briefingId}` : null;
   const written = !!answer || (!!s.text && !wait.sourcesOnly);
   const pile = wait.live && s.sources.length > 0 && wait.stage >= 1 ? (
@@ -537,7 +546,8 @@ function App() {
                       <Found evidence={s.evidence} shown={wait.dealt} total={s.sources.length} />
                     )}
                     {!wide && pile}
-                    {wait.stage >= 2 && !wait.sourcesOnly && (
+                    {/* only while the text is written: from the checks on, the stage list and the checking line say it */}
+                    {wait.stage === 2 && !wait.sourcesOnly && (
                       <p className="wait__only">
                         {s.sources.length === 1
                           ? "Writing from this one record only. The AI may use it and nothing else."
@@ -553,9 +563,10 @@ function App() {
                   {s.answer ? (
                     <BriefingText segments={s.answer.segments} sources={s.sources} checking={wait.run} />
                   ) : (
-                    s.text && <BriefingText text={s.text} cursor={wait.live} />
+                    s.text && <BriefingText text={s.text} cursor={wait.live && !wait.checking} />
                   )}
                 </div>
+                {wait.live && wait.checking && <CheckingLine />}
                 {s.note && <p className="notice info">{s.note}</p>}
                 {s.error && <p className="notice">{s.error}</p>}
                 {answer && (
@@ -597,30 +608,7 @@ function App() {
   );
 }
 
-/** The home page's proof is drawn without a script, its sentence set beside the passage it came from. Where the
- * script runs, the two highlights are made level, and the rule between them drawn at their first line, whatever the
- * width (the kit's --wts-join). */
-function alignProof() {
-  const pair = document.querySelector<HTMLElement>("#proof .wts-proof__pair");
-  if (!pair || pair.offsetParent === null) return;
-  const left = pair.firstElementChild as HTMLElement | null;
-  const quote = pair.querySelector(".wts-proof__said .wts-quote"), mark = pair.querySelector(".wts-passage mark");
-  if (!left || !quote || !mark) return;
-  if (!matchMedia("(min-width: 48rem)").matches) {
-    left.style.removeProperty("padding-block-start");
-    return;
-  }
-  left.style.setProperty("padding-block-start", "0px");
-  const q = quote.getClientRects()[0], m = mark.getClientRects()[0], box = pair.getBoundingClientRect();
-  if (!q || !m) return;
-  left.style.setProperty("padding-block-start", `${Math.max(0, m.top - q.top)}px`);
-  pair.style.setProperty("--wts-join", `${m.top - box.top + m.height / 2}px`);
-}
-
 markNav();
-alignProof();
-addEventListener("resize", alignProof);
-document.fonts?.ready.then(alignProof);
 createRoot(document.getElementById("app")!).render(
   <StrictMode>
     <App />

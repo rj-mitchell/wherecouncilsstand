@@ -1,6 +1,7 @@
 /** The wait for a briefing, drawn from the stream's real events in order (family/BRIEFINGS.md, "The wait"): the
  * stages, the family's spines before the first event, the question as read, the records found arriving as pages of
- * minutes into a pile, and the line that says the AI writes from these records only. Nothing here is invented and
+ * minutes into a pile, the line that says the AI writes from these records only, and the checking line while the
+ * checks run. Nothing here is invented and
  * nothing waits for an animation: each part is drawn when its event has arrived. */
 import { forwardRef, type CSSProperties } from "react";
 import type { Plan, SourceCard } from "../api";
@@ -59,6 +60,22 @@ export function PlanRead({ plan, regions, types, councilNames }: {
   );
 }
 
+/** What the checking line says, and the status region with it, once: from the server's progress event (the text is
+ * written and the checks have begun) until the final event (family/BRIEFINGS.md, "The wait", kit 2.3.0). */
+export const CHECKING = "Checking every citation and quotation against the council minutes. The briefing is finished " +
+  "when this is done.";
+
+/** The checking line under the text, with the kit's bar, which moves while the checks run (still with reduced
+ * motion, when the words carry it). Its words are said by the page's one status region, so it is not a region itself. */
+export function CheckingLine() {
+  return (
+    <div className="wts-checking">
+      <span>{CHECKING}</span>
+      <div className="wts-checking__bar" />
+    </div>
+  );
+}
+
 /** What was found, in words: the running count while the cards arrive, then the summary. */
 export function Found({ evidence, shown, total }: { evidence: Evidence | null; shown: number; total: number }) {
   const f = foundWords(evidence, shown, total);
@@ -82,7 +99,7 @@ function Card({ s, cited, checked, tilt }: { s: SourceCard; cited: boolean; chec
         <span>{longDate(s.date)}</span>
       </div>
       <div className="wts-card__who">
-        {meeting.charAt(0).toUpperCase() + meeting.slice(1)}, {itemLabel(s)}
+        <span>{meeting.charAt(0).toUpperCase() + meeting.slice(1)}, {itemLabel(s)}</span>
         <span className="wts-card__cited"> Cited</span>
       </div>
       <div className="wts-card__line">{firstWords(s.text)}</div>
