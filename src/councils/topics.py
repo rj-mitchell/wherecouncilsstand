@@ -32,7 +32,7 @@ import re
 import tomllib
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -40,6 +40,7 @@ from wts_core.briefing import DeskParts
 from wts_core.briefing.stages import Stages, calling, marking
 from wts_core.dates import long_date
 from wts_core.ports import SYSTEM_CLOCK, Clock
+from wts_core.replies.days import months_before
 from wts_core.state import StateDB, iso
 from wts_core.usage import SavedBriefings
 
@@ -114,23 +115,11 @@ def find(settings: Settings, slug: str) -> Topic | None:
     return next((t for t in site_topics(settings) if t.slug == slug), None)
 
 
-def months_before(day: date, months: int) -> date:
-    """The same day ``months`` earlier, or the last day of that month where it is shorter."""
-    y, m = divmod(day.year * 12 + day.month - 1 - months, 12)
-    m += 1
-    for d in range(day.day, 27, -1):
-        try:
-            return date(y, m, d)
-        except ValueError:
-            continue
-    return date(y, m, min(day.day, 28))
-
-
 def plan_for(topic: Topic, today: date, start: date) -> dict[str, Any]:
     """The topic's question as read: its own search, from ``months`` before ``today`` to today, in the meetings it
     names (or those a reader's question with no filters searches), balanced across councils run by different
     parties. Given to the pipeline as a plan, so no model reads it."""
-    since = max(months_before(today, topic.months), start)
+    since = max(months_before(datetime.combine(today, time()), topic.months).date(), start)
     return {"search_text": topic.search, "group_by": "control", "parser": "topic", "wants_votes": False,
             "filters": {"date_from": since.isoformat(), "date_to": today.isoformat(), "kinds": list(topic.kinds)},
             "interpretation": f"{topic.title}, in the minutes of councils across the UK from {long_date(since)} to "
