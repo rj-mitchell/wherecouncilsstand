@@ -269,7 +269,7 @@ def test_a_topic_page_has_its_briefing_written_in_full_by_the_server(pages):
     assert 'class="wts-check"' in main and "Checked against the council minutes" in main
     assert re.search(r'<span class="wts-check__num">1</span><span>of 1</span></span><span>citation matched', main)
     assert 'class="wts-chip" data-source="1"' in main
-    assert re.search(r"Source </span>1</span><span>(Barnsley Metropolitan|Guildford) Borough Council, full council, "
+    assert re.search(r"Source</span> 1</span><span>(Barnsley Metropolitan|Guildford) Borough Council, full council, "
                      r"\d+ (February|March) 2025</span>", main)
     assert 'class="wts-nosource" id="nosource-' in main and "(no source)" in main
     assert "How this briefing was checked" in main and 'id="sources-heading"' in main
