@@ -2,8 +2,10 @@
 ``wts_core.settings``), and the facts about this site that are fixed in its code.
 
 The loader reads config/settings.toml (or the file named by ``COUNCILS_CONFIG``), then ``settings.local.toml`` in
-the data folder if there is one (laid over it one level deep), then any overrides given by name
-(``**{"usage.daily_spend_cap_usd": 1.0}``). The data folder is ``COUNCILS_DATA_DIR``, else ``[paths] data_dir``.
+the data folder if there is one (laid over it one level deep), then the measurement switch the server keeps in
+deploy/.env (``COUNCILS_ADS_MEASUREMENT`` and ``COUNCILS_ADS_TAG``: docs/DEPLOY.md, "Measurement"), then any
+overrides given by name (``**{"usage.daily_spend_cap_usd": 1.0}``). The data folder is ``COUNCILS_DATA_DIR``, else
+``[paths] data_dir``.
 """
 
 from __future__ import annotations
@@ -46,6 +48,13 @@ SITE = core.Site(
     state_file="state.db",
     version=_version(),
     instructions_version=INSTRUCTIONS_VERSION,
+    # The measurement switch (docs/DECISIONS.md, 36) can be set on the server in deploy/.env, without changing the
+    # repository: COUNCILS_ADS_MEASUREMENT ("1", "true" or "yes") sets [ads] measurement, and COUNCILS_ADS_TAG
+    # [ads] tag.
+    env_settings=(
+        core.EnvSetting("ADS_MEASUREMENT", "ads", "measurement", "flag"),
+        core.EnvSetting("ADS_TAG", "ads", "tag"),
+    ),
 )
 
 

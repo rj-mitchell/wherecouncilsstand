@@ -135,7 +135,7 @@ function Recent({ c }: { c: CouncilPage }) {
           <li key={m.url}>
             <span>{longDate(m.date)}</span>
             <span>
-              <a href={m.url}>{m.committee}</a>
+              <a href={m.url} data-wts-conversion="source_opened">{m.committee}</a>
               {m.items_with_minutes ? "" : <span className="muted"> (minutes not published yet)</span>}
             </span>
           </li>

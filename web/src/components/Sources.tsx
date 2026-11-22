@@ -28,7 +28,7 @@ export function Sources({ sources }: { sources: SourceCard[] }) {
                 <span className="source-n">{s.n}</span>
                 <div>
                   <Heading>
-                    <a href={s.url} rel="noreferrer">
+                    <a href={s.url} rel="noreferrer" data-wts-conversion="source_opened">
                       {s.item_number ? `${s.item_number} ` : ""}
                       {s.item_title}
                     </a>

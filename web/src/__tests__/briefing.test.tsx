@@ -119,7 +119,8 @@ describe("Chip", () => {
       <Chip n={3} source={card(3, "Barnsley Metropolitan Borough Council", "council", "Full Council", "2026-02-26")} />,
     );
     expect(container.innerHTML).toBe(
-      '<button type="button" class="wts-chip" data-source="3"><span class="wts-chip__in"><span class="wts-chip__n">' +
+      '<button type="button" class="wts-chip" data-source="3" data-wts-conversion="source_opened"><span class="wts-chip__in">' +
+        '<span class="wts-chip__n">' +
         '<span class="wts-vh">Source </span>3</span><span>Barnsley Metropolitan Borough Council, full council, 26 February 2026' +
         "</span></span></button>",
     );

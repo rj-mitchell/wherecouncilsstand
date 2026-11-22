@@ -26,7 +26,7 @@ def stored(value, tmp: Path):
     return shared.plain(value, (tmp, "<tmp>"), (REPO_ROOT, "<root>"))
 
 
-# Settings: no difference
+# Settings: no difference but the measurement switch, [ads] (below)
 
 
 @pytest.mark.parametrize("case", shared.read("settings.json"), ids=lambda case: case["name"])
@@ -46,6 +46,10 @@ def test_settings_resolve_as_before(case, tmp_path):
             env["COUNCILS_CONFIG"] = str(path)
     s = load_settings(argument, env, **case.get("overrides", {}))
     now = stored(shared.settings_given(s), tmp)
+    # The one section added on purpose: the measurement switch, [ads], on 21 November 2026 (docs/DECISIONS.md, 36),
+    # after the recording. It ships off with no tag; a file without it reads as an empty table, since the server may
+    # set it from deploy/.env (COUNCILS_ADS_MEASUREMENT, COUNCILS_ADS_TAG).
+    assert now["raw"].pop("ads") == ({"measurement": False, "tag": ""} if case["config"] == "real" else {})
     if case["config"] == "real":
         if "[usage.models." in case.get("local", ""):
             a_local_table_of_prices_adds_to_the_sites(now, case["gives"])

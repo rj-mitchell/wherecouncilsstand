@@ -63,7 +63,7 @@ function Vote({ v, id }: { v: VotePage; id: string }) {
         <blockquote className="excerpt">{v.excerpt}</blockquote>
       )}
       <p className="small">
-        <a href={v.url}>The item in the council’s own minutes</a>. Names are matched to the councillors listed at the
+        <a href={v.url} data-wts-conversion="source_opened">The item in the council’s own minutes</a>. Names are matched to the councillors listed at the
         meeting. The names of people who aren’t councillors are removed.
       </p>
       {v.siblings && v.siblings.length > 0 && (

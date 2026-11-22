@@ -96,8 +96,42 @@ docker compose run --rm -T app councils backup --to /backups     # ends "Off-sit
 
 Putting a backup back is in [`OPERATIONS.md`](OPERATIONS.md), "The state database".
 
+## Measurement
+
+Measurement for Google Ad Grants ([decision 36](DECISIONS.md#36-measurement-for-google-ad-grants-built-and-switched-off);
+the charity's `family/MEASUREMENT.md`) is built and off: `[ads] measurement = false` and `tag = ""` in
+`config/settings.toml`. Off, the site sends its pages exactly as built, with nothing from Google. Turn it on only once
+the charity is registered and its Google Ads account has the conversions set up (`briefing_read`, `source_opened`,
+`donate_click`, `report_sent`: this site has no downloads), following the charity's checklist,
+`plans/2026-11-21-ad-grants-checklist.md` ("On the day the charity is registered"), in this order:
+
+1. Finish `web/privacy-measurement.html`: the charity number in place of `NNNNNNN`, the date in its last line in place
+   of "21 November 2026 (draft, for when measurement is turned on)", and the Google entity the Google Ads account's
+   terms name if it is not simply "Google". Read it against the checklist, and merge it. Until it is finished the site
+   will not start with measurement on.
+2. The front door. On this server Where MPs Stand's Caddy front door sends its own content security policy in place
+   of any site's, and it would block the Google tag; this app sends none of its own. Once Where MPs Stand carries
+   `MEASURED_SITES` support (its own measurement work, or the charity's `family/front-door-measurement.patch` applied
+   to `wherempsstand` and merged, then `cd /opt/hansardgpt/deploy && bash update.sh`), add this site's domain to
+   `MEASURED_SITES` in `/opt/hansardgpt/deploy/.env` (space-separated, beside any other site already there, for
+   example `MEASURED_SITES="wherelandlordsstand.com wherecouncilsstand.com"`) and run
+   `cd /opt/hansardgpt/deploy && bash update.sh` again. Until `MEASURED_SITES` names this site, the front door sends
+   what it sends today.
+3. Add `COUNCILS_ADS_MEASUREMENT=true` and `COUNCILS_ADS_TAG=AW-…` (the tag's ID from the Google Ads account) to
+   `/opt/wherecouncilsstand/deploy/.env`, and run `bash /opt/wherecouncilsstand/deploy/update.sh`, which builds the
+   image with the finished notice and starts the site with the switch on.
+4. Check in a private window: the banner shows at the top of the page; "Reject" leaves no request to Google (the
+   browser's network panel); "Accept" loads the tag, and Google Ads' tag diagnostics see a conversion; "Measurement
+   choices" at the foot of a page opens the banner again; `/privacy` is the measurement notice; and
+   `curl -sI https://wherecouncilsstand.com/ | grep -i content-security-policy` names
+   `https://www.googletagmanager.com`.
+
+To turn it off, remove the two lines from `.env` and run `update.sh`, then take the site out of `MEASURED_SITES` and
+run Where MPs Stand's `update.sh`. The pages are again as they were, and readers' stored choices do nothing.
+
 ## Privacy on the server
 
 The privacy notice (`web/privacy.html`) names Cloudflare, which carries the site's visits, and says requests are
 not logged: `councils serve` turns its access log off, and the front door keeps none. Keep both true when changing
-either.
+either. While measurement is on, `/privacy` is `web/privacy-measurement.html` instead ("Measurement",
+above), which says the same: change the two together.

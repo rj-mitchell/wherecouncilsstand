@@ -58,7 +58,7 @@ from councils import cards, scrub
 from councils import replies as right_of_reply
 from councils import state as state_database
 from councils import topics as topic_briefings
-from councils.api import plaintext, topic_pages
+from councils.api import measure, plaintext, topic_pages
 from councils.api.data import Data
 from councils.config import INSTRUCTIONS_VERSION, REPO_ROOT, SITE, Settings, load_settings
 from councils.rag.checks import rechecked, shown
@@ -71,8 +71,9 @@ log = logging.getLogger(__name__)
 # so that a proxy passes each event on as it is written
 STREAM_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
 # The pages the app fills in, and the 404 page: served only at their own addresses (or for an address that isn't
-# there), never as pages of their own at /vote, /index.html ...
-TEMPLATES = {"index", "councils", "council", "vote", "topics", "topic", "404"}
+# there), never as pages of their own at /vote, /index.html ... And the measurement version of the privacy notice,
+# served at /privacy only while measurement is on (decision 36), never at an address of its own.
+TEMPLATES = {"index", "councils", "council", "vote", "topics", "topic", "404", measure.NOTICE}
 # the most addresses one sitemap may hold (the sitemaps protocol allows 50,000)
 SITEMAP_MAX = 45_000
 # the named votes on the home page, newest first across every council (decision 32)
@@ -309,6 +310,16 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     # content security policy blocks, so they showed a blank page. The machine-readable description stays.
     app = FastAPI(title="Where Councils Stand", docs_url=None, redoc_url=None, openapi_url="/api/openapi.json")
     app.state.councils = site_parts
+    # Measurement for Google Ad Grants (decision 36; api/measure.py): the Google tag's ID while the switch is on, else
+    # "". Off, every page is sent as it was built. On, every page is sent with the kit's measure.js and "Measurement
+    # choices", and /privacy is the measurement notice, which must be finished before the site will start.
+    google_tag = measure.tag(settings)
+    if google_tag:
+        measure.check_notice(dist)
+
+    def as_sent(html: str) -> str:
+        """A page as it is sent: as built, or while measuring with the script and "Measurement choices"."""
+        return measure.page(html, google_tag) if google_tag else html
 
     def get_pipeline() -> Pipeline:
         with lock:
@@ -648,10 +659,10 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             status, title, description, url, ld, text = build()
         except Exception:  # noqa: BLE001 - the readable copy is a courtesy; never fail the page for it
             log.exception("readable page text not built for %s", name)
-            return HTMLResponse(html)
+            return HTMLResponse(as_sent(html))
         html = plaintext.page_with_meta(html, title=title, description=description, url=url, data=ld,
                                         noindex=noindex or status != 200)
-        return HTMLResponse(plaintext.with_text(html, text), status_code=status)
+        return HTMLResponse(as_sent(plaintext.with_text(html, text)), status_code=status)
 
     @app.get("/", include_in_schema=False)
     def home(request: Request):
@@ -902,7 +913,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             html = plaintext.with_corrections(html, right_of_reply.corrections(replies, archive))
         except Exception:  # noqa: BLE001 - the form on the page must still work
             log.exception("the corrections log was not written into its page")
-        return HTMLResponse(html)
+        return HTMLResponse(as_sent(html))
 
     # the sitemaps as last made, and what they were made from
     sitemaps_kept: dict[str, Any] = {}
@@ -1005,6 +1016,10 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
             return RedirectResponse(f"/{stem}" + (f"?{query}" if query else ""), status_code=301)
         if (dist / safe).is_file():
             return FileResponse(dist / safe)
+        if google_tag and (dist / f"{safe}.html").is_file():
+            # while measuring, the privacy notice is the measurement version (decision 36)
+            built = dist / f"{measure.NOTICE if stem == 'privacy' else safe}.html"
+            return HTMLResponse(as_sent(built.read_text(encoding="utf-8")))
         if (dist / f"{safe}.html").is_file():
             return FileResponse(dist / f"{safe}.html", media_type="text/html")
         return not_found()
@@ -1012,7 +1027,7 @@ def create_app(settings: Settings | None = None, pipeline: Pipeline | None = Non
     def not_found() -> Response:
         missing = dist / "404.html"
         if missing.exists():
-            return HTMLResponse(missing.read_text(encoding="utf-8"), status_code=404)
+            return HTMLResponse(as_sent(missing.read_text(encoding="utf-8")), status_code=404)
         raise HTTPException(404, "Not found.")
 
     return app

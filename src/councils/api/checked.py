@@ -165,7 +165,8 @@ def cited_sources(answer: Mapping[str, Any]) -> list[int]:
 
 def chip(n: int, source: Mapping[str, Any] | None, seg: int) -> str:
     label = chip_label(source)
-    return (f'<button type="button" class="wts-chip" data-source="{n}" data-seg="{seg}"><span class="wts-chip__in">'
+    return (f'<button type="button" class="wts-chip" data-source="{n}" data-seg="{seg}" '
+            'data-wts-conversion="source_opened"><span class="wts-chip__in">'
             f'<span class="wts-chip__n"><span class="wts-vh">Source </span>{n}</span>'
             + (f"<span>{e(label)}</span>" if label else "") + "</span></button>")
 
@@ -373,8 +374,10 @@ def check_strip(answer: Mapping[str, Any]) -> str:
             + "</ul></section>")
 
 
-def check_details(answer: Mapping[str, Any], found: int) -> str:
-    """"How this briefing was checked" (``CheckDetails``): the verifier's own counts, and what each mark means."""
+def check_details(answer: Mapping[str, Any], found: int, briefing: str | None = None) -> str:
+    """"How this briefing was checked" (``CheckDetails``): the verifier's own counts, and what each mark means. It
+    ends a finished briefing, so it carries the family kit's mark for a briefing read to the end (``briefing_read``,
+    once for each ``briefing``; docs/DECISIONS.md, 36)."""
     total, invalid = int(answer.get("citations_total") or 0), int(answer.get("citations_invalid") or 0)
     quotes, missing = int(answer.get("quotes_total") or 0), int(answer.get("quotes_unverified") or 0)
     unsupported = int(answer.get("unsupported_segments") or 0)
@@ -403,7 +406,8 @@ def check_details(answer: Mapping[str, Any], found: int) -> str:
         "a councillor’s own.",
         "Some errors can still get through: check the minutes before relying on a point.",
     ]
-    return ('<section class="check-details" id="check-details" aria-labelledby="check-details-head">'
+    return ('<section class="check-details" id="check-details" aria-labelledby="check-details-head" '
+            'data-wts-conversion="briefing_read"' + (f' data-wts-briefing="{e(briefing)}"' if briefing else "") + ">"
             '<h2 id="check-details-head">How this briefing was checked</h2><ul>'
             + "".join(f"<li>{e(x)}</li>" for x in points if x)
             + '</ul><p><a href="/methodology#ai-briefings">How every briefing is checked, on the methodology page</a>'
@@ -446,7 +450,8 @@ def sources_list(sources: Sequence[Mapping[str, Any]]) -> str:
             votes = s.get("votes") or []
             parts.append(
                 f'<li id="source-{e(s.get("n"))}" class="source {e(kind)}"><span class="source-n">{e(s.get("n"))}</span>'
-                f'<div><{heading}><a href="{e(s.get("url") or "")}" rel="noreferrer">{e(number)}{e(s.get("item_title") or "")}'
+                f'<div><{heading}><a href="{e(s.get("url") or "")}" rel="noreferrer" data-wts-conversion="source_opened">'
+                f'{e(number)}{e(s.get("item_title") or "")}'
                 f"</a></{heading}>"
                 f'<p class="meta"><a href="/councils/{e(s.get("gss") or "")}">{e(s.get("council_name") or "")}</a>, '
                 f'{e(KIND_LABEL.get(kind) or s.get("committee") or "")} ({e(s.get("committee") or "")}), '
