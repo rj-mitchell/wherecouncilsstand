@@ -121,6 +121,19 @@ price_input_per_mtok = 0.1
 price_output_per_mtok = 0.5
 price_cache_read_per_mtok = 0.01
 
+[topics]
+# Topic briefings (config/topics.toml; docs/DECISIONS.md, 35), written by `councils topics refresh` every Sunday
+# evening (deploy/councils-topics.timer). Each is a saved briefing written through the same pipeline and checks as a
+# reader's, its cost recorded as kind "topic" in the spending record and counted against the caps above.
+file = "topics.toml"
+mode = "summary"        # as a reader's briefing: up to [answer] summary_sources passages, at summary_effort
+min_days = 6            # a topic is written again once its briefing is this many days old (the timer is weekly)
+# A briefing costs about $0.07 (docs/EVALUATION.md, the run of 19 November 2026), so ten a week cost about $0.70
+# (about 55p, at £1 = $1.27). A run stops before a topic once it has spent this much, whatever the caps allow: twice
+# the expected, and about £1.60.
+max_run_usd = 2.0
+failures_to_stop = 2    # this many topics failing in one run stops it: the same cause would stop the rest
+
 [site]
 name = "Where Councils Stand"
 url = "https://wherecouncilsstand.com"

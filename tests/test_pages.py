@@ -128,7 +128,9 @@ def test_sitemap_lists_every_council_and_vote(site):
     base = "https://wherecouncilsstand.com"
     maps = sitemap_entries(site)
     assert list(maps) == [f"{base}/sitemaps/pages.xml", f"{base}/sitemaps/councils.xml",
-                          f"{base}/sitemaps/votes-2025.xml"]
+                          f"{base}/sitemaps/topics.xml", f"{base}/sitemaps/votes-2025.xml"]
+    # the topics' list, undated while no topic has a briefing (tests/test_topics.py has them written)
+    assert maps[f"{base}/sitemaps/topics.xml"] == [(f"{base}/topics", "")]
     pages = [u for u, _ in maps[f"{base}/sitemaps/pages.xml"]]
     assert pages[:2] == [f"{base}/", f"{base}/councils"]
     assert {f"{base}/about", f"{base}/press", f"{base}/status", f"{base}/named"} <= set(pages)
@@ -191,7 +193,7 @@ def test_no_sitemap_holds_more_than_the_protocol_allows(site, monkeypatch):
     monkeypatch.setattr(type(data), "vote_dates", lambda self: [(f"{BARNSLEY}:1:10:{n}", "2025-02-26")
                                                                 for n in range(3)])
     names = [u.rsplit("/", 1)[1] for u in sitemap_entries(site)]
-    assert names[2:] == ["votes-2025-1.xml", "votes-2025-2.xml", "votes-2025-3.xml"]
+    assert names[3:] == ["votes-2025-1.xml", "votes-2025-2.xml", "votes-2025-3.xml"]
 
 
 def test_a_page_is_sent_as_it_is_if_the_record_cannot_be_read(site, monkeypatch):

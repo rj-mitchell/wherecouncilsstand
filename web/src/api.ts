@@ -258,9 +258,13 @@ export const getCouncils = () =>
   fetch("/api/councils").then((r) => json<{ totals: Meta["totals"]; councils: CouncilRow[] }>(r));
 export const getCouncil = (gss: string) => fetch(`/api/councils/${encodeURIComponent(gss)}`).then((r) => json<CouncilPage>(r));
 export const getVote = (id: string) => fetch(`/api/votes/${encodeURIComponent(id)}`).then((r) => json<VotePage>(r));
+export type TopicRef = { slug: string; title: string; path: string };
+
 export const getBriefing = (id: string) =>
   fetch(`/api/briefings/${encodeURIComponent(id)}`).then((r) =>
-    json<{ id: string; at: string; question: string; options: Record<string, unknown>; events: AskEvent[] }>(r),
+    json<{ id: string; at: string; question: string; options: Record<string, unknown>; events: AskEvent[];
+      /** a topic briefing's topic (decision 35): its question is the topic's, not a reader's */
+      topic?: TopicRef }>(r),
   );
 
 export async function sendReport(body: { kind: string; page: string; message: string; contact: string }) {

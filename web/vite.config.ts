@@ -27,7 +27,7 @@ function partials(): Plugin {
 }
 
 const pages = [
-  "index", "councils", "council", "vote", "about", "methodology", "privacy", "corrections", "named", "accessibility", "terms",
+  "index", "councils", "council", "vote", "topics", "topic", "about", "methodology", "privacy", "corrections", "named", "accessibility", "terms",
   "press", "status", "404",
 ];
 

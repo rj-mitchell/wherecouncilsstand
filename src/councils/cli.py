@@ -23,6 +23,8 @@
     councils weekly-report                    # the week's figures saved, and what is over its threshold (scheduled)
     councils tidy                             # the nightly housekeeping (scheduled, after the backup)
     councils eval run                         # the test questions, each briefing written (costs money; has a limit)
+    councils topics list                      # the topic briefings, when each was last written, what the last run did
+    councils topics refresh                   # write the topic briefings that are due (weekly, scheduled; costs money)
     councils search "bin collections" --control NOC
     councils ask "What have Labour-run councils decided about bin collections since 2023?"
 """
@@ -577,6 +579,57 @@ app.add_typer(eval_commands(
     max_cost_usd=lambda: float(load_settings().section("eval")["max_cost_usd"]),   # no run starts without a limit
     verifier=lambda: _checks("VERIFIER"), loaded_words=lambda: _checks("LOADED_WORDS"),
     clock=lambda: CLOCK))
+
+
+# Topic briefings (decision 35; src/councils/topics.py): `councils topics refresh` runs weekly
+# (deploy/councils-topics.timer). It writes saved briefings and the topics' own table in the state database, which the
+# site writes to at any time, and only reads the search index, so it takes no update lock.
+
+topics_app = typer.Typer(no_args_is_help=True, help="Topic briefings (config/topics.toml): /topics and each topic's page.")
+app.add_typer(topics_app, name="topics")
+
+
+@topics_app.command("list")
+def topics_list() -> None:
+    """Each topic, when its current briefing was written, how many stand, and what the last run did with it."""
+    from councils import topics
+
+    settings = load_settings()
+    db = open_state(settings, CLOCK)
+    for row in topics.listing(settings, db, open_archive(db, CLOCK)):
+        cur, check = row["current"], row["last_check"]
+        written = f"written {cur['prepared_at'][:10]} ({cur['briefing_id']})" if cur else "not written yet"
+        typer.echo(f"{row['topic'].slug:50} {written:36} {len(row['versions'])} standing"
+                   + (f"  last run {check['checked_at'][:10]}: {check['outcome']}" if check else ""))
+
+
+@topics_app.command("refresh")
+def topics_refresh(only: list[str] = typer.Option(None, "--only", help="just this topic (its slug); repeat for more"),
+                   force: bool = typer.Option(False, help="write it again even if it is not due, or its evidence is "
+                                                          "unchanged")) -> None:
+    """Write the topic briefings that are due, each through the same pipeline and checks as a reader's, counted
+    against the site's spending caps. A failure keeps the last good briefing. Each costs about 7 cents. Exits 1 when a
+    topic failed or the run stopped early (a spending cap, or the run's own limit, max_run_usd in the settings' topics
+    section), so the timer's alert is sent."""
+    from councils import topics
+    from councils.api.app import build
+    from councils.rag.pipeline import Pipeline
+    from councils.replies import hidden_now
+
+    settings = load_settings()
+    site = build(settings, clock=CLOCK)        # the same parts as the site's: spending, caps, saved briefings
+    now = hidden_now(site.replies)
+    try:
+        run = topics.refresh(settings, site.db, Pipeline(settings), site.parts, without_councils=sorted(now.councils),
+                             without_votes=sorted(now.votes), only=only or None, force=force, clock=CLOCK,
+                             say=typer.echo)
+    except ValueError as exc:
+        typer.echo(f"error: {exc}", err=True)
+        raise typer.Exit(2) from None
+    typer.echo(f"{len(run.written)} written, ${run.spent_usd:.2f} spent"
+               + (f"; stopped: {run.stopped}" if run.stopped else ""))
+    if run.needs_attention:
+        raise typer.Exit(1)
 
 
 suppress_app = typer.Typer(no_args_is_help=True, help="Names and phrases removed by hand: the suppression list "

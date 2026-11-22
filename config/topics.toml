@@ -1,0 +1,93 @@
+# Topic briefings (docs/DECISIONS.md, 35): standing questions on what councils across the UK keep returning to, each
+# with its own page at /topics/<slug>, written afresh every week by `councils topics refresh` (the timer
+# deploy/councils-topics.timer) through the same pipeline and checks as a reader's briefing.
+#
+# Wording matters. Each question asks what councils have discussed and decided, names no side and presumes no
+# answer, and is one the minutes can answer. The topics were chosen across what councils do and from every side of
+# each argument (decision 35 says why each is here); a new one needs the same care, and a line in that decision.
+#
+#   slug         the page's address: lower-case words joined by hyphens. Never change it once published: links
+#                and search engines know the page by it
+#   title        the page's heading, its entry on /topics and the home page, and its title in search results
+#   question     what the model is asked each time the briefing is written, and what the page and its share card
+#                show under the title. Keep the period in it ("over the past twelve months"), which `months` sets
+#   description  one line under the title on /topics, and the start of the page's description
+#   search       what the record is searched for, in the vocabulary of council minutes: the topic's reading of its
+#                question, fixed here rather than read by the model each week, so every week's briefing searches
+#                for the same thing (and the reading costs nothing)
+#   months       how far back the record is searched, from the day it is written (default 12)
+#   kinds        the meetings searched (default: full council, cabinet and their equivalents, and strategic
+#                authorities' boards and scrutiny committees, as for a reader's question with no filters)
+#
+# Each briefing is a summary over up to 24 passages of minutes, balanced across councils run by different parties.
+# One costs about 7 cents, so the ten a week cost about 70 cents (about 55p); docs/OPERATIONS.md, "Topic briefings".
+
+[[topic]]
+slug = "council-tax-and-budgets"
+title = "Council tax and budgets"
+question = "What have councils discussed and decided about council tax and their budgets over the past twelve months?"
+description = "Budgets, council tax, savings, reserves and financial pressures."
+search = "council tax, revenue budget, budget setting, savings, reserves, medium term financial strategy, budget gap"
+
+[[topic]]
+slug = "adult-social-care"
+title = "Adult social care"
+question = "What have councils discussed and decided about adult social care over the past twelve months?"
+description = "Care homes, care at home, charges for care and the care workforce."
+search = "adult social care, care homes, home care, care charges, care packages, carers, care workforce"
+
+[[topic]]
+slug = "housing-and-homelessness"
+title = "Housing and homelessness"
+question = "What have councils discussed and decided about housing and homelessness over the past twelve months?"
+description = "Council and social housing, temporary accommodation and homelessness."
+search = "housing, homelessness, temporary accommodation, council housing, social housing, housing strategy, rough sleeping"
+
+[[topic]]
+slug = "special-educational-needs-and-school-transport"
+title = "Special educational needs and school transport"
+question = "What have councils discussed and decided about special educational needs and school transport over the past twelve months?"
+description = "Support for children with special educational needs, its funding, and home to school transport."
+search = "special educational needs, SEND, education health and care plans, high needs funding, home to school transport"
+
+[[topic]]
+slug = "planning-and-new-homes"
+title = "Planning and new homes"
+question = "What have councils discussed and decided about planning and new homes over the past twelve months?"
+description = "Local plans, housing targets, the green belt and new development."
+search = "local plan, planning policy, housing targets, new homes, housing development, green belt, housebuilding"
+
+[[topic]]
+slug = "roads-potholes-and-traffic-schemes"
+title = "Roads, potholes and traffic schemes"
+question = "What have councils discussed and decided about roads, potholes and traffic schemes over the past twelve months?"
+description = "Road repairs, potholes, speed limits, low traffic schemes and parking."
+search = "roads, potholes, highways maintenance, road repairs, traffic schemes, speed limits, low traffic neighbourhoods, parking"
+
+[[topic]]
+slug = "bins-recycling-and-waste"
+title = "Bins, recycling and waste"
+question = "What have councils discussed and decided about bins, recycling and waste over the past twelve months?"
+description = "Bin collections, recycling, food waste and recycling centres."
+search = "bin collections, waste collection, recycling, food waste, garden waste, household waste recycling centres"
+
+[[topic]]
+slug = "climate-and-net-zero"
+title = "Climate and net zero"
+question = "What have councils discussed and decided about climate change and net zero over the past twelve months?"
+description = "Climate emergency declarations, net zero targets and climate action plans."
+search = "climate change, climate emergency, net zero, carbon emissions, climate action plan, carbon reduction"
+
+[[topic]]
+slug = "local-government-reorganisation-and-devolution"
+title = "Local government reorganisation and devolution"
+question = "What have councils discussed and decided about local government reorganisation and devolution over the past twelve months?"
+description = "Proposals for new unitary councils, combined authorities, mayors and devolution deals."
+search = "local government reorganisation, unitary council proposals, devolution, combined authority, mayoral strategic authority"
+
+[[topic]]
+slug = "accommodation-for-asylum-seekers"
+title = "Accommodation for asylum seekers"
+question = "What have councils discussed and decided about accommodation for asylum seekers over the past twelve months?"
+description = "Hotels and other housing for people seeking asylum, and resettlement schemes."
+search = "asylum seekers, asylum accommodation, hotels used for asylum seekers, asylum dispersal, refugee resettlement"

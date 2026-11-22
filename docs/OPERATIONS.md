@@ -82,12 +82,12 @@ waiting). The containers see the lock through a read-only mount of the server's 
 If the lock file isn't there, as after a restart of the server before any update has run, the command does nothing
 and says so; make the file with `touch /var/lock/wheretheystand-update.lock` and run it again.
 
-If the update, the backup or the weekly report fails, the server emails wheretheystanduk@gmail.com with the
-result and the last log lines, at most once every six hours (Where MPs Stand's
+If the update, the backup, the weekly report or the topic briefings' run fails, the server emails
+wheretheystanduk@gmail.com with the result and the last log lines, at most once every six hours (Where MPs Stand's
 [`docs/HOSTING.md`](https://github.com/rj-mitchell/wherempsstand/blob/main/docs/HOSTING.md), "Email from the
 server"). A backup timer that stops running sends no failure of its own, so `councils-backup-check.timer` runs
-`councils backup-check` every day at 11:47 UTC. It fails, and so sends the same email, if the last backup or
-off-site copy is over two days old or the last off-site copy failed.
+`councils backup-check` every day at 11:47 UTC. It fails, and so sends the same email, if the last backup or off-site
+copy is over two days old or the last off-site copy failed.
 
 ### Problems a run reports
 
@@ -159,6 +159,7 @@ flock /var/lock/wheretheystand-update.lock docker compose run --rm -T app sh -c 
 | `councils tidy` | The nightly deletion, after each backup |
 | `councils backup`, `backup-check`, `offsite`, `restore` | The state database's backups |
 | `councils evaluate`, `councils eval` | The briefing test set ([`EVALUATION.md`](EVALUATION.md)) |
+| `councils topics list`, `topics refresh` | The topic briefings: when each was written, and writing those that are due ("Topic briefings", below) |
 
 `list-reports`, `close-report`, `list-statements`, `publish-statement`, `decline-statement`, `update-statement` and
 `withdraw-statement` are older names that still work; each first says, on standard error, what it is called now.
@@ -185,7 +186,50 @@ version>.png` (about 60 KB each). A card is never drawn for a briefing that is m
 concern is decided, or has no written answer, and an existing card is not served for one. The folder holds nothing
 that is not in the saved briefing itself and is not backed up: deleting it (`docker compose exec app rm -rf
 /data/cards`) loses nothing, and each card is drawn again when next asked for. A change to what a card shows raises
-`CARD_VERSION`, so cards are drawn afresh; the old files can then be deleted the same way.
+`CARD_VERSION`, so cards are drawn afresh; the old files can then be deleted the same way. A topic's page has its
+own card too, `/topics/<slug>/card.png`, titled with the topic's question and kept as `data/cards/topic-<slug>-<id>…`;
+when a new week's briefing's card is drawn, the topic's older cards are deleted.
+
+### Topic briefings
+
+Ten standing questions in `config/topics.toml`, each with a page at `/topics/<slug>` holding its latest briefing,
+written afresh every week (decision 35). `councils-topics.timer` runs `councils topics refresh` every Sunday at 21:43
+UTC. It writes each topic whose briefing is six days old or more (or never written), through the same pipeline and
+checks as a reader's briefing, and keeps each as a saved briefing at its own address. It does not take the server's
+update lock: it writes only saved briefings, as the site does all day, and reads the search index.
+
+What it does with each topic is printed, one line each, and the last line says how many were written and what they
+cost. A briefing that fails, or a search that finds no records, leaves the topic's last good briefing in place; two
+failures in one run stop it. A topic whose search finds exactly the passages its current briefing used is not written
+again. The command exits 1, and the alert email is sent, when a topic failed or the run stopped early: at the site's
+daily or monthly spending cap (it asks before each topic, counting the briefing about to be written at `[usage]
+briefing_estimate_usd`), or at the run's own limit, `[topics] max_run_usd` ($2). Each briefing costs about 7 cents, so
+a week's ten cost about 70 cents (about 55p), recorded in the spending record as kind `topic` and counted in the
+weekly report's spending.
+
+```bash
+docker compose run --rm --no-deps -T app councils topics list        # each topic, its current briefing, the last run
+docker compose run --rm --no-deps -T app councils topics refresh     # write those that are due, now
+docker compose run --rm --no-deps -T app councils topics refresh --only adult-social-care --force   # one, again
+systemctl list-timers councils-topics.timer                          # when it runs next
+journalctl -u councils-topics.service -n 50                          # the last run's output
+```
+
+On a new server, or the first time this is deployed, no topic has a briefing yet: their pages say so, are kept out of
+search engines and the sitemap, and the home page lists none. Run `councils topics refresh` once by hand (about ten
+minutes) rather than wait for Sunday.
+
+A topic briefing is a saved briefing, so the usual commands apply to it: `councils withdraw <id>` takes it down (the
+topic's page then shows the week before's, or none), and `councils hide /b/<id>` hides it while a concern is decided
+(the topic's page then shows the note in its place and leaves search engines). The page links to each week's
+briefing at its own address.
+
+To add a topic, add an entry to `config/topics.toml` (its slug, title, question, description and search; the
+comments at the top of the file say what each is), with a line in decision 35 saying why, keep its question in the
+form the others take ("What have councils discussed and decided about … over the past twelve months?",
+`tests/test_topics.py` checks it), deploy, and run `councils topics refresh --only <slug>`. Never change a published
+topic's slug: links and search engines know its page by it. To retire one, remove its entry: its page then answers
+404, and its briefings stay at their own addresses.
 
 ### Costs and limits
 
@@ -434,7 +478,9 @@ visitors' codes and no visitor secret (wts-core 0.3.2), for as long as that back
 `data/state.db` is the one thing that can't be rebuilt. It is kept by the shared package, wts-core, in tables whose
 names start `wts_`: `wts_spending` (each model call's cost), `wts_answer_cache`, `wts_briefings` (saved
 briefings), `wts_briefing_log` (the record of each briefing), `wts_reports`, `wts_statements` and
-`wts_statement_log`, `wts_hidden`, and `wts_schema` (which changes to the tables have been made).
+`wts_statement_log`, `wts_hidden`, and `wts_schema` (which changes to the tables have been made). Two tables are the
+site's own: `topic_versions`, which saved briefing is each topic's current one (decision 35), and `topic_checks`, what
+the last weekly run did with each topic.
 
 It is backed up every night ([`DEPLOY.md`](DEPLOY.md), "Backups").
 

@@ -1,0 +1,20 @@
+# Writes the topic briefings afresh (councils topics refresh; docs/DECISIONS.md, 35): each topic in config/topics.toml
+# whose briefing is a week old, through the same pipeline and checks as a reader's briefing, counted against the
+# site's spending caps. About ten briefings, about 70 cents in all. Installed by deploy/update.sh with
+# councils-topics.timer (docs/OPERATIONS.md, "Topic briefings").
+[Unit]
+Description=Where Councils Stand: write the topic briefings afresh
+After=docker.service
+Requires=docker.service
+# Emails the alerts address if this fails (deploy/alert@.service in Where MPs Stand, docs/HOSTING.md there)
+OnFailure=alert@%n.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/wherecouncilsstand/deploy
+# Exits 1 when a topic failed (its last good briefing stays) or the run stopped early at a spending cap or its own
+# limit. It writes saved briefings in the state database, as the site does all day, and only reads the search index,
+# so it does not take the server's update lock; its hour keeps it well clear of every site's nightly update anyway.
+ExecStart=/usr/bin/docker compose run --rm --no-deps -T app councils topics refresh
+Nice=10
+TimeoutStartSec=1h

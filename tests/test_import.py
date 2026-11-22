@@ -70,10 +70,11 @@ def old_database(folder: Path) -> Path:
 
 
 def old_tables(path: Path) -> str:
-    """Everything in the database that is not the shared package's, as SQL: the old tables and their rows."""
+    """Everything in the database that is not the shared package's, as SQL: the old tables and their rows. The
+    site's own tables for topic briefings (decision 35), made new on the way in, are not old tables."""
     con = sqlite3.connect(path)
     try:
-        return "\n".join(line for line in con.iterdump() if "wts_" not in line) + "\n"
+        return "\n".join(line for line in con.iterdump() if "wts_" not in line and "topic_" not in line) + "\n"
     finally:
         con.close()
 

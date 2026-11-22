@@ -444,3 +444,76 @@ dark, are in [`screenshots/2026-11-checked-briefings/`](screenshots/2026-11-chec
 them is the made-up record's (`scripts/fixture_site.py`), written by hand and checked by the site's own checks, and
 the wait is that briefing's events replayed.
 
+
+## 35. Topic briefings
+
+Decided 21 November 2026, carrying out the charity's review plan of that day (C3, step 6; the owner's answer 10, "yes,
+both sites"), and modelled on Where MPs Stand's topics: ten standing questions, each with a page of its own at
+`/topics/<slug>` holding a checked briefing written afresh every week, so that a first-time visitor or a search engine
+finds real, checked briefings to read without asking anything. The topics are in `config/topics.toml`; the code is
+`src/councils/topics.py`, `api/topic_pages.py` and `api/checked.py`.
+
+- **The topics.** Chosen across what councils do, from the money (council tax and budgets) through the services
+  people use most (adult social care; housing and homelessness; special educational needs and school transport;
+  roads, potholes and traffic schemes; bins, recycling and waste) to how places change and are run (planning and new
+  homes; climate and net zero; local government reorganisation and devolution), and one that many councils debated
+  in 2025 and 2026 though it is not a service of their own (accommodation for asylum seekers). Each is a
+  subject councils of every party decide on and argue over from more than one side: spending and savings, building
+  and protecting land, schemes some residents want and others oppose, and whether hotels and housing should be used
+  for asylum seekers. Each is something council minutes record (full council and cabinet, and strategic authorities'
+  boards and scrutiny committees), so the record can answer it. Topics that are mostly national (the NHS, schools'
+  own budgets, policing) are left to Where MPs Stand.
+- **The wording.** Every question is "What have councils discussed and decided about … over the past twelve
+  months?": it asks what the minutes record, names no party or side, and presumes no answer ("climate change and net
+  zero", not "the climate emergency"; "accommodation for asylum seekers", not "asylum hotels"). A test holds every
+  question to that form. The evidence is balanced across councils run by different parties, as for a reader's
+  question with no filters.
+- **The reading of each question is fixed.** Each topic gives its own search, in the vocabulary of council minutes,
+  and its period (twelve months back from the day it is written), and the briefing is written from that plan: the
+  model does not read the question. Every week searches for the same thing, the reading costs nothing, and a change to
+  what a topic covers is a reviewed change to the file.
+- **Written through the same pipeline and checks as a reader's briefing, never weaker.** `councils topics refresh`
+  runs the site's own pipeline (the same search, instructions, model and every check) and keeps each briefing as a
+  saved briefing, so it has its own address and can be withdrawn, hidden while a concern is decided, or reported like
+  any other, and is shown through the same rules (the current checks, the display rule of decision 34, what may be
+  shown). Pages and councils hidden while a concern is decided are left out of its search, as for a reader. A topic is
+  written again once its briefing is six days old; one whose search finds exactly the passages its current briefing
+  was written from is not written again. A briefing that fails, or a search that finds no records, leaves the last
+  good briefing in place; two failures in one run stop it, since the same cause would stop the rest. The site's own
+  table `topic_versions` says which saved briefing is each topic's current one; a withdrawn one is passed over.
+- **Cost.** A briefing on the real record costs about $0.07 (the test set's run of 19 November 2026,
+  `docs/EVALUATION.md`: $2.116 for 31 questions), and a topic's has no reading of the question to pay for, so ten a
+  week cost about $0.70, about 55p at £1 = $1.27 (Where MPs Stand's `docs/COSTS.md` rate), and about £2.40 a month:
+  within the plan's £1 to £2 a week. Every call is recorded in the spending record (kind `topic`) and counted against
+  the site's daily and monthly caps; before each topic the caps are asked, counting the briefing about to be written
+  at its estimate, and the run stops when a cap would be reached. A run also stops once it has spent `[topics]
+  max_run_usd` ($2, about £1.60), whatever the caps allow.
+- **When.** Every Sunday at 21:43 UTC (`deploy/councils-topics.timer`, installed by `deploy/update.sh` with the
+  other timers): a quiet evening hour, many hours after the day's update (03:17, which can wait on other sites' jobs
+  into the afternoon) and before the next, so the week's minutes are in. It writes saved briefings in the state
+  database, as the site does all day, and only reads the search index, so it does not take the server's update lock
+  (decision 29). A failure or an early stop exits 1, and the alert email is sent.
+- **Indexed.** A topic's page is listed by search engines, with its own title, description, canonical address and
+  breadcrumbs, once it has a briefing to show; not before, nor while its briefing is hidden. Readers' saved briefings
+  stay out of search engines (decision 33, and the owner's answer 1 in the review plan: "only the record's own pages,
+  and MPs' curated topics, are indexed"; answer 10 extends curated topics to this site). A topic briefing's own
+  address, `/b/<id>`, stays `noindex`, as every saved briefing's does, and says which topic it is, not "Asked by a
+  reader".
+- **Written by the server, in full.** The topic's page is the briefing in the family's checked design (decision 34),
+  written into the HTML by the server: the title, the question, the day it was prepared and the records it was
+  written from (how many, from how many councils and meetings, between which dates), "Briefing written by AI", the
+  strip, the text with its record quotations, chips and marks of text with no source, "How this briefing was
+  checked", the sources, and the earlier weeks' briefings at their own addresses. Crawlers and readers without
+  scripts read exactly what everyone else does. The page's script only adds the record beside the briefing on wide
+  screens, and the sheet on narrow ones, from the sources written into the page as data, so it fetches nothing.
+  `api/checked.py` is the server's copy of the app's renderer; a test compares the two, element by element.
+- **Share card.** A topic's page has its own card, drawn once like a saved briefing's (decision 34) with the strip's
+  counts and the day it was prepared, titled with the topic's own question: the family's `BRIEFINGS.md` says "a
+  curated topic's card has the topic's own question" (Where MPs Stand titles its cards with the topic's title). The
+  question is the site's own words, never a reader's, so decision 33 is kept.
+- **Found from the home page, the menu and the sitemap.** The home page lists each topic with a briefing, with the day
+  it was prepared, before the latest named votes and after the question box and the proof (decision 32: nothing
+  pushes the question box down). The menu gains "Topics", after "Ask", as Where MPs Stand's has it (the family's
+  glossary limits footer links, not the menu); on a phone the five links keep to one line. The sitemap has a
+  `topics.xml` with `/topics`, dated by its newest briefing, and each topic with a briefing, dated by the day it was
+  prepared.
