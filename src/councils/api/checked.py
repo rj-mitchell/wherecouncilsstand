@@ -167,7 +167,7 @@ def chip(n: int, source: Mapping[str, Any] | None, seg: int) -> str:
     label = chip_label(source)
     return (f'<button type="button" class="wts-chip" data-source="{n}" data-seg="{seg}" '
             'data-wts-conversion="source_opened"><span class="wts-chip__in">'
-            f'<span class="wts-chip__n"><span class="wts-vh">Source </span>{n}</span>'
+            f'<span class="wts-chip__n"><span class="wts-vh">Source</span> {n}</span>'
             + (f"<span>{e(label)}</span>" if label else "") + "</span></button>")
 
 

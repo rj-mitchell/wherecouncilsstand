@@ -121,7 +121,7 @@ describe("Chip", () => {
     expect(container.innerHTML).toBe(
       '<button type="button" class="wts-chip" data-source="3" data-wts-conversion="source_opened"><span class="wts-chip__in">' +
         '<span class="wts-chip__n">' +
-        '<span class="wts-vh">Source </span>3</span><span>Barnsley Metropolitan Borough Council, full council, 26 February 2026' +
+        '<span class="wts-vh">Source</span> 3</span><span>Barnsley Metropolitan Borough Council, full council, 26 February 2026' +
         "</span></span></button>",
     );
   });

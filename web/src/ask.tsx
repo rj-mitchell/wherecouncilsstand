@@ -223,7 +223,8 @@ function App() {
     } else if ((ev.type === "text" || ev.type === "citation") && before.text === "" && !before.lit.length) {
       dealtAll(after.sources.length);
       setWait((w) => ({ ...w, stage: 2 }));
-      setSaid(`Writing the briefing from these ${after.sources.length} records only.`);
+      setSaid(after.sources.length === 1 ? "Writing the briefing from this one record only."
+        : `Writing the briefing from these ${after.sources.length} records only.`);
     } else if (ev.type === "final") {
       const a = ev.answer;
       if (a && !a.no_records) {
@@ -538,7 +539,9 @@ function App() {
                     {!wide && pile}
                     {wait.stage >= 2 && !wait.sourcesOnly && (
                       <p className="wait__only">
-                        Writing from these {s.sources.length} records only. The AI may use these and nothing else.
+                        {s.sources.length === 1
+                          ? "Writing from this one record only. The AI may use it and nothing else."
+                          : `Writing from these ${s.sources.length} records only. The AI may use these and nothing else.`}
                       </p>
                     )}
                   </div>

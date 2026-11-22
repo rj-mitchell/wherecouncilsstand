@@ -56,8 +56,7 @@ export function Chip({ n, source, seg }: { n: number; source?: SourceCard; seg?:
     <button type="button" className="wts-chip" data-source={n} data-seg={seg} data-wts-conversion="source_opened">
       <span className="wts-chip__in">
         <span className="wts-chip__n">
-          <span className="wts-vh">Source </span>
-          {n}
+          <span className="wts-vh">Source</span>{` ${n}`}
         </span>
         {label && <span>{label}</span>}
       </span>
