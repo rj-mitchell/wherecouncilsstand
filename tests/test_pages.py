@@ -84,7 +84,8 @@ def test_a_vote_page_names_each_councillor_and_their_party(site):
     assert f'href="https://wherecouncilsstand.com/votes/{VOTE}"' in html
     assert "Hannah Kitching (Liberal Democrats)" in html and "<h2>Against (2)</h2>" in html
     assert "the motion was &lt;lost&gt;." in html and "<lost>" not in html    # every value escaped
-    assert ld(html)["about"][1]["startDate"] == "2025-02-26"
+    # about the council, citing the minutes; the meeting is not marked as an Event (Search Console, 24 November 2026)
+    assert ld(html)["about"]["@type"] == "GovernmentOrganization" and "Event" not in str(ld(html))
 
 
 def test_unknown_councils_and_votes_are_404_and_not_indexed(site):

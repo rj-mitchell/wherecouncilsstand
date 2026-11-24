@@ -561,3 +561,16 @@ def test_a_visitor_may_have_eight_briefings_written_a_day():
     from councils.config import load_settings
 
     assert load_settings().usage["per_visitor_daily_questions"] == 8
+
+
+def test_a_vote_page_marks_no_event():
+    """A named vote's structured data is about the council and cites the minutes; a past meeting is not marked as an
+    Event, which Google reads as something to attend and checks for a venue (Search Console, 24 November 2026)."""
+    from councils.api.plaintext import vote_data
+
+    v = {"council": "Barnsley", "gss": "E08000016", "kind": "full_council", "date": "2025-03-01", "vote_id": "x:1",
+         "url": "https://example.org/minutes", "heading": "Budget"}
+    page, _ = vote_data(v, "https://wherecouncilsstand.com/votes/x:1", "https://wherecouncilsstand.com")
+    assert "Event" not in str(page)
+    assert page["about"]["@type"] == "GovernmentOrganization"
+    assert page["citation"]["url"] == "https://example.org/minutes"

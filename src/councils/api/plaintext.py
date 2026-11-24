@@ -449,10 +449,12 @@ def vote_data(v: dict[str, Any], url: str, base: str) -> list[dict[str, Any]]:
     page = {"@context": "https://schema.org", "@type": "WebPage", "name": vote_title(v), "url": url,
             "description": vote_description(v), "inLanguage": "en-GB",
             "isPartOf": {"@type": "WebSite", "name": SITE, "url": base + "/"},
-            "about": [{"@type": "GovernmentOrganization", "name": v["council"],
-                       "url": base + council_path(v["gss"])},
-                      {"@type": "Event", "name": f"{v['council']}: {meeting}", "startDate": v.get("date"),
-                       **({"url": v["url"]} if v.get("url") else {})}]}
+            "about": {"@type": "GovernmentOrganization", "name": v["council"], "url": base + council_path(v["gss"])},
+            # the meeting's minutes, as the record the page is drawn from: not an Event, which Google reads as
+            # something to attend and checks for a venue (Search Console, 24 November 2026), when this is a past
+            # meeting whose place the site does not hold
+            **({"citation": {"@type": "CreativeWork", "name": f"Minutes: {v['council']}, {meeting}", "url": v["url"]}}
+               if v.get("url") else {})}
     return [page, breadcrumbs(base, [("Councils", "/councils"), (v["council"], council_path(v["gss"])),
                                      (v.get("heading") or v.get("item") or "Named vote", vote_path(v["vote_id"]))])]
 
